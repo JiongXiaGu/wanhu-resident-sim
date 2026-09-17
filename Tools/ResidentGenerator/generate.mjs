@@ -55,6 +55,11 @@ function weightedPick(rng, items) {
   return items.at(-1);
 }
 
+function weightedPickAvoiding(rng, items, avoidIds) {
+  const filtered = items.filter((item) => !avoidIds.has(item.id));
+  return weightedPick(rng, filtered.length ? filtered : items);
+}
+
 function lifeStageForAge(age) {
   return generation.lifeStages.find((stage) => age >= stage.minAge && age <= stage.maxAge)?.id ?? 'adult';
 }
@@ -91,17 +96,20 @@ function buildRecentLifeLog(resident, rng) {
 
   const target = Math.min(generation.recentLifeLogCapacity, randomInt(rng, 4, 7));
   const interval = generation.routineIntervalDays;
+  const recentTemplateIds = [];
   let day = generation.currentDay - randomInt(rng, 1, 5);
   const minimumDay = generation.currentDay - generation.routineWindowDays;
 
   while (result.length < target && day >= minimumDay) {
-    const item = weightedPick(rng, pool);
+    const item = weightedPickAvoiding(rng, pool, new Set(recentTemplateIds));
     result.push({
       id: `${resident.id}:${item.id}:${day}`,
       day,
       kind: 'routine',
       title: item.text,
     });
+    recentTemplateIds.unshift(item.id);
+    recentTemplateIds.splice(2);
     day -= randomInt(rng, interval.min, interval.max);
   }
 
