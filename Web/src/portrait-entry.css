@@ -28,15 +28,6 @@
   transform: translateY(-1px);
 }
 
-/* 旧故事审查器已退出当前 Web Demo 入口。 */
-.sim-game .dev-buttons--two button:last-child {
-  display: none;
-}
-
-.sim-game .dev-buttons--two {
-  grid-template-columns: minmax(0, 1fr);
-}
-
 @media (max-width: 900px) {
   .portrait-view-entry {
     top: 70px;

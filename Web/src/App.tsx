@@ -19,10 +19,6 @@ import {
   stageForAssignment,
   type LifeEventAssignment,
 } from './simulation/life-events';
-import { StoryReviewView } from './StoryReviewView';
-import type { StoryCollection } from './types';
-
-type AppMode = 'game' | 'review';
 
 const START_OFFSETS = [0, 3, 8, 14, 21, 2, 5, 11, 18, 27, 6, 16];
 
@@ -79,11 +75,9 @@ function createAssignments(
 }
 
 export default function App() {
-  const [collection, setCollection] = useState<StoryCollection | null>(null);
   const [definitions, setDefinitions] = useState<ResidentDefinitions | null>(null);
   const [residentSnapshot, setResidentSnapshot] = useState<ResidentWorldSnapshot | null>(null);
   const [loadError, setLoadError] = useState('');
-  const [mode, setMode] = useState<AppMode>('game');
   const [gameDay, setGameDay] = useState(120);
   const [selectedResidentId, setSelectedResidentId] = useState<number | null>(null);
   const [assignments, setAssignments] = useState<Record<number, LifeEventAssignment>>({});
@@ -103,14 +97,12 @@ export default function App() {
   useEffect(() => {
     let cancelled = false;
     Promise.all([
-      loadJson<StoryCollection>('/generated/stories.json', '故事数据'),
       loadJson<ResidentDefinitions>('/generated/definitions.json', '居民定义'),
       loadJson<ResidentWorldSnapshot>('/generated/resident-snapshot.json', '居民快照'),
     ])
-      .then(([storyData, definitionData, snapshotData]) => {
+      .then(([definitionData, snapshotData]) => {
         if (cancelled) return;
         if (!definitionData.lifeEvents?.length) throw new Error('LifeEvent V2 定义为空');
-        setCollection(storyData);
         setDefinitions(definitionData);
         setResidentSnapshot(snapshotData);
         setGameDay(snapshotData.currentDay);
@@ -248,7 +240,7 @@ export default function App() {
     );
   }
 
-  if (!collection || !definitions || !residentSnapshot || !selectedResident || !assignment || !lifeView) {
+  if (!definitions || !residentSnapshot || !selectedResident || !assignment || !lifeView) {
     return (
       <main className="app-shell center-state">
         <section className="state-card">
@@ -258,8 +250,6 @@ export default function App() {
       </main>
     );
   }
-
-  if (mode === 'review') return <StoryReviewView collection={collection} onExit={() => setMode('game')} />;
 
   const occupation = occupationFor(definitions, selectedResident.occupationId);
   const selectedAge = ageAtDay(selectedResident, gameDay, definitions.generation.daysPerYear);
@@ -507,7 +497,6 @@ export default function App() {
           </div>
           <div className="dev-buttons dev-buttons--two">
             <button type="button" onClick={toggleFamily}>展开家人</button>
-            <button type="button" onClick={() => setMode('review')}>Legacy 审查器</button>
           </div>
           <p>{unreadCount} 位居民有未查看的新故事阶段。生活模式看现在，人生模式只按年龄回看已经沉淀的往事。</p>
         </aside>
