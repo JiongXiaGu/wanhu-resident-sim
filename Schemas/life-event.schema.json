@@ -2,6 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wanhu.local/schemas/life-event.schema.json",
   "title": "Wanhu Resident Life Events V2",
+  "$defs": {
+    "stableId": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9-]*)+$" },
+    "lifeTagId": { "type": "string", "pattern": "^lifetag\\.[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)*$" },
+    "lifeTagList": { "type": "array", "items": { "$ref": "#/$defs/lifeTagId" }, "uniqueItems": true }
+  },
   "type": "object",
   "required": ["schema", "items"],
   "properties": {
@@ -12,19 +17,29 @@
         "type": "object",
         "required": ["id", "title", "weight", "eligibility", "stages"],
         "properties": {
-          "id": { "type": "string", "minLength": 1 },
+          "id": { "$ref": "#/$defs/stableId" },
           "title": { "type": "string", "minLength": 1 },
           "weight": { "type": "number", "minimum": 0 },
           "recordToHistory": { "type": "boolean" },
           "eligibility": {
             "type": "object",
             "properties": {
-              "occupations": { "type": "array", "items": { "type": "string" } },
-              "genders": { "type": "array", "items": { "enum": ["male", "female"] } },
+              "occupations": { "type": "array", "items": { "$ref": "#/$defs/stableId" }, "uniqueItems": true },
+              "genders": { "type": "array", "items": { "enum": ["male", "female"] }, "uniqueItems": true },
               "minAge": { "type": "integer", "minimum": 0 },
               "maxAge": { "type": "integer", "minimum": 0 },
               "minChildren": { "type": "integer", "minimum": 0 },
-              "requireSpouse": { "type": "boolean" }
+              "requireSpouse": { "type": "boolean" },
+              "requiredTags": { "$ref": "#/$defs/lifeTagList" },
+              "forbiddenTags": { "$ref": "#/$defs/lifeTagList" }
+            },
+            "additionalProperties": false
+          },
+          "effects": {
+            "type": "object",
+            "properties": {
+              "addTags": { "$ref": "#/$defs/lifeTagList" },
+              "removeTags": { "$ref": "#/$defs/lifeTagList" }
             },
             "additionalProperties": false
           },
