@@ -23,6 +23,8 @@ export type ResidentRecord = {
   seed: number;
   displayName: string;
   surname: string;
+  surnameId: string;
+  givenNameId: string;
   birthDay: number;
   gender: Gender;
   portraitSeed: number;
@@ -39,6 +41,7 @@ export type ResidentRecord = {
   lifeStage: LifeStageId;
   stateBits: number;
   activeStoryId: string | null;
+  lifeTags: string[];
   recentLifeLog: ResidentLifeLogRecord[];
   majorLifeHistory: ResidentMajorLifeEvent[];
 };
@@ -51,11 +54,33 @@ export type HouseholdRecord = {
 };
 
 export type ResidentWorldSnapshot = {
-  schema: 'wanhu.resident-snapshot.v1';
+  schema: 'wanhu.resident-snapshot.v2';
   citySeed: number;
   currentDay: number;
   residents: ResidentRecord[];
   households: HouseholdRecord[];
+};
+
+export type NameTokenDefinition = {
+  id: string;
+  text: string;
+  weight: number;
+  gender?: Gender | 'unisex';
+  styles?: string[];
+  generationGroups?: string[];
+};
+
+export type NameCatalogDefinition = {
+  schema: 'wanhu.name-catalog.v2';
+  surnames: NameTokenDefinition[];
+  givenNames: NameTokenDefinition[];
+};
+
+export type LifeTagDefinition = {
+  id: string;
+  label: string;
+  category: string;
+  description?: string;
 };
 
 export type OccupationDefinition = {
@@ -94,6 +119,13 @@ export type LifeEventEligibility = {
   maxAge?: number;
   minChildren?: number;
   requireSpouse?: boolean;
+  requiredTags?: string[];
+  forbiddenTags?: string[];
+};
+
+export type LifeEventEffects = {
+  addTags?: string[];
+  removeTags?: string[];
 };
 
 export type LifeEventStageDefinition = {
@@ -108,6 +140,7 @@ export type LifeEventDefinition = {
   title: string;
   weight: number;
   eligibility: LifeEventEligibility;
+  effects?: LifeEventEffects;
   source?: LifeEventSource;
   recordToHistory?: boolean;
   stages: [LifeEventStageDefinition, LifeEventStageDefinition, LifeEventStageDefinition];
@@ -128,12 +161,14 @@ export type ResidentGenerationDefinition = {
 };
 
 export type ResidentDefinitions = {
-  schema: 'wanhu.resident-definitions.v2';
+  schema: 'wanhu.resident-definitions.v3';
   names: {
     surnames: string[];
     maleGivenNames: string[];
     femaleGivenNames: string[];
   };
+  nameCatalog: NameCatalogDefinition;
+  lifeTags: LifeTagDefinition[];
   occupations: OccupationDefinition[];
   routines: RoutineDefinition[];
   lifeEvents: LifeEventDefinition[];
