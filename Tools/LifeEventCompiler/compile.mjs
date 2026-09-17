@@ -22,6 +22,10 @@ for (const event of source.items) {
   if (event.recordToHistory !== undefined && typeof event.recordToHistory !== 'boolean') {
     throw new Error(`${event.id}: recordToHistory must be a boolean.`);
   }
+  const persistsAsChapter = Boolean(event.recordToHistory || event.effects?.structuralRequests?.length);
+  if (persistsAsChapter && (typeof event.memoryText !== 'string' || !event.memoryText.trim())) {
+    throw new Error(`${event.id}: persistent life chapters require memoryText.`);
+  }
   if (!Array.isArray(event.stages) || event.stages.length !== 3) {
     throw new Error(`${event.id}: LifeEvent V2 must have exactly 3 stages.`);
   }
