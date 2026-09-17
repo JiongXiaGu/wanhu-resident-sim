@@ -7,7 +7,7 @@
   "properties": {
     "schema": {"const": "wanhu.stable-id-registry.v1"},
     "hashAlgorithm": {"const": "fnv1a32-utf16"},
-    "items": {"type":"array","items":{"type":"object","required":["id","hash","hashHex","kind","source"],"additionalProperties":false,"properties":{"id":{"type":"string","pattern":"^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9-]*)+$"},"hash":{"type":"integer","minimum":0,"maximum":4294967295},"hashHex":{"type":"string","pattern":"^0x[0-9a-f]{8}$"},"kind":{"type":"string","minLength":1},"source":{"type":"string","minLength":1}}}}
+    "items": {"type":"array","items":{"type":"object","required":["id","hash","hashHex","kind","source"],"additionalProperties":false,"properties":{"id":{"type":"string","pattern":"^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$"},"hash":{"type":"integer","minimum":0,"maximum":4294967295},"hashHex":{"type":"string","pattern":"^0x[0-9a-f]{8}$"},"kind":{"type":"string","minLength":1},"source":{"type":"string","minLength":1}}}}
   },
   "additionalProperties": false
 }
