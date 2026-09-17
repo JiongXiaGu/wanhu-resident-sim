@@ -1,13 +1,12 @@
 # wanhu-resident-sim
 
-《万户天工》居民系统的设计、内容生产、玩法原型与数据管线验证仓库。
+《万户天工》居民玩法的 Web 演示、内容生产与原型验证仓库。
 
-本仓库同时承担两件事，但保持边界清楚：
+本仓库当前只回答一件事：
 
-1. **Web Demo**：快速验证 Resident Panel、LifeEvent、人生经历、内容密度和交互体验。
-2. **Resident Content Pipeline**：建立可批量生产、可校验、可编译，并能被未来 Unity Runtime 消费的居民内容源。
+> **居民系统作为游戏玩法是否成立、是否有代入感、是否值得玩家持续点开和观察。**
 
-Web Demo 是玩法与内容原型，不是 Unity ECS 内存结构规范。未来 Unity ECS 不直接照搬 `Web/src` TypeScript 类型，也不在 Runtime 解析 Markdown / JSON。
+Web Demo 是玩法原型，不是 Unity Runtime 设计稿。Unity ECS 组件、BlobAsset、正式存档、RuntimeIndex、序列化和资源加载方式都不在本仓库继续设计；正式进入 Unity 时重新根据游戏工程约束设计。
 
 ## 项目别名
 
@@ -19,8 +18,8 @@ Web Demo 是玩法与内容原型，不是 Unity ECS 内存结构规范。未来
 README.md
 AGENTS.md
 Documentation/居民逻辑网页Demo接续说明.md
-Documentation/居民内容生产与运行时数据管线V1.md
-Documentation/居民内容契约V1.md
+Documentation/居民面板与生活事件V2.md
+Documentation/居民生活记录与故事连续性.md
 Documentation/StoryBucket与内容覆盖V1.md
 ```
 
@@ -31,18 +30,18 @@ Documentation/StoryBucket与内容覆盖V1.md
 ```text
 wanhu-resident-sim/
 ├─ 居民故事/                         # Legacy Story 素材
-├─ Content/                          # 人工维护的内容源
+├─ Content/                          # 人工维护的原型内容源
 │  ├─ Stories/                       # Legacy Story Markdown
 │  ├─ LifeEvents/                    # Resident Panel 短生活事件
-│  ├─ Names/                         # Name V2 唯一姓名源
+│  ├─ Names/                         # Name V2
 │  ├─ Occupations/                   # 职业 + Occupation Group
 │  ├─ Tags/                          # LifeTag Registry
-│  ├─ Appearance/                    # Appearance Part / Palette Authoring
+│  ├─ Appearance/                    # Prototype Appearance Authoring
 │  ├─ Routines/                      # 普通生活表现模板
 │  └─ Simulation/                    # Demo 生成与模拟参数
-├─ Documentation/                    # 长期设计与数据契约
+├─ Documentation/                    # 玩法与内容规则
 ├─ Schemas/                          # Authoring / Demo Schema
-├─ Tools/                            # Compiler / Generator
+├─ Tools/                            # Web 内容编译与验证工具
 ├─ Web/                              # 玩法 / UI / 内容原型
 ├─ scripts/                          # Visual Review 等辅助脚本
 ├─ AGENTS.md
@@ -50,20 +49,22 @@ wanhu-resident-sim/
 └─ vercel.json
 ```
 
-## Web Demo 的职责
+## Web Demo 的验收问题
 
-Web Demo 主要回答：
+当前所有实现都优先服务下面这些问题：
 
 ```text
-这个玩法好不好理解？
-Resident Panel 信息层级是否合理？
-LifeEvent 是否像一个居民正在生活？
-人生经历是否值得玩家点开？
-故事文本在真实 UI 中是否过长？
-内容条件、年龄阶段和家庭状态是否成立？
+1. 点一个陌生居民，我有没有兴趣继续看？
+2. 他现在的生活是否可信？
+3. 几段故事组合起来是否像一个人的人生？
+4. 过去发生的事情是否真的会影响后来？
+5. 家庭 / 职业等状态变化以后，人物是否真的发生变化？
+6. 城市建设与世界变化能否反馈到具体居民？
+7. 连续查看十几个居民以后，会不会明显重复？
+8. “人生经历”是否值得玩家主动翻阅？
 ```
 
-Web Demo 可以使用调试友好的 JSON、字符串 Stable ID、固定快照和 DEV 工具；不负责定义 Unity ECS 组件布局、BlobAsset 内存布局、正式存档格式和角色资源加载策略。
+只要某项实现不能帮助回答这些问题，就不应在 Web Demo 中继续扩展。
 
 ## 当前内容编译链
 
@@ -110,25 +111,41 @@ definitions.json       wanhu.resident-definitions.v4
 resident-snapshot.json wanhu.resident-snapshot.v3
 ```
 
-`definitions.json` 已收拢 Name、LifeTag、Occupation Group、Occupation、Routine、LifeEvent、Appearance Catalog、Story Bucket 和编译统计；Web 后续可以只消费这一份最终 Definition Bundle。
+这些文件只服务 Web 原型、内容检查和自动测试，不代表未来 Unity 存档或 Runtime 格式。
 
-`resident-snapshot.json` 已保存：
+## 已经可以验证的玩法
+
+### 居民当前生活
+
+玩家可以看到：
 
 ```text
-surnameId / givenNameId
-lifeTags[]
-appearance AppearanceDNA
+姓名 / 年龄 / 职业 / 家庭
+此刻 Activity
+正在经历 / 最近发生
+少量 Routine
 ```
 
-这些仍是 **Web Demo / Compiler 输出**，不是未来 Unity Save 格式。
+Routine 只负责生活感，不进入永久人生经历。
 
-## 已落地的数据契约
+### LifeEvent 三阶段故事
 
-### Name V2
+LifeEvent 会随时间推进三个阶段，并保留前一阶段作为轻量上下文。完成后，普通事件逐渐淡出；重要事件进入人生经历。
 
-ResidentGenerator 直接消费带 Stable ID、权重、性别和代际条件的姓名 token。姓名允许重复；子女通常继承父系姓氏 Stable ID。
+### 人生经历
 
-### LifeTag
+人生模式与当前生活模式分离。打开后只看已经沉淀的过去：
+
+```text
+年龄阶段
+事实型人生节点
+可展开的故事章节
+如今
+```
+
+不会混入当前 Activity、当前 LifeEvent 和 Routine。
+
+### LifeTag 连续性
 
 LifeEvent 支持：
 
@@ -137,115 +154,118 @@ requiredTags / forbiddenTags
 addTags / removeTags
 ```
 
-过去章节可以留下轻量事实，未来故事读取它形成低成本回响，不需要扫描人生全文。
+过去故事可以留下一个轻量事实，后续故事读取它形成回响。例如：
 
-### Occupation Group + Story Bucket
+```text
+曾经服役
+↓
+多年后旧同伍进城
+```
 
-每个职业拥有 `groupId`。Compiler 已按：
+### Story Bucket
+
+Web Selector 已真正使用：
 
 ```text
 LifeStage + OccupationGroup
+↓
+粗候选池
+↓
+Age / Gender / Family / LifeTag 精确过滤
 ```
 
-预编译 `story-buckets.json`，以后故事规模扩大时不需要每个居民扫描全部 LifeEvent。
+Story Bucket 的目的只是让原型能扩到更大的内容量，并继续观察重复率和覆盖缺口。
 
-### Structural Effect Contract
+### Prototype Effect
 
-LifeEvent 已定义结构变更请求：
+Web Demo 现在允许完成故事后直接改变 Demo 内的居民状态。
+
+当前用于验证的效果包括：
 
 ```text
-changeOccupation
-moveHousehold
-formMarriage
-addChild
+LifeTag 增减
+换职业
+家庭搬迁
+成婚
 ```
 
-当前只是内容 / Compiler 契约，Web 尚不直接执行。正式 Unity Runtime 必须转成集中结构 Request / Command，再统一做结构变化。
+这只是 **玩法原型 reducer**，不是 Unity 的结构变更架构。
 
-### Appearance / AppearanceDNA
-
-`Content/Appearance/appearance-parts.json` 已成为正式 Appearance Authoring 起点。
-
-当前定义：
+结构型故事在 Web 中完成后可以：
 
 ```text
-Part:
-face / hair / brow / facial-hair / headwear / outfit
-
-Palette:
-skin / hair / clothing
+故事完成
+↓
+居民状态真的变化
+↓
+人生经历留下章节
+↓
+新的 Family / Occupation / LifeTag 条件进入候选池
+↓
+出现后续故事
 ```
 
-ResidentAppearanceCompiler 会按 Seed + Gender + LifeStage + OccupationGroup 生成稳定 AppearanceDNA，并写入 Web Snapshot。正式游戏居民创建后应把最终 DNA 写入存档，不能只依赖当前资源池重新用 Seed 随机。
-
-## 玩家居民面板
-
-默认验证五个问题：
+当前已有一条专门用于验收的连续链：
 
 ```text
-他是谁？
-他属于哪里？
-他现在做什么？
-他正在经历或最近发生了什么？
-他过去有哪些值得记住的人生章节？
+这门亲事定下来了
+↓
+居民真的获得配偶并同住
+↓
+lifetag.newly-married
+↓
+“两个人一起过日子以后”进入候选池
+↓
+后续完成后临时 Tag 消失
 ```
 
-生活模式负责“现在”；人生模式负责“过去”。进入人生模式后不再混入 Activity、当前 LifeEvent 和 Routine，只显示已经沉淀的 Life Chapter，并允许展开故事章节。
+这条链由 Resident Visual Review 自动验证。
 
-## 正式数据管线目标
+### AppearanceDNA
+
+AppearanceDNA 在本仓库只负责验证：
+
+> 同一个居民在原型里应保持稳定、可辨认的外观身份。
+
+它不是未来 Unity 角色数据格式。当前 Web 仍使用简化生成头像，之后需要时再把具体槽位映射到更丰富的原型视觉资源。
+
+## 内容生产原则
+
+为了方便后续批量生产，当前仍保留：
 
 ```text
-Authoring Data
-      ↓
-Resident Content Compiler
-校验 / 引用解析 / Stable ID / Bucket / Coverage
-      ↓
-Compiled Content
-├─ Web Demo Bundle
-└─ Unity ResidentContentBlob
-      ↓
-Runtime State / Save Data
+Stable ID
+Schema / Reference Validation
+Name V2
+LifeTag Registry
+Occupation Group
+Story Bucket
+Coverage Report
+Appearance Catalog
 ```
 
-核心原则：
+它们的目的不是提前设计正式存档，而是保证：
 
-- 人工维护内容是唯一内容源。
-- Web 与 Unity 共享 Stable ID、字段语义和规则，但物理布局不同。
-- 故事正文、姓名文本、职业显示名和资源定义不复制进每个 Resident。
-- Runtime 实例只保存必要状态、Stable ID / RuntimeIndex、少量 StoryThread / LifeChapter / AppearanceDNA。
-- 存档不依赖易变数组下标。
+- AI / 人工可以批量生产内容而不把引用写乱。
+- 同一故事不会因为改标题就失去身份。
+- 可以统计年龄、职业、性别、家庭等内容缺口。
+- Web Demo 可以稳定重现问题和验收结果。
 
-## 核心性能方向
+## 当前玩法验证路线
 
-- 居民低频更新只读自己的状态、全局只读世界快照和少量编译定义。
-- 家庭与家谱允许保存引用，但常规模拟不沿关系网高频传播。
-- 结婚、出生、搬家、换职业等结构变化通过集中结构命令处理。
-- `BirthDay` 长期保存，年龄按当前时间推导。
-- Activity 按需推导，不为全城逐小时跑完整日程。
-- Story Bucket 先粗筛，再做 LifeTag / Family / World 等精确 Eligibility。
-- Routine 正式 Runtime 方向是确定性按需生成，而不是永久保存大量普通日志。
-- AppearanceDNA 保存稳定选择结果；Portrait / 3D 可以共享关键识别特征。
-
-## 分阶段路线
+后续优先级改为：
 
 ```text
-阶段 1  数据契约
-StableId / LifeTag / Name / OccupationGroup / LifeEvent / Appearance
-
-阶段 2  Content Compiler
-Reference Validate / Story Bucket / Coverage / Web Bundle
-
-阶段 3  Web Demo 迁移
-Story Selector / Portrait / Effect Request 开始真正消费编译输出
-
-阶段 4  Unity Runtime Contract
-ResidentContentBlob / ECS Hot-Cold / Save StableId
-
-阶段 5  批量生产
-按 Coverage Matrix 扩充故事、姓名、职业和头像资源
+1. Story Effect 真正改变人物                     ← 当前已进入
+2. 过去经历 → 后续故事的连续性                   ← 当前已有可玩链
+3. 城市 / 世界变化 → 具体居民故事
+4. 同一居民有限的并行生活线与互斥规则
+5. 故事密度、重复率和人生节奏
+6. 按 Coverage Matrix 批量扩充内容
+7. 玩家实际试玩与反馈迭代
 ```
 
-当前阶段 1 的核心基础已基本覆盖，并已进入阶段 2 / 3 的交界。下一步优先让 Web Story Selector 真正消费 Story Bucket，再让头像展示真正消费 AppearanceDNA。
+不再把 Unity Save、Blob、ECS Runtime Contract 作为 Web Demo 的下一阶段任务。
 
 ## 本地运行
 
@@ -282,6 +302,8 @@ Vercel Preview
 Vercel Production
 ```
 
-Build 会上传 `resident-generated-data` Artifact，用于直接检查所有 compiled JSON。`tmp-*` 允许正常触发 Vercel Preview。不要为了触发部署连续推空 commit。
+Build 会上传 `resident-generated-data` Artifact，用于检查 compiled JSON。Resident Visual Review 除基础 UI 外，也应逐步覆盖真正的玩法状态变化和连续故事。
+
+`tmp-*` 允许正常触发 Vercel Preview。不要为了触发部署连续推空 commit。
 
 详细流程见 `Documentation/开发与部署工作流.md`。
