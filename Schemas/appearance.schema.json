@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wanhu.local/schemas/appearance.schema.json",
+  "title": "Wanhu Appearance Authoring V1",
+  "$defs": {
+    "stableId": {"type":"string","pattern":"^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$"},
+    "weight": {"type":"number","exclusiveMinimum":0},
+    "genderList": {"type":"array","items":{"enum":["male","female"]},"uniqueItems":true},
+    "lifeStageList": {"type":"array","items":{"enum":["child","teen","young-adult","adult","middle-age","elder"]},"uniqueItems":true},
+    "occupationGroupList": {"type":"array","items":{"$ref":"#/$defs/stableId"},"uniqueItems":true}
+  },
+  "type": "object",
+  "required": ["schema", "parts", "palettes"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const":"wanhu.appearance-parts.v1"},
+    "parts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "slot", "label", "weight"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"allOf":[{"$ref":"#/$defs/stableId"},{"pattern":"^appearance\\."}]},
+          "slot": {"enum":["face","hair","brow","facial-hair","headwear","outfit"]},
+          "label": {"type":"string","minLength":1},
+          "weight": {"$ref":"#/$defs/weight"},
+          "genders": {"$ref":"#/$defs/genderList"},
+          "lifeStages": {"$ref":"#/$defs/lifeStageList"},
+          "occupationGroups": {"$ref":"#/$defs/occupationGroupList"},
+          "assetKey": {"type":"string","minLength":1}
+        }
+      }
+    },
+    "palettes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "slot", "label", "weight"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"allOf":[{"$ref":"#/$defs/stableId"},{"pattern":"^appearance\\.palette\\."}]},
+          "slot": {"enum":["skin","hair","clothing"]},
+          "label": {"type":"string","minLength":1},
+          "weight": {"$ref":"#/$defs/weight"},
+          "genders": {"$ref":"#/$defs/genderList"},
+          "lifeStages": {"$ref":"#/$defs/lifeStageList"},
+          "occupationGroups": {"$ref":"#/$defs/occupationGroupList"}
+        }
+      }
+    }
+  }
+}

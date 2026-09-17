@@ -18,6 +18,18 @@ export type ResidentMajorLifeEvent = {
   sourceEventId?: string;
 };
 
+export type ResidentAppearanceDNA = {
+  faceId: string;
+  hairId: string;
+  browId: string;
+  facialHairId: string;
+  headwearId: string;
+  outfitId: string;
+  skinPaletteId: string;
+  hairPaletteId: string;
+  clothingPaletteId: string;
+};
+
 export type ResidentRecord = {
   id: number;
   seed: number;
@@ -28,6 +40,7 @@ export type ResidentRecord = {
   birthDay: number;
   gender: Gender;
   portraitSeed: number;
+  appearance: ResidentAppearanceDNA;
   districtId: string;
   occupationId: string;
   workplaceId: number;
@@ -54,7 +67,7 @@ export type HouseholdRecord = {
 };
 
 export type ResidentWorldSnapshot = {
-  schema: 'wanhu.resident-snapshot.v2';
+  schema: 'wanhu.resident-snapshot.v3';
   citySeed: number;
   currentDay: number;
   residents: ResidentRecord[];
@@ -83,6 +96,11 @@ export type LifeTagDefinition = {
   description?: string;
 };
 
+export type OccupationGroupDefinition = {
+  id: string;
+  label: string;
+};
+
 export type OccupationDefinition = {
   id: string;
   groupId: string;
@@ -106,6 +124,36 @@ export type RoutineDefinition = {
   season?: string[];
 };
 
+export type AppearancePartSlot = 'face' | 'hair' | 'brow' | 'facial-hair' | 'headwear' | 'outfit';
+export type AppearancePaletteSlot = 'skin' | 'hair' | 'clothing';
+
+export type AppearancePartDefinition = {
+  id: string;
+  slot: AppearancePartSlot;
+  label: string;
+  weight: number;
+  genders?: Gender[];
+  lifeStages?: LifeStageId[];
+  occupationGroups?: string[];
+  assetKey?: string;
+};
+
+export type AppearancePaletteDefinition = {
+  id: string;
+  slot: AppearancePaletteSlot;
+  label: string;
+  weight: number;
+  genders?: Gender[];
+  lifeStages?: LifeStageId[];
+  occupationGroups?: string[];
+};
+
+export type AppearanceCatalogDefinition = {
+  schema: 'wanhu.appearance-catalog.v1';
+  parts: AppearancePartDefinition[];
+  palettes: AppearancePaletteDefinition[];
+};
+
 export type LifeEventSourceType = 'city' | 'family' | 'work' | 'weather' | 'personal';
 
 export type LifeEventSource = {
@@ -125,9 +173,16 @@ export type LifeEventEligibility = {
   forbiddenTags?: string[];
 };
 
+export type LifeEventStructuralRequest =
+  | { type: 'changeOccupation'; occupationId: string }
+  | { type: 'moveHousehold'; policy: 'same-district' | 'different-district' | 'any-district' }
+  | { type: 'formMarriage' }
+  | { type: 'addChild' };
+
 export type LifeEventEffects = {
   addTags?: string[];
   removeTags?: string[];
+  structuralRequests?: LifeEventStructuralRequest[];
 };
 
 export type LifeEventStageDefinition = {
@@ -148,6 +203,21 @@ export type LifeEventDefinition = {
   stages: [LifeEventStageDefinition, LifeEventStageDefinition, LifeEventStageDefinition];
 };
 
+export type StoryBucketDefinition = {
+  key: string;
+  lifeStageId: LifeStageId;
+  occupationGroupId: string;
+  occupationIds: string[];
+  eventIds: string[];
+  recordableEventIds: string[];
+};
+
+export type StoryBucketCollection = {
+  schema: 'wanhu.story-buckets.v1';
+  dimensions: ['lifeStageId', 'occupationGroupId'];
+  buckets: StoryBucketDefinition[];
+};
+
 export type ResidentGenerationDefinition = {
   schema: 'wanhu.resident-generation.v1';
   citySeed: number;
@@ -163,7 +233,7 @@ export type ResidentGenerationDefinition = {
 };
 
 export type ResidentDefinitions = {
-  schema: 'wanhu.resident-definitions.v3';
+  schema: 'wanhu.resident-definitions.v4';
   names: {
     surnames: string[];
     maleGivenNames: string[];
@@ -171,6 +241,15 @@ export type ResidentDefinitions = {
   };
   nameCatalog: NameCatalogDefinition;
   lifeTags: LifeTagDefinition[];
+  occupationGroups: OccupationGroupDefinition[];
+  appearanceCatalog: AppearanceCatalogDefinition;
+  storyBuckets: StoryBucketCollection;
+  contentMeta: {
+    stableIdCount: number;
+    storyBucketCount: number;
+    appearancePartCount: number;
+    appearancePaletteCount: number;
+  };
   occupations: OccupationDefinition[];
   routines: RoutineDefinition[];
   lifeEvents: LifeEventDefinition[];

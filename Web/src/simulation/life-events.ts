@@ -65,6 +65,23 @@ function weightedPick<T extends { weight: number }>(seed: number, salt: string, 
   return items.at(-1)!;
 }
 
+function storyBucketCandidates(
+  resident: ResidentRecord,
+  definitions: ResidentDefinitions,
+  age: number,
+) {
+  const occupation = occupationFor(definitions, resident.occupationId);
+  const lifeStage = definitions.generation.lifeStages.find((stage) => age >= stage.minAge && age <= stage.maxAge);
+  if (!occupation || !lifeStage) return definitions.lifeEvents;
+
+  const key = `${lifeStage.id}|${occupation.groupId}`;
+  const bucket = definitions.storyBuckets.buckets.find((item) => item.key === key);
+  if (!bucket) return [];
+
+  const candidateIds = new Set(bucket.eventIds);
+  return definitions.lifeEvents.filter((event) => candidateIds.has(event.id));
+}
+
 export function eligibleLifeEvents(
   resident: ResidentRecord,
   household: HouseholdRecord | undefined,
@@ -79,8 +96,9 @@ export function eligibleLifeEvents(
       .filter((eventId): eventId is string => Boolean(eventId)),
   );
   const lifeTags = new Set(resident.lifeTags ?? []);
+  const bucketCandidates = storyBucketCandidates(resident, definitions, age);
 
-  return definitions.lifeEvents.filter((event) => {
+  return bucketCandidates.filter((event) => {
     const rule = event.eligibility;
     if (event.recordToHistory && recordedStoryIds.has(event.id)) return false;
     if (rule.occupations?.length && !rule.occupations.includes(resident.occupationId)) return false;

@@ -1,0 +1,62 @@
+{
+  "schema": "wanhu.appearance-parts.v1",
+  "parts": [
+    {"id":"appearance.face.oval-01","slot":"face","label":"椭圆脸","weight":4},
+    {"id":"appearance.face.round-01","slot":"face","label":"圆脸","weight":3},
+    {"id":"appearance.face.long-01","slot":"face","label":"长脸","weight":3},
+    {"id":"appearance.face.square-01","slot":"face","label":"方脸","weight":2},
+
+    {"id":"appearance.hair.short-01","slot":"hair","label":"短发一","weight":4},
+    {"id":"appearance.hair.short-02","slot":"hair","label":"短发二","weight":3},
+    {"id":"appearance.hair.tied-01","slot":"hair","label":"束发一","weight":4},
+    {"id":"appearance.hair.tied-02","slot":"hair","label":"束发二","weight":3},
+    {"id":"appearance.hair.bun-01","slot":"hair","label":"发髻一","weight":4,"genders":["female"]},
+    {"id":"appearance.hair.bun-02","slot":"hair","label":"发髻二","weight":3,"genders":["female"]},
+
+    {"id":"appearance.brow.straight-01","slot":"brow","label":"平眉","weight":4},
+    {"id":"appearance.brow.soft-01","slot":"brow","label":"柔眉","weight":3},
+    {"id":"appearance.brow.thick-01","slot":"brow","label":"浓眉","weight":2},
+
+    {"id":"appearance.facial-hair.none","slot":"facial-hair","label":"无胡须","weight":7},
+    {"id":"appearance.facial-hair.mustache-01","slot":"facial-hair","label":"短髭","weight":2,"genders":["male"],"lifeStages":["adult","middle-age","elder"]},
+    {"id":"appearance.facial-hair.beard-01","slot":"facial-hair","label":"短须","weight":2,"genders":["male"],"lifeStages":["middle-age","elder"]},
+    {"id":"appearance.facial-hair.beard-02","slot":"facial-hair","label":"长须","weight":1,"genders":["male"],"lifeStages":["elder"]},
+
+    {"id":"appearance.headwear.none","slot":"headwear","label":"无头饰","weight":8},
+    {"id":"appearance.headwear.work-cloth-01","slot":"headwear","label":"做活布巾","weight":3,"occupationGroups":["occupation-group.craft","occupation-group.agriculture","occupation-group.transport","occupation-group.infrastructure"]},
+    {"id":"appearance.headwear.trade-cap-01","slot":"headwear","label":"市井小帽","weight":3,"occupationGroups":["occupation-group.trade"]},
+    {"id":"appearance.headwear.scholar-cap-01","slot":"headwear","label":"文巾","weight":3,"occupationGroups":["occupation-group.education"]},
+    {"id":"appearance.headwear.medical-cloth-01","slot":"headwear","label":"医者巾帽","weight":3,"occupationGroups":["occupation-group.medical"]},
+    {"id":"appearance.headwear.sun-hat-01","slot":"headwear","label":"遮阳笠","weight":2,"occupationGroups":["occupation-group.agriculture","occupation-group.transport"]},
+
+    {"id":"appearance.outfit.child-plain-01","slot":"outfit","label":"孩童常服","weight":6,"occupationGroups":["occupation-group.child"]},
+    {"id":"appearance.outfit.student-plain-01","slot":"outfit","label":"学生常服","weight":6,"occupationGroups":["occupation-group.education"]},
+    {"id":"appearance.outfit.craft-work-01","slot":"outfit","label":"工匠短褐","weight":7,"occupationGroups":["occupation-group.craft"]},
+    {"id":"appearance.outfit.trade-work-01","slot":"outfit","label":"商贸常服","weight":7,"occupationGroups":["occupation-group.trade"]},
+    {"id":"appearance.outfit.medical-01","slot":"outfit","label":"医者常服","weight":7,"occupationGroups":["occupation-group.medical"]},
+    {"id":"appearance.outfit.infrastructure-01","slot":"outfit","label":"水利差服","weight":7,"occupationGroups":["occupation-group.infrastructure"]},
+    {"id":"appearance.outfit.farm-01","slot":"outfit","label":"农事短衣","weight":7,"occupationGroups":["occupation-group.agriculture"]},
+    {"id":"appearance.outfit.transport-01","slot":"outfit","label":"脚夫短衣","weight":7,"occupationGroups":["occupation-group.transport"]},
+    {"id":"appearance.outfit.performance-01","slot":"outfit","label":"戏班便服","weight":7,"occupationGroups":["occupation-group.performance"]},
+    {"id":"appearance.outfit.retired-01","slot":"outfit","label":"退养常服","weight":7,"occupationGroups":["occupation-group.retired"]},
+    {"id":"appearance.outfit.generic-01","slot":"outfit","label":"城中常服","weight":2}
+  ],
+  "palettes": [
+    {"id":"appearance.palette.skin.warm-01","slot":"skin","label":"暖肤一","weight":4},
+    {"id":"appearance.palette.skin.warm-02","slot":"skin","label":"暖肤二","weight":4},
+    {"id":"appearance.palette.skin.deep-01","slot":"skin","label":"深肤一","weight":2},
+    {"id":"appearance.palette.skin.light-01","slot":"skin","label":"浅肤一","weight":2},
+
+    {"id":"appearance.palette.hair.black-01","slot":"hair","label":"乌黑","weight":6},
+    {"id":"appearance.palette.hair.dark-brown-01","slot":"hair","label":"深褐","weight":3},
+    {"id":"appearance.palette.hair.gray-01","slot":"hair","label":"灰白","weight":4,"lifeStages":["middle-age","elder"]},
+    {"id":"appearance.palette.hair.white-01","slot":"hair","label":"花白","weight":3,"lifeStages":["elder"]},
+
+    {"id":"appearance.palette.clothing.earth-01","slot":"clothing","label":"土褐","weight":4},
+    {"id":"appearance.palette.clothing.indigo-01","slot":"clothing","label":"靛青","weight":4},
+    {"id":"appearance.palette.clothing.gray-01","slot":"clothing","label":"灰青","weight":3},
+    {"id":"appearance.palette.clothing.green-01","slot":"clothing","label":"黛绿","weight":2},
+    {"id":"appearance.palette.clothing.red-brown-01","slot":"clothing","label":"赭红","weight":2},
+    {"id":"appearance.palette.clothing.blue-01","slot":"clothing","label":"青蓝","weight":3}
+  ]
+}
