@@ -2,21 +2,22 @@ name: Resident Visual Review
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - 'tmp-*'
     paths:
-      - 'Web/src/**'
-      - '居民故事/**'
+      - 'Web/**'
       - 'Content/**'
-      - 'Tools/StoryCompiler/**'
-      - 'Tools/ResidentGenerator/**'
+      - 'Tools/**'
       - 'scripts/**'
       - 'package.json'
       - 'Web/package.json'
+      - 'Web/vite.config.*'
       - '.github/workflows/visual-review.yml'
   workflow_dispatch:
 
 concurrency:
-  group: resident-visual-review-main
+  group: resident-visual-review-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:

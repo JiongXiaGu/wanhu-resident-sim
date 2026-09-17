@@ -4,6 +4,20 @@
 
 当前阶段验证一个低成本的居民生命模拟模型：居民拥有稳定身份、年龄、职业、家庭/家谱、稀疏后台更新与可回看的 LifeLog。玩家居民面板默认使用短小的 `LifeEvent V2`；较长的 Legacy Story 保留为素材与完整内容审查，不再强行直接塞进 400px 游戏面板。
 
+## 项目别名
+
+对话中提到 **“居民逻辑网页demo”**，默认就是本仓库。
+
+如果在新的 ChatGPT 对话里需要继续项目，先让助手读取：
+
+```text
+README.md
+AGENTS.md
+Documentation/居民逻辑网页Demo接续说明.md
+```
+
+再检查 GitHub `main`、Actions 与必要的设计文档。这样即使换对话，也不依赖旧聊天记录恢复项目状态。
+
 ## 当前结构
 
 ```text
@@ -105,7 +119,25 @@ npm run build
 
 玩家体验优先于历史内容兼容。
 
-## Vercel 与开发工作流
+## GitHub Actions / Visual Review / Vercel
+
+开发流程参考 `wanhu-ui-prototype`：
+
+```text
+tmp-* 分支
+↓
+GitHub Build
+↓
+Resident Visual Review
+↓
+直接查看压缩后的单张截图
+↓
+确认后一次推进 main
+↓
+Vercel Production
+```
+
+Build 和 Visual Review 都支持 `tmp-*`；`vercel.json` 禁止 `tmp-*` 自动部署，因此高频 UI/逻辑迭代不会持续触发 Vercel。
 
 Vercel 从仓库根目录构建：
 
@@ -114,4 +146,6 @@ Build Command: npm run build
 Output Directory: Web/dist
 ```
 
-一个逻辑功能批次尽量只产生一个进入 `main` 的 commit，先由 GitHub Actions 完整构建和 Visual Review，再让 Vercel 部署最新 `main`。详细流程见 `Documentation/开发与部署工作流.md`。
+判断线上是否已经更新时，必须比较 Vercel Production Deployment 的 Git SHA 与 GitHub `main` SHA。
+
+详细流程见 `Documentation/开发与部署工作流.md`。

@@ -2,6 +2,13 @@
 
 本仓库用于《万户天工》的居民生成、背景人生模拟、生活事件与叙事内容设计。
 
+## 项目别名与接续
+
+- 本项目在对话中的固定简称是 **“居民逻辑网页demo”**。
+- 当用户在新的对话中说“居民逻辑网页demo 做到哪了 / 继续做居民逻辑网页demo”等，默认指向 `JiongXiaGu/wanhu-resident-sim`。
+- 不仅依赖聊天记忆；先读取 GitHub `main`、`README.md`、本文件以及 `Documentation/居民逻辑网页Demo接续说明.md`，再根据最新 commit、Actions 与代码回答当前状态。
+- 详细接续步骤见 `Documentation/居民逻辑网页Demo接续说明.md`。
+
 ## 工作边界
 
 - `Content/LifeEvents/` 是默认玩家居民面板使用的短生活事件定义。
@@ -49,12 +56,17 @@
 
 ## Git 与部署工作流
 
+- 高频迭代优先在 `tmp-*` 临时分支完成；Build 与 Resident Visual Review 都应支持 `tmp-*`。
+- `tmp-*` 不触发 Vercel 自动部署；确认后再把一个完整逻辑批次推进到 `main`。
 - 一个逻辑功能批次尽量只产生一个进入 `main` 的 commit。
 - 同一功能涉及多个文件时，先完成整批修改，再一次性提交；不要按“一个文件一个 commit”的方式连续推进 `main`。
 - 自动化助手修改多个文件时，优先使用 Git tree / 单次 commit 的方式写入仓库。
+- 准备更新 `main` 前必须重新读取当前 main SHA；如果 main 已前进，先合并 / 重放，不基于过期 SHA 强制覆盖 main。
 - GitHub Actions 是主要构建与类型验证入口；Visual Review Artifact 是主要 UI 截图审查入口。
+- UI 审查结果默认解压 Artifact 后直接给用户关键单张 WebP 链接，不只发 ZIP；完整包仅在用户需要时提供。
 - Vercel 用于阶段性 Production 交互验证，不作为每次微小改动后的逐文件编译器。
 - 遇到 Vercel 频率限制时不连续推空 commit；限制解除后只部署当时最新 `main`。
+- 判断 Vercel 是否更新必须比较 Production Deployment 的 Git SHA 与 GitHub `main` SHA。
 - 详细规则见 `Documentation/开发与部署工作流.md`。
 
 ## 文档原则
