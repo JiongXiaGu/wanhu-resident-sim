@@ -3,7 +3,7 @@
   "$id": "https://wanhu.local/schemas/resident-snapshot.schema.json",
   "title": "Wanhu Resident Snapshot V2",
   "$defs": {
-    "stableId": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9-]*)+$" },
+    "stableId": { "type": "string", "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$" },
     "lifeTagId": { "type": "string", "pattern": "^lifetag\\.[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)*$" }
   },
   "type": "object",
