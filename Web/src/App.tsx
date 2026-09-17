@@ -92,6 +92,7 @@ export default function App() {
   const [panelOpen, setPanelOpen] = useState(true);
   const [familyOpen, setFamilyOpen] = useState(false);
   const [historyExpanded, setHistoryExpanded] = useState(false);
+  const [expandedChapterId, setExpandedChapterId] = useState<string | null>(null);
   const [followed, setFollowed] = useState<Record<number, boolean>>({});
   const [locationNotice, setLocationNotice] = useState('');
   const [bodyLines, setBodyLines] = useState(0);
@@ -143,6 +144,7 @@ export default function App() {
   useEffect(() => {
     setFamilyOpen(false);
     setHistoryExpanded(false);
+    setExpandedChapterId(null);
     setLocationNotice('');
   }, [selectedResidentId]);
 
@@ -160,7 +162,7 @@ export default function App() {
       setTitleLines(measure(titleRef.current));
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [lifeView?.currentStage, selectedResidentId, gameDay]);
+  }, [lifeView?.currentStage, lifeView?.showCurrentEvent, selectedResidentId, gameDay]);
 
   const stageByResident = useMemo(() => Object.fromEntries(residents.map((resident) => {
     const currentAssignment = assignments[resident.id];
@@ -205,6 +207,7 @@ export default function App() {
     }));
     setSeenStages((current) => ({ ...current, [selectedResident.id]: -1 }));
     setHistoryExpanded(false);
+    setExpandedChapterId(null);
   }
 
   function jumpToNextStage() {
@@ -252,11 +255,8 @@ export default function App() {
   const currentStage = lifeView.currentStage;
   const bodyDensity = bodyLines <= 3.5 ? 'good' : bodyLines <= 4.8 ? 'warn' : 'bad';
   const titleDensity = titleLines <= 2.05 ? 'good' : 'bad';
-  const lifeCount = selectedResident.majorLifeHistory.length + lifeView.eventEntries.length;
-  const historyItems = [
-    ...lifeView.eventEntries.map((entry) => ({ id: entry.id, day: entry.day, title: entry.title })),
-    ...selectedResident.majorLifeHistory,
-  ].sort((a, b) => b.day - a.day);
+  const lifeCount = lifeView.history.length;
+  const historyItems = lifeView.history;
 
   return (
     <main className="sim-game" data-dev={showDev ? 'true' : 'false'}>
@@ -347,33 +347,33 @@ export default function App() {
               <p>{lifeView.activity}</p>
             </section>
 
-            <section className="resident-summary">
-              <span>近况</span>
-              <p>{lifeView.summary}</p>
-            </section>
-
-            <section className="resident-recent">
-              <div className="resident-recent__heading"><b>最近</b></div>
-              <article className="life-event-card">
-                <div className="life-event-card__meta">
-                  <time>{relativeDayLabel(Math.max(0, gameDay - currentEventEntry.day))}</time>
-                  {lifeView.event.source && (
-                    <button type="button" className={`life-event-source is-${lifeView.event.source.type}`} onClick={() => focusLocation(lifeView.event.source!.label)}>
-                      {sourceTypeLabel(lifeView.event.source.type)} · {lifeView.event.source.label}
-                    </button>
-                  )}
-                </div>
-                <h2 ref={titleRef}>{currentEventEntry.title}</h2>
-                <p ref={bodyRef}>{currentEventEntry.text}</p>
-                {previousEventEntry && (
-                  <div className="life-event-prior">
-                    <span>└ {relativeDayLabel(Math.max(0, gameDay - previousEventEntry.day))}</span>
-                    <b>{previousEventEntry.title}</b>
+            {lifeView.showCurrentEvent && (
+              <section className="resident-recent">
+                <div className="resident-recent__heading"><b>{currentStage < 2 ? '正在经历' : '最近发生'}</b></div>
+                <article className="life-event-card">
+                  <div className="life-event-card__meta">
+                    <time>{relativeDayLabel(Math.max(0, gameDay - currentEventEntry.day))}</time>
+                    {lifeView.event.source && (
+                      <button type="button" className={`life-event-source is-${lifeView.event.source.type}`} onClick={() => focusLocation(lifeView.event.source!.label)}>
+                        {sourceTypeLabel(lifeView.event.source.type)} · {lifeView.event.source.label}
+                      </button>
+                    )}
                   </div>
-                )}
-              </article>
+                  <h2 ref={titleRef}>{currentEventEntry.title}</h2>
+                  <p ref={bodyRef}>{currentEventEntry.text}</p>
+                  {previousEventEntry && (
+                    <div className="life-event-prior">
+                      <span>└ {relativeDayLabel(Math.max(0, gameDay - previousEventEntry.day))}</span>
+                      <b>{previousEventEntry.title}</b>
+                    </div>
+                  )}
+                </article>
+              </section>
+            )}
 
-              {lifeView.routines.length > 0 && (
+            {lifeView.routines.length > 0 && (
+              <section className="resident-routine-section">
+                <div className="resident-routine-section__heading"><b>最近</b></div>
                 <ul className="resident-routine-list">
                   {lifeView.routines.slice(0, 3).map((entry) => (
                     <li key={entry.id}>
@@ -382,20 +382,43 @@ export default function App() {
                     </li>
                   ))}
                 </ul>
-              )}
+              </section>
+            )}
 
-              {historyExpanded && (
-                <section className="resident-history-drawer">
-                  <div className="resident-history-drawer__heading"><b>人生经历</b><span>重要变化与当前事件</span></div>
-                  {historyItems.slice(0, 10).map((entry) => (
-                    <div key={entry.id}>
-                      <time>{relativeDayLabel(Math.max(0, gameDay - entry.day))}</time>
-                      <span>{entry.title}</span>
+            {historyExpanded && (
+              <section className="resident-history-drawer">
+                <div className="resident-history-drawer__heading"><b>人生经历</b><span>只保留值得记住的人生章节</span></div>
+                {historyItems.slice(0, 10).map((entry) => {
+                  const chapterEvent = entry.sourceEventId
+                    ? definitions.lifeEvents.find((event) => event.id === entry.sourceEventId)
+                    : undefined;
+                  const chapterOpen = expandedChapterId === entry.id;
+                  return (
+                    <div className={`resident-history-item ${chapterEvent ? 'has-story' : ''}`} key={entry.id}>
+                      <time>{ageAtDay(selectedResident, entry.day, definitions.generation.daysPerYear)}岁</time>
+                      {chapterEvent ? (
+                        <button type="button" onClick={() => setExpandedChapterId((current) => current === entry.id ? null : entry.id)}>
+                          <span>{entry.title}</span>
+                          <small>{chapterOpen ? '收起' : '展开故事'}</small>
+                        </button>
+                      ) : (
+                        <span className="resident-history-item__fact">{entry.title}</span>
+                      )}
+                      {chapterOpen && chapterEvent && (
+                        <div className="resident-history-story">
+                          {chapterEvent.stages.map((stage, index) => (
+                            <article key={`${chapterEvent.id}:history:${index}`}>
+                              <b>{stage.title}</b>
+                              <p>{stage.text}</p>
+                            </article>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </section>
-              )}
-            </section>
+                  );
+                })}
+              </section>
+            )}
           </div>
 
           <footer className="resident-panel__footer resident-panel__footer--v2">
@@ -425,6 +448,7 @@ export default function App() {
           <div className="dev-panel__row"><span>居民</span><b>{selectedResident.displayName} · {selectedIndex + 1}/{residents.length}</b></div>
           <div className="dev-panel__row"><span>LifeEvent</span><b>{lifeView.event.id}</b></div>
           <div className="dev-panel__row"><span>阶段</span><b>{currentStage + 1}/3 · {lifeView.event.source?.label ?? '个人生活'}</b></div>
+          <div className="dev-panel__row"><span>人生记录</span><b>{lifeView.event.recordToHistory ? '完成后进入人生经历' : '普通生活事件'}</b></div>
           <div className="dev-panel__row"><span>家庭</span><b>Household {selectedResident.householdId} · {householdMembers.length} 位家人</b></div>
           <div className="dev-density">
             <span className={`density-chip is-${bodyDensity}`}>正文 {bodyLines.toFixed(1)} 行</span>
@@ -438,13 +462,13 @@ export default function App() {
           <div className="dev-buttons dev-buttons--three">
             <button type="button" onClick={() => setGameDay((day) => day + 1)}>+1 天</button>
             <button type="button" onClick={() => setGameDay((day) => day + 10)}>+10 天</button>
-            <button type="button" onClick={jumpToNextStage} disabled={currentStage === 2}>推进近况</button>
+            <button type="button" onClick={jumpToNextStage} disabled={currentStage === 2}>推进故事</button>
           </div>
           <div className="dev-buttons dev-buttons--two">
             <button type="button" onClick={() => setFamilyOpen((value) => !value)}>展开家人</button>
             <button type="button" onClick={() => setMode('review')}>Legacy 审查器</button>
           </div>
-          <p>{unreadCount} 位居民有未查看的新近况。默认玩家面板已改用 LifeEvent V2；Legacy Story 只保留在内容审查器。</p>
+          <p>{unreadCount} 位居民有未查看的新故事阶段。当前面板不再保存独立“近况摘要”；只有重要故事完成后进入人生经历。</p>
         </aside>
       )}
 

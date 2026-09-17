@@ -40,7 +40,21 @@
           "stateBits": { "type": "integer" },
           "activeStoryId": { "type": ["string", "null"] },
           "recentLifeLog": { "type": "array" },
-          "majorLifeHistory": { "type": "array" }
+          "majorLifeHistory": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "day", "type", "title"],
+              "properties": {
+                "id": { "type": "string", "minLength": 1 },
+                "day": { "type": "integer" },
+                "type": { "type": "string", "minLength": 1 },
+                "title": { "type": "string", "minLength": 1 },
+                "sourceEventId": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            }
+          }
         },
         "additionalProperties": false
       }

@@ -6,21 +6,13 @@
 
 > **居民逻辑网页demo**
 
-当用户在新的对话中说：
-
-```text
-居民逻辑网页demo 做到哪了？
-居民逻辑网页demo 继续做
-看看居民逻辑网页demo 现在的状态
-```
-
-默认指向：
+当用户在新的对话中说“居民逻辑网页demo 做到哪了 / 继续做居民逻辑网页demo / 看看居民逻辑网页demo 现在的状态”，默认指向：
 
 ```text
 GitHub: JiongXiaGu/wanhu-resident-sim
 ```
 
-它不是单纯的故事仓库，而是《万户天工》的低成本居民生命模拟、LifeEvent、Resident Panel 与 Web 验证项目。
+它不是单纯的故事仓库，而是《万户天工》的低成本居民生命模拟、LifeEvent、人生章节、Resident Panel 与 Web 验证项目。
 
 ---
 
@@ -58,6 +50,8 @@ Resident 自身状态
 全局只读世界快照
 +
 少量只读定义
++
+少量人生章节 / 故事标签
 ↓
 独立 / 稀疏 / 可并行更新
 ```
@@ -77,8 +71,8 @@ Resident 自身状态
 - 父母 / 配偶引用
 - 子女数量
 - 稀疏 NextUpdateDay
-- Recent LifeLog
-- Major Life History
+- 有限容量 Routine / Recent LifeLog
+- Major Life History / Life Chapter
 
 不做：
 
@@ -92,32 +86,58 @@ Resident 自身状态
 
 ## 玩家居民面板当前方向
 
-玩家点击居民时优先回答五个问题：
+玩家点击居民时优先回答：
 
 ```text
 他是谁？
 他属于哪里？
 他现在做什么？
-他最近过得怎么样？
-他过去经历过什么？
+他正在经历或最近发生了什么？
+他过去有哪些值得记住的人生章节？
 ```
 
-Resident Panel V2 已围绕这些信息组织：
+Resident Panel V2 当前组织：
 
 - 头像、姓名、年龄、职业
 - 居住坊区与家庭摘要
 - 住处 / 工作地 / 家人入口
 - 此刻 Activity
-- 近况 Summary
-- 当前 LifeEvent
+- 当前或刚完成的 LifeEvent
 - 同一事件的轻量前情
 - 低视觉级别 Routine
 - 关注居民
-- 人生经历
+- 人生经历 / Life Chapter
 
-目标不是“点 NPC 看一篇故事”，而是：
+**不再维护独立“近况 Summary”，LifeEvent Stage 本身也不保存 `summary` 字段。**
 
-> **点这个人，看看他最近过得怎么样。**
+原因是居民可能同时受到多个故事、家庭、工作、天气与城市变化影响，强行维护一句综合近况会引入额外优先级和过期逻辑。当前事实直接由 Activity、LifeEvent、Routine 和人生经历表达。
+
+---
+
+## 三层生活信息
+
+### Routine
+
+普通生活记录，数量多、保存时间短，只用于让居民在故事之间持续“生活着”。不进入永久人生经历。
+
+### LifeEvent / Story Thread
+
+一件正在发生的连续事情。通常有三个阶段：当前阶段完整展示，旧阶段只作为轻量前情。
+
+事件完成后不会自动成为人生历史。
+
+### Life Chapter
+
+真正值得长期回看的经历。
+
+来源包括：
+
+- 真实事实：开始营生、成婚、添孩子、搬家等。
+- 重要故事：只有 `recordToHistory: true` 的 LifeEvent 完成后才进入。
+
+一条三阶段故事只形成 **一个** Life Chapter，而不是三个历史节点。
+
+故事章节保存 `sourceEventId`，需要展开时回查 LifeEvent Definition 获取完整三阶段内容，不把全文复制进每个居民存档。
 
 ---
 
@@ -129,39 +149,119 @@ Resident Panel V2 已围绕这些信息组织：
 Content/LifeEvents/
 ```
 
-而不是把旧长篇 Story 直接塞进 400px 面板。
-
-LifeEvent V2 通常包含：
+核心字段：
 
 ```text
 id
 weight
 eligibility
-source
+source?
+recordToHistory?
 stages[3]
   delayDays
   title
   text
-  summary
   activityOverride?
 ```
 
 设计重点：
 
 - 标题短。
-- 正文比旧 Story 更短，适合真实 UI。
-- `summary` 回答“最近过得怎么样”。
+- 正文适合真实 400px 居民 UI。
 - `source` 把居民经历与城市建设、工作、家庭、天气等连接起来。
-- `activityOverride` 在事件确实改变当前生活时覆盖职业默认 Activity。
+- `activityOverride` 只在事件确实改变当前生活时覆盖职业默认 Activity。
+- `recordToHistory` 只给真正值得成为人生章节的事件。
+- 不再保存单独 `summary`；Stage 自身负责表达当下情况。
 
-现有 Legacy Story：
+当前重要故事示例：
+
+- 服役
+- 孩子入学
+- 学徒第一次独立完成正式工作
+- 少年第一次独自替家里办事
+- 晚年形成新的稳定生活方式
+
+普通排水施工、忙季、连续下雨、新市场等默认只属于当前生活，不永久进入人生历史。
+
+---
+
+## 人生由多次故事抽取组成
+
+居民不是出生时绑定一条固定人生剧情。
+
+设计模型：
 
 ```text
-Content/Stories/
-居民故事/
+年龄阶段
++ Resident 当前状态
++ 职业 / 家庭条件
++ 世界状态
++ 过去的重要经历
+↓
+候选故事池
+↓
+低频加权抽取
+↓
+Story Thread
+↓
+完成后按重要度决定是否形成 Life Chapter
 ```
 
-保留为素材库与完整审查器。旧故事如果影响真实游戏体验，可以拆解重写或直接淘汰，不要求兼容。
+当前 Web 背景人生生成已经按年龄阶段从重要故事中稳定抽取少量章节：
+
+```text
+10～17
+18～25
+26～39
+40～57
+58+
+```
+
+故事密度由 Resident Seed 稳定决定：有些居民没有额外精彩故事，有些有 1～3 个跨阶段故事。系统不要求每个居民、每个年龄阶段都强行发生重大剧情。
+
+目标是让不同故事共同组成一个人的一生，而不是让每个 NPC 都像剧情主角。
+
+---
+
+## 故事之间的连续性
+
+多故事线不等于复杂社会图。
+
+推荐方向：
+
+```text
+大多数故事独立结束
++
+少量重要故事留下 LifeTag / Story Anchor
+↓
+未来另一条故事偶尔读取过去经历
+```
+
+例如未来可以留下：
+
+```text
+served_military
+trained_as_carpenter
+opened_shop
+debt_history
+migrated_from_x
+```
+
+后续故事只读取少量稳定标签或 Life Chapter，不扫描旧长文本，不做全城关系传播。
+
+---
+
+## 当前事件显示周期
+
+主面板不让已经结束很久的故事长期占据视觉中心。
+
+当前 Web 验证规则：
+
+- Stage 1 / Stage 2：显示为“正在经历”。
+- Stage 3：短时间显示为“最近发生”。
+- 完成约 14 天后：退出主面板当前事件区域。
+- 重要事件仍可从“人生经历”长期回看。
+- 普通事件自然退出，不进入永久历史。
 
 ---
 
@@ -210,9 +310,12 @@ Content/Occupations/occupations.json
 Content/Routines/
 Content/Simulation/
 
-Tools/ResidentGenerator/
-Tools/LifeEventCompiler/
+Tools/ResidentGenerator/generate.mjs
+Tools/LifeEventCompiler/compile.mjs
 Tools/StoryCompiler/
+
+Schemas/life-event.schema.json
+Schemas/resident-snapshot.schema.json
 
 Web/src/App.tsx
 Web/src/domain/resident.ts
@@ -237,18 +340,21 @@ UI 审查参考 `wanhu-ui-prototype`：
 - 压缩成 WebP。
 - 上传 Visual Review Artifact。
 
-向用户汇报时，默认直接给关键单张截图链接，不只给 ZIP。
-
-例如：
+当前截图重点：
 
 ```text
 玩家居民面板
 生活事件推进
-人生经历展开
+人生经历展开（包含可展开故事章节）
 DEV 密度检查
 ```
 
-完整 ZIP 仅在用户需要时提供。
+Visual Review 需要确认：
+
+- 不再出现独立“近况”行。
+- LifeEvent 前情仍然连续。
+- 人生经历计数只统计 Life Chapter。
+- 有 `sourceEventId` 的故事章节可以展开三阶段正文。
 
 ---
 
@@ -272,26 +378,17 @@ Vercel Production
 
 自动化助手在更新 main 前必须重新读取 main SHA，不基于过期 SHA 强行覆盖 main。
 
-如果 Vercel 看起来没更新，比较：
-
-```text
-GitHub main SHA
-vs
-Vercel Production SHA
-```
-
-而不是只看页面或时间。
+如果 Vercel 看起来没更新，比较 GitHub `main` SHA 与 Vercel Production SHA，而不是只看页面或时间。
 
 ---
 
 ## 下一阶段优先级
 
-继续项目时优先考虑：
+1. 扩充各年龄阶段可抽取的重要 Story / Life Chapter，尤其童年、青年、成家、营生、晚年。
+2. 增加真正修改 Resident 状态的故事结果，例如换工、服役状态、家庭变化、迁居。
+3. 引入极少量稳定 LifeTag / Story Anchor，让过去的重要经历在几年或十几年后偶尔产生回响。
+4. 强化城市建设 / 天气 / 营生变化对当前 LifeEvent 的可见反馈，但普通事件不要污染永久历史。
+5. 继续保持居民独立并行，避免演化成高成本社会关系图。
+6. 每轮 UI 改动继续用约 400px 左下 Resident Panel 和 Visual Review 截图验证。
 
-1. 扩充 LifeEvent V2 覆盖面，让年龄、职业、家庭状态产生明显差异。
-2. 增加少量真正改变 Resident 状态的事件结果，例如服役、换工、家庭变化。
-3. 强化城市建设 / 天气 / 营生变化对居民面板的可见反馈。
-4. 保持居民独立并行，避免演化成高成本社会关系图。
-5. 每轮 UI 改动继续用 400px 左下 Resident Panel 和 Visual Review 截图验证。
-
-不要为了保留旧内容而退回“故事窗口中心”的设计。
+继续开发时优先完善“一个居民几十年的人生是否成立”，而不是继续扩大基础框架。

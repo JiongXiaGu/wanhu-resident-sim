@@ -15,7 +15,7 @@
 - `Content/Stories/` 与 `居民故事/` 保留较长的 Legacy Story；默认不再直接进入玩家 Resident Panel，只供素材与完整审查器使用。
 - `Documentation/` 只记录稳定、长期值得维护的设计事实与规则。
 - `Tools/StoryCompiler/` 负责 Legacy Story Markdown 标准化。
-- `Tools/ResidentGenerator/` 负责从稳定定义与 Seed 生成居民验证快照。
+- `Tools/ResidentGenerator/` 负责从稳定定义与 Seed 生成居民验证快照，并为已有年龄阶段生成少量稳定的人生章节样本。
 - `Tools/LifeEventCompiler/` 负责把 LifeEvent V2 合并进 generated definitions。
 - `Web/` 只负责展示、模拟验证与审查，不自行发明另一套 Story / Resident 数据规则。
 - Unity 后续消费编译结果，不在 Runtime 解析 Markdown / JSON。
@@ -25,20 +25,34 @@
 - 居民常规后台模拟只读取自己的状态、全局只读世界快照和少量只读定义。
 - 允许保存父母、配偶、家庭等关系引用，但常规模拟不沿这些引用传播状态。
 - 结婚、出生、死亡、搬家等低频结构变化由集中结构系统处理，不进入高频居民并行更新。
-- `BirthDay`、职业、家庭与重要人生历史长期保存；普通 LifeLog 使用有限容量。
+- `BirthDay`、职业、家庭与重要人生章节长期保存；普通 Routine / Recent LifeLog 使用有限容量。
 - 当前活动优先在玩家查看时根据职业、时间和状态推导，不为所有后台居民做逐小时完整日程仿真。
-- 姓名允许重复；同一 Seed 必须稳定得到相同身份、家庭基础数据与 PortraitSeed。
+- 姓名允许重复；同一 Seed 必须稳定得到相同身份、家庭基础数据、PortraitSeed 与背景人生抽取结果。
+- 人生不是出生时一次生成完整剧本；居民在不同年龄阶段低频进入故事池，多次抽取不同 Story Thread。
+- 不要求每个居民、每个年龄阶段都发生重大剧情；故事密度允许由 Seed 稳定产生差异。
 
 ## 玩家居民面板规则
 
-- 玩家点击居民优先回答：他是谁、属于哪里、现在做什么、最近过得怎样、过去经历过什么。
+- 玩家点击居民优先回答：他是谁、属于哪里、现在做什么、正在经历或最近发生了什么、过去有哪些值得记住的人生章节。
 - 住处、工作地、家庭使用已有 ID / Household 冷数据建立可点击关联，不新增关系传播。
+- 不维护独立的居民级“近况 Summary”，LifeEvent V2 的 Stage 也不保存 `summary` 字段。当前事实直接由 Current Activity、当前 LifeEvent、Routine 与人生经历表达。
 - LifeEvent V2 当前 Stage 完整显示，同一事件旧 Stage 只保留轻量前情。
-- Routine 视觉级别低于 LifeEvent，不与重要事件争夺正文空间。
+- LifeEvent 完成后只在短期内继续作为“最近发生”展示；普通事件随后退出主面板。
+- Routine 视觉级别低于 LifeEvent，只承担生活连续感，不进入永久人生经历。
+- 只有 `recordToHistory: true` 的重要 LifeEvent 才在完成后形成一个 Life Chapter；一条三阶段事件只计为一个人生章节。
+- `majorLifeHistory` 同时允许保存成婚、开始营生等事实章节，以及带 `sourceEventId` 的故事章节。
+- 故事章节通过 `sourceEventId` 回查 Definition 展开三阶段正文，不把完整故事文本复制进每个居民存档。
 - LifeEvent 可以用 `source` 标记城市、家庭、营生、天气或个人来源，让玩家理解城市变化如何作用到具体居民。
-- `activityOverride` 只在事件确实改变当前活动时使用，例如服役期间覆盖原职业活动。
-- LifeEvent V2 标题尽量 8～18 个中文字符，正文通常 25～55 字，摘要通常 15～30 字。
+- `activityOverride` 只在事件确实改变当前活动时使用，例如服役期间覆盖原职业活动；事件结束后回到正常活动推导。
+- LifeEvent V2 标题尽量 8～18 个中文字符，正文通常 25～55 字。
 - 不为了兼容旧 Story 篇幅而牺牲 Resident Panel 的玩家体验；不合适的 Legacy Story 可以重写、仅作素材或淘汰。
+
+## 故事连续性规则
+
+- 多故事线指一个居民的一生由多条独立或弱关联 Story Thread 组成，不代表建立完整社会关系图。
+- 大多数故事应能独立完成；少量重要故事可以留下轻量 `LifeTag / Story Anchor`，供未来故事筛选和回响。
+- 未来故事读取过去经历时优先读取稳定标签或章节 ID，不扫描长文本，不沿社会关系网络传播。
+- 当前 Web 历史样本按年龄阶段从 `recordToHistory` 故事中稳定抽取；随着内容库扩大，可继续细化职业、家庭和世界状态条件。
 
 ## Legacy Story 规则
 

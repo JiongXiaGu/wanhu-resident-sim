@@ -15,6 +15,7 @@
           "id": { "type": "string", "minLength": 1 },
           "title": { "type": "string", "minLength": 1 },
           "weight": { "type": "number", "minimum": 0 },
+          "recordToHistory": { "type": "boolean" },
           "eligibility": {
             "type": "object",
             "properties": {
@@ -42,7 +43,7 @@
             "maxItems": 3,
             "items": {
               "type": "object",
-              "required": ["delayDays", "title", "text", "summary"],
+              "required": ["delayDays", "title", "text"],
               "properties": {
                 "delayDays": {
                   "type": "object",
@@ -55,7 +56,6 @@
                 },
                 "title": { "type": "string", "minLength": 1 },
                 "text": { "type": "string", "minLength": 1 },
-                "summary": { "type": "string", "minLength": 1 },
                 "activityOverride": { "type": "string" }
               },
               "additionalProperties": false

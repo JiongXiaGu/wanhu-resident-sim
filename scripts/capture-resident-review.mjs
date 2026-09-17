@@ -17,12 +17,16 @@ async function open() {
 
 await open();
 
+if ((await page.locator('.resident-summary').count()) !== 0) {
+  throw new Error('Resident Panel should not render a standalone recent-summary row.');
+}
+
 await page.getByRole('button', { name: '隐藏', exact: true }).click();
 await page.waitForSelector('.dev-reopen');
 await page.screenshot({ path: `${outDir}/01-player-resident.png` });
 
 await page.getByRole('button', { name: 'DEV', exact: true }).click();
-await page.getByRole('button', { name: '推进近况', exact: true }).click();
+await page.getByRole('button', { name: '推进故事', exact: true }).click();
 await page.waitForTimeout(80);
 await page.getByRole('button', { name: '隐藏', exact: true }).click();
 await page.waitForSelector('.life-event-card');
@@ -34,6 +38,11 @@ await page.screenshot({ path: `${outDir}/02-life-event-continuation.png` });
 const historyButton = page.getByRole('button', { name: /人生经历/ });
 await historyButton.click();
 await page.waitForSelector('.resident-history-drawer');
+const storyChapter = page.locator('.resident-history-item.has-story button').first();
+if ((await storyChapter.count()) > 0) {
+  await storyChapter.click();
+  await page.waitForSelector('.resident-history-story');
+}
 await page.screenshot({ path: `${outDir}/03-life-history.png` });
 
 await page.getByRole('button', { name: 'DEV', exact: true }).click();

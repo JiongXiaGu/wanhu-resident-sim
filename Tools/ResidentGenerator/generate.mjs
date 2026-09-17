@@ -13,6 +13,15 @@ const givenNames = await readJson('Content/Names/given-names.json');
 const occupations = await readJson('Content/Occupations/occupations.json');
 const routines = await readJson('Content/Routines/routine-templates.json');
 const generation = await readJson('Content/Simulation/resident-generation.json');
+const lifeEvents = await readJson('Content/LifeEvents/life-events.json');
+
+const HISTORY_PHASES = [
+  { id: 'school-age', minAge: 10, maxAge: 17 },
+  { id: 'young-adult', minAge: 18, maxAge: 25 },
+  { id: 'adult', minAge: 26, maxAge: 39 },
+  { id: 'middle-age', minAge: 40, maxAge: 57 },
+  { id: 'elder', minAge: 58, maxAge: 82 },
+];
 
 function hash32(value) {
   const text = String(value);
@@ -114,6 +123,78 @@ function buildRecentLifeLog(resident, rng) {
   }
 
   return result.sort((left, right) => right.day - left.day);
+}
+
+function ageAtDay(resident, day) {
+  return Math.max(0, Math.floor((day - resident.birthDay) / generation.daysPerYear));
+}
+
+function eventFitsResidentHistory(event, resident, phase, currentAge) {
+  if (!event.recordToHistory) return false;
+  const rule = event.eligibility ?? {};
+  const minAge = Math.max(phase.minAge, Number(rule.minAge ?? phase.minAge));
+  const maxAge = Math.min(phase.maxAge, Number(rule.maxAge ?? phase.maxAge), currentAge - 1);
+  if (minAge > maxAge) return false;
+  if (Array.isArray(rule.occupations) && rule.occupations.length && !rule.occupations.includes(resident.occupationId)) return false;
+  if (Array.isArray(rule.genders) && rule.genders.length && !rule.genders.includes(resident.gender)) return false;
+  if (rule.minChildren !== undefined && resident.childCount < rule.minChildren) return false;
+  if (rule.requireSpouse !== undefined && Boolean(resident.spouseId) !== rule.requireSpouse) return false;
+  return true;
+}
+
+function buildStoryHistory(resident) {
+  const currentAge = ageAtDay(resident, generation.currentDay);
+  const livedPhases = HISTORY_PHASES.filter((phase) => phase.minAge <= currentAge - 1);
+  if (!livedPhases.length) return [];
+
+  const densityRoll = hash32(`${resident.seed}:life-story-density`) % 100;
+  const desiredCount = densityRoll < 15 ? 0 : densityRoll < 55 ? 1 : densityRoll < 88 ? 2 : 3;
+  const target = Math.min(desiredCount, livedPhases.length);
+  if (!target) return [];
+
+  const candidates = [];
+  for (const phase of livedPhases) {
+    for (const event of lifeEvents.items) {
+      if (!eventFitsResidentHistory(event, resident, phase, currentAge)) continue;
+      const minAge = Math.max(phase.minAge, Number(event.eligibility?.minAge ?? phase.minAge));
+      const maxAge = Math.min(phase.maxAge, Number(event.eligibility?.maxAge ?? phase.maxAge), currentAge - 1);
+      candidates.push({
+        event,
+        phase,
+        minAge,
+        maxAge,
+        rank: hash32(`${resident.seed}:history-rank:${phase.id}:${event.id}`),
+      });
+    }
+  }
+
+  candidates.sort((left, right) => left.rank - right.rank);
+  const usedEvents = new Set();
+  const usedPhases = new Set();
+  const selected = [];
+  for (const candidate of candidates) {
+    if (selected.length >= target) break;
+    if (usedEvents.has(candidate.event.id) || usedPhases.has(candidate.phase.id)) continue;
+    usedEvents.add(candidate.event.id);
+    usedPhases.add(candidate.phase.id);
+    selected.push(candidate);
+  }
+
+  return selected.map(({ event, phase, minAge, maxAge }) => {
+    const age = minAge + (hash32(`${resident.seed}:history-age:${phase.id}:${event.id}`) % (maxAge - minAge + 1));
+    const dayInYear = hash32(`${resident.seed}:history-day:${event.id}`) % generation.daysPerYear;
+    const day = Math.min(
+      generation.currentDay - 14,
+      resident.birthDay + age * generation.daysPerYear + dayInYear,
+    );
+    return {
+      id: `${resident.id}:story:${event.id}:${day}`,
+      day,
+      type: 'story',
+      title: event.title,
+      sourceEventId: event.id,
+    };
+  });
 }
 
 let nextResidentId = 1001;
@@ -289,6 +370,7 @@ for (const resident of residents) {
     });
   }
 
+  history.push(...buildStoryHistory(resident));
   resident.majorLifeHistory = history.sort((left, right) => right.day - left.day);
 }
 

@@ -15,6 +15,7 @@ export type ResidentMajorLifeEvent = {
   day: number;
   type: 'employment' | 'marriage' | 'family' | 'move' | 'story' | string;
   title: string;
+  sourceEventId?: string;
 };
 
 export type ResidentRecord = {
@@ -99,7 +100,6 @@ export type LifeEventStageDefinition = {
   delayDays: { min: number; max: number };
   title: string;
   text: string;
-  summary: string;
   activityOverride?: string;
 };
 
@@ -109,6 +109,7 @@ export type LifeEventDefinition = {
   weight: number;
   eligibility: LifeEventEligibility;
   source?: LifeEventSource;
+  recordToHistory?: boolean;
   stages: [LifeEventStageDefinition, LifeEventStageDefinition, LifeEventStageDefinition];
 };
 

@@ -17,12 +17,15 @@ const ids = new Set();
 for (const event of source.items) {
   if (!event.id || ids.has(event.id)) throw new Error(`Duplicate or missing LifeEvent id: ${event.id ?? '(missing)'}`);
   ids.add(event.id);
+  if (event.recordToHistory !== undefined && typeof event.recordToHistory !== 'boolean') {
+    throw new Error(`${event.id}: recordToHistory must be a boolean.`);
+  }
   if (!Array.isArray(event.stages) || event.stages.length !== 3) {
     throw new Error(`${event.id}: LifeEvent V2 must have exactly 3 stages.`);
   }
   event.stages.forEach((stage, index) => {
-    if (!stage.title || !stage.text || !stage.summary) {
-      throw new Error(`${event.id}: stage ${index + 1} is missing title/text/summary.`);
+    if (!stage.title || !stage.text) {
+      throw new Error(`${event.id}: stage ${index + 1} is missing title/text.`);
     }
     const min = Number(stage.delayDays?.min ?? -1);
     const max = Number(stage.delayDays?.max ?? -1);

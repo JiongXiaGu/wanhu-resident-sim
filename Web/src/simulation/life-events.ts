@@ -34,9 +34,11 @@ export type ResidentLifeView = {
   priorEventEntries: LifeFeedEntry[];
   routines: LifeFeedEntry[];
   history: ResidentMajorLifeEvent[];
-  summary: string;
   activity: string;
+  showCurrentEvent: boolean;
 };
+
+const COMPLETED_EVENT_VISIBLE_DAYS = 14;
 
 function hashText(value: string) {
   let hash = 2166136261;
@@ -70,8 +72,15 @@ export function eligibleLifeEvents(
   currentDay: number,
 ) {
   const age = ageAtDay(resident, currentDay, definitions.generation.daysPerYear);
+  const recordedStoryIds = new Set(
+    resident.majorLifeHistory
+      .map((entry) => entry.sourceEventId)
+      .filter((eventId): eventId is string => Boolean(eventId)),
+  );
+
   return definitions.lifeEvents.filter((event) => {
     const rule = event.eligibility;
+    if (event.recordToHistory && recordedStoryIds.has(event.id)) return false;
     if (rule.occupations?.length && !rule.occupations.includes(resident.occupationId)) return false;
     if (rule.genders?.length && !rule.genders.includes(resident.gender)) return false;
     if (rule.minAge !== undefined && age < rule.minAge) return false;
@@ -195,6 +204,22 @@ function routineEntries(
   return entries.sort((a, b) => b.day - a.day);
 }
 
+function completedEventChapter(
+  resident: ResidentRecord,
+  event: LifeEventDefinition,
+  assignment: LifeEventAssignment,
+  gameDay: number,
+): ResidentMajorLifeEvent | undefined {
+  if (!event.recordToHistory || gameDay < assignment.stage3Day) return undefined;
+  return {
+    id: `${resident.id}:story:${event.id}:${assignment.stage3Day}`,
+    day: assignment.stage3Day,
+    type: 'story',
+    title: event.title,
+    sourceEventId: event.id,
+  };
+}
+
 export function buildResidentLifeView(
   resident: ResidentRecord,
   household: HouseholdRecord | undefined,
@@ -216,6 +241,13 @@ export function buildResidentLifeView(
   const defaultActivity = offDay
     ? occupation?.offActivity ?? '正在家里歇着'
     : occupation?.workActivity ?? '正在忙今天的事情';
+  const showCurrentEvent = stage < 2 || gameDay - assignment.stage3Day <= COMPLETED_EVENT_VISIBLE_DAYS;
+  const runtimeChapter = completedEventChapter(resident, event, assignment, gameDay);
+  const history = resident.majorLifeHistory.filter((entry) => entry.day <= gameDay);
+  if (runtimeChapter && !history.some((entry) => entry.id === runtimeChapter.id || entry.sourceEventId === runtimeChapter.sourceEventId)) {
+    history.push(runtimeChapter);
+  }
+  history.sort((left, right) => right.day - left.day);
 
   return {
     event,
@@ -224,8 +256,8 @@ export function buildResidentLifeView(
     eventEntries: eventHistory,
     priorEventEntries: eventHistory.slice(0, -1).reverse(),
     routines,
-    history: resident.majorLifeHistory.filter((entry) => entry.day <= gameDay),
-    summary: stageDefinition.summary,
-    activity: stageDefinition.activityOverride ?? defaultActivity,
+    history,
+    activity: (showCurrentEvent ? stageDefinition.activityOverride : undefined) ?? defaultActivity,
+    showCurrentEvent,
   };
 }
