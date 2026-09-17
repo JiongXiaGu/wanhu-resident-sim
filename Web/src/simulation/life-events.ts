@@ -2,6 +2,7 @@ import type {
   HouseholdRecord,
   LifeEventDefinition,
   LifeEventStageDefinition,
+  LifeEventStructuralRequest,
   ResidentDefinitions,
   ResidentMajorLifeEvent,
   ResidentRecord,
@@ -39,6 +40,7 @@ export type ResidentLifeView = {
 };
 
 const COMPLETED_EVENT_VISIBLE_DAYS = 14;
+const appliedPrototypeEffectKeys = new Set<string>();
 
 function hashText(value: string) {
   let hash = 2166136261;
@@ -63,6 +65,10 @@ function weightedPick<T extends { weight: number }>(seed: number, salt: string, 
     if (cursor <= 0) return item;
   }
   return items.at(-1)!;
+}
+
+function eventPersistsAsChapter(event: LifeEventDefinition) {
+  return Boolean(event.recordToHistory || event.effects?.structuralRequests?.length);
 }
 
 function storyBucketCandidates(
@@ -100,7 +106,7 @@ export function eligibleLifeEvents(
 
   return bucketCandidates.filter((event) => {
     const rule = event.eligibility;
-    if (event.recordToHistory && recordedStoryIds.has(event.id)) return false;
+    if (eventPersistsAsChapter(event) && recordedStoryIds.has(event.id)) return false;
     if (rule.occupations?.length && !rule.occupations.includes(resident.occupationId)) return false;
     if (rule.occupationGroups?.length && (!occupation || !rule.occupationGroups.includes(occupation.groupId))) return false;
     if (rule.genders?.length && !rule.genders.includes(resident.gender)) return false;
@@ -233,7 +239,7 @@ function completedEventChapter(
   assignment: LifeEventAssignment,
   gameDay: number,
 ): ResidentMajorLifeEvent | undefined {
-  if (!event.recordToHistory || gameDay < assignment.stage3Day) return undefined;
+  if (!eventPersistsAsChapter(event) || gameDay < assignment.stage3Day) return undefined;
   return {
     id: `${resident.id}:story:${event.id}:${assignment.stage3Day}`,
     day: assignment.stage3Day,
@@ -241,6 +247,189 @@ function completedEventChapter(
     title: event.title,
     sourceEventId: event.id,
   };
+}
+
+function isDirectFamilyRelation(left: ResidentRecord, right: ResidentRecord) {
+  return left.fatherId === right.id
+    || left.motherId === right.id
+    || right.fatherId === left.id
+    || right.motherId === left.id;
+}
+
+function chooseMarriagePartner(
+  resident: ResidentRecord,
+  snapshot: ResidentWorldSnapshot,
+  definitions: ResidentDefinitions,
+  currentDay: number,
+) {
+  const householdById = new Map(snapshot.households.map((item) => [item.id, item]));
+  const residentAge = ageAtDay(resident, currentDay, definitions.generation.daysPerYear);
+  const candidates = snapshot.residents.filter((candidate) => {
+    if (candidate.id === resident.id) return false;
+    if (candidate.gender === resident.gender) return false;
+    if (candidate.spouseId) return false;
+    if (candidate.householdId === resident.householdId) return false;
+    if (isDirectFamilyRelation(resident, candidate)) return false;
+    const candidateAge = ageAtDay(candidate, currentDay, definitions.generation.daysPerYear);
+    if (candidateAge < 18 || candidateAge > 55) return false;
+    if (Math.abs(candidateAge - residentAge) > 16) return false;
+    return true;
+  });
+
+  candidates.sort((left, right) => {
+    const leftHouseholdSize = householdById.get(left.householdId)?.memberIds.length ?? 99;
+    const rightHouseholdSize = householdById.get(right.householdId)?.memberIds.length ?? 99;
+    const leftSingleHome = leftHouseholdSize === 1 ? 0 : 1;
+    const rightSingleHome = rightHouseholdSize === 1 ? 0 : 1;
+    if (leftSingleHome !== rightSingleHome) return leftSingleHome - rightSingleHome;
+
+    const leftSameDistrict = left.districtId === resident.districtId ? 0 : 1;
+    const rightSameDistrict = right.districtId === resident.districtId ? 0 : 1;
+    if (leftSameDistrict !== rightSameDistrict) return leftSameDistrict - rightSameDistrict;
+
+    const leftAgeGap = Math.abs(ageAtDay(left, currentDay, definitions.generation.daysPerYear) - residentAge);
+    const rightAgeGap = Math.abs(ageAtDay(right, currentDay, definitions.generation.daysPerYear) - residentAge);
+    if (leftAgeGap !== rightAgeGap) return leftAgeGap - rightAgeGap;
+
+    return hashText(`${resident.seed}:marriage:${left.id}`) - hashText(`${resident.seed}:marriage:${right.id}`);
+  });
+
+  return candidates[0];
+}
+
+function applyMarriageRequest(
+  resident: ResidentRecord,
+  snapshot: ResidentWorldSnapshot,
+  definitions: ResidentDefinitions,
+  assignment: LifeEventAssignment,
+) {
+  if (resident.spouseId) return true;
+  const partner = chooseMarriagePartner(resident, snapshot, definitions, assignment.stage3Day);
+  if (!partner) return false;
+
+  const targetHousehold = snapshot.households.find((item) => item.id === resident.householdId);
+  const sourceHousehold = snapshot.households.find((item) => item.id === partner.householdId);
+  if (!targetHousehold) return false;
+
+  if (sourceHousehold && sourceHousehold.id !== targetHousehold.id) {
+    sourceHousehold.memberIds = sourceHousehold.memberIds.filter((id) => id !== partner.id);
+  }
+  if (!targetHousehold.memberIds.includes(partner.id)) targetHousehold.memberIds.push(partner.id);
+
+  partner.householdId = resident.householdId;
+  partner.districtId = resident.districtId;
+  resident.spouseId = partner.id;
+  partner.spouseId = resident.id;
+
+  const partnerHistoryId = `${partner.id}:marriage:${assignment.stage3Day}`;
+  if (!partner.majorLifeHistory.some((entry) => entry.id === partnerHistoryId)) {
+    partner.majorLifeHistory.push({
+      id: partnerHistoryId,
+      day: assignment.stage3Day,
+      type: 'marriage',
+      title: '成了家',
+    });
+  }
+  return true;
+}
+
+function applyChangeOccupationRequest(
+  resident: ResidentRecord,
+  definitions: ResidentDefinitions,
+  assignment: LifeEventAssignment,
+  request: Extract<LifeEventStructuralRequest, { type: 'changeOccupation' }>,
+) {
+  const occupation = occupationFor(definitions, request.occupationId);
+  if (!occupation) return false;
+  resident.occupationId = occupation.id;
+  resident.employmentStartDay = assignment.stage3Day;
+  resident.workplaceId = occupation.workplaceType
+    ? 3000 + (hashText(`${resident.seed}:${occupation.workplaceType}:${resident.districtId}`) % 700)
+    : 0;
+  return true;
+}
+
+function applyMoveHouseholdRequest(
+  resident: ResidentRecord,
+  snapshot: ResidentWorldSnapshot,
+  definitions: ResidentDefinitions,
+  request: Extract<LifeEventStructuralRequest, { type: 'moveHousehold' }>,
+) {
+  const household = snapshot.households.find((item) => item.id === resident.householdId);
+  if (!household) return false;
+
+  const districts = definitions.generation.districts.filter((district) => {
+    if (request.policy === 'same-district') return district.id === household.districtId;
+    if (request.policy === 'different-district') return district.id !== household.districtId;
+    return true;
+  });
+  if (!districts.length) return false;
+  const district = districts[hashText(`${resident.seed}:move:${request.policy}`) % districts.length];
+  household.districtId = district.id;
+  household.homeId = 9000 + (hashText(`${resident.seed}:home:${district.id}`) % 900);
+  for (const memberId of household.memberIds) {
+    const member = snapshot.residents.find((item) => item.id === memberId);
+    if (member) member.districtId = district.id;
+  }
+  return true;
+}
+
+function applyStructuralRequest(
+  resident: ResidentRecord,
+  snapshot: ResidentWorldSnapshot,
+  definitions: ResidentDefinitions,
+  assignment: LifeEventAssignment,
+  request: LifeEventStructuralRequest,
+) {
+  if (request.type === 'changeOccupation') {
+    return applyChangeOccupationRequest(resident, definitions, assignment, request);
+  }
+  if (request.type === 'moveHousehold') {
+    return applyMoveHouseholdRequest(resident, snapshot, definitions, request);
+  }
+  if (request.type === 'formMarriage') {
+    return applyMarriageRequest(resident, snapshot, definitions, assignment);
+  }
+  // addChild requires creating a real child Resident, so the Web prototype leaves it unapplied until that playtest exists.
+  return false;
+}
+
+function applyPrototypeCompletedEvent(
+  resident: ResidentRecord,
+  event: LifeEventDefinition,
+  assignment: LifeEventAssignment,
+  snapshot: ResidentWorldSnapshot,
+  definitions: ResidentDefinitions,
+  gameDay: number,
+) {
+  if (gameDay < assignment.stage3Day) return;
+  const key = `${resident.id}:${event.id}:${assignment.startDay}`;
+  if (appliedPrototypeEffectKeys.has(key)) return;
+
+  const alreadyRecorded = resident.majorLifeHistory.some((entry) =>
+    entry.sourceEventId === event.id && entry.day === assignment.stage3Day);
+  if (alreadyRecorded) {
+    appliedPrototypeEffectKeys.add(key);
+    return;
+  }
+
+  let structuralSucceeded = true;
+  for (const request of event.effects?.structuralRequests ?? []) {
+    if (!applyStructuralRequest(resident, snapshot, definitions, assignment, request)) structuralSucceeded = false;
+  }
+  if (!structuralSucceeded) return;
+
+  const tags = new Set(resident.lifeTags ?? []);
+  for (const tagId of event.effects?.removeTags ?? []) tags.delete(tagId);
+  for (const tagId of event.effects?.addTags ?? []) tags.add(tagId);
+  resident.lifeTags = [...tags].sort();
+
+  const chapter = completedEventChapter(resident, event, assignment, gameDay);
+  if (chapter && !resident.majorLifeHistory.some((entry) => entry.id === chapter.id || entry.sourceEventId === chapter.sourceEventId)) {
+    resident.majorLifeHistory.push(chapter);
+  }
+
+  appliedPrototypeEffectKeys.add(key);
 }
 
 export function buildResidentLifeView(
@@ -253,6 +442,8 @@ export function buildResidentLifeView(
 ): ResidentLifeView {
   const event = definitions.lifeEvents.find((item) => item.id === assignment.eventId) ?? definitions.lifeEvents[0];
   const stage = stageForAssignment(gameDay, assignment);
+  if (stage === 2) applyPrototypeCompletedEvent(resident, event, assignment, snapshot, definitions, gameDay);
+
   const eventHistory = eventEntries(event, assignment, stage);
   const blockedDays = eventHistory.map((entry) => entry.day);
   const routines = routineEntries(resident, definitions, snapshot.currentDay, gameDay, blockedDays)

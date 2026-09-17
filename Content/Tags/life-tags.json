@@ -6,6 +6,7 @@
     {"id":"lifetag.child-started-school","label":"孩子已经入学","category":"family"},
     {"id":"lifetag.first-family-errand","label":"少年时独自替家里办过事","category":"experience"},
     {"id":"lifetag.retirement-routine","label":"晚年有了固定消遣","category":"life"},
+    {"id":"lifetag.newly-married","label":"刚刚成婚","category":"family"},
     {"id":"lifetag.trained-carpenter","label":"学过木工手艺","category":"skill"},
     {"id":"lifetag.opened-shop","label":"曾独立开铺","category":"work"},
     {"id":"lifetag.debt-history","label":"曾有债务经历","category":"finance"},
