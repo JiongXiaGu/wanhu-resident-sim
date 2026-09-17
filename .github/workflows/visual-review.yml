@@ -6,8 +6,9 @@ on:
     paths:
       - 'Web/src/**'
       - '居民故事/**'
-      - 'Content/Stories/**'
+      - 'Content/**'
       - 'Tools/StoryCompiler/**'
+      - 'Tools/ResidentGenerator/**'
       - 'scripts/**'
       - 'package.json'
       - 'Web/package.json'
@@ -48,7 +49,7 @@ jobs:
       - name: Install Chromium
         if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install chromium
-      - name: Build story data
+      - name: Build generated content
         run: npm run build-content
       - name: Start Vite review server
         run: |
