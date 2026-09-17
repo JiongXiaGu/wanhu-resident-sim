@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wanhu.story.v1",
+  "title": "Wanhu Story Document",
+  "type": "object",
+  "required": ["schema", "id", "title", "start", "branches"],
+  "properties": {
+    "schema": { "const": "wanhu.story.v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "source": { "type": "string" },
+    "categories": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "importance": { "type": "string" },
+    "perspective": { "type": "string" },
+    "eligibility": {
+      "type": "object",
+      "properties": {
+        "required": { "type": "array", "items": { "type": "string" } },
+        "forbidden": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "start": { "$ref": "#/$defs/node" },
+    "branches": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/branch" }
+    }
+  },
+  "$defs": {
+    "time": {
+      "type": "object",
+      "required": ["raw"],
+      "properties": {
+        "raw": { "type": "string" },
+        "relativeTo": {
+          "enum": ["story-start", "previous-node", "unknown"]
+        },
+        "minDays": { "type": ["integer", "null"], "minimum": 0 },
+        "maxDays": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "title", "text", "time"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "text": { "type": "string" },
+        "time": { "$ref": "#/$defs/time" }
+      }
+    },
+    "branch": {
+      "type": "object",
+      "required": ["id", "title", "weight", "stage2", "stage3"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "weight": { "type": "number", "exclusiveMinimum": 0 },
+        "stage2": { "$ref": "#/$defs/node" },
+        "stage3": { "$ref": "#/$defs/node" }
+      }
+    }
+  }
+}
