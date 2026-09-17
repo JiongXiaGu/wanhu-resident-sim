@@ -133,16 +133,27 @@ function routineEntries(
   if (!pool.length) return entries;
 
   const { min, max } = definitions.generation.routineIntervalDays;
+  const baselineRoutines = [...entries]
+    .filter((entry) => entry.kind === 'routine')
+    .sort((left, right) => right.day - left.day);
+  let previousRoutineTitle = baselineRoutines[0]?.title ?? '';
   let day = baselineDay + 2 + (resident.seed % 5);
+
   while (day <= gameDay) {
     if (!storyDays.some((storyDay) => Math.abs(storyDay - day) <= 1)) {
-      const template = pool[hashText(`${resident.seed}:routine:${day}`) % pool.length];
+      let templateIndex = hashText(`${resident.seed}:routine:${day}`) % pool.length;
+      if (pool.length > 1 && pool[templateIndex].text === previousRoutineTitle) {
+        templateIndex = (templateIndex + 1 + (hashText(`${resident.seed}:routine-alt:${day}`) % (pool.length - 1))) % pool.length;
+        if (pool[templateIndex].text === previousRoutineTitle) templateIndex = (templateIndex + 1) % pool.length;
+      }
+      const template = pool[templateIndex];
       entries.push({
         id: `${resident.id}:${template.id}:${day}`,
         day,
         kind: 'routine',
         title: template.text,
       });
+      previousRoutineTitle = template.text;
     }
     day += min + (hashText(`${resident.seed}:interval:${day}`) % Math.max(1, max - min + 1));
   }
