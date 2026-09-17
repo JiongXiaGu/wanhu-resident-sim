@@ -118,22 +118,20 @@ function pick<T>(items: T[], seed: number, divisor: number) {
 }
 
 function fallbackAppearance(seed: number, gender: Gender, lifeStage: LifeStageId, occupationId: string): ResidentAppearanceDNA {
-  const isOlder = lifeStage === 'middle-age' || lifeStage === 'elder';
-  const hairChoices = gender === 'female' ? FALLBACK_FEMALE_HAIR : FALLBACK_MALE_HAIR;
-  const outfitId = gender === 'female'
-    ? 'appearance.outfit.female-plain-01'
-    : occupationId
-      ? 'appearance.outfit.common-plain-01'
-      : 'appearance.outfit.common-rough-01';
+  const older = lifeStage === 'middle-age' || lifeStage === 'elder';
   return {
     faceId: pick(gender === 'female' ? FALLBACK_FEMALE_FACES : FALLBACK_MALE_FACES, seed, 1),
-    hairId: pick(hairChoices, seed, 7),
+    hairId: pick(gender === 'female' ? FALLBACK_FEMALE_HAIR : FALLBACK_MALE_HAIR, seed, 7),
     browId: pick(FALLBACK_BROWS, seed, 13),
-    facialHairId: gender === 'male' && isOlder && seed % 4 === 0
+    facialHairId: gender === 'male' && older && seed % 4 === 0
       ? 'appearance.facial-hair.mustache-01'
       : 'appearance.facial-hair.none',
     headwearId: 'appearance.headwear.none',
-    outfitId,
+    outfitId: gender === 'female'
+      ? 'appearance.outfit.female-plain-01'
+      : occupationId
+        ? 'appearance.outfit.common-plain-01'
+        : 'appearance.outfit.common-rough-01',
     skinPaletteId: pick(FALLBACK_SKIN, seed, 17),
     hairPaletteId: lifeStage === 'elder'
       ? (seed % 2 ? 'appearance.palette.hair.salt-pepper-01' : 'appearance.palette.hair.silver-01')
@@ -150,10 +148,10 @@ function faceGeometry(rig: PortraitRig, profile: PortraitFaceArtProfile) {
   const right = cx + half;
   const topY = rig.topY;
   const chinY = rig.chinY + profile.chinDepth;
-  const templeY = topY + (chinY - topY) * 0.39;
-  const cheekY = rig.eyeY + (rig.mouthY - rig.eyeY) * 0.47;
+  const templeY = topY + (chinY - topY) * .39;
+  const cheekY = rig.eyeY + (rig.mouthY - rig.eyeY) * .47;
   const cheekHalf = Math.max(jawHalf + 2.5, half - profile.templeInset + profile.cheekPush);
-  const jawY = rig.mouthY + (chinY - rig.mouthY) * 0.52;
+  const jawY = rig.mouthY + (chinY - rig.mouthY) * .52;
   return { cx, half, jawHalf, left, right, topY, chinY, templeY, cheekY, cheekHalf, jawY };
 }
 
@@ -170,8 +168,8 @@ function facePath(rig: PortraitRig, family: PortraitFaceFamily, profile: Portrai
     `M${g.cx} ${g.topY}`,
     `C${g.left + topRound} ${g.topY - 1.8} ${g.left} ${g.templeY - 8} ${g.left + profile.templeInset} ${g.templeY}`,
     `C${leftCheek} ${g.cheekY - 3} ${leftCheek + roundBias * .2} ${g.cheekY + 5} ${leftJaw} ${g.jawY}`,
-    `Q${g.cx - g.jawHalf * .45} ${g.chinY + (family === 'long' ? 1.8 : 0.7)} ${g.cx} ${g.chinY}`,
-    `Q${g.cx + g.jawHalf * .45} ${g.chinY + (family === 'long' ? 1.8 : 0.7)} ${rightJaw} ${g.jawY}`,
+    `Q${g.cx - g.jawHalf * .45} ${g.chinY + (family === 'long' ? 1.8 : .7)} ${g.cx} ${g.chinY}`,
+    `Q${g.cx + g.jawHalf * .45} ${g.chinY + (family === 'long' ? 1.8 : .7)} ${rightJaw} ${g.jawY}`,
     `C${rightCheek - roundBias * .2} ${g.cheekY + 5} ${rightCheek} ${g.cheekY - 3} ${g.right - profile.templeInset} ${g.templeY}`,
     `C${g.right} ${g.templeY - 8} ${g.right - topRound} ${g.topY - 1.8} ${g.cx} ${g.topY}Z`,
   ].join(' ');
@@ -190,7 +188,6 @@ function HairBack({ id, color, rig, gender }: { id: string; color: string; rig: 
   const left = rig.centerX - half;
   const right = rig.centerX + half;
   const cap = <HairCap color={color} rig={rig} gender={gender}/>;
-
   if (id.includes('female-long-straight-01')) return <><path d={`M${left + 1} ${rig.hairlineY + 7} C${left - 5} 70 ${left - 5} 113 ${left + 1} 144 L${left + 15} 144 C${left + 8} 111 ${left + 11} 76 ${left + 12} ${rig.hairlineY + 18}Z`} fill={color}/><path d={`M${right - 1} ${rig.hairlineY + 7} C${right + 5} 70 ${right + 5} 113 ${right - 1} 144 L${right - 15} 144 C${right - 8} 111 ${right - 11} 76 ${right - 12} ${rig.hairlineY + 18}Z`} fill={color}/>{cap}</>;
   if (id.includes('female-long-straight-02')) return <><path d={`M${left + 2} ${rig.hairlineY + 7} C${left - 9} 71 ${left - 2} 111 ${left + 4} 145 L${left + 18} 141 C${left + 9} 103 ${left + 12} 69 ${left + 13} ${rig.hairlineY + 18}Z`} fill={color}/><path d={`M${right - 2} ${rig.hairlineY + 7} C${right + 9} 71 ${right + 2} 111 ${right - 4} 145 L${right - 18} 141 C${right - 9} 103 ${right - 12} 69 ${right - 13} ${rig.hairlineY + 18}Z`} fill={color}/>{cap}</>;
   if (id.includes('female-long-tied')) return <><path d={`M${rig.centerX + 5} ${rig.topY + 3} C${right + 13} 70 ${right + 8} 112 ${right + 1} 143 Q${rig.centerX + 12} 128 ${rig.centerX + 10} 57Z`} fill={color}/><ellipse cx={rig.centerX + 12} cy={rig.topY - 1} rx="7.5" ry="5.2" fill={color}/>{cap}</>;
@@ -206,19 +203,33 @@ function HairBack({ id, color, rig, gender }: { id: string; color: string; rig: 
   return null;
 }
 
+function FemaleTempleLocks({ color, rig, leftLong = false, rightLong = false }: { color: string; rig: PortraitRig; leftLong?: boolean; rightLong?: boolean }) {
+  const half = rig.faceWidth / 2 + 1.6;
+  const left = rig.centerX - half;
+  const right = rig.centerX + half;
+  return <g fill={color} opacity=".96">
+    <path d={`M${left + 2} ${rig.hairlineY - 1} Q${left - 1} ${rig.eyeY + 5} ${left + 6} ${leftLong ? rig.mouthY + 5 : rig.noseY + 3} Q${left + 10} ${rig.eyeY + 2} ${left + 10} ${rig.hairlineY + 2}Z`}/>
+    <path d={`M${right - 2} ${rig.hairlineY - 1} Q${right + 1} ${rig.eyeY + 5} ${right - 6} ${rightLong ? rig.mouthY + 5 : rig.noseY + 3} Q${right - 10} ${rig.eyeY + 2} ${right - 10} ${rig.hairlineY + 2}Z`}/>
+  </g>;
+}
+
 function HairFront({ id, color, rig, gender }: { id: string; color: string; rig: PortraitRig; gender: Gender }) {
   const half = rig.faceWidth / 2 + 1.6;
   const left = rig.centerX - half;
   const right = rig.centerX + half;
   const top = rig.topY - 2;
   const line = rig.hairlineY;
-
   if (id.includes('male-thinning')) return <path d={`M${left + 4} ${line + 2} Q${left + 9} ${top + 4} ${rig.centerX - 6} ${top + 3} M${right - 4} ${line + 1} Q${right - 8} ${top + 5} ${rig.centerX + 8} ${top + 3}`} fill="none" stroke={color} strokeWidth="4.5" strokeLinecap="round"/>;
   if (id.includes('female-married-bun')) return <g fill={color}><path d={`M${left} ${line + 1} Q${left + 2} ${top} ${rig.centerX} ${top} Q${right - 2} ${top} ${right} ${line + 1} Q${rig.centerX + 8} ${line - 4} ${rig.centerX} ${line - 7} Q${rig.centerX - 8} ${line - 4} ${left} ${line + 1}Z`}/><path d={`M${left + 3} ${line} Q${left} ${rig.eyeY + 4} ${left + 7} ${rig.noseY + 3} Q${left + 11} ${rig.eyeY + 2} ${left + 11} ${line + 2}Z`}/></g>;
-  if (id.includes('female-long') || id.includes('female-side-fall') || id.includes('female-braid') || id.includes('female-double-braid')) {
-    return <g fill={color}><path d={`M${left} ${line + 1} Q${left + 2} ${top} ${rig.centerX} ${top} Q${right - 2} ${top} ${right} ${line + 1} Q${rig.centerX + 9} ${line - 4} ${rig.centerX + 4} ${line - 7} L${rig.centerX} ${line + 2} L${rig.centerX - 4} ${line - 7} Q${rig.centerX - 9} ${line - 4} ${left} ${line + 1}Z`}/><path d={`M${left + 2} ${line - 1} Q${left - 1} ${rig.eyeY + 6} ${left + 6} ${rig.mouthY + 3} Q${left + 10} ${rig.eyeY + 3} ${left + 10} ${line + 2}Z`} opacity=".96"/><path d={`M${right - 2} ${line - 1} Q${right + 1} ${rig.eyeY + 6} ${right - 6} ${rig.mouthY + 3} Q${right - 10} ${rig.eyeY + 3} ${right - 10} ${line + 2}Z`} opacity=".96"/></g>;
-  }
-  if (id.includes('female-low-bun') || id.includes('female-bun') || id.includes('female-elder-tied')) return <path d={`M${left} ${line + 1} Q${left + 2} ${top} ${rig.centerX} ${top} Q${right - 2} ${top} ${right} ${line + 1} Q${rig.centerX + 8} ${line - 4} ${rig.centerX} ${line - 6} Q${rig.centerX - 8} ${line - 4} ${left} ${line + 1}Z`} fill={color}/>;
+  if (id.includes('female-long-straight-01')) return <g><path d={`M${left} ${line + 1} Q${left + 2} ${top} ${rig.centerX} ${top} Q${right - 2} ${top} ${right} ${line + 1} Q${rig.centerX + 9} ${line - 4} ${rig.centerX + 4} ${line - 7} L${rig.centerX} ${line + 2} L${rig.centerX - 4} ${line - 7} Q${rig.centerX - 9} ${line - 4} ${left} ${line + 1}Z`} fill={color}/><FemaleTempleLocks color={color} rig={rig} leftLong rightLong/></g>;
+  if (id.includes('female-long-straight-02')) return <g><path d={`M${left} ${line + 2} Q${left + 6} ${top - 1} ${rig.centerX - 5} ${top - 1} Q${rig.centerX + 7} ${top - 3} ${right} ${line + 1} Q${rig.centerX + 2} ${line - 6} ${rig.centerX - 6} ${line - 5} Q${rig.centerX - 13} ${line - 1} ${left} ${line + 2}Z`} fill={color}/><path d={`M${right - 2} ${line - 1} Q${right + 1} ${rig.eyeY + 7} ${right - 7} ${rig.mouthY + 7} Q${right - 11} ${rig.eyeY + 3} ${right - 10} ${line + 1}Z`} fill={color}/></g>;
+  if (id.includes('female-long-tied')) return <g><path d={`M${left} ${line + 1} Q${rig.centerX - 13} ${top - 2} ${rig.centerX + 4} ${top - 2} Q${right - 6} ${top} ${right} ${line + 2} Q${rig.centerX + 8} ${line - 1} ${rig.centerX + 3} ${line - 5} Q${rig.centerX - 10} ${line - 4} ${left} ${line + 1}Z`} fill={color}/><path d={`M${left + 4} ${line + 1} Q${left + 2} ${rig.eyeY + 3} ${left + 8} ${rig.noseY + 1}`} fill="none" stroke={color} strokeWidth="4" strokeLinecap="round"/></g>;
+  if (id.includes('female-side-fall')) return <g><path d={`M${left} ${line + 1} Q${rig.centerX - 14} ${top - 2} ${rig.centerX - 3} ${top - 2} Q${rig.centerX + 9} ${top - 3} ${right} ${line + 2} Q${rig.centerX + 3} ${line - 5} ${rig.centerX - 5} ${line - 4} Q${rig.centerX - 12} ${line - 1} ${left} ${line + 1}Z`} fill={color}/><path d={`M${right - 1} ${line - 1} Q${right + 3} ${rig.eyeY + 8} ${right - 7} ${rig.mouthY + 8} Q${right - 12} ${rig.eyeY + 4} ${right - 10} ${line + 1}Z`} fill={color}/></g>;
+  if (id.includes('female-double-braid')) return <g><path d={`M${left} ${line + 1} Q${left + 4} ${top} ${rig.centerX} ${top - 1} Q${right - 4} ${top} ${right} ${line + 1} Q${rig.centerX + 7} ${line - 3} ${rig.centerX} ${line - 6} Q${rig.centerX - 7} ${line - 3} ${left} ${line + 1}Z`} fill={color}/><FemaleTempleLocks color={color} rig={rig}/></g>;
+  if (id.includes('female-braid')) return <g><path d={`M${left} ${line + 1} Q${rig.centerX - 12} ${top - 1} ${rig.centerX + 2} ${top - 2} Q${right - 5} ${top} ${right} ${line + 1} Q${rig.centerX + 4} ${line - 6} ${rig.centerX - 4} ${line - 4} Q${rig.centerX - 11} ${line} ${left} ${line + 1}Z`} fill={color}/><path d={`M${right - 2} ${line} Q${right + 1} ${rig.eyeY + 5} ${right - 7} ${rig.noseY + 4} Q${right - 10} ${rig.eyeY + 2} ${right - 9} ${line + 1}Z`} fill={color}/></g>;
+  if (id.includes('female-low-bun')) return <path d={`M${left} ${line + 1} Q${rig.centerX - 15} ${top - 1} ${rig.centerX + 2} ${top - 2} Q${right - 7} ${top - 1} ${right} ${line + 1} Q${rig.centerX + 5} ${line - 5} ${rig.centerX - 4} ${line - 5} Q${rig.centerX - 11} ${line} ${left} ${line + 1}Z`} fill={color}/>;
+  if (id.includes('female-bun')) return <path d={`M${left} ${line + 1} Q${left + 3} ${top - 1} ${rig.centerX} ${top - 2} Q${right - 3} ${top - 1} ${right} ${line + 1} Q${rig.centerX + 9} ${line - 5} ${rig.centerX} ${line - 7} Q${rig.centerX - 9} ${line - 5} ${left} ${line + 1}Z`} fill={color}/>;
+  if (id.includes('female-elder-tied')) return <path d={`M${left} ${line + 1} Q${left + 5} ${top} ${rig.centerX + 1} ${top - 1} Q${right - 4} ${top + 1} ${right} ${line + 2} Q${rig.centerX + 8} ${line - 2} ${rig.centerX - 1} ${line - 5} Q${rig.centerX - 8} ${line - 2} ${left} ${line + 1}Z`} fill={color}/>;
   if (id.includes('cropped')) return <path d={`M${left + 2} ${line} Q${left + 4} ${top + 1} ${rig.centerX} ${top} Q${right - 4} ${top + 1} ${right - 2} ${line} Q${rig.centerX + 10} ${line - 6} ${rig.centerX + 1} ${line - 5} Q${rig.centerX - 9} ${line - 6} ${left + 2} ${line}Z`} fill={color}/>;
   if (id.includes('short-02')) return <path d={`M${left} ${line + 1} Q${left + 1} ${top} ${rig.centerX} ${top} Q${right - 1} ${top} ${right} ${line} Q${rig.centerX + 8} ${line - 4} ${rig.centerX + 1} ${line - 8} Q${rig.centerX - 7} ${line - 2} ${left} ${line + 1}Z`} fill={color}/>;
   if (gender === 'female') return <HairCap color={color} rig={rig} gender={gender}/>;
@@ -227,47 +238,71 @@ function HairFront({ id, color, rig, gender }: { id: string; color: string; rig:
 
 function Brows({ id, color, rig, profile, gender }: { id: string; color: string; rig: PortraitRig; profile: PortraitFaceArtProfile; gender: Gender }) {
   const eyeOffset = rig.faceWidth * profile.eyeSpacing;
-  const halfWidth = Math.max(3.3, rig.faceWidth * (gender === 'female' ? .105 : .1));
+  const halfWidth = Math.max(3.3, rig.faceWidth * (gender === 'female' ? .108 : .1));
   const styleScale = id.includes('thick') ? 1.22 : id.includes('soft') ? .86 : 1;
   const width = profile.browThickness * styleScale;
   const leftX = rig.centerX - eyeOffset;
   const rightX = rig.centerX + eyeOffset;
   const angle = id.includes('angled') ? 1.7 : 0;
-  const bow = id.includes('soft') || gender === 'female' ? 1.9 : .9;
+  const bow = id.includes('soft') || gender === 'female' ? 2.05 : .75;
   const y = rig.browY - profile.browLift;
   return <g fill="none" stroke={color} strokeWidth={width} strokeLinecap="round" opacity=".84"><path d={`M${leftX - halfWidth} ${y + angle} Q${leftX} ${y - bow} ${leftX + halfWidth} ${y}`}/><path d={`M${rightX - halfWidth} ${y} Q${rightX} ${y - bow} ${rightX + halfWidth} ${y + angle}`}/></g>;
 }
 
-function FaceDetails({ gender, rig, profile }: { gender: Gender; rig: PortraitRig; profile: PortraitFaceArtProfile }) {
+function FemaleFaceDetails({ rig, profile }: { rig: PortraitRig; profile: PortraitFaceArtProfile }) {
   const eyeOffset = rig.faceWidth * profile.eyeSpacing;
-  const eyeHalf = Math.max(3, rig.faceWidth * profile.eyeWidth);
-  const ink = '#3f332d';
-  const noseInk = '#825f4b';
-  const mouthInk = '#785047';
-  const pupil = gender === 'female' ? .92 : .82;
-  const eyeStroke = gender === 'female' ? 1.45 : 1.62;
+  const eyeHalf = Math.max(3.5, rig.faceWidth * profile.eyeWidth);
   const leftX = rig.centerX - eyeOffset;
   const rightX = rig.centerX + eyeOffset;
   const eyeY = rig.eyeY;
-  const outerTilt = profile.eyeTilt;
-  const curve = 1.45 * profile.eyeCurve;
-  const noseEnd = Math.min(rig.mouthY - 4, rig.eyeY + (rig.noseY - rig.eyeY) * profile.noseLength);
-  const noseHalf = 3.1 * profile.noseWidth;
-  const mouthHalf = Math.max(4.7, rig.jawWidth * profile.mouthWidth);
-  const mouthCurve = 2.15 * profile.mouthCurve;
-
+  const upper = 1.5 * profile.eyeCurve;
+  const lower = .85 + profile.eyeCurve * .15;
+  const noseEnd = Math.min(rig.mouthY - 4.5, rig.eyeY + (rig.noseY - rig.eyeY) * profile.noseLength);
+  const mouthHalf = Math.max(4.6, rig.jawWidth * profile.mouthWidth);
+  const ink = '#44352f';
   return <g>
-    <g fill="none" stroke={ink} strokeWidth={eyeStroke} strokeLinecap="round" opacity=".86">
-      <path d={`M${leftX - eyeHalf} ${eyeY + outerTilt} Q${leftX} ${eyeY - curve} ${leftX + eyeHalf} ${eyeY - outerTilt * .25}`}/>
-      <path d={`M${rightX - eyeHalf} ${eyeY - outerTilt * .25} Q${rightX} ${eyeY - curve} ${rightX + eyeHalf} ${eyeY + outerTilt}`}/>
+    <g fill="none" stroke={ink} strokeLinecap="round">
+      <path d={`M${leftX - eyeHalf} ${eyeY + profile.eyeTilt} Q${leftX} ${eyeY - upper} ${leftX + eyeHalf} ${eyeY - profile.eyeTilt * .2}`} strokeWidth="1.38" opacity=".9"/>
+      <path d={`M${leftX - eyeHalf + 1} ${eyeY + .9} Q${leftX} ${eyeY + lower} ${leftX + eyeHalf - 1} ${eyeY + .8}`} strokeWidth=".62" opacity=".3"/>
+      <path d={`M${rightX - eyeHalf} ${eyeY - profile.eyeTilt * .2} Q${rightX} ${eyeY - upper} ${rightX + eyeHalf} ${eyeY + profile.eyeTilt}`} strokeWidth="1.38" opacity=".9"/>
+      <path d={`M${rightX - eyeHalf + 1} ${eyeY + .8} Q${rightX} ${eyeY + lower} ${rightX + eyeHalf - 1} ${eyeY + .9}`} strokeWidth=".62" opacity=".3"/>
     </g>
-    <circle cx={leftX} cy={eyeY - .15} r={pupil} fill={ink} opacity=".82"/>
-    <circle cx={rightX} cy={eyeY - .15} r={pupil} fill={ink} opacity=".82"/>
-    {gender === 'female' && <g fill="none" stroke={ink} strokeWidth=".55" opacity=".22"><path d={`M${leftX - eyeHalf + .8} ${eyeY + 1.2} Q${leftX} ${eyeY + 2} ${leftX + eyeHalf - .8} ${eyeY + 1.2}`}/><path d={`M${rightX - eyeHalf + .8} ${eyeY + 1.2} Q${rightX} ${eyeY + 2} ${rightX + eyeHalf - .8} ${eyeY + 1.2}`}/></g>}
-    <path d={`M${rig.centerX - .7} ${rig.eyeY + 2} Q${rig.centerX - 2.2} ${(rig.eyeY + noseEnd) / 2} ${rig.centerX - .3} ${noseEnd} Q${rig.centerX + noseHalf * .35} ${noseEnd + 1} ${rig.centerX + noseHalf} ${noseEnd - .5}`} fill="none" stroke={noseInk} strokeWidth={gender === 'female' ? 1 : 1.18} strokeLinecap="round" opacity={gender === 'female' ? '.42' : '.52'}/>
-    <path d={`M${rig.centerX - mouthHalf} ${rig.mouthY} Q${rig.centerX} ${rig.mouthY + mouthCurve} ${rig.centerX + mouthHalf} ${rig.mouthY}`} fill="none" stroke={mouthInk} strokeWidth={gender === 'female' ? 1.38 : 1.5} strokeLinecap="round" opacity=".76"/>
-    {profile.cheekAccent > 0 && <g fill="none" stroke="#a86f5d" strokeWidth=".75" opacity={profile.cheekAccent}><path d={`M${leftX - 4} ${rig.noseY + 3} Q${leftX} ${rig.noseY + 4.2} ${leftX + 3} ${rig.noseY + 3}`}/><path d={`M${rightX - 3} ${rig.noseY + 3} Q${rightX} ${rig.noseY + 4.2} ${rightX + 4} ${rig.noseY + 3}`}/></g>}
+    <ellipse cx={leftX} cy={eyeY - .08} rx=".78" ry="1.05" fill={ink} opacity=".84"/>
+    <ellipse cx={rightX} cy={eyeY - .08} rx=".78" ry="1.05" fill={ink} opacity=".84"/>
+    <path d={`M${rig.centerX - .45} ${rig.eyeY + 3} Q${rig.centerX - 1.5} ${(rig.eyeY + noseEnd) / 2} ${rig.centerX - .15} ${noseEnd} Q${rig.centerX + 1.2 * profile.noseWidth} ${noseEnd + .7} ${rig.centerX + 2.4 * profile.noseWidth} ${noseEnd - .15}`} fill="none" stroke="#835f4b" strokeWidth=".9" strokeLinecap="round" opacity=".42"/>
+    <path d={`M${rig.centerX - mouthHalf} ${rig.mouthY} Q${rig.centerX} ${rig.mouthY + 2.1 * profile.mouthCurve} ${rig.centerX + mouthHalf} ${rig.mouthY}`} fill="none" stroke="#7b5048" strokeWidth="1.25" strokeLinecap="round" opacity=".78"/>
+    <path d={`M${rig.centerX - mouthHalf * .38} ${rig.mouthY + 2.35} Q${rig.centerX} ${rig.mouthY + 3} ${rig.centerX + mouthHalf * .38} ${rig.mouthY + 2.35}`} fill="none" stroke="#8b5d52" strokeWidth=".6" strokeLinecap="round" opacity=".32"/>
+    {profile.cheekAccent > 0 && <g fill="none" stroke="#a86f5d" strokeWidth=".68" opacity={profile.cheekAccent}><path d={`M${leftX - 4} ${rig.noseY + 3} Q${leftX} ${rig.noseY + 4.1} ${leftX + 3} ${rig.noseY + 3}`}/><path d={`M${rightX - 3} ${rig.noseY + 3} Q${rightX} ${rig.noseY + 4.1} ${rightX + 4} ${rig.noseY + 3}`}/></g>}
   </g>;
+}
+
+function MaleFaceDetails({ rig, profile, family }: { rig: PortraitRig; profile: PortraitFaceArtProfile; family: PortraitFaceFamily }) {
+  const eyeOffset = rig.faceWidth * profile.eyeSpacing;
+  const eyeHalf = Math.max(3.1, rig.faceWidth * profile.eyeWidth);
+  const leftX = rig.centerX - eyeOffset;
+  const rightX = rig.centerX + eyeOffset;
+  const eyeY = rig.eyeY;
+  const upper = 1.05 * profile.eyeCurve;
+  const noseEnd = Math.min(rig.mouthY - 3.4, rig.eyeY + (rig.noseY - rig.eyeY) * profile.noseLength);
+  const mouthHalf = Math.max(5, rig.jawWidth * profile.mouthWidth);
+  const ink = '#3c312d';
+  return <g>
+    <g fill="none" stroke={ink} strokeLinecap="round" strokeWidth="1.65" opacity=".88">
+      <path d={`M${leftX - eyeHalf} ${eyeY + profile.eyeTilt} Q${leftX} ${eyeY - upper} ${leftX + eyeHalf} ${eyeY}`}/>
+      <path d={`M${rightX - eyeHalf} ${eyeY} Q${rightX} ${eyeY - upper} ${rightX + eyeHalf} ${eyeY + profile.eyeTilt}`}/>
+    </g>
+    <circle cx={leftX} cy={eyeY} r=".72" fill={ink} opacity=".8"/>
+    <circle cx={rightX} cy={eyeY} r=".72" fill={ink} opacity=".8"/>
+    <path d={`M${rig.centerX - .9} ${rig.eyeY + 1.7} Q${rig.centerX - 2.2} ${(rig.eyeY + noseEnd) / 2} ${rig.centerX - .45} ${noseEnd} Q${rig.centerX + 1.8 * profile.noseWidth} ${noseEnd + 1.15} ${rig.centerX + 3.15 * profile.noseWidth} ${noseEnd - .6}`} fill="none" stroke="#7c5948" strokeWidth="1.18" strokeLinecap="round" opacity=".57"/>
+    <path d={`M${rig.centerX - mouthHalf} ${rig.mouthY} Q${rig.centerX} ${rig.mouthY + 1.8 * profile.mouthCurve} ${rig.centerX + mouthHalf} ${rig.mouthY}`} fill="none" stroke="#704b43" strokeWidth="1.45" strokeLinecap="round" opacity=".74"/>
+    {(family === 'square' || family === 'broad') && <g fill="none" stroke="#795846" strokeWidth=".72" opacity=".16"><path d={`M${rig.centerX - rig.jawWidth * .42} ${rig.noseY + 4} Q${rig.centerX - rig.jawWidth * .39} ${rig.mouthY + 4} ${rig.centerX - rig.jawWidth * .3} ${rig.chinY - 3}`}/><path d={`M${rig.centerX + rig.jawWidth * .42} ${rig.noseY + 4} Q${rig.centerX + rig.jawWidth * .39} ${rig.mouthY + 4} ${rig.centerX + rig.jawWidth * .3} ${rig.chinY - 3}`}/></g>}
+  </g>;
+}
+
+function FaceDetails({ gender, rig, profile, family }: { gender: Gender; rig: PortraitRig; profile: PortraitFaceArtProfile; family: PortraitFaceFamily }) {
+  return gender === 'female'
+    ? <FemaleFaceDetails rig={rig} profile={profile}/>
+    : <MaleFaceDetails rig={rig} profile={profile} family={family}/>;
 }
 
 function FacialHair({ id, color, rig }: { id: string; color: string; rig: PortraitRig }) {
@@ -321,7 +356,6 @@ function Outfit({ id, color, rig, gender, profile }: { id: string; color: string
   const collarOuter = tier === 'wealthy' ? '#d8ccb0' : tier === 'comfortable' ? '#c5baa0' : tier === 'plain' ? '#b7ad98' : '#aa9d84';
   const collarInner = tier === 'wealthy' ? '#91816b' : '#867a69';
   const bodyPath = `M${rig.centerX - shoulderHalf} 150 Q${rig.centerX - shoulderHalf + (female ? 1.5 : 3.5)} ${topY + (female ? 8 : 4)} ${rig.centerX - 12} ${topY} H${rig.centerX + 12} Q${rig.centerX + shoulderHalf - (female ? 1.5 : 3.5)} ${topY + (female ? 8 : 4)} ${rig.centerX + shoulderHalf} 150Z`;
-
   return <g data-outfit-tier={tier}>
     <path d={bodyPath} fill={color}/>
     {tier === 'poor' && <><path d={`M${rig.centerX - 9} ${topY + 1} L${rig.centerX - 1} ${topY + 13} L${rig.centerX + 9} ${topY + 3}`} fill="none" stroke={collarOuter} strokeWidth="4.3" strokeLinecap="round" opacity=".82"/><path d={`M${rig.centerX - shoulderHalf + 6} 146 L${rig.centerX - shoulderHalf + 12} ${topY + 18}`} stroke="#d5c7aa" strokeWidth="1" opacity=".12"/></>}
@@ -337,7 +371,7 @@ function Outfit({ id, color, rig, gender, profile }: { id: string; color: string
 function AgeOverlay({ lifeStage, rig, gender }: { lifeStage: LifeStageId; rig: PortraitRig; gender: Gender }) {
   if (lifeStage !== 'middle-age' && lifeStage !== 'elder') return null;
   const elder = lifeStage === 'elder';
-  const eyeOffset = rig.faceWidth * (gender === 'female' ? .232 : .222);
+  const eyeOffset = rig.faceWidth * (gender === 'female' ? .238 : .216);
   return <g fill="none" stroke="#705745" strokeWidth={elder ? .8 : .68} opacity={elder ? '.34' : '.2'}>
     <path d={`M${rig.centerX - eyeOffset - 4} ${rig.eyeY + 4} Q${rig.centerX - eyeOffset} ${rig.eyeY + 6} ${rig.centerX - eyeOffset + 4} ${rig.eyeY + 5}`}/>
     <path d={`M${rig.centerX + eyeOffset - 4} ${rig.eyeY + 5} Q${rig.centerX + eyeOffset} ${rig.eyeY + 6} ${rig.centerX + eyeOffset + 4} ${rig.eyeY + 4}`}/>
@@ -349,14 +383,10 @@ function RigDebug({ rig }: { rig: PortraitRig }) {
   const half = rig.faceWidth / 2;
   const eyeOffset = rig.faceWidth * .22;
   const anchors = [
-    [rig.centerX, rig.topY],
-    [rig.centerX, rig.hairlineY],
-    [rig.centerX - eyeOffset, rig.browY],
-    [rig.centerX + eyeOffset, rig.browY],
-    [rig.centerX, rig.mouthY],
-    [rig.centerX, rig.chinY],
-    [rig.centerX, rig.neckTopY],
-    [rig.centerX, rig.shoulderY],
+    [rig.centerX, rig.topY], [rig.centerX, rig.hairlineY],
+    [rig.centerX - eyeOffset, rig.browY], [rig.centerX + eyeOffset, rig.browY],
+    [rig.centerX, rig.mouthY], [rig.centerX, rig.chinY],
+    [rig.centerX, rig.neckTopY], [rig.centerX, rig.shoulderY],
   ];
   return <g className="portrait-rig-debug" pointerEvents="none">
     <rect x=".7" y=".7" width={PORTRAIT_MASTER.width - 1.4} height={PORTRAIT_MASTER.height - 1.4} fill="none" stroke="#6f8d82" strokeWidth=".6" strokeDasharray="3 2" opacity=".58"/>
@@ -370,15 +400,9 @@ function RigDebug({ rig }: { rig: PortraitRig }) {
 
 export function appearanceSignature(appearance: ResidentAppearanceDNA) {
   return [
-    appearance.faceId,
-    appearance.hairId,
-    appearance.browId,
-    appearance.facialHairId,
-    appearance.headwearId,
-    appearance.outfitId,
-    appearance.skinPaletteId,
-    appearance.hairPaletteId,
-    appearance.clothingPaletteId,
+    appearance.faceId, appearance.hairId, appearance.browId, appearance.facialHairId,
+    appearance.headwearId, appearance.outfitId, appearance.skinPaletteId,
+    appearance.hairPaletteId, appearance.clothingPaletteId,
   ].join('|');
 }
 
@@ -443,7 +467,7 @@ export function ResidentAvatar({
       <ellipse cx={geometry.left - 1} cy={rig.earY} rx={4.1 * profile.earScale} ry={5.9 * profile.earScale} fill={skin}/>
       <ellipse cx={geometry.right + 1} cy={rig.earY} rx={4.1 * profile.earScale} ry={5.9 * profile.earScale} fill={skin}/>
       <path d={facePath(rig, faceFamily, profile)} fill={skin}/>
-      <FaceDetails gender={gender} rig={rig} profile={profile}/>
+      <FaceDetails gender={gender} rig={rig} profile={profile} family={faceFamily}/>
       {!hidden.has('brow') && <Brows id={dna.browId} color={hair} rig={rig} profile={profile} gender={gender}/>} 
       {showHairFront && <HairFront id={dna.hairId} color={hair} rig={rig} gender={gender}/>} 
       {!hidden.has('facial-hair') && <FacialHair id={dna.facialHairId} color={hair} rig={rig}/>} 
