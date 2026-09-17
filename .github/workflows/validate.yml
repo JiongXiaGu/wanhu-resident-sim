@@ -23,16 +23,13 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit --no-fund
-      - name: Compile resident demo content
+      - name: Compile resident content contracts and demo data
         run: npm run build-content
       - name: Upload compiled resident demo data
         uses: actions/upload-artifact@v4
         with:
           name: resident-generated-data
-          path: |
-            Web/public/generated/stories.json
-            Web/public/generated/definitions.json
-            Web/public/generated/resident-snapshot.json
+          path: Web/public/generated/*.json
           retention-days: 7
           if-no-files-found: error
       - name: Build web prototype

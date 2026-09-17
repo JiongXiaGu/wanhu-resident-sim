@@ -1,0 +1,12 @@
+{
+  "schema": "wanhu.life-tags.v1",
+  "items": [
+    {"id":"lifetag.served-military","label":"曾经服役","category":"experience"},
+    {"id":"lifetag.trained-carpenter","label":"学过木工手艺","category":"skill"},
+    {"id":"lifetag.opened-shop","label":"曾独立开铺","category":"work"},
+    {"id":"lifetag.debt-history","label":"曾有债务经历","category":"finance"},
+    {"id":"lifetag.migrated","label":"曾经迁居","category":"life"},
+    {"id":"lifetag.widowed","label":"丧偶","category":"family"},
+    {"id":"lifetag.learned-medicine","label":"学过医术","category":"skill"}
+  ]
+}
