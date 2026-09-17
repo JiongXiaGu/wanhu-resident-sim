@@ -15,6 +15,19 @@ async function open() {
   await page.waitForTimeout(180);
 }
 
+async function currentLifeEventId() {
+  return page.locator('.dev-panel__row').filter({ hasText: 'LifeEvent' }).locator('b').innerText();
+}
+
+async function chooseLifeEvent(eventId) {
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    if ((await currentLifeEventId()) === eventId) return;
+    await page.getByRole('button', { name: '换一件事', exact: true }).click();
+    await page.waitForTimeout(40);
+  }
+  throw new Error(`Could not select prototype LifeEvent ${eventId}. Current=${await currentLifeEventId()}`);
+}
+
 await open();
 
 if ((await page.locator('.resident-summary').count()) !== 0) {
@@ -65,5 +78,45 @@ await page.getByRole('button', { name: 'DEV', exact: true }).click();
 await page.getByRole('button', { name: '下一居民', exact: true }).click();
 await page.waitForTimeout(100);
 await page.screenshot({ path: `${outDir}/04-dev-density.png` });
+
+// Gameplay validation: a completed story should change the actual resident state,
+// persist as a life chapter, and unlock a lightweight follow-up through LifeTag.
+await open();
+await chooseLifeEvent('lifeevent.marriage-introduction');
+await page.getByRole('button', { name: '推进故事', exact: true }).click();
+await page.getByRole('button', { name: '推进故事', exact: true }).click();
+await page.waitForTimeout(80);
+
+const identityText = await page.locator('.resident-identity').innerText();
+if (!identityText.includes('已婚')) {
+  throw new Error('Completing the marriage story should update the resident family state to married.');
+}
+
+await page.getByRole('button', { name: /家人/ }).click();
+await page.waitForSelector('.resident-family-drawer');
+if (!(await page.locator('.resident-family-drawer').innerText()).includes('配偶')) {
+  throw new Error('Marriage effect should create a spouse relationship visible in the family drawer.');
+}
+
+await page.getByRole('button', { name: /人生经历/ }).click();
+await page.waitForSelector('.resident-history-mode');
+if (!(await page.locator('.resident-history-mode').innerText()).includes('这门亲事定下来了')) {
+  throw new Error('A completed structural story should persist into life history in the Web prototype.');
+}
+await page.getByRole('button', { name: '返回生活', exact: true }).click();
+
+await page.getByRole('button', { name: '换一件事', exact: true }).click();
+await page.waitForTimeout(60);
+if ((await currentLifeEventId()) !== 'lifeevent.newlywed-settling') {
+  throw new Error(`Marriage LifeTag should unlock the newlywed follow-up. Current=${await currentLifeEventId()}`);
+}
+await page.screenshot({ path: `${outDir}/05-life-effect-continuity.png` });
+
+await page.getByRole('button', { name: '推进故事', exact: true }).click();
+await page.getByRole('button', { name: '推进故事', exact: true }).click();
+await page.getByRole('button', { name: '换一件事', exact: true }).click();
+if ((await currentLifeEventId()) === 'lifeevent.newlywed-settling') {
+  throw new Error('The temporary newly-married LifeTag should be removed after the follow-up finishes.');
+}
 
 await browser.close();
