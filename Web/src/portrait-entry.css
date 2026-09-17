@@ -1,7 +1,7 @@
 .portrait-view-entry {
   position: fixed;
   top: 78px;
-  right: 24px;
+  left: 24px;
   z-index: 90;
   display: inline-flex;
   align-items: center;
@@ -40,6 +40,6 @@
 @media (max-width: 900px) {
   .portrait-view-entry {
     top: 70px;
-    right: 14px;
+    left: 14px;
   }
 }
