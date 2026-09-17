@@ -1,15 +1,32 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wanhu.local/schemas/resident-snapshot.schema.json",
-  "title": "Wanhu Resident Snapshot V2",
+  "title": "Wanhu Resident Snapshot V3",
   "$defs": {
     "stableId": { "type": "string", "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$" },
-    "lifeTagId": { "type": "string", "pattern": "^lifetag\\.[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)*$" }
+    "lifeTagId": { "type": "string", "pattern": "^lifetag\\.[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)*$" },
+    "appearanceId": { "type": "string", "pattern": "^appearance\\.[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)*$" },
+    "appearance": {
+      "type": "object",
+      "required": ["faceId", "hairId", "browId", "facialHairId", "headwearId", "outfitId", "skinPaletteId", "hairPaletteId", "clothingPaletteId"],
+      "additionalProperties": false,
+      "properties": {
+        "faceId": { "$ref": "#/$defs/appearanceId" },
+        "hairId": { "$ref": "#/$defs/appearanceId" },
+        "browId": { "$ref": "#/$defs/appearanceId" },
+        "facialHairId": { "$ref": "#/$defs/appearanceId" },
+        "headwearId": { "$ref": "#/$defs/appearanceId" },
+        "outfitId": { "$ref": "#/$defs/appearanceId" },
+        "skinPaletteId": { "$ref": "#/$defs/appearanceId" },
+        "hairPaletteId": { "$ref": "#/$defs/appearanceId" },
+        "clothingPaletteId": { "$ref": "#/$defs/appearanceId" }
+      }
+    }
   },
   "type": "object",
   "required": ["schema", "citySeed", "currentDay", "residents", "households"],
   "properties": {
-    "schema": { "const": "wanhu.resident-snapshot.v2" },
+    "schema": { "const": "wanhu.resident-snapshot.v3" },
     "citySeed": { "type": "integer" },
     "currentDay": { "type": "integer" },
     "residents": {
@@ -17,7 +34,7 @@
       "items": {
         "type": "object",
         "required": [
-          "id", "seed", "displayName", "surname", "surnameId", "givenNameId", "birthDay", "gender", "portraitSeed",
+          "id", "seed", "displayName", "surname", "surnameId", "givenNameId", "birthDay", "gender", "portraitSeed", "appearance",
           "districtId", "occupationId", "householdId", "fatherId", "motherId",
           "spouseId", "childCount", "nextUpdateDay", "lifeStage", "stateBits",
           "lifeTags", "recentLifeLog", "majorLifeHistory"
@@ -32,6 +49,7 @@
           "birthDay": { "type": "integer" },
           "gender": { "enum": ["male", "female"] },
           "portraitSeed": { "type": "integer" },
+          "appearance": { "$ref": "#/$defs/appearance" },
           "districtId": { "type": "string" },
           "occupationId": { "$ref": "#/$defs/stableId" },
           "workplaceId": { "type": "integer" },
