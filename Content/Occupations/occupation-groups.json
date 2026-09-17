@@ -1,0 +1,15 @@
+{
+  "schema": "wanhu.occupation-groups.v1",
+  "items": [
+    {"id":"occupation-group.child","label":"孩童"},
+    {"id":"occupation-group.education","label":"学业"},
+    {"id":"occupation-group.craft","label":"手工业"},
+    {"id":"occupation-group.trade","label":"商贸"},
+    {"id":"occupation-group.medical","label":"医护"},
+    {"id":"occupation-group.infrastructure","label":"城建与水利"},
+    {"id":"occupation-group.agriculture","label":"农事"},
+    {"id":"occupation-group.transport","label":"运输"},
+    {"id":"occupation-group.performance","label":"演艺"},
+    {"id":"occupation-group.retired","label":"退养"}
+  ]
+}

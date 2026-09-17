@@ -3,6 +3,7 @@
   "items": [
     {
       "id": "occupation.child",
+      "groupId": "occupation-group.child",
       "name": "孩童",
       "workplaceType": null,
       "minAge": 0,
@@ -14,6 +15,7 @@
     },
     {
       "id": "occupation.student",
+      "groupId": "occupation-group.education",
       "name": "学生",
       "workplaceType": "school.private",
       "minAge": 7,
@@ -25,6 +27,7 @@
     },
     {
       "id": "occupation.apprentice",
+      "groupId": "occupation-group.craft",
       "name": "学徒",
       "workplaceType": "workshop.generic",
       "minAge": 13,
@@ -36,6 +39,7 @@
     },
     {
       "id": "occupation.cloth-worker",
+      "groupId": "occupation-group.trade",
       "name": "布庄伙计",
       "workplaceType": "shop.cloth",
       "minAge": 18,
@@ -47,6 +51,7 @@
     },
     {
       "id": "occupation.potter",
+      "groupId": "occupation-group.craft",
       "name": "陶工",
       "workplaceType": "workshop.kiln",
       "minAge": 18,
@@ -58,6 +63,7 @@
     },
     {
       "id": "occupation.carpenter",
+      "groupId": "occupation-group.craft",
       "name": "木工",
       "workplaceType": "workshop.wood",
       "minAge": 18,
@@ -69,6 +75,7 @@
     },
     {
       "id": "occupation.account-clerk",
+      "groupId": "occupation-group.trade",
       "name": "账房",
       "workplaceType": "shop.accounting",
       "minAge": 20,
@@ -80,6 +87,7 @@
     },
     {
       "id": "occupation.physician",
+      "groupId": "occupation-group.medical",
       "name": "郎中",
       "workplaceType": "clinic",
       "minAge": 24,
@@ -91,6 +99,7 @@
     },
     {
       "id": "occupation.lock-keeper",
+      "groupId": "occupation-group.infrastructure",
       "name": "守闸人",
       "workplaceType": "infrastructure.lock",
       "minAge": 20,
@@ -102,6 +111,7 @@
     },
     {
       "id": "occupation.vendor",
+      "groupId": "occupation-group.trade",
       "name": "小贩",
       "workplaceType": "market.stall",
       "minAge": 18,
@@ -113,6 +123,7 @@
     },
     {
       "id": "occupation.farmer",
+      "groupId": "occupation-group.agriculture",
       "name": "农户",
       "workplaceType": "field",
       "minAge": 18,
@@ -124,6 +135,7 @@
     },
     {
       "id": "occupation.courier",
+      "groupId": "occupation-group.transport",
       "name": "脚夫",
       "workplaceType": "transport",
       "minAge": 18,
@@ -135,6 +147,7 @@
     },
     {
       "id": "occupation.performer",
+      "groupId": "occupation-group.performance",
       "name": "戏班演员",
       "workplaceType": "theatre",
       "minAge": 16,
@@ -146,6 +159,7 @@
     },
     {
       "id": "occupation.midwife",
+      "groupId": "occupation-group.medical",
       "name": "稳婆",
       "workplaceType": "service.midwife",
       "minAge": 28,
@@ -158,6 +172,7 @@
     },
     {
       "id": "occupation.retired-craftsman",
+      "groupId": "occupation-group.retired",
       "name": "退下来的手艺人",
       "workplaceType": null,
       "minAge": 58,

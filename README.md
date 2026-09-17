@@ -20,6 +20,7 @@ README.md
 AGENTS.md
 Documentation/居民逻辑网页Demo接续说明.md
 Documentation/居民内容生产与运行时数据管线V1.md
+Documentation/居民内容契约V1.md
 ```
 
 然后检查 GitHub `main`、Actions 与必要设计文档。
@@ -32,8 +33,9 @@ wanhu-resident-sim/
 ├─ Content/                          # 人工维护的内容源
 │  ├─ Stories/                       # Legacy Story Markdown
 │  ├─ LifeEvents/                    # 玩家面板使用的 LifeEvent
-│  ├─ Names/                         # 姓名内容源
-│  ├─ Occupations/                   # 职业定义
+│  ├─ Names/                         # Name V1 迁移桥 + Name V2 Authoring
+│  ├─ Occupations/                   # 职业 + Occupation Group
+│  ├─ Tags/                          # LifeTag Registry
 │  ├─ Routines/                      # 普通生活表现模板
 │  └─ Simulation/                    # Demo 生成与模拟参数
 ├─ Documentation/                    # 长期设计与数据契约
@@ -61,41 +63,52 @@ LifeEvent 是否像一个居民正在生活？
 
 它允许使用更易调试的 JSON、字符串 ID 和验证快照。为了快速试玩法，Web 数据结构可以比正式游戏 Runtime 更直观。
 
-Web Demo **不负责**定义：
+Web Demo **不负责**定义 Unity ECS 最终组件布局、BlobAsset 内存布局、正式存档二进制格式和角色资源加载策略。
 
-- Unity ECS 最终组件布局
-- BlobAsset 内存布局
-- 正式存档二进制格式
-- 角色渲染资源加载策略
+## 当前内容编译链
 
-这些内容由独立的 Runtime / Content Pipeline 设计约束。
-
-## 当前 generated 数据
-
-当前 `npm run build-content` 仍服务 Web Demo：
+`npm run build-content` 当前依次执行：
 
 ```text
+ContentContractCompiler
+↓
 StoryCompiler
 ↓
 ResidentGenerator
 ↓
 LifeEventCompiler
+↓
+StoryBucketCompiler
+↓
+ResidentSnapshotCompiler
 ```
 
-生成：
+主要 generated 数据：
 
 ```text
 Web/public/generated/
+├─ stable-id-registry.json
+├─ name-catalog-v2.json
+├─ life-tags.json
+├─ occupation-groups.json
+├─ content-coverage.json
+├─ story-buckets.json
 ├─ stories.json
 ├─ definitions.json
 └─ resident-snapshot.json
 ```
 
-- `stories.json`：Legacy Story 审查数据。
-- `definitions.json`：姓名、职业、Routine、LifeEvent、人生阶段等 Demo 只读定义。
-- `resident-snapshot.json`：固定 CitySeed 生成的验证居民、家庭与人生章节快照。
+其中：
 
-这些文件是 **Web Demo 输出**，不是未来 Unity 存档格式。
+- `stable-id-registry.json`：跨内容域 Stable ID + hash 校验结果。
+- `name-catalog-v2.json`：带 Stable ID 的姓名 token。
+- `life-tags.json`：过去经历的轻量标签定义。
+- `occupation-groups.json`：故事粗筛使用的职业组。
+- `content-coverage.json`：按人生阶段、职业、职业组等统计的内容覆盖。
+- `story-buckets.json`：`LifeStage + OccupationGroup` 预编译候选故事桶。
+- `resident-snapshot.json`：Web Demo 验证居民，当前为 `wanhu.resident-snapshot.v2`，包含 `surnameId / givenNameId / lifeTags`。
+
+这些文件是 **Web Demo / Compiler 输出**，不是未来 Unity 存档格式。
 
 ## 正式数据管线目标
 
@@ -127,6 +140,8 @@ Runtime State / Save Data
 
 ```text
 Documentation/居民内容生产与运行时数据管线V1.md
+Documentation/居民内容契约V1.md
+Documentation/StoryBucket与内容覆盖V1.md
 Documentation/居民模拟V1架构.md
 ```
 
@@ -146,6 +161,8 @@ Documentation/居民模拟V1架构.md
 
 LifeEvent 可以设置 `recordToHistory: true`。只有真正值得长期回看的事件完成后才进入人生经历；普通天气、施工、忙季等不会永久污染历史。
 
+LifeEvent 已支持 `requiredTags / forbiddenTags` 与第一批 `addTags / removeTags`。过去人生章节可以留下 LifeTag，几年后另一条故事再读取它，形成低成本连续性。
+
 ## 核心性能方向
 
 - 居民常规后台模拟以“自己状态 + 全局只读快照 + 编译后的少量定义”为输入。
@@ -154,19 +171,18 @@ LifeEvent 可以设置 `recordToHistory: true`。只有真正值得长期回看�
 - `BirthDay` 长期保存，年龄按当前时间推导。
 - 当前 Activity 尽量按需推导，不对全城居民逐小时执行完整日程。
 - 人生故事按阶段低频抽取，不持续运行复杂叙事图。
+- Story Bucket 先用 `LifeStage + OccupationGroup` 将大故事库缩小，再做精确 Eligibility。
 - Routine 的正式 Runtime 方向是尽量确定性按需生成，而不是为所有居民永久保存文本日志。
 - 正式 Appearance 最终保存稳定的 Appearance DNA；`PortraitSeed` 主要用于 Demo 和第一次生成。
 
 ## 分阶段实现路线
 
-当前不急着批量写几千条内容，先把生产线搭稳：
-
 ```text
 阶段 1  数据契约
-StableId / LifeTag / Name / Occupation / LifeEvent / Portrait Authoring 规则
+StableId / LifeTag / Name / OccupationGroup / LifeEvent / Portrait Authoring 规则
 
 阶段 2  Content Compiler
-统一校验、引用解析、Coverage、Web Bundle
+统一校验、引用解析、Story Bucket、Coverage、Web Bundle
 
 阶段 3  Web Demo 迁移
 继续验证玩法，但只消费编译输出
@@ -178,7 +194,7 @@ ResidentContentBlob、ECS Hot/Cold 数据、Save StableId
 按 Coverage Matrix 扩充故事、姓名和头像资源
 ```
 
-每一步都应独立可验证，不要求一次完成整个正式系统。
+当前已经进入阶段 1 后半与阶段 2 的早期验证：Stable ID、LifeTag、Name V2 身份、Occupation Group、Coverage、Story Bucket 都已有真实 compiled 输出。
 
 ## 本地运行
 
@@ -193,7 +209,7 @@ npm run dev
 npm run build
 ```
 
-单独编译当前 Web Demo 内容：
+单独编译内容：
 
 ```bash
 npm run build-content
@@ -217,12 +233,8 @@ Vercel Preview
 Vercel Production
 ```
 
-Build 现在会把“内容编译”和“Web 构建”明确拆成两个步骤，并上传 `resident-generated-data` Artifact，便于单独检查编译后的 Demo 数据。
+Build 会上传 `resident-generated-data` Artifact，便于不打开 Web UI 也能检查所有 compiled JSON。
 
 `tmp-*` 允许正常触发 Vercel Preview。不要为了部署连续提交空 commit，高频修改尽量集中在同一临时分支完成。
 
-详细流程见：
-
-```text
-Documentation/开发与部署工作流.md
-```
+详细流程见 `Documentation/开发与部署工作流.md`。

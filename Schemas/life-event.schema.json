@@ -3,7 +3,7 @@
   "$id": "https://wanhu.local/schemas/life-event.schema.json",
   "title": "Wanhu Resident Life Events V2",
   "$defs": {
-    "stableId": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9-]*)+$" },
+    "stableId": { "type": "string", "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$" },
     "lifeTagId": { "type": "string", "pattern": "^lifetag\\.[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)*$" },
     "lifeTagList": { "type": "array", "items": { "$ref": "#/$defs/lifeTagId" }, "uniqueItems": true }
   },
@@ -25,6 +25,7 @@
             "type": "object",
             "properties": {
               "occupations": { "type": "array", "items": { "$ref": "#/$defs/stableId" }, "uniqueItems": true },
+              "occupationGroups": { "type": "array", "items": { "$ref": "#/$defs/stableId" }, "uniqueItems": true },
               "genders": { "type": "array", "items": { "enum": ["male", "female"] }, "uniqueItems": true },
               "minAge": { "type": "integer", "minimum": 0 },
               "maxAge": { "type": "integer", "minimum": 0 },

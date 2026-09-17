@@ -85,6 +85,7 @@ export type LifeTagDefinition = {
 
 export type OccupationDefinition = {
   id: string;
+  groupId: string;
   name: string;
   workplaceType: string | null;
   minAge: number;
@@ -114,6 +115,7 @@ export type LifeEventSource = {
 
 export type LifeEventEligibility = {
   occupations?: string[];
+  occupationGroups?: string[];
   genders?: Gender[];
   minAge?: number;
   maxAge?: number;

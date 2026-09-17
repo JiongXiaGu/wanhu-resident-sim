@@ -72,6 +72,7 @@ export function eligibleLifeEvents(
   currentDay: number,
 ) {
   const age = ageAtDay(resident, currentDay, definitions.generation.daysPerYear);
+  const occupation = occupationFor(definitions, resident.occupationId);
   const recordedStoryIds = new Set(
     resident.majorLifeHistory
       .map((entry) => entry.sourceEventId)
@@ -83,6 +84,7 @@ export function eligibleLifeEvents(
     const rule = event.eligibility;
     if (event.recordToHistory && recordedStoryIds.has(event.id)) return false;
     if (rule.occupations?.length && !rule.occupations.includes(resident.occupationId)) return false;
+    if (rule.occupationGroups?.length && (!occupation || !rule.occupationGroups.includes(occupation.groupId))) return false;
     if (rule.genders?.length && !rule.genders.includes(resident.gender)) return false;
     if (rule.minAge !== undefined && age < rule.minAge) return false;
     if (rule.maxAge !== undefined && age > rule.maxAge) return false;
