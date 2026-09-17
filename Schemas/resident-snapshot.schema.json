@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wanhu.local/schemas/resident-snapshot.schema.json",
+  "title": "Wanhu Resident Snapshot V1",
+  "type": "object",
+  "required": ["schema", "citySeed", "currentDay", "residents", "households"],
+  "properties": {
+    "schema": { "const": "wanhu.resident-snapshot.v1" },
+    "citySeed": { "type": "integer" },
+    "currentDay": { "type": "integer" },
+    "residents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id", "seed", "displayName", "birthDay", "gender", "portraitSeed",
+          "districtId", "occupationId", "householdId", "fatherId", "motherId",
+          "spouseId", "childCount", "nextUpdateDay", "lifeStage", "stateBits",
+          "recentLifeLog", "majorLifeHistory"
+        ],
+        "properties": {
+          "id": { "type": "integer" },
+          "seed": { "type": "integer" },
+          "displayName": { "type": "string", "minLength": 1 },
+          "surname": { "type": "string", "minLength": 1 },
+          "birthDay": { "type": "integer" },
+          "gender": { "enum": ["male", "female"] },
+          "portraitSeed": { "type": "integer" },
+          "districtId": { "type": "string" },
+          "occupationId": { "type": "string" },
+          "workplaceId": { "type": "integer" },
+          "employmentStartDay": { "type": "integer" },
+          "householdId": { "type": "integer" },
+          "fatherId": { "type": "integer" },
+          "motherId": { "type": "integer" },
+          "spouseId": { "type": "integer" },
+          "childCount": { "type": "integer", "minimum": 0 },
+          "nextUpdateDay": { "type": "integer" },
+          "lifeStage": { "type": "string" },
+          "stateBits": { "type": "integer" },
+          "activeStoryId": { "type": ["string", "null"] },
+          "recentLifeLog": { "type": "array" },
+          "majorLifeHistory": { "type": "array" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "households": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "homeId", "districtId", "memberIds"],
+        "properties": {
+          "id": { "type": "integer" },
+          "homeId": { "type": "integer" },
+          "districtId": { "type": "string" },
+          "memberIds": { "type": "array", "items": { "type": "integer" } }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
