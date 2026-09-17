@@ -6,7 +6,7 @@
 
 - 本项目在对话中的固定简称是 **“居民逻辑网页demo”**。
 - 用户说“居民逻辑网页demo 做到哪了 / 继续做居民逻辑网页demo”等，默认指向 `JiongXiaGu/wanhu-resident-sim`。
-- 新对话不要只依赖聊天记忆；先读取 GitHub `main`、`README.md`、本文件、`Documentation/居民逻辑网页Demo接续说明.md`、`Documentation/居民面板与生活事件V2.md`、`Documentation/居民生活记录与故事连续性.md`，再根据最新 commit、Actions 与代码回答。
+- 新对话不要只依赖聊天记忆；先读取 GitHub `main`、`README.md`、本文件、`Documentation/居民逻辑网页Demo接续说明.md`、`Documentation/居民面板与生活事件V2.md`、`Documentation/居民生活记录与故事连续性.md`、`Documentation/人生经历与生活界面玩法规则V1.md`，再根据最新 commit、Actions 与代码回答。
 
 ## 项目边界
 
@@ -85,30 +85,23 @@ ResidentAppearanceCompiler
 WebContentCompiler
 ```
 
-最终 Web Definition Bundle：
-
-```text
-wanhu.resident-definitions.v4
-```
-
-最终 Web Snapshot：
-
-```text
-wanhu.resident-snapshot.v3
-```
+最终 Web Definition Bundle：`wanhu.resident-definitions.v4`。
+最终 Web Snapshot：`wanhu.resident-snapshot.v3`。
 
 这些都只是 Web / Compiler 验证格式。
 
 ## 居民玩法规则
 
 - `BirthDay` 推导年龄；Web 可以直接保存方便调试的字符串 ID 和显示字段。
-- 当前 Activity 主要按职业 / 时间 /当前故事按需推导。
+- 当前 Activity 主要按职业 / 时间 / 当前故事按需推导。
 - `Routine` 只负责生活感，不进入永久人生经历。
 - `LifeEvent` 是当前正在发生的一件连续事情，默认三阶段。
 - `Life Chapter` 是值得长期回看的经历；人生模式只看已经沉淀的过去。
 - 不维护独立“近况 Summary”。
 - 人生模式打开后，不混入 Activity、当前 LifeEvent 和 Routine。
-- 有 `sourceEventId` 的人生章节可以展开原始三阶段故事。
+- 人生经历只有一条按年龄从小到大排列的时间轴，不显示“少年 / 青年 / 壮年”等分组。
+- 一个 Life Chapter 只对应一件事；Story Chapter 展开时显示该事件的 `memoryText`，不再重放 `起初 / 后来 / 最后` 或三阶段结构。
+- `stages` 只服务当前生活模式；`memoryText` 只服务人生回忆模式。
 
 ## LifeTag / 连续故事
 
@@ -156,7 +149,7 @@ lifetag.newly-married
 临时 LifeTag 被移除
 ```
 
-Resident Visual Review 必须继续验证这条链。
+Resident Visual Review 必须继续验证这条链，以及人生时间轴的年龄顺序、单节点单故事和 `memoryText` 展开表现。
 
 ## 姓名规则
 
@@ -186,13 +179,14 @@ Resident Visual Review 必须继续验证这条链。
 ## 当前玩法验证优先级
 
 ```text
-1. Story Effect 真正改变人物
-2. 过去经历 → 后续故事连续性
-3. 城市 / 世界变化 → 居民反馈
-4. 有限并行生活线 + 重大故事互斥
-5. 故事密度、重复率、人生节奏
-6. Coverage 驱动的内容扩充
-7. 玩家试玩反馈
+1. 人生经历阅读体验与回忆文本
+2. Story Effect 真正改变人物
+3. 过去经历 → 后续故事连续性
+4. 城市 / 世界变化 → 居民反馈
+5. 有限并行生活线 + 重大故事互斥
+6. 故事密度、重复率、人生节奏
+7. Coverage 驱动的内容扩充
+8. 玩家试玩反馈
 ```
 
 Unity Runtime / Save 不再是本仓库的下一阶段。
@@ -208,10 +202,13 @@ Unity Runtime / Save 不再是本仓库的下一阶段。
 ## Git 与部署工作流
 
 - 高频迭代优先 `tmp-*`；玩法 / UI 分支优先 `tmp-prototype-*`。
-- Build 与 Resident Visual Review 必须通过后再推进 `main`。
 - `tmp-*` 允许 Vercel Preview；`main` 对应 Vercel Production。
-- 一个逻辑批次尽量只产生一个进入 `main` 的 commit。
+- **一次逻辑开发批次只向远端 `tmp-*` 推送一个聚合 commit。** 不允许按文件、按小步骤连续 push，因为每次 push 都可能触发 GitHub Actions 和 Vercel Preview。
+- 如果 Preview / Visual Review 发现问题，先把这一轮修正全部准备好，再作为一个新的修正 commit 推送；仍然禁止“一文件一 commit”。
+- 推荐使用 `create_blob → create_tree → create_commit → update_ref` 或等价的本地原子提交方式，一次更新完整批次。
+- Build 与 Resident Visual Review 必须通过后再推进 `main`。
 - 更新 `main` 前重新读取最新 SHA，不基于过期 SHA 覆盖。
+- 进入 `main` 时同样只推进一个逻辑完整 commit，避免重复申请 Production Deployment。
 - Build 先执行 `build-content`，上传 `resident-generated-data` Artifact，再构建 Web。
 - Visual Review 不只看截图，也应验证状态变化、人生历史、连续故事等玩法逻辑。
 - 不为了触发 Vercel 连续推空 commit。

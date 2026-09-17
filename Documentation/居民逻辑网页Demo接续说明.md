@@ -12,12 +12,13 @@
 GitHub: JiongXiaGu/wanhu-resident-sim
 ```
 
-它现在有两个明确角色：
+当前定位只有一个：
 
-1. **Web Demo**：居民玩法、Resident Panel、LifeEvent、人生经历与内容体验原型。
-2. **Resident Content Pipeline**：未来正式游戏所需的居民 Authoring / Compiler / Runtime Contract 设计与逐步实现。
+> **用 Web Demo 验证居民玩法、故事连续性、人生经历、UI 阅读体验和内容规模化是否成立。**
 
-Web Demo 是演示和玩法验证层，不是 Unity Runtime 内存布局或正式存档格式。
+`Content/`、Schema、Compiler、Coverage 等工具继续存在，是为了让原型内容可批量生产、可复现、可自动验收；它们不代表未来 Unity Runtime / Save 设计。
+
+Unity ECS、BlobAsset、正式存档、RuntimeIndex、序列化和资源加载方式不在本仓库继续设计，正式进入 Unity 时重新根据游戏工程约束确定。
 
 ---
 
@@ -29,270 +30,273 @@ Web Demo 是演示和玩法验证层，不是 Unity Runtime 内存布局或正�
 2. `README.md`。
 3. `AGENTS.md`。
 4. 本文件。
-5. `Documentation/居民内容生产与运行时数据管线V1.md`。
-6. 按需要读取：
-   - `Documentation/居民模拟V1架构.md`
-   - `Documentation/居民面板与生活事件V2.md`
-   - `Documentation/居民生活记录与故事连续性.md`
-   - `Documentation/开发与部署工作流.md`
-7. 检查最新 GitHub Actions Build / Resident Visual Review。
-8. 如果用户问线上版本，再比较 GitHub 分支 SHA 与对应 Vercel Deployment SHA：`main` 对 Production，`tmp-*` 对 Preview。
+5. `Documentation/人生经历与生活界面玩法规则V1.md`。
+6. `Documentation/居民面板与生活事件V2.md`。
+7. `Documentation/居民生活记录与故事连续性.md`。
+8. `Documentation/开发与部署工作流.md`。
+9. 检查最新 GitHub Actions Build / Resident Visual Review。
+10. 用户问线上版本时，再比较 GitHub 分支 SHA 与 Vercel 状态：`main` 对 Production，`tmp-*` 对 Preview。
 
-回答“做到哪了”时，以仓库、CI 和当前设计文档为准。
+不要再把 `Documentation/居民内容生产与运行时数据管线V1.md` 或 `Documentation/居民模拟V1架构.md` 当成当前 Web Demo 下一阶段路线；其中与 Unity Runtime / Save 有关的内容只是早期设计记录。
 
 ---
 
-## 当前玩法原型已经确定的方向
+## 当前 Resident Panel
 
-### Resident Panel
+### 生活模式
 
-生活模式回答：
+回答：
 
-```text
-他是谁？
-他属于哪里？
-他现在做什么？
-他正在经历或最近发生了什么？
-```
+> **这个人现在过得怎么样？**
 
-人生模式回答：
+展示：
 
 ```text
-他过去有哪些值得记住的人生章节？
+Identity
+World Links
+此刻 Activity
+正在经历 / 最近发生
+少量 Routine
+人生经历入口
 ```
 
-进入人生模式后：
+当前 LifeEvent 仍按三个 Stage 随时间推进。Stage 文本服务“事情正在发生”的体验。
 
-- 不显示当前 Activity。
-- 不显示当前 / 最近 LifeEvent。
-- 不显示 Routine 琐事。
-- 只显示已经沉淀的 Life Chapter。
-- 故事型 Chapter 可以展开三阶段正文。
+### 人生经历模式
 
-### 三层生活信息
+回答：
+
+> **这个人过去经历过什么，他是怎么走到今天的？**
+
+进入后：
+
+- 不显示当前 Activity；
+- 不显示当前 / 最近 LifeEvent；
+- 不显示 Routine 琐事；
+- 只看已经沉淀的 Life Chapter；
+- 只有一条纵向时间轴；
+- 节点按年龄从小到大排列；
+- 不显示童年 / 少年 / 青年 / 壮年等阶段分组；
+- 一个节点只代表一件人生事件；
+- Fact Chapter 只显示 `年龄 + 标题`；
+- Story Chapter 点击后展开一段完整的第一人称 `memoryText`；
+- 不在历史页显示 `起初 / 后来 / 最后` 或原始 Stage 结构；
+- 时间轴末尾保留“如今”。
+
+---
+
+## LifeEvent 的两种文本职责
+
+### `stages`
+
+只服务生活模式。
+
+玩家在事情发生时逐步看到：
+
+```text
+Stage 1
+↓
+Stage 2
+↓
+Stage 3
+```
+
+### `memoryText`
+
+只服务人生经历。
+
+重要故事完成以后，人生页把它当成一件已经发生过的往事：
+
+```text
+25岁 · 孩子到了该认字的年纪
+
+我开始问附近哪家私塾合适……后来有一天回家路上，他忽然把一家铺子的招牌念了出来……
+```
+
+`memoryText` 不是把三个 Stage 原文机械拼接，而是重新压缩成角色自己的回忆。
+
+只要事件会形成长期 Life Chapter，就必须有 `memoryText`，包括：
+
+- `recordToHistory: true`；
+- 或成婚等会形成长期人生变化的 Prototype Effect。
+
+---
+
+## 三层生活信息
 
 ```text
 Routine
-普通生活表现，不进入永久人生经历
+普通生活感，短期存在，不进入人生经历
 
 LifeEvent / Story Thread
-正在发生的一件连续事情
+当前正在发生的一件连续事情
 
 Life Chapter
-值得长期保存和回看的重要经历
+值得长期回看的过去，一个节点就是一件事
 ```
 
-不再维护独立“近况 Summary”。
-
-### 人生由多次故事组成
-
-居民不是出生时绑定一条完整人生剧本。
-
-```text
-年龄阶段
-+ Resident 状态
-+ 职业 / 家庭
-+ 世界状态
-+ 过去经历
-↓
-故事池
-↓
-低频抽取 Story Thread
-↓
-重要结果形成 Life Chapter / LifeTag
-```
-
-大多数故事独立结束，少量重要故事通过 LifeTag / Story Anchor 在以后产生回响。
+不维护独立“近况 Summary”。
 
 ---
 
-## 当前 Web Demo 数据流
+## 当前已经可以玩的连续性
 
-当前实现：
+### LifeTag
+
+过去的重要故事可以留下轻量标签，未来故事通过 Eligibility 读取：
 
 ```text
-Content / Definitions
-    ↓
-StoryCompiler / ResidentGenerator / LifeEventCompiler
-    ↓
+服役
+↓
+lifetag.served-military
+↓
+多年后旧同伍进城
+```
+
+### Prototype Effect
+
+Web Demo 可以直接改变原型状态，用来判断这种玩法是否有价值。
+
+当前已支持验证：
+
+```text
+LifeTag 增减
+换职业
+搬迁
+成婚
+```
+
+已存在自动验收链：
+
+```text
+未婚居民
+↓
+这门亲事定下来了
+↓
+真实 spouse / Household 变化
+↓
+lifetag.newly-married
+↓
+两个人一起过日子以后
+↓
+临时 Tag 消失
+```
+
+这些实现都只是 Web 原型，不代表未来 Unity 的结构变更方式。
+
+---
+
+## 当前 Web 内容数据流
+
+```text
+Content Authoring
+↓
+ContentContractCompiler
+↓
+StoryCompiler
+↓
+ResidentGenerator
+↓
+LifeEventCompiler
+↓
+StoryBucketCompiler
+↓
+ResidentSnapshotCompiler
+↓
+ResidentAppearanceCompiler
+↓
+WebContentCompiler
+↓
 Web/public/generated/
-├─ stories.json
-├─ definitions.json
-└─ resident-snapshot.json
-    ↓
-Web Resident Simulation
+↓
+Web Prototype
 ```
 
-这些 generated JSON 是 **Demo Bundle**，不是正式游戏 Save / ECS Contract。
+主要 generated：
+
+```text
+stable-id-registry.json
+name-catalog-v2.json
+life-tags.json
+occupation-groups.json
+appearance-catalog.json
+content-coverage.json
+story-buckets.json
+stories.json
+definitions.json
+resident-snapshot.json
+```
+
+这些都只是 Demo 数据。
 
 ---
 
-## 下一阶段：Resident Content Pipeline
+## 当前玩法验证路线
 
-现在不优先继续大量补故事，而先搭生产线。
-
-长期目标：
+接下来按玩法问题推进：
 
 ```text
-Authoring Data
-↓
-Resident Content Compiler
-├─ Web Demo Bundle
-└─ Unity ResidentContentBlob
-↓
-Resident Runtime State / Save
+1. 人生经历阅读体验 / memoryText
+2. Story Effect 真正改变人物
+3. 过去经历 → 后续故事连续性
+4. 城市 / 世界变化 → 具体居民反馈
+5. 同一居民有限并行生活线与重大故事互斥
+6. 故事密度、重复率、人生节奏
+7. Coverage 驱动的内容扩充
+8. 玩家试玩反馈
 ```
 
-### 当前开始的是阶段 1：数据契约
-
-先逐步明确：
-
-1. Stable ID 规则。
-2. LifeTag Registry。
-3. Name V2：完整 Given Name token、权重、代际 / 风格、家庭姓氏继承。
-4. Occupation V2：职业组、工作地点类别、Story Group。
-5. LifeEvent：Tag 条件与 Effects 契约。
-6. Portrait Catalog / AppearanceDNA。
-7. Save 中哪些字段长期保存、哪些通过 Definition 查询。
-
-详细设计：
-
-```text
-Documentation/居民内容生产与运行时数据管线V1.md
-```
+不要重新把 Unity Runtime / Save 设计拉回本仓库的下一阶段。
 
 ---
 
-## 正式 Runtime 关键边界
+## Git / Vercel 工作流
 
-### 不直接复制 Web ResidentRecord
+`tmp-*` 已允许 Vercel Preview，因此远端 push 本身就是部署触发器。
 
-Web DTO 可以有：
-
-```text
-displayName
-portraitSeed
-recentLifeLog
-字符串 occupationId
-```
-
-Unity Runtime 目标更接近：
+正确流程：
 
 ```text
-ResidentIdentity
-ResidentSimulationState
-ResidentAppearance
-StoryThread Buffer
-LifeChapter Buffer
-```
-
-### Definition 不复制进 Resident
-
-不为每个居民保存：
-
-```text
-完整姓名字符串
-职业名称
-故事标题 / 正文
-Routine 文本
-头像图片
-```
-
-这些由 `ResidentContentBlob` / TextTable / Asset Table 查询。
-
-### Appearance
-
-`PortraitSeed` 只负责 Demo 和第一次外观生成。
-
-正式居民需要保存稳定 AppearanceDNA，否则以后扩充发型 / 服饰资源池会导致旧居民“变脸”。
-
-### Routine
-
-正式 Runtime 方向优先使用：
-
-```text
-ResidentSeed + CurrentDay + Occupation + WorldSnapshot
+最新 main
 ↓
-确定性生成近期 Routine
-```
-
-普通 Routine 默认不进入 Save。
-
----
-
-## 当前 Build / Artifact 工作流
-
-`Build` 现在应分开看两个阶段：
-
-```text
-npm run build-content
+建立 tmp-*
 ↓
-上传 resident-generated-data Artifact
+集中完成本轮所有修改
 ↓
-npm run build -w Web
-```
-
-`resident-generated-data` 用于直接检查当前 Demo Compiler 输出。
-
-Visual Review 继续检查 Web Prototype UI；Vercel Preview 继续做网页交互验证。
-
-后续真正实现 Coverage、StableId Registry、Unity Intermediate 后，再扩展 Build，不提前假装这些步骤已经完成。
-
----
-
-## Git / Vercel
-
-推荐：
-
-```text
-tmp-* branch
+一个聚合 commit / 一次 push
 ↓
-Build + generated Artifact
+Build + Visual Review + Vercel Preview
 ↓
-必要时 Visual Review / Vercel Preview
+需要修正时，再聚合成一个修正 commit
 ↓
-确认
+验收通过
 ↓
-重新读取最新 main SHA
+重新读取 main SHA
 ↓
 一次推进 main
+↓
+Vercel Production
 ```
 
-数据契约分支可用：
+禁止同一批次按文件连续 push。自动化助手优先使用 `create_blob → create_tree → create_commit → update_ref` 或等价的一次性提交方式。
 
-```text
-tmp-content-*
-```
-
-玩法 / UI 分支可用：
-
-```text
-tmp-prototype-*
-```
-
-`tmp-*` 允许 Vercel Preview。
-
-遇到 Vercel rate limit 时不连续推空 commit。
+遇到 Vercel rate limit 时不要通过空 commit 连续重试。
 
 ---
 
-## 分阶段路线
+## 当前验收问题
+
+继续开发时优先问：
 
 ```text
-阶段 1  数据契约
-StableId / LifeTag / Name / Occupation / LifeEvent Effect / Portrait
-
-阶段 2  Content Compiler
-统一校验、引用解析、StableId、Story Bucket、Coverage、Web Bundle
-
-阶段 3  Web Demo 迁移
-只消费 Compiler 输出，继续验证玩法
-
-阶段 4  Unity Runtime Contract
-ResidentContentBlob、ECS Hot/Cold、Save StableId、Structural Request
-
-阶段 5  批量生产
-按 Coverage Matrix 扩充故事、姓名、头像与职业资源
+点一个陌生居民，我有没有兴趣继续看？
+现在的生活是否可信？
+从小到大读人生时间轴是否像一个人的一生？
+展开后的回忆是否像角色自己的记忆？
+过去是否真的影响后来？
+家庭 / 职业变化后人物是否真的变化？
+城市建设能否反馈到个人？
+连续看十几个居民后会不会明显重复？
 ```
 
-下一轮继续开发时，优先从 **阶段 1 的 Stable ID + LifeTag + Name V2 契约** 开始，而不是直接批量写内容。
+回答“现在做到哪了”时，以最新 `main`、Actions、代码和以上当前玩法规则为准。
