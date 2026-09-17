@@ -7,7 +7,30 @@
     "weight": {"type":"number","exclusiveMinimum":0},
     "genderList": {"type":"array","items":{"enum":["male","female"]},"uniqueItems":true},
     "lifeStageList": {"type":"array","items":{"enum":["child","teen","young-adult","adult","middle-age","elder"]},"uniqueItems":true},
-    "occupationGroupList": {"type":"array","items":{"$ref":"#/$defs/stableId"},"uniqueItems":true}
+    "occupationGroupList": {"type":"array","items":{"$ref":"#/$defs/stableId"},"uniqueItems":true},
+    "faceFamily": {"enum":["oval","round","long","square","broad"]},
+    "faceFamilyList": {"type":"array","items":{"$ref":"#/$defs/faceFamily"},"uniqueItems":true},
+    "hairVisibility": {"enum":["full","back-only","hidden"]},
+    "rig": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["centerX","topY","hairlineY","browY","eyeY","noseY","mouthY","chinY","faceWidth","jawWidth","earY","neckTopY","shoulderY"],
+      "properties": {
+        "centerX":{"type":"number","minimum":0,"maximum":120},
+        "topY":{"type":"number","minimum":0,"maximum":120},
+        "hairlineY":{"type":"number","minimum":0,"maximum":120},
+        "browY":{"type":"number","minimum":0,"maximum":120},
+        "eyeY":{"type":"number","minimum":0,"maximum":120},
+        "noseY":{"type":"number","minimum":0,"maximum":120},
+        "mouthY":{"type":"number","minimum":0,"maximum":120},
+        "chinY":{"type":"number","minimum":0,"maximum":120},
+        "faceWidth":{"type":"number","exclusiveMinimum":0,"maximum":80},
+        "jawWidth":{"type":"number","exclusiveMinimum":0,"maximum":80},
+        "earY":{"type":"number","minimum":0,"maximum":120},
+        "neckTopY":{"type":"number","minimum":0,"maximum":120},
+        "shoulderY":{"type":"number","minimum":0,"maximum":120}
+      }
+    }
   },
   "type": "object",
   "required": ["schema", "parts", "palettes"],
@@ -29,7 +52,12 @@
           "genders": {"$ref":"#/$defs/genderList"},
           "lifeStages": {"$ref":"#/$defs/lifeStageList"},
           "occupationGroups": {"$ref":"#/$defs/occupationGroupList"},
-          "assetKey": {"type":"string","minLength":1}
+          "assetKey": {"type":"string","minLength":1},
+          "faceFamily": {"$ref":"#/$defs/faceFamily"},
+          "preferredFaceFamilies": {"$ref":"#/$defs/faceFamilyList"},
+          "avoidFaceFamilies": {"$ref":"#/$defs/faceFamilyList"},
+          "hairVisibility": {"$ref":"#/$defs/hairVisibility"},
+          "rig": {"$ref":"#/$defs/rig"}
         }
       }
     },
