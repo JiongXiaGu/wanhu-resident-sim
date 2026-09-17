@@ -92,7 +92,7 @@ if (!identityText.includes('已婚')) {
   throw new Error('Completing the marriage story should update the resident family state to married.');
 }
 
-await page.getByRole('button', { name: /家人/ }).click();
+await page.locator('.resident-world-links').getByRole('button', { name: /家人/ }).click();
 await page.waitForSelector('.resident-family-drawer');
 if (!(await page.locator('.resident-family-drawer').innerText()).includes('配偶')) {
   throw new Error('Marriage effect should create a spouse relationship visible in the family drawer.');
