@@ -2,6 +2,10 @@
   "schema": "wanhu.life-tags.v1",
   "items": [
     {"id":"lifetag.served-military","label":"曾经服役","category":"experience"},
+    {"id":"lifetag.first-independent-task","label":"独自完成过正式差事","category":"work"},
+    {"id":"lifetag.child-started-school","label":"孩子已经入学","category":"family"},
+    {"id":"lifetag.first-family-errand","label":"少年时独自替家里办过事","category":"experience"},
+    {"id":"lifetag.retirement-routine","label":"晚年有了固定消遣","category":"life"},
     {"id":"lifetag.trained-carpenter","label":"学过木工手艺","category":"skill"},
     {"id":"lifetag.opened-shop","label":"曾独立开铺","category":"work"},
     {"id":"lifetag.debt-history","label":"曾有债务经历","category":"finance"},
