@@ -60,17 +60,27 @@ if ((await page.locator('.resident-recent').count()) !== 0) {
 if ((await page.locator('.resident-routine-section').count()) !== 0) {
   throw new Error('Life history mode must hide routine entries.');
 }
-if ((await page.locator('.resident-history-hero').count()) !== 1) {
-  throw new Error('Life history mode should render a dedicated biography header.');
+if ((await page.locator('.resident-life-stage__label').count()) !== 0) {
+  throw new Error('Life history should be one continuous timeline without child/teen/adult stage groups.');
 }
-if ((await page.locator('.resident-life-timeline').count()) !== 1) {
-  throw new Error('Life history mode should render the life chapter timeline.');
+if ((await page.locator('.resident-life-timeline--continuous').count()) !== 1) {
+  throw new Error('Life history should render one continuous chronological timeline.');
+}
+
+const ages = await page.locator('.resident-life-chapter').evaluateAll((items) => items.map((item) => Number(item.getAttribute('data-age'))));
+for (let index = 1; index < ages.length; index += 1) {
+  if (ages[index] < ages[index - 1]) throw new Error(`Life chapters must be ordered youngest-to-oldest by age: ${ages.join(',')}`);
 }
 
 const storyChapter = page.locator('.resident-life-chapter.has-story button').first();
 if ((await storyChapter.count()) > 0) {
   await storyChapter.click();
-  await page.waitForSelector('.resident-life-story');
+  await page.waitForSelector('.resident-life-memory');
+  const memoryText = await page.locator('.resident-life-memory').first().innerText();
+  if (!memoryText.trim()) throw new Error('Expanded life chapter should show a resident memory paragraph.');
+  if (/起初|后来|最后/.test(await page.locator('.resident-history-mode').innerText())) {
+    throw new Error('Life history must not expose stage labels such as 起初/后来/最后.');
+  }
 }
 await page.screenshot({ path: `${outDir}/03-life-history.png` });
 
@@ -80,7 +90,7 @@ await page.waitForTimeout(100);
 await page.screenshot({ path: `${outDir}/04-dev-density.png` });
 
 // Gameplay validation: a completed story should change the actual resident state,
-// persist as a life chapter, and unlock a lightweight follow-up through LifeTag.
+// persist as one life-memory node, and unlock a lightweight follow-up through LifeTag.
 await open();
 await chooseLifeEvent('lifeevent.marriage-introduction');
 await page.getByRole('button', { name: '推进故事', exact: true }).click();
@@ -100,8 +110,14 @@ if (!(await page.locator('.resident-family-drawer').innerText()).includes('配�
 
 await page.getByRole('button', { name: /人生经历/ }).click();
 await page.waitForSelector('.resident-history-mode');
-if (!(await page.locator('.resident-history-mode').innerText()).includes('这门亲事定下来了')) {
-  throw new Error('A completed structural story should persist into life history in the Web prototype.');
+const marriageChapter = page.locator('.resident-life-chapter').filter({ hasText: '这门亲事定下来了' }).first();
+if ((await marriageChapter.count()) !== 1) {
+  throw new Error('A completed structural story should persist as one life-history node.');
+}
+await marriageChapter.getByRole('button').click();
+await page.waitForSelector('.resident-life-memory');
+if (!(await page.locator('.resident-life-memory').last().innerText()).includes('亲友')) {
+  throw new Error('Marriage chapter should expand as one resident memory, not three stage cards.');
 }
 await page.getByRole('button', { name: /^返回生活/ }).click();
 
