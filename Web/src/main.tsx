@@ -4,6 +4,7 @@ import App from './App';
 import './styles.css';
 import './game-validation.css';
 import './life-log.css';
+import './resident-avatar.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
