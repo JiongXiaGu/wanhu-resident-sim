@@ -1,18 +1,53 @@
-import { useEffect, useMemo, useState } from 'react';
-import type { Story, StoryBranch, StoryCollection, StoryNode } from './types';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { MOCK_RESIDENTS } from './mock-residents';
+import { StoryReviewView } from './StoryReviewView';
+import type { Story, StoryBranch, StoryCollection, StoryNode, StoryTime } from './types';
 
-type StoryMode = 'sequential' | 'random';
-type ViewMode = 'game' | 'review';
+type AppMode = 'game' | 'review';
 type StageIndex = 0 | 1 | 2;
+
+type ResidentAssignment = {
+  storyIndex: number;
+  branchIndex: number;
+  startDay: number;
+};
+
+type StageSchedule = {
+  stage2Day: number;
+  stage3Day: number;
+};
+
+const INITIAL_GAME_DAY = 120;
+const START_OFFSETS = [2, 9, 22, 45, 76, 14, 105, 33];
 
 function pickRandomIndex(length: number, except?: number) {
   if (length <= 1) return 0;
-
   let next = Math.floor(Math.random() * length);
-  if (except !== undefined && next === except) {
-    next = (next + 1 + Math.floor(Math.random() * (length - 1))) % length;
-  }
+  if (except !== undefined && next === except) next = (next + 1 + Math.floor(Math.random() * (length - 1))) % length;
   return next;
+}
+
+function midpointDelay(time: StoryTime, fallback: number) {
+  const min = time.minDays ?? fallback;
+  const max = time.maxDays ?? min;
+  return Math.max(0, Math.round((min + max) / 2));
+}
+
+function scheduleFor(assignment: ResidentAssignment, branch: StoryBranch): StageSchedule {
+  const stage2Delay = midpointDelay(branch.stage2.time, 7);
+  const stage2Day = assignment.startDay + stage2Delay;
+  const stage3Delay = midpointDelay(branch.stage3.time, 10);
+  const stage3Base = branch.stage3.time.relativeTo === 'story-start' ? assignment.startDay : stage2Day;
+  return {
+    stage2Day,
+    stage3Day: stage3Base + stage3Delay,
+  };
+}
+
+function stageAtDay(gameDay: number, schedule: StageSchedule): StageIndex {
+  if (gameDay >= schedule.stage3Day) return 2;
+  if (gameDay >= schedule.stage2Day) return 1;
+  return 0;
 }
 
 function nodeFor(story: Story, branch: StoryBranch, stage: StageIndex): StoryNode {
@@ -21,31 +56,58 @@ function nodeFor(story: Story, branch: StoryBranch, stage: StageIndex): StoryNod
   return branch.stage3;
 }
 
-function stageLabel(stage: StageIndex) {
-  if (stage === 0) return '第一阶段';
-  if (stage === 1) return '第二阶段';
-  return '第三阶段';
+function nodeDayFor(assignment: ResidentAssignment, schedule: StageSchedule, stage: StageIndex) {
+  if (stage === 0) return assignment.startDay;
+  if (stage === 1) return schedule.stage2Day;
+  return schedule.stage3Day;
 }
 
-function paragraphs(text: string) {
-  return text
-    .split(/\n\s*\n/g)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
+function compactText(text: string) {
+  return text.split(/\n\s*\n/g).map((item) => item.trim()).filter(Boolean).join('');
+}
+
+function relativeDayLabel(days: number) {
+  if (days <= 0) return '今日';
+  if (days === 1) return '昨日';
+  if (days < 30) return `${days}日前`;
+  const months = Math.max(1, Math.round(days / 30));
+  if (months < 12) return `${months}个月前`;
+  return `${Math.max(1, Math.round(months / 12))}年前`;
+}
+
+function stageEyebrow(stage: StageIndex) {
+  return stage === 0 ? '近况' : '往事续篇';
+}
+
+function createAssignments(stories: Story[]): Record<string, ResidentAssignment> {
+  return Object.fromEntries(MOCK_RESIDENTS.map((resident, index) => {
+    const storyIndex = stories.length ? (index * 7 + 3) % stories.length : 0;
+    const story = stories[storyIndex];
+    const branchIndex = story?.branches.length ? (index * 3 + 1) % story.branches.length : 0;
+    return [resident.id, {
+      storyIndex,
+      branchIndex,
+      startDay: INITIAL_GAME_DAY - START_OFFSETS[index % START_OFFSETS.length],
+    }];
+  }));
 }
 
 export default function App() {
   const [collection, setCollection] = useState<StoryCollection | null>(null);
   const [loadError, setLoadError] = useState('');
-  const [storyIndex, setStoryIndex] = useState(0);
-  const [branchIndex, setBranchIndex] = useState(0);
-  const [stage, setStage] = useState<StageIndex>(0);
-  const [storyMode, setStoryMode] = useState<StoryMode>('sequential');
-  const [viewMode, setViewMode] = useState<ViewMode>('game');
+  const [mode, setMode] = useState<AppMode>('game');
+  const [gameDay, setGameDay] = useState(INITIAL_GAME_DAY);
+  const [selectedResidentId, setSelectedResidentId] = useState(MOCK_RESIDENTS[0].id);
+  const [assignments, setAssignments] = useState<Record<string, ResidentAssignment>>({});
+  const [seenStages, setSeenStages] = useState<Record<string, number>>({});
+  const [showDev, setShowDev] = useState(true);
+  const [bodyLines, setBodyLines] = useState(0);
+  const [titleLines, setTitleLines] = useState(0);
+  const bodyRef = useRef<HTMLParagraphElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     let cancelled = false;
-
     fetch('/generated/stories.json')
       .then(async (response) => {
         if (!response.ok) throw new Error(`故事数据读取失败：HTTP ${response.status}`);
@@ -54,252 +116,250 @@ export default function App() {
       .then((data) => {
         if (cancelled) return;
         setCollection(data);
-        if (data.stories.length > 0) {
-          setBranchIndex(pickRandomIndex(data.stories[0].branches.length));
-        }
+        setAssignments(createAssignments(data.stories));
       })
       .catch((error: Error) => {
         if (!cancelled) setLoadError(error.message);
       });
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   const stories = collection?.stories ?? [];
-  const story = stories[storyIndex];
-  const branch = story?.branches[branchIndex] ?? story?.branches[0];
-  const node = story && branch ? nodeFor(story, branch, stage) : null;
+  const selectedResident = MOCK_RESIDENTS.find((item) => item.id === selectedResidentId) ?? MOCK_RESIDENTS[0];
+  const assignment = assignments[selectedResident.id];
+  const story = assignment && stories.length ? stories[assignment.storyIndex % stories.length] : undefined;
+  const branch = story && assignment ? (story.branches[assignment.branchIndex] ?? story.branches[0]) : undefined;
+  const schedule = assignment && branch ? scheduleFor(assignment, branch) : undefined;
+  const stage = schedule ? stageAtDay(gameDay, schedule) : 0;
+  const node = story && branch ? nodeFor(story, branch, stage) : undefined;
+  const nodeDay = assignment && schedule ? nodeDayFor(assignment, schedule, stage) : gameDay;
+  const currentText = node ? compactText(node.text) : '';
 
-  const currentWarnings = useMemo(() => {
-    if (!collection || !story) return [];
-    return collection.diagnostics.warnings.find((item) => item.source === story.source)?.warnings ?? [];
-  }, [collection, story]);
+  useEffect(() => {
+    if (!selectedResident || !schedule) return;
+    setSeenStages((current) => ({ ...current, [selectedResident.id]: stage }));
+  }, [selectedResident.id, stage, schedule]);
 
-  function selectStory(index: number) {
-    if (!stories.length) return;
-    const normalized = (index + stories.length) % stories.length;
-    const nextStory = stories[normalized];
-    setStoryIndex(normalized);
-    setBranchIndex(pickRandomIndex(nextStory.branches.length));
-    setStage(0);
-  }
-
-  function nextStory() {
-    if (!stories.length) return;
-
-    if (storyMode === 'random') {
-      selectStory(pickRandomIndex(stories.length, storyIndex));
-      return;
+  useLayoutEffect(() => {
+    function measure(element: HTMLElement | null) {
+      if (!element) return 0;
+      const style = window.getComputedStyle(element);
+      const lineHeight = Number.parseFloat(style.lineHeight);
+      if (!Number.isFinite(lineHeight) || lineHeight <= 0) return 0;
+      return element.scrollHeight / lineHeight;
     }
 
-    selectStory(storyIndex + 1);
+    const frame = window.requestAnimationFrame(() => {
+      setBodyLines(measure(bodyRef.current));
+      setTitleLines(measure(titleRef.current));
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [currentText, node?.title, selectedResidentId, gameDay]);
+
+  const stageByResident = useMemo(() => {
+    if (!stories.length) return {} as Record<string, StageIndex>;
+    return Object.fromEntries(MOCK_RESIDENTS.map((resident) => {
+      const currentAssignment = assignments[resident.id];
+      if (!currentAssignment) return [resident.id, 0];
+      const currentStory = stories[currentAssignment.storyIndex % stories.length];
+      const currentBranch = currentStory?.branches[currentAssignment.branchIndex] ?? currentStory?.branches[0];
+      if (!currentBranch) return [resident.id, 0];
+      return [resident.id, stageAtDay(gameDay, scheduleFor(currentAssignment, currentBranch))];
+    })) as Record<string, StageIndex>;
+  }, [assignments, gameDay, stories]);
+
+  function selectResident(id: string) {
+    setSelectedResidentId(id);
   }
 
-  function previousStory() {
-    selectStory(storyIndex - 1);
+  function selectRelativeResident(offset: number) {
+    const currentIndex = MOCK_RESIDENTS.findIndex((item) => item.id === selectedResidentId);
+    const nextIndex = (currentIndex + offset + MOCK_RESIDENTS.length) % MOCK_RESIDENTS.length;
+    setSelectedResidentId(MOCK_RESIDENTS[nextIndex].id);
   }
 
-  function nextNode() {
-    if (stage === 0) {
-      setStage(1);
-      return;
-    }
-
-    if (stage === 1) {
-      setStage(2);
-      return;
-    }
-
-    nextStory();
-  }
-
-  function previousNode() {
-    if (stage === 2) setStage(1);
-    else if (stage === 1) setStage(0);
+  function rerollStory() {
+    if (!stories.length || !story) return;
+    const nextStoryIndex = pickRandomIndex(stories.length, assignment?.storyIndex);
+    const nextStory = stories[nextStoryIndex];
+    setAssignments((current) => ({
+      ...current,
+      [selectedResident.id]: {
+        storyIndex: nextStoryIndex,
+        branchIndex: pickRandomIndex(nextStory.branches.length),
+        startDay: gameDay,
+      },
+    }));
   }
 
   function rerollBranch() {
-    if (!story || story.branches.length <= 1) return;
-    setBranchIndex(pickRandomIndex(story.branches.length, branchIndex));
+    if (!story || !assignment || story.branches.length <= 1) return;
+    setAssignments((current) => ({
+      ...current,
+      [selectedResident.id]: {
+        ...assignment,
+        branchIndex: pickRandomIndex(story.branches.length, assignment.branchIndex),
+        startDay: gameDay,
+      },
+    }));
   }
 
-  function chooseBranch(index: number) {
-    setBranchIndex(index);
-    if (stage === 0) setStage(1);
+  function jumpToNextNode() {
+    if (!schedule) return;
+    if (stage === 0) setGameDay((day) => Math.max(day, schedule.stage2Day));
+    else if (stage === 1) setGameDay((day) => Math.max(day, schedule.stage3Day));
   }
 
   if (loadError) {
     return (
       <main className="app-shell center-state">
         <section className="state-card">
-          <p className="eyebrow">WANHU STORY REVIEWER</p>
+          <p className="eyebrow">WANHU RESIDENT SIM</p>
           <h1>故事数据读取失败</h1>
           <p>{loadError}</p>
-          <p className="muted">请先执行 npm run build-content，确认 generated/stories.json 已生成。</p>
         </section>
       </main>
     );
   }
 
-  if (!collection) {
+  if (!collection || !assignment || !story || !branch || !schedule || !node) {
     return (
       <main className="app-shell center-state">
         <section className="state-card">
-          <p className="eyebrow">WANHU STORY REVIEWER</p>
-          <h1>正在读取居民故事…</h1>
+          <p className="eyebrow">WANHU RESIDENT SIM</p>
+          <h1>正在生成居民生活…</h1>
         </section>
       </main>
     );
   }
 
-  if (!story || !branch || !node) {
-    return (
-      <main className="app-shell center-state">
-        <section className="state-card">
-          <p className="eyebrow">WANHU STORY REVIEWER</p>
-          <h1>没有可显示的故事</h1>
-          <p className="muted">请检查 Content/Stories 或居民故事目录。</p>
-        </section>
-      </main>
-    );
-  }
+  if (mode === 'review') return <StoryReviewView collection={collection} onExit={() => setMode('game')} />;
+
+  const relativeDays = Math.max(0, gameDay - nodeDay);
+  const unreadCount = MOCK_RESIDENTS.filter((resident) => (stageByResident[resident.id] ?? 0) > (seenStages[resident.id] ?? -1)).length;
+  const bodyDensity = bodyLines <= 4.5 ? 'good' : bodyLines <= 5.8 ? 'warn' : 'bad';
+  const titleDensity = titleLines <= 2.05 ? 'good' : 'bad';
 
   return (
-    <main className="app-shell">
-      <header className="topbar">
-        <div>
-          <p className="eyebrow">万户天工 · RESIDENT SIM</p>
-          <h1>居民故事审查器</h1>
-        </div>
+    <main className="sim-game" data-dev={showDev ? 'true' : 'false'}>
+      <div className="sim-world" aria-hidden="true">
+        <div className="sim-world__mist" />
+        <div className="sim-world__river" />
+        <div className="sim-world__district sim-world__district--one" />
+        <div className="sim-world__district sim-world__district--two" />
+        <div className="sim-world__district sim-world__district--three" />
+        <div className="sim-world__road sim-world__road--one" />
+        <div className="sim-world__road sim-world__road--two" />
+      </div>
 
-        <div className="toolbar">
-          <div className="segmented" aria-label="故事切换方式">
-            <button
-              className={storyMode === 'sequential' ? 'active' : ''}
-              onClick={() => setStoryMode('sequential')}
-            >
-              顺序
-            </button>
-            <button
-              className={storyMode === 'random' ? 'active' : ''}
-              onClick={() => setStoryMode('random')}
-            >
-              随机
-            </button>
-          </div>
-
-          <div className="segmented" aria-label="查看模式">
-            <button
-              className={viewMode === 'game' ? 'active' : ''}
-              onClick={() => setViewMode('game')}
-            >
-              游戏模式
-            </button>
-            <button
-              className={viewMode === 'review' ? 'active' : ''}
-              onClick={() => setViewMode('review')}
-            >
-              审查模式
-            </button>
-          </div>
+      <header className="sim-top-hud">
+        <div className="sim-city-name"><b>万户城</b><span>秋 · 晴</span></div>
+        <div className="sim-resource-strip">
+          <span>钱粮 <b>24,680</b></span>
+          <span>人口 <b>8,426</b></span>
+          <span>木材 <b>3,240</b></span>
+          <span>石料 <b>2,780</b></span>
         </div>
+        <div className="sim-time-strip"><b>第 {gameDay} 日</b><span>14:36</span></div>
       </header>
 
-      <section className="workspace">
-        <article className="story-card">
-          <div className="story-head">
-            <div>
-              <p className="story-position">故事 {storyIndex + 1} / {stories.length}</p>
-              <h2>{story.title}</h2>
-            </div>
-
-            <div className="node-badges">
-              <span>{stageLabel(stage)}</span>
-              {node.time.raw && <span>{node.time.raw}</span>}
-            </div>
-          </div>
-
-          {viewMode === 'review' && (
-            <section className="review-panel">
-              <div className="review-grid">
-                <div>
-                  <span className="review-label">Story ID</span>
-                  <strong>{story.id}</strong>
-                </div>
-                <div>
-                  <span className="review-label">Branch</span>
-                  <strong>{stage === 0 ? '尚未进入分支' : branch.id}</strong>
-                </div>
-                <div>
-                  <span className="review-label">来源</span>
-                  <strong>{story.source}</strong>
-                </div>
-                <div>
-                  <span className="review-label">分类</span>
-                  <strong>{story.categories.length ? story.categories.join(' · ') : '未标注'}</strong>
-                </div>
-              </div>
-
-              <div className="branch-tabs" aria-label="故事分支">
-                {story.branches.map((item, index) => (
-                  <button
-                    key={item.id}
-                    className={index === branchIndex ? 'active' : ''}
-                    onClick={() => chooseBranch(index)}
-                  >
-                    <span>{item.id}</span>
-                    {item.title}
-                  </button>
-                ))}
-              </div>
-
-              {currentWarnings.length > 0 && (
-                <details className="warning-box">
-                  <summary>本故事有 {currentWarnings.length} 条格式提醒</summary>
-                  <ul>
-                    {currentWarnings.map((warning) => <li key={warning}>{warning}</li>)}
-                  </ul>
-                </details>
-              )}
-            </section>
-          )}
-
-          <div className="node-content">
-            <p className="node-kicker">{stageLabel(stage)}</p>
-            <h3>{node.title}</h3>
-            <div className="story-text">
-              {paragraphs(node.text).map((paragraph, index) => (
-                <p key={`${node.id}-${index}`}>{paragraph}</p>
-              ))}
-            </div>
-          </div>
-
-          <div className="node-actions">
-            <button className="ghost-button" onClick={previousNode} disabled={stage === 0}>
-              上一节点
+      <section className="resident-markers" aria-label="模拟居民">
+        {MOCK_RESIDENTS.map((resident) => {
+          const residentStage = stageByResident[resident.id] ?? 0;
+          const isUnread = residentStage > (seenStages[resident.id] ?? -1);
+          const isSelected = resident.id === selectedResident.id;
+          return (
+            <button
+              key={resident.id}
+              type="button"
+              className={`resident-marker ${isSelected ? 'is-selected' : ''}`}
+              style={{ left: `${resident.marker.x}%`, top: `${resident.marker.y}%` }}
+              onClick={() => selectResident(resident.id)}
+              aria-label={`查看居民 ${resident.name}`}
+            >
+              <span className="resident-marker__person">人</span>
+              {isUnread && !isSelected && <i className="resident-marker__new" />}
+              <span className="resident-marker__label"><b>{resident.name}</b><small>{resident.occupation}</small></span>
             </button>
-            <button className="primary-button" onClick={nextNode}>
-              {stage === 2 ? '下一个故事' : '下一节点'}
-            </button>
-          </div>
-        </article>
-
-        <footer className="story-nav">
-          <button onClick={previousStory}>← 上一个故事</button>
-          <button onClick={rerollBranch} disabled={story.branches.length <= 1}>重抽分支</button>
-          <button onClick={nextStory}>下一个故事 →</button>
-        </footer>
+          );
+        })}
       </section>
 
-      <footer className="statusbar">
-        <span>已读取 {collection.count} 个故事</span>
-        <span>{collection.diagnostics.warningCount} 条格式提醒</span>
-        {collection.diagnostics.skippedCount > 0 && (
-          <span className="status-warning">{collection.diagnostics.skippedCount} 个文件未解析</span>
-        )}
-      </footer>
+      <aside className="resident-panel" aria-label={`${selectedResident.name}的居民信息`}>
+        <header className="resident-panel__header">
+          <div className="resident-avatar" aria-hidden="true">{selectedResident.name.slice(-1)}</div>
+          <div className="resident-identity">
+            <div><b>{selectedResident.name}</b><span>{selectedResident.age}岁 · {selectedResident.occupation}</span></div>
+            <small>{selectedResident.district} · {selectedResident.family}</small>
+          </div>
+          <button className="resident-panel__close" type="button" aria-label="关闭居民面板">×</button>
+        </header>
+
+        <div className="resident-panel__body">
+          <section className="resident-activity">
+            <span>正在做</span>
+            <p>{selectedResident.activity}</p>
+          </section>
+
+          <section className="resident-story">
+            <div className="resident-story__meta">
+              <span className={stage > 0 ? 'is-continuation' : ''}>{stageEyebrow(stage)}</span>
+              <time>{relativeDayLabel(relativeDays)}</time>
+            </div>
+            <p className="resident-story__series">{story.title}</p>
+            <h2 ref={titleRef}>{node.title}</h2>
+            <p className="resident-story__text" ref={bodyRef}>{currentText}</p>
+
+            <div className="resident-story__timeline" aria-label="故事进展">
+              {[0, 1, 2].map((item) => <i key={item} className={item <= stage ? 'is-active' : ''} />)}
+            </div>
+          </section>
+        </div>
+
+        <footer className="resident-panel__footer">
+          <button type="button">往事 {selectedResident.historyCount + stage}<span>›</span></button>
+          {stage < 2 && <small>这段经历还会继续</small>}
+          {stage === 2 && <small>这段经历暂告一段落</small>}
+        </footer>
+      </aside>
+
+      <nav className="sim-command-dock" aria-label="模拟游戏主工具栏">
+        {['道路', '桥梁', '建筑', '城墙', '装饰'].map((label, index) => (
+          <button key={label} type="button" className={index === 2 ? 'is-active' : ''}><i />{label}</button>
+        ))}
+      </nav>
+
+      <div className="sim-world-tools" aria-hidden="true"><span>↶</span><span>↷</span><span>网格</span></div>
+
+      {showDev && (
+        <aside className="dev-panel">
+          <header><b>GAME UI VALIDATION</b><button type="button" onClick={() => setShowDev(false)}>隐藏</button></header>
+          <div className="dev-panel__row"><span>当前居民</span><b>{selectedResident.name}</b></div>
+          <div className="dev-panel__row"><span>Story</span><b>{story.id}</b></div>
+          <div className="dev-panel__row"><span>Branch</span><b>{branch.id} · Stage {stage + 1}</b></div>
+          <div className="dev-density">
+            <span className={`density-chip is-${bodyDensity}`}>正文 {bodyLines.toFixed(1)} 行</span>
+            <span className={`density-chip is-${titleDensity}`}>标题 {titleLines.toFixed(1)} 行</span>
+          </div>
+          <div className="dev-buttons dev-buttons--three">
+            <button type="button" onClick={() => selectRelativeResident(-1)}>上一居民</button>
+            <button type="button" onClick={() => selectRelativeResident(1)}>下一居民</button>
+            <button type="button" onClick={rerollStory}>重抽故事</button>
+          </div>
+          <div className="dev-buttons dev-buttons--three">
+            <button type="button" onClick={() => setGameDay((day) => day + 1)}>+1 天</button>
+            <button type="button" onClick={() => setGameDay((day) => day + 10)}>+10 天</button>
+            <button type="button" onClick={jumpToNextNode} disabled={stage === 2}>推进节点</button>
+          </div>
+          <div className="dev-buttons dev-buttons--two">
+            <button type="button" onClick={rerollBranch}>重抽分支</button>
+            <button type="button" onClick={() => setMode('review')}>完整审查器</button>
+          </div>
+          <p>{unreadCount} 位居民有未查看的生活近况 · 当前故事仅用于 UI/游戏性验证，尚未启用居民条件筛选。</p>
+        </aside>
+      )}
+
+      {!showDev && <button className="dev-reopen" type="button" onClick={() => setShowDev(true)}>DEV</button>}
     </main>
   );
 }
