@@ -7,7 +7,8 @@
     "weight": {"type":"number","exclusiveMinimum":0},
     "genderList": {"type":"array","items":{"enum":["male","female"]},"uniqueItems":true},
     "lifeStageList": {"type":"array","items":{"enum":["child","teen","young-adult","adult","middle-age","elder"]},"uniqueItems":true},
-    "occupationGroupList": {"type":"array","items":{"$ref":"#/$defs/stableId"},"uniqueItems":true},
+    "wealthTierList": {"type":"array","items":{"enum":["poor","plain","comfortable","wealthy"]},"uniqueItems":true},
+    "presentationStyleList": {"type":"array","items":{"enum":["practical","tidy","refined"]},"uniqueItems":true},
     "faceFamily": {"enum":["oval","round","long","square","broad"]},
     "faceFamilyList": {"type":"array","items":{"$ref":"#/$defs/faceFamily"},"uniqueItems":true},
     "hairVisibility": {"enum":["full","back-only","hidden"]},
@@ -51,7 +52,8 @@
           "weight": {"$ref":"#/$defs/weight"},
           "genders": {"$ref":"#/$defs/genderList"},
           "lifeStages": {"$ref":"#/$defs/lifeStageList"},
-          "occupationGroups": {"$ref":"#/$defs/occupationGroupList"},
+          "wealthTiers": {"$ref":"#/$defs/wealthTierList"},
+          "presentationStyles": {"$ref":"#/$defs/presentationStyleList"},
           "assetKey": {"type":"string","minLength":1},
           "faceFamily": {"$ref":"#/$defs/faceFamily"},
           "preferredFaceFamilies": {"$ref":"#/$defs/faceFamilyList"},
@@ -75,7 +77,8 @@
           "weight": {"$ref":"#/$defs/weight"},
           "genders": {"$ref":"#/$defs/genderList"},
           "lifeStages": {"$ref":"#/$defs/lifeStageList"},
-          "occupationGroups": {"$ref":"#/$defs/occupationGroupList"}
+          "wealthTiers": {"$ref":"#/$defs/wealthTierList"},
+          "presentationStyles": {"$ref":"#/$defs/presentationStyleList"}
         }
       }
     }

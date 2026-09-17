@@ -88,12 +88,14 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "homeId", "districtId", "memberIds"],
+        "required": ["id", "homeId", "districtId", "memberIds", "wealthTier", "presentationStyle"],
         "properties": {
           "id": { "type": "integer" },
           "homeId": { "type": "integer" },
           "districtId": { "type": "string" },
-          "memberIds": { "type": "array", "items": { "type": "integer" } }
+          "memberIds": { "type": "array", "items": { "type": "integer" } },
+          "wealthTier": { "enum": ["poor", "plain", "comfortable", "wealthy"] },
+          "presentationStyle": { "enum": ["practical", "tidy", "refined"] }
         },
         "additionalProperties": false
       }

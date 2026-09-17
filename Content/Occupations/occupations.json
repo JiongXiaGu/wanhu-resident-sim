@@ -26,19 +26,6 @@
       "offActivity": "正在家里温习功课"
     },
     {
-      "id": "occupation.scholar",
-      "groupId": "occupation-group.education",
-      "name": "书生",
-      "workplaceType": "school.study",
-      "minAge": 18,
-      "maxAge": 52,
-      "weight": 3,
-      "genders": ["male"],
-      "storyHints": ["读书", "文章", "先生", "科考", "代写"],
-      "workActivity": "正在书案前读书写字",
-      "offActivity": "正在茶铺里翻一卷旧书"
-    },
-    {
       "id": "occupation.apprentice",
       "groupId": "occupation-group.craft",
       "name": "学徒",
@@ -61,18 +48,6 @@
       "storyHints": ["布", "铺", "掌柜", "货", "账"],
       "workActivity": "正在布庄整理今日新到的布匹",
       "offActivity": "今日不当值，正在家里歇着"
-    },
-    {
-      "id": "occupation.shopkeeper",
-      "groupId": "occupation-group.trade",
-      "name": "掌柜",
-      "workplaceType": "shop.generic",
-      "minAge": 24,
-      "maxAge": 72,
-      "weight": 3,
-      "storyHints": ["铺子", "伙计", "货", "账", "买卖"],
-      "workActivity": "正在铺里照看今日的买卖",
-      "offActivity": "今日早早收了铺，正在家里理账"
     },
     {
       "id": "occupation.potter",
@@ -194,32 +169,6 @@
       "storyHints": ["孩子", "生产", "产妇", "稳婆"],
       "workActivity": "正在收拾接生时常用的东西",
       "offActivity": "今日没有人来请，正在家中歇着"
-    },
-    {
-      "id": "occupation.yamen-clerk",
-      "groupId": "occupation-group.administration",
-      "name": "书吏",
-      "workplaceType": "government.yamen",
-      "minAge": 20,
-      "maxAge": 68,
-      "weight": 3,
-      "genders": ["male"],
-      "storyHints": ["官署", "文书", "名册", "差事", "告示"],
-      "workActivity": "正在官署里誊写今日的文书",
-      "offActivity": "今日不当值，正在家中整理旧纸"
-    },
-    {
-      "id": "occupation.official",
-      "groupId": "occupation-group.administration",
-      "name": "官员",
-      "workplaceType": "government.office",
-      "minAge": 28,
-      "maxAge": 70,
-      "weight": 2,
-      "genders": ["male"],
-      "storyHints": ["官署", "案牍", "城务", "差役", "公文"],
-      "workActivity": "正在官署里处理今日的案牍",
-      "offActivity": "今日无公事，正在宅中会客"
     },
     {
       "id": "occupation.retired-craftsman",

@@ -1,6 +1,8 @@
 export type Gender = 'male' | 'female';
 
 export type LifeStageId = 'child' | 'teen' | 'young-adult' | 'adult' | 'middle-age' | 'elder';
+export type WealthTier = 'poor' | 'plain' | 'comfortable' | 'wealthy';
+export type PresentationStyle = 'practical' | 'tidy' | 'refined';
 
 export type ResidentLifeLogRecord = {
   id: string;
@@ -64,6 +66,8 @@ export type HouseholdRecord = {
   homeId: number;
   districtId: string;
   memberIds: number[];
+  wealthTier: WealthTier;
+  presentationStyle: PresentationStyle;
 };
 
 export type ResidentWorldSnapshot = {
@@ -134,6 +138,8 @@ export type AppearancePartDefinition = {
   weight: number;
   genders?: Gender[];
   lifeStages?: LifeStageId[];
+  wealthTiers?: WealthTier[];
+  presentationStyles?: PresentationStyle[];
   occupationGroups?: string[];
   assetKey?: string;
 };
@@ -145,6 +151,8 @@ export type AppearancePaletteDefinition = {
   weight: number;
   genders?: Gender[];
   lifeStages?: LifeStageId[];
+  wealthTiers?: WealthTier[];
+  presentationStyles?: PresentationStyle[];
   occupationGroups?: string[];
 };
 

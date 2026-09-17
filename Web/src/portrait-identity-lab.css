@@ -12,8 +12,12 @@
   border-color: rgba(202, 174, 105, .16);
 }
 
-.portrait-lab-card[data-occupation-group="occupation-group.administration"] .portrait-lab-card__role {
-  color: rgba(225, 192, 113, .82);
+.portrait-lab-card[data-wealth-tier="wealthy"] .portrait-lab-card__role {
+  color: rgba(226, 196, 118, .84);
+}
+
+.portrait-lab-card[data-wealth-tier="poor"] .portrait-lab-card__role {
+  color: rgba(190, 180, 157, .48);
 }
 
 .portrait-lab-card[data-gender="female"] .portrait-lab-card__role {

@@ -22,11 +22,13 @@ if (appearanceCatalog.schema !== 'wanhu.appearance-catalog.v1') {
   throw new Error(`Unsupported appearance catalog schema: ${appearanceCatalog.schema}`);
 }
 
-const occupationById = new Map(definitions.occupations.map((item) => [item.id, item]));
 const partById = new Map(appearanceCatalog.parts.map((item) => [item.id, item]));
 const paletteById = new Map(appearanceCatalog.palettes.map((item) => [item.id, item]));
+const householdById = new Map(snapshot.households.map((item) => [item.id, item]));
 const validFaceFamilies = new Set(['oval', 'round', 'long', 'square', 'broad']);
 const validHairVisibility = new Set(['full', 'back-only', 'hidden']);
+const validWealthTiers = new Set(['poor', 'plain', 'comfortable', 'wealthy']);
+const validPresentationStyles = new Set(['practical', 'tidy', 'refined']);
 const rigKeys = ['centerX', 'topY', 'hairlineY', 'browY', 'eyeY', 'noseY', 'mouthY', 'chinY', 'faceWidth', 'jawWidth', 'earY', 'neckTopY', 'shoulderY'];
 
 function hash32(value) {
@@ -38,6 +40,29 @@ function hash32(value) {
   }
   return hash >>> 0;
 }
+
+function assignHouseholdAppearanceProfile(household) {
+  const wealthRoll = hash32(`${snapshot.citySeed}:household:${household.id}:wealth`) % 100;
+  const wealthTier = wealthRoll < 20
+    ? 'poor'
+    : wealthRoll < 65
+      ? 'plain'
+      : wealthRoll < 92
+        ? 'comfortable'
+        : 'wealthy';
+
+  const styleRoll = hash32(`${snapshot.citySeed}:household:${household.id}:presentation`) % 100;
+  let presentationStyle;
+  if (wealthTier === 'poor') presentationStyle = styleRoll < 72 ? 'practical' : 'tidy';
+  else if (wealthTier === 'plain') presentationStyle = styleRoll < 42 ? 'practical' : styleRoll < 90 ? 'tidy' : 'refined';
+  else if (wealthTier === 'comfortable') presentationStyle = styleRoll < 20 ? 'practical' : styleRoll < 76 ? 'tidy' : 'refined';
+  else presentationStyle = styleRoll < 42 ? 'tidy' : 'refined';
+
+  household.wealthTier = wealthTier;
+  household.presentationStyle = presentationStyle;
+}
+
+for (const household of snapshot.households) assignHouseholdAppearanceProfile(household);
 
 function compatibilityWeight(item, faceFamily) {
   let multiplier = 1;
@@ -59,21 +84,22 @@ function weightedPick(seed, salt, items, faceFamily = null) {
   return items.at(-1);
 }
 
-function matches(item, resident, occupationGroupId) {
+function matches(item, resident, household) {
   if (item.genders?.length && !item.genders.includes(resident.gender)) return false;
   if (item.lifeStages?.length && !item.lifeStages.includes(resident.lifeStage)) return false;
-  if (item.occupationGroups?.length && !item.occupationGroups.includes(occupationGroupId)) return false;
+  if (item.wealthTiers?.length && !item.wealthTiers.includes(household.wealthTier)) return false;
+  if (item.presentationStyles?.length && !item.presentationStyles.includes(household.presentationStyle)) return false;
   return true;
 }
 
-function choosePart(resident, occupationGroupId, slot, faceFamily = null) {
-  const candidates = appearanceCatalog.parts.filter((item) => item.slot === slot && matches(item, resident, occupationGroupId));
-  return weightedPick(resident.seed, `part:${slot}`, candidates, faceFamily).id;
+function choosePart(resident, household, slot, faceFamily = null) {
+  const candidates = appearanceCatalog.parts.filter((item) => item.slot === slot && matches(item, resident, household));
+  return weightedPick(resident.seed, `part:${slot}:${household.wealthTier}:${household.presentationStyle}`, candidates, faceFamily).id;
 }
 
-function choosePalette(resident, occupationGroupId, slot) {
-  const candidates = appearanceCatalog.palettes.filter((item) => item.slot === slot && matches(item, resident, occupationGroupId));
-  return weightedPick(resident.seed, `palette:${slot}`, candidates).id;
+function choosePalette(resident, household, slot) {
+  const candidates = appearanceCatalog.palettes.filter((item) => item.slot === slot && matches(item, resident, household));
+  return weightedPick(resident.seed, `palette:${slot}:${household.wealthTier}:${household.presentationStyle}`, candidates).id;
 }
 
 function portraitSeedFromAppearance(appearance) {
@@ -88,6 +114,15 @@ function portraitSeedFromAppearance(appearance) {
     appearance.hairPaletteId,
     appearance.clothingPaletteId,
   ].join('|'));
+}
+
+for (const item of [...appearanceCatalog.parts, ...appearanceCatalog.palettes]) {
+  for (const wealthTier of item.wealthTiers ?? []) {
+    if (!validWealthTiers.has(wealthTier)) throw new Error(`${item.id}: invalid wealth tier ${wealthTier}.`);
+  }
+  for (const style of item.presentationStyles ?? []) {
+    if (!validPresentationStyles.has(style)) throw new Error(`${item.id}: invalid presentation style ${style}.`);
+  }
 }
 
 for (const part of appearanceCatalog.parts) {
@@ -110,23 +145,23 @@ for (const part of appearanceCatalog.parts) {
 }
 
 for (const resident of snapshot.residents) {
-  const occupation = occupationById.get(resident.occupationId);
-  if (!occupation) throw new Error(`${resident.id}: unknown occupation ${resident.occupationId}.`);
-  const occupationGroupId = occupation.groupId;
-  const faceId = choosePart(resident, occupationGroupId, 'face');
+  const household = householdById.get(resident.householdId);
+  if (!household) throw new Error(`${resident.id}: missing household ${resident.householdId}.`);
+
+  const faceId = choosePart(resident, household, 'face');
   const faceFamily = partById.get(faceId)?.faceFamily;
   if (!validFaceFamilies.has(faceFamily)) throw new Error(`${resident.id}: ${faceId} has no valid faceFamily.`);
 
   resident.appearance = {
     faceId,
-    hairId: choosePart(resident, occupationGroupId, 'hair', faceFamily),
-    browId: choosePart(resident, occupationGroupId, 'brow', faceFamily),
-    facialHairId: choosePart(resident, occupationGroupId, 'facial-hair', faceFamily),
-    headwearId: choosePart(resident, occupationGroupId, 'headwear', faceFamily),
-    outfitId: choosePart(resident, occupationGroupId, 'outfit', faceFamily),
-    skinPaletteId: choosePalette(resident, occupationGroupId, 'skin'),
-    hairPaletteId: choosePalette(resident, occupationGroupId, 'hair'),
-    clothingPaletteId: choosePalette(resident, occupationGroupId, 'clothing'),
+    hairId: choosePart(resident, household, 'hair', faceFamily),
+    browId: choosePart(resident, household, 'brow', faceFamily),
+    facialHairId: choosePart(resident, household, 'facial-hair', faceFamily),
+    headwearId: choosePart(resident, household, 'headwear', faceFamily),
+    outfitId: choosePart(resident, household, 'outfit', faceFamily),
+    skinPaletteId: choosePalette(resident, household, 'skin'),
+    hairPaletteId: choosePalette(resident, household, 'hair'),
+    clothingPaletteId: choosePalette(resident, household, 'clothing'),
   };
 
   for (const id of [resident.appearance.faceId, resident.appearance.hairId, resident.appearance.browId, resident.appearance.facialHairId, resident.appearance.headwearId, resident.appearance.outfitId]) {
@@ -135,6 +170,9 @@ for (const resident of snapshot.residents) {
   for (const id of [resident.appearance.skinPaletteId, resident.appearance.hairPaletteId, resident.appearance.clothingPaletteId]) {
     if (!paletteById.has(id)) throw new Error(`${resident.id}: generated unknown appearance palette ${id}.`);
   }
+  if (resident.gender === 'female' && !resident.appearance.facialHairId.endsWith('.none')) {
+    throw new Error(`${resident.id}: female resident generated facial hair.`);
+  }
 
   resident.portraitSeed = portraitSeedFromAppearance(resident.appearance);
 }
@@ -142,4 +180,5 @@ for (const resident of snapshot.residents) {
 snapshot.schema = 'wanhu.resident-snapshot.v3';
 await writeFile(join(generatedDir, 'resident-snapshot.json'), `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
 
-console.log(`Compiled stable AppearanceDNA with PortraitRig compatibility for ${snapshot.residents.length} residents.`);
+const wealthSummary = Object.fromEntries([...validWealthTiers].map((tier) => [tier, snapshot.households.filter((item) => item.wealthTier === tier).length]));
+console.log(`Compiled wealth-driven AppearanceDNA for ${snapshot.residents.length} residents across ${snapshot.households.length} households. ${JSON.stringify(wealthSummary)}`);
