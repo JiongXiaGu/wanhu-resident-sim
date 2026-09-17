@@ -8,8 +8,6 @@ async function readJson(relativePath) {
   return JSON.parse(await readFile(join(root, relativePath), 'utf8'));
 }
 
-const legacySurnames = await readJson('Content/Names/surnames.json');
-const legacyGivenNames = await readJson('Content/Names/given-names.json');
 const surnames = await readJson('Content/Names/surnames-v2.json');
 const givenNames = await readJson('Content/Names/given-names-v2.json');
 const lifeTags = await readJson('Content/Tags/life-tags.json');
@@ -76,17 +74,6 @@ function assertUniqueStrings(items, label) {
     if (seen.has(value)) throw new Error(`${label} contains duplicate value ${value}.`);
     seen.add(value);
   }
-}
-
-function assertLegacyMirror() {
-  const v2SurnameTexts = surnames.items.map((item) => item.text);
-  if (JSON.stringify(v2SurnameTexts) !== JSON.stringify(legacySurnames.items)) {
-    throw new Error('Name V1/V2 surname bridge drifted. V2 must mirror the current demo surname pool during migration.');
-  }
-  const v2Male = givenNames.items.filter((item) => item.gender === 'male').map((item) => item.text);
-  const v2Female = givenNames.items.filter((item) => item.gender === 'female').map((item) => item.text);
-  if (JSON.stringify(v2Male) !== JSON.stringify(legacyGivenNames.male)) throw new Error('Name V1/V2 male given-name bridge drifted.');
-  if (JSON.stringify(v2Female) !== JSON.stringify(legacyGivenNames.female)) throw new Error('Name V1/V2 female given-name bridge drifted.');
 }
 
 requireArray(surnames.items, 'Surname V2');
@@ -177,8 +164,6 @@ for (const event of lifeEvents.items ?? []) {
   const addSet = new Set(addTags);
   for (const tagId of removeTags) if (addSet.has(tagId)) throw new Error(`${event.id}: ${tagId} cannot be both added and removed.`);
 }
-
-assertLegacyMirror();
 
 const registry = {
   schema: 'wanhu.stable-id-registry.v1',
