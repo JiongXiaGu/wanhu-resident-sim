@@ -63,6 +63,8 @@ jobs:
           done
           cat /tmp/wanhu-resident-vite.log
           exit 1
+      - name: Gate Portrait Art V2 quality
+        run: node scripts/assert-portrait-v2-quality.mjs
       - name: Capture resident review screenshots
         run: node scripts/capture-resident-review.mjs
       - name: Capture Portrait Art V2 review screenshots
