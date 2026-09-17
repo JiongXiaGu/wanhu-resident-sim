@@ -1,0 +1,55 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+
+const root = process.cwd();
+const generatedDir = join(root, 'Web', 'public', 'generated');
+
+async function readJson(name) {
+  return JSON.parse(await readFile(join(generatedDir, name), 'utf8'));
+}
+
+const definitions = await readJson('definitions.json');
+const storyBuckets = await readJson('story-buckets.json');
+const occupationGroups = await readJson('occupation-groups.json');
+const appearanceCatalog = await readJson('appearance-catalog.json');
+const stableIdRegistry = await readJson('stable-id-registry.json');
+
+if (definitions.schema !== 'wanhu.resident-definitions.v3') {
+  throw new Error(`WebContentCompiler expected wanhu.resident-definitions.v3, got ${definitions.schema}`);
+}
+if (storyBuckets.schema !== 'wanhu.story-buckets.v1') {
+  throw new Error(`Unsupported Story Bucket schema: ${storyBuckets.schema}`);
+}
+if (occupationGroups.schema !== 'wanhu.occupation-groups.v1') {
+  throw new Error(`Unsupported occupation-group schema: ${occupationGroups.schema}`);
+}
+if (appearanceCatalog.schema !== 'wanhu.appearance-catalog.v1') {
+  throw new Error(`Unsupported appearance catalog schema: ${appearanceCatalog.schema}`);
+}
+if (stableIdRegistry.schema !== 'wanhu.stable-id-registry.v1') {
+  throw new Error(`Unsupported Stable ID registry schema: ${stableIdRegistry.schema}`);
+}
+
+const eventIds = new Set(definitions.lifeEvents.map((item) => item.id));
+for (const bucket of storyBuckets.buckets) {
+  for (const eventId of bucket.eventIds) {
+    if (!eventIds.has(eventId)) throw new Error(`Story Bucket ${bucket.key} references unknown LifeEvent ${eventId}.`);
+  }
+}
+
+const output = {
+  ...definitions,
+  schema: 'wanhu.resident-definitions.v4',
+  occupationGroups: occupationGroups.items,
+  appearanceCatalog,
+  storyBuckets,
+  contentMeta: {
+    stableIdCount: stableIdRegistry.items.length,
+    storyBucketCount: storyBuckets.buckets.length,
+    appearancePartCount: appearanceCatalog.parts.length,
+    appearancePaletteCount: appearanceCatalog.palettes.length,
+  },
+};
+
+await writeFile(join(generatedDir, 'definitions.json'), `${JSON.stringify(output, null, 2)}\n`, 'utf8');
+console.log(`Assembled Web resident definitions v4 with ${storyBuckets.buckets.length} Story Buckets and ${appearanceCatalog.parts.length} appearance parts.`);
