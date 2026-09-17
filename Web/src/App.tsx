@@ -1,21 +1,20 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+  buildResidentLife,
+  compactText,
+  nodeFor,
+  pickDemoStoryIndex,
+  recentLifeEntries,
+  scheduleFor,
+  stageAtDay,
+  type ResidentAssignment,
+  type StageIndex,
+} from './life-log';
 import { MOCK_RESIDENTS } from './mock-residents';
 import { StoryReviewView } from './StoryReviewView';
-import type { Story, StoryBranch, StoryCollection, StoryNode, StoryTime } from './types';
+import type { Story, StoryCollection } from './types';
 
 type AppMode = 'game' | 'review';
-type StageIndex = 0 | 1 | 2;
-
-type ResidentAssignment = {
-  storyIndex: number;
-  branchIndex: number;
-  startDay: number;
-};
-
-type StageSchedule = {
-  stage2Day: number;
-  stage3Day: number;
-};
 
 const INITIAL_GAME_DAY = 120;
 const START_OFFSETS = [2, 9, 22, 45, 76, 14, 105, 33];
@@ -27,45 +26,6 @@ function pickRandomIndex(length: number, except?: number) {
   return next;
 }
 
-function midpointDelay(time: StoryTime, fallback: number) {
-  const min = time.minDays ?? fallback;
-  const max = time.maxDays ?? min;
-  return Math.max(0, Math.round((min + max) / 2));
-}
-
-function scheduleFor(assignment: ResidentAssignment, branch: StoryBranch): StageSchedule {
-  const stage2Delay = midpointDelay(branch.stage2.time, 7);
-  const stage2Day = assignment.startDay + stage2Delay;
-  const stage3Delay = midpointDelay(branch.stage3.time, 10);
-  const stage3Base = branch.stage3.time.relativeTo === 'story-start' ? assignment.startDay : stage2Day;
-  return {
-    stage2Day,
-    stage3Day: stage3Base + stage3Delay,
-  };
-}
-
-function stageAtDay(gameDay: number, schedule: StageSchedule): StageIndex {
-  if (gameDay >= schedule.stage3Day) return 2;
-  if (gameDay >= schedule.stage2Day) return 1;
-  return 0;
-}
-
-function nodeFor(story: Story, branch: StoryBranch, stage: StageIndex): StoryNode {
-  if (stage === 0) return story.start;
-  if (stage === 1) return branch.stage2;
-  return branch.stage3;
-}
-
-function nodeDayFor(assignment: ResidentAssignment, schedule: StageSchedule, stage: StageIndex) {
-  if (stage === 0) return assignment.startDay;
-  if (stage === 1) return schedule.stage2Day;
-  return schedule.stage3Day;
-}
-
-function compactText(text: string) {
-  return text.split(/\n\s*\n/g).map((item) => item.trim()).filter(Boolean).join('');
-}
-
 function relativeDayLabel(days: number) {
   if (days <= 0) return '今日';
   if (days === 1) return '昨日';
@@ -75,13 +35,10 @@ function relativeDayLabel(days: number) {
   return `${Math.max(1, Math.round(months / 12))}年前`;
 }
 
-function stageEyebrow(stage: StageIndex) {
-  return stage === 0 ? '近况' : '往事续篇';
-}
-
 function createAssignments(stories: Story[]): Record<string, ResidentAssignment> {
   return Object.fromEntries(MOCK_RESIDENTS.map((resident, index) => {
-    const storyIndex = stories.length ? (index * 7 + 3) % stories.length : 0;
+    const fallbackIndex = stories.length ? (index * 7 + 3) % stories.length : 0;
+    const storyIndex = pickDemoStoryIndex(stories, resident, fallbackIndex);
     const story = stories[storyIndex];
     const branchIndex = story?.branches.length ? (index * 3 + 1) % story.branches.length : 0;
     return [resident.id, {
@@ -90,6 +47,12 @@ function createAssignments(stories: Story[]): Record<string, ResidentAssignment>
       startDay: INITIAL_GAME_DAY - START_OFFSETS[index % START_OFFSETS.length],
     }];
   }));
+}
+
+function summarize(text: string | undefined, limit = 38) {
+  if (!text) return '';
+  const compact = compactText(text);
+  return compact.length > limit ? `${compact.slice(0, limit)}…` : compact;
 }
 
 export default function App() {
@@ -101,6 +64,8 @@ export default function App() {
   const [assignments, setAssignments] = useState<Record<string, ResidentAssignment>>({});
   const [seenStages, setSeenStages] = useState<Record<string, number>>({});
   const [showDev, setShowDev] = useState(true);
+  const [panelOpen, setPanelOpen] = useState(true);
+  const [historyExpanded, setHistoryExpanded] = useState(false);
   const [bodyLines, setBodyLines] = useState(0);
   const [titleLines, setTitleLines] = useState(0);
   const bodyRef = useRef<HTMLParagraphElement>(null);
@@ -131,14 +96,19 @@ export default function App() {
   const branch = story && assignment ? (story.branches[assignment.branchIndex] ?? story.branches[0]) : undefined;
   const schedule = assignment && branch ? scheduleFor(assignment, branch) : undefined;
   const stage = schedule ? stageAtDay(gameDay, schedule) : 0;
-  const node = story && branch ? nodeFor(story, branch, stage) : undefined;
-  const nodeDay = assignment && schedule ? nodeDayFor(assignment, schedule, stage) : gameDay;
-  const currentText = node ? compactText(node.text) : '';
+  const currentNode = story && branch ? nodeFor(story, branch, stage) : undefined;
+  const residentLife = selectedResident && story && branch && assignment && schedule
+    ? buildResidentLife(selectedResident, story, branch, assignment, schedule, stage, gameDay)
+    : undefined;
 
   useEffect(() => {
-    if (!selectedResident || !schedule) return;
+    if (!panelOpen || !selectedResident || !schedule) return;
     setSeenStages((current) => ({ ...current, [selectedResident.id]: stage }));
-  }, [selectedResident.id, stage, schedule]);
+  }, [panelOpen, selectedResident.id, stage, schedule]);
+
+  useEffect(() => {
+    setHistoryExpanded(false);
+  }, [selectedResidentId]);
 
   useLayoutEffect(() => {
     function measure(element: HTMLElement | null) {
@@ -154,7 +124,7 @@ export default function App() {
       setTitleLines(measure(titleRef.current));
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [currentText, node?.title, selectedResidentId, gameDay]);
+  }, [residentLife?.latestStoryEntry.id, selectedResidentId, gameDay]);
 
   const stageByResident = useMemo(() => {
     if (!stories.length) return {} as Record<string, StageIndex>;
@@ -170,12 +140,14 @@ export default function App() {
 
   function selectResident(id: string) {
     setSelectedResidentId(id);
+    setPanelOpen(true);
   }
 
   function selectRelativeResident(offset: number) {
     const currentIndex = MOCK_RESIDENTS.findIndex((item) => item.id === selectedResidentId);
     const nextIndex = (currentIndex + offset + MOCK_RESIDENTS.length) % MOCK_RESIDENTS.length;
     setSelectedResidentId(MOCK_RESIDENTS[nextIndex].id);
+    setPanelOpen(true);
   }
 
   function rerollStory() {
@@ -190,6 +162,8 @@ export default function App() {
         startDay: gameDay,
       },
     }));
+    setSeenStages((current) => ({ ...current, [selectedResident.id]: -1 }));
+    setHistoryExpanded(false);
   }
 
   function rerollBranch() {
@@ -202,6 +176,8 @@ export default function App() {
         startDay: gameDay,
       },
     }));
+    setSeenStages((current) => ({ ...current, [selectedResident.id]: -1 }));
+    setHistoryExpanded(false);
   }
 
   function jumpToNextNode() {
@@ -222,7 +198,7 @@ export default function App() {
     );
   }
 
-  if (!collection || !assignment || !story || !branch || !schedule || !node) {
+  if (!collection || !assignment || !story || !branch || !schedule || !currentNode || !residentLife) {
     return (
       <main className="app-shell center-state">
         <section className="state-card">
@@ -235,10 +211,14 @@ export default function App() {
 
   if (mode === 'review') return <StoryReviewView collection={collection} onExit={() => setMode('game')} />;
 
-  const relativeDays = Math.max(0, gameDay - nodeDay);
+  const latestStoryEntry = residentLife.latestStoryEntry;
+  const visibleEntries = historyExpanded
+    ? residentLife.entries.slice(0, 12)
+    : recentLifeEntries(residentLife.entries, latestStoryEntry, 5);
   const unreadCount = MOCK_RESIDENTS.filter((resident) => (stageByResident[resident.id] ?? 0) > (seenStages[resident.id] ?? -1)).length;
   const bodyDensity = bodyLines <= 4.5 ? 'good' : bodyLines <= 5.8 ? 'warn' : 'bad';
   const titleDensity = titleLines <= 2.05 ? 'good' : 'bad';
+  const lifeCount = selectedResident.historyCount + Math.max(1, residentLife.entries.filter((entry) => entry.kind !== 'routine').length);
 
   return (
     <main className="sim-game" data-dev={showDev ? 'true' : 'false'}>
@@ -267,7 +247,7 @@ export default function App() {
         {MOCK_RESIDENTS.map((resident) => {
           const residentStage = stageByResident[resident.id] ?? 0;
           const isUnread = residentStage > (seenStages[resident.id] ?? -1);
-          const isSelected = resident.id === selectedResident.id;
+          const isSelected = resident.id === selectedResident.id && panelOpen;
           return (
             <button
               key={resident.id}
@@ -285,43 +265,77 @@ export default function App() {
         })}
       </section>
 
-      <aside className="resident-panel" aria-label={`${selectedResident.name}的居民信息`}>
-        <header className="resident-panel__header">
-          <div className="resident-avatar" aria-hidden="true">{selectedResident.name.slice(-1)}</div>
-          <div className="resident-identity">
-            <div><b>{selectedResident.name}</b><span>{selectedResident.age}岁 · {selectedResident.occupation}</span></div>
-            <small>{selectedResident.district} · {selectedResident.family}</small>
+      {panelOpen && (
+        <aside className="resident-panel" aria-label={`${selectedResident.name}的居民信息`}>
+          <header className="resident-panel__header">
+            <div className="resident-avatar" aria-hidden="true">{selectedResident.name.slice(-1)}</div>
+            <div className="resident-identity">
+              <div><b>{selectedResident.name}</b><span>{selectedResident.age}岁 · {residentLife.presentation.occupation}</span></div>
+              <small>{selectedResident.district} · {residentLife.presentation.family}</small>
+            </div>
+            <button className="resident-panel__close" type="button" onClick={() => setPanelOpen(false)} aria-label="关闭居民面板">×</button>
+          </header>
+
+          <div className="resident-panel__body">
+            <section className="resident-activity">
+              <span>此刻</span>
+              <p>{residentLife.presentation.activity}</p>
+            </section>
+
+            <section className="resident-life">
+              <div className="resident-life__heading">
+                <b>最近</b>
+                <small>看看他最近过得怎么样</small>
+              </div>
+
+              <div className="resident-life__feed">
+                {visibleEntries.map((entry) => {
+                  const isLatestStory = entry.id === latestStoryEntry.id;
+                  const isOlderStory = entry.kind === 'story' && !isLatestStory;
+                  const relativeDays = Math.max(0, gameDay - entry.day);
+                  return (
+                    <article
+                      key={entry.id}
+                      className={`life-entry life-entry--${entry.kind} ${isLatestStory ? 'is-featured' : ''} ${isOlderStory ? 'is-story-history' : ''}`}
+                    >
+                      <div className="life-entry__rail" aria-hidden="true"><i /></div>
+                      <div className="life-entry__content">
+                        <div className="life-entry__meta">
+                          <time>{relativeDayLabel(relativeDays)}</time>
+                          {isLatestStory && <span>生活近况</span>}
+                          {isOlderStory && <span>同一件事</span>}
+                          {entry.kind === 'state' && <span>生活变化</span>}
+                        </div>
+
+                        {isLatestStory ? (
+                          <>
+                            <h2 ref={titleRef}>{entry.title}</h2>
+                            <p className="life-entry__story-text" ref={bodyRef}>{entry.text}</p>
+                          </>
+                        ) : entry.kind === 'story' ? (
+                          <>
+                            <h3>{entry.title}</h3>
+                            <p className="life-entry__summary">{summarize(entry.text)}</p>
+                          </>
+                        ) : (
+                          <p className="life-entry__routine-text">{entry.title}</p>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
           </div>
-          <button className="resident-panel__close" type="button" aria-label="关闭居民面板">×</button>
-        </header>
 
-        <div className="resident-panel__body">
-          <section className="resident-activity">
-            <span>正在做</span>
-            <p>{selectedResident.activity}</p>
-          </section>
-
-          <section className="resident-story">
-            <div className="resident-story__meta">
-              <span className={stage > 0 ? 'is-continuation' : ''}>{stageEyebrow(stage)}</span>
-              <time>{relativeDayLabel(relativeDays)}</time>
-            </div>
-            <p className="resident-story__series">{story.title}</p>
-            <h2 ref={titleRef}>{node.title}</h2>
-            <p className="resident-story__text" ref={bodyRef}>{currentText}</p>
-
-            <div className="resident-story__timeline" aria-label="故事进展">
-              {[0, 1, 2].map((item) => <i key={item} className={item <= stage ? 'is-active' : ''} />)}
-            </div>
-          </section>
-        </div>
-
-        <footer className="resident-panel__footer">
-          <button type="button">往事 {selectedResident.historyCount + stage}<span>›</span></button>
-          {stage < 2 && <small>这段经历还会继续</small>}
-          {stage === 2 && <small>这段经历暂告一段落</small>}
-        </footer>
-      </aside>
+          <footer className="resident-panel__footer">
+            <button type="button" onClick={() => setHistoryExpanded((value) => !value)}>
+              {historyExpanded ? '收起最近记录' : `往事 ${lifeCount}`}<span>{historyExpanded ? '⌃' : '›'}</span>
+            </button>
+            <small>{historyExpanded ? '显示更多生活记录' : `${visibleEntries.length} 条最近生活记录`}</small>
+          </footer>
+        </aside>
+      )}
 
       <nav className="sim-command-dock" aria-label="模拟游戏主工具栏">
         {['道路', '桥梁', '建筑', '城墙', '装饰'].map((label, index) => (
@@ -337,6 +351,7 @@ export default function App() {
           <div className="dev-panel__row"><span>当前居民</span><b>{selectedResident.name}</b></div>
           <div className="dev-panel__row"><span>Story</span><b>{story.id}</b></div>
           <div className="dev-panel__row"><span>Branch</span><b>{branch.id} · Stage {stage + 1}</b></div>
+          <div className="dev-panel__row"><span>居民状态</span><b>{residentLife.presentation.occupation} · {residentLife.presentation.family}</b></div>
           <div className="dev-density">
             <span className={`density-chip is-${bodyDensity}`}>正文 {bodyLines.toFixed(1)} 行</span>
             <span className={`density-chip is-${titleDensity}`}>标题 {titleLines.toFixed(1)} 行</span>
@@ -355,7 +370,7 @@ export default function App() {
             <button type="button" onClick={rerollBranch}>重抽分支</button>
             <button type="button" onClick={() => setMode('review')}>完整审查器</button>
           </div>
-          <p>{unreadCount} 位居民有未查看的生活近况 · 当前故事仅用于 UI/游戏性验证，尚未启用居民条件筛选。</p>
+          <p>{unreadCount} 位居民有未查看的故事进展。玩家界面只读取 LifeLog；Story / Branch / Stage 仅在开发面板保留。</p>
         </aside>
       )}
 
