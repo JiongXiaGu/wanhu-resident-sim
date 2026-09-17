@@ -65,6 +65,20 @@ function choosePalette(resident, occupationGroupId, slot) {
   return weightedPick(resident.seed, `palette:${slot}`, candidates).id;
 }
 
+function portraitSeedFromAppearance(appearance) {
+  return hash32([
+    appearance.faceId,
+    appearance.hairId,
+    appearance.browId,
+    appearance.facialHairId,
+    appearance.headwearId,
+    appearance.outfitId,
+    appearance.skinPaletteId,
+    appearance.hairPaletteId,
+    appearance.clothingPaletteId,
+  ].join('|'));
+}
+
 for (const resident of snapshot.residents) {
   const occupation = occupationById.get(resident.occupationId);
   if (!occupation) throw new Error(`${resident.id}: unknown occupation ${resident.occupationId}.`);
@@ -88,9 +102,13 @@ for (const resident of snapshot.residents) {
   for (const id of [resident.appearance.skinPaletteId, resident.appearance.hairPaletteId, resident.appearance.clothingPaletteId]) {
     if (!paletteById.has(id)) throw new Error(`${resident.id}: generated unknown appearance palette ${id}.`);
   }
+
+  // Web 现有 SVG 头像仍以 portraitSeed 选取变体；把 Seed 改为 AppearanceDNA 的确定性投影，
+  // 让当前原型先由稳定外观身份驱动，同时不把这套 SVG 变体映射误当成正式资源契约。
+  resident.portraitSeed = portraitSeedFromAppearance(resident.appearance);
 }
 
 snapshot.schema = 'wanhu.resident-snapshot.v3';
 await writeFile(join(generatedDir, 'resident-snapshot.json'), `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
 
-console.log(`Compiled stable AppearanceDNA for ${snapshot.residents.length} residents.`);
+console.log(`Compiled stable AppearanceDNA for ${snapshot.residents.length} residents and projected it into Web portrait seeds.`);
