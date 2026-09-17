@@ -63,6 +63,15 @@ function relationLabel(owner: ResidentRecord, member: ResidentRecord) {
   return '家人';
 }
 
+function historyStageLabel(age: number) {
+  if (age < 13) return '童年';
+  if (age < 18) return '少年';
+  if (age < 26) return '青年';
+  if (age < 46) return '壮年';
+  if (age < 60) return '中年';
+  return '晚年';
+}
+
 function createAssignments(
   residents: ResidentRecord[],
   households: HouseholdRecord[],
@@ -162,7 +171,7 @@ export default function App() {
       setTitleLines(measure(titleRef.current));
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [lifeView?.currentStage, lifeView?.showCurrentEvent, selectedResidentId, gameDay]);
+  }, [lifeView?.currentStage, lifeView?.showCurrentEvent, selectedResidentId, gameDay, historyExpanded]);
 
   const stageByResident = useMemo(() => Object.fromEntries(residents.map((resident) => {
     const currentAssignment = assignments[resident.id];
@@ -219,6 +228,23 @@ export default function App() {
     setLocationNotice(`镜头定位 · ${label}`);
   }
 
+  function openHistory() {
+    setFamilyOpen(false);
+    setExpandedChapterId(null);
+    setHistoryExpanded(true);
+  }
+
+  function closeHistory() {
+    setExpandedChapterId(null);
+    setHistoryExpanded(false);
+  }
+
+  function toggleFamily() {
+    setHistoryExpanded(false);
+    setExpandedChapterId(null);
+    setFamilyOpen((value) => !value);
+  }
+
   if (loadError) {
     return (
       <main className="app-shell center-state">
@@ -257,6 +283,15 @@ export default function App() {
   const titleDensity = titleLines <= 2.05 ? 'good' : 'bad';
   const lifeCount = lifeView.history.length;
   const historyItems = lifeView.history;
+  const chronologicalHistory = [...historyItems].sort((left, right) => left.day - right.day);
+  const historyGroups = chronologicalHistory.reduce<Array<{ label: string; items: typeof historyItems }>>((groups, entry) => {
+    const entryAge = ageAtDay(selectedResident, entry.day, definitions.generation.daysPerYear);
+    const label = historyStageLabel(entryAge);
+    const currentGroup = groups.at(-1);
+    if (currentGroup?.label === label) currentGroup.items.push(entry);
+    else groups.push({ label, items: [entry] });
+    return groups;
+  }, []);
 
   return (
     <main className="sim-game" data-dev={showDev ? 'true' : 'false'}>
@@ -305,7 +340,7 @@ export default function App() {
       </section>
 
       {panelOpen && (
-        <aside className="resident-panel resident-panel--v2" aria-label={`${selectedResident.displayName}的居民信息`}>
+        <aside className={`resident-panel resident-panel--v2 ${historyExpanded ? 'is-history-mode' : ''}`} aria-label={`${selectedResident.displayName}的居民信息`}>
           <header className="resident-panel__header">
             <div className="resident-avatar">
               <ResidentAvatar
@@ -325,7 +360,7 @@ export default function App() {
           <div className="resident-world-links" aria-label="居民世界关联">
             <button type="button" onClick={() => focusLocation(`${selectedDistrict} · 住处 ${selectedHousehold?.homeId ?? ''}`)}>⌂ <span>住处</span></button>
             <button type="button" disabled={!selectedResident.workplaceId} onClick={() => focusLocation(`${occupation?.name ?? '工作地'} · ${selectedResident.workplaceId}`)}>⚒ <span>工作地</span></button>
-            <button type="button" disabled={!householdMembers.length} className={familyOpen ? 'is-active' : ''} onClick={() => setFamilyOpen((value) => !value)}>♡ <span>家人 {householdMembers.length}</span></button>
+            <button type="button" disabled={!householdMembers.length} className={familyOpen ? 'is-active' : ''} onClick={toggleFamily}>♡ <span>家人 {householdMembers.length}</span></button>
           </div>
 
           {familyOpen && (
@@ -342,82 +377,129 @@ export default function App() {
           )}
 
           <div className="resident-panel__body resident-panel__body--v2">
-            <section className="resident-activity">
-              <span>此刻</span>
-              <p>{lifeView.activity}</p>
-            </section>
+            {historyExpanded ? (
+              <section className="resident-history-drawer resident-history-mode" aria-label={`${selectedResident.displayName}的人生经历`}>
+                <header className="resident-history-hero">
+                  <span>人生经历</span>
+                  <h2>{selectedResident.displayName}的一生</h2>
+                  <p>{selectedAge}岁 · 已记录 {lifeCount} 章值得回看的经历</p>
+                </header>
 
-            {lifeView.showCurrentEvent && (
-              <section className="resident-recent">
-                <div className="resident-recent__heading"><b>{currentStage < 2 ? '正在经历' : '最近发生'}</b></div>
-                <article className="life-event-card">
-                  <div className="life-event-card__meta">
-                    <time>{relativeDayLabel(Math.max(0, gameDay - currentEventEntry.day))}</time>
-                    {lifeView.event.source && (
-                      <button type="button" className={`life-event-source is-${lifeView.event.source.type}`} onClick={() => focusLocation(lifeView.event.source!.label)}>
-                        {sourceTypeLabel(lifeView.event.source.type)} · {lifeView.event.source.label}
-                      </button>
-                    )}
-                  </div>
-                  <h2 ref={titleRef}>{currentEventEntry.title}</h2>
-                  <p ref={bodyRef}>{currentEventEntry.text}</p>
-                  {previousEventEntry && (
-                    <div className="life-event-prior">
-                      <span>└ {relativeDayLabel(Math.max(0, gameDay - previousEventEntry.day))}</span>
-                      <b>{previousEventEntry.title}</b>
+                {historyGroups.length > 0 ? (
+                  <div className="resident-life-timeline">
+                    {historyGroups.map((group) => (
+                      <section className="resident-life-stage" key={group.label}>
+                        <div className="resident-life-stage__label">
+                          <b>{group.label}</b>
+                          <span>{group.items.length}章</span>
+                        </div>
+                        <div className="resident-life-stage__chapters">
+                          {group.items.map((entry) => {
+                            const chapterEvent = entry.sourceEventId
+                              ? definitions.lifeEvents.find((event) => event.id === entry.sourceEventId)
+                              : undefined;
+                            const chapterOpen = expandedChapterId === entry.id;
+                            const entryAge = ageAtDay(selectedResident, entry.day, definitions.generation.daysPerYear);
+                            return (
+                              <article className={`resident-life-chapter ${chapterEvent ? 'has-story' : 'is-fact'} ${chapterOpen ? 'is-open' : ''}`} key={entry.id}>
+                                <i className="resident-life-chapter__dot" aria-hidden="true" />
+                                {chapterEvent ? (
+                                  <button type="button" className="resident-life-chapter__row" onClick={() => setExpandedChapterId((current) => current === entry.id ? null : entry.id)}>
+                                    <time>{entryAge}岁</time>
+                                    <span>{entry.title}</span>
+                                    <small>{chapterOpen ? '收起' : '展开故事'}</small>
+                                  </button>
+                                ) : (
+                                  <div className="resident-life-chapter__row resident-life-chapter__row--fact">
+                                    <time>{entryAge}岁</time>
+                                    <span>{entry.title}</span>
+                                    <small>人生节点</small>
+                                  </div>
+                                )}
+
+                                {chapterOpen && chapterEvent && (
+                                  <div className="resident-life-story">
+                                    {chapterEvent.source && (
+                                      <div className={`resident-life-story__source is-${chapterEvent.source.type}`}>
+                                        {sourceTypeLabel(chapterEvent.source.type)} · {chapterEvent.source.label}
+                                      </div>
+                                    )}
+                                    {chapterEvent.stages.map((stage, index) => (
+                                      <article key={`${chapterEvent.id}:history:${index}`}>
+                                        <i aria-hidden="true" />
+                                        <div>
+                                          <span>{index === 0 ? '起初' : index === 1 ? '后来' : '最后'}</span>
+                                          <b>{stage.title}</b>
+                                          <p>{stage.text}</p>
+                                        </div>
+                                      </article>
+                                    ))}
+                                  </div>
+                                )}
+                              </article>
+                            );
+                          })}
+                        </div>
+                      </section>
+                    ))}
+
+                    <div className="resident-life-now">
+                      <i aria-hidden="true" />
+                      <div><time>{selectedAge}岁</time><b>如今</b><span>故事仍在继续</span></div>
                     </div>
-                  )}
-                </article>
+                  </div>
+                ) : (
+                  <div className="resident-history-empty">
+                    <b>还没有需要长期记住的章节</b>
+                    <p>普通日常不会被强行写进人生经历。</p>
+                  </div>
+                )}
               </section>
-            )}
+            ) : (
+              <>
+                <section className="resident-activity">
+                  <span>此刻</span>
+                  <p>{lifeView.activity}</p>
+                </section>
 
-            {lifeView.routines.length > 0 && (
-              <section className="resident-routine-section">
-                <div className="resident-routine-section__heading"><b>最近</b></div>
-                <ul className="resident-routine-list">
-                  {lifeView.routines.slice(0, 3).map((entry) => (
-                    <li key={entry.id}>
-                      <time>{relativeDayLabel(Math.max(0, gameDay - entry.day))}</time>
-                      <span>{entry.title}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-
-            {historyExpanded && (
-              <section className="resident-history-drawer">
-                <div className="resident-history-drawer__heading"><b>人生经历</b><span>只保留值得记住的人生章节</span></div>
-                {historyItems.slice(0, 10).map((entry) => {
-                  const chapterEvent = entry.sourceEventId
-                    ? definitions.lifeEvents.find((event) => event.id === entry.sourceEventId)
-                    : undefined;
-                  const chapterOpen = expandedChapterId === entry.id;
-                  return (
-                    <div className={`resident-history-item ${chapterEvent ? 'has-story' : ''}`} key={entry.id}>
-                      <time>{ageAtDay(selectedResident, entry.day, definitions.generation.daysPerYear)}岁</time>
-                      {chapterEvent ? (
-                        <button type="button" onClick={() => setExpandedChapterId((current) => current === entry.id ? null : entry.id)}>
-                          <span>{entry.title}</span>
-                          <small>{chapterOpen ? '收起' : '展开故事'}</small>
-                        </button>
-                      ) : (
-                        <span className="resident-history-item__fact">{entry.title}</span>
-                      )}
-                      {chapterOpen && chapterEvent && (
-                        <div className="resident-history-story">
-                          {chapterEvent.stages.map((stage, index) => (
-                            <article key={`${chapterEvent.id}:history:${index}`}>
-                              <b>{stage.title}</b>
-                              <p>{stage.text}</p>
-                            </article>
-                          ))}
+                {lifeView.showCurrentEvent && (
+                  <section className="resident-recent">
+                    <div className="resident-recent__heading"><b>{currentStage < 2 ? '正在经历' : '最近发生'}</b></div>
+                    <article className="life-event-card">
+                      <div className="life-event-card__meta">
+                        <time>{relativeDayLabel(Math.max(0, gameDay - currentEventEntry.day))}</time>
+                        {lifeView.event.source && (
+                          <button type="button" className={`life-event-source is-${lifeView.event.source.type}`} onClick={() => focusLocation(lifeView.event.source!.label)}>
+                            {sourceTypeLabel(lifeView.event.source.type)} · {lifeView.event.source.label}
+                          </button>
+                        )}
+                      </div>
+                      <h2 ref={titleRef}>{currentEventEntry.title}</h2>
+                      <p ref={bodyRef}>{currentEventEntry.text}</p>
+                      {previousEventEntry && (
+                        <div className="life-event-prior">
+                          <span>└ {relativeDayLabel(Math.max(0, gameDay - previousEventEntry.day))}</span>
+                          <b>{previousEventEntry.title}</b>
                         </div>
                       )}
-                    </div>
-                  );
-                })}
-              </section>
+                    </article>
+                  </section>
+                )}
+
+                {lifeView.routines.length > 0 && (
+                  <section className="resident-routine-section">
+                    <div className="resident-routine-section__heading"><b>最近</b></div>
+                    <ul className="resident-routine-list">
+                      {lifeView.routines.slice(0, 3).map((entry) => (
+                        <li key={entry.id}>
+                          <time>{relativeDayLabel(Math.max(0, gameDay - entry.day))}</time>
+                          <span>{entry.title}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+              </>
             )}
           </div>
 
@@ -425,8 +507,8 @@ export default function App() {
             <button type="button" className={followed[selectedResident.id] ? 'is-followed' : ''} onClick={() => setFollowed((current) => ({ ...current, [selectedResident.id]: !current[selectedResident.id] }))}>
               {followed[selectedResident.id] ? '★ 已关注' : '☆ 关注'}
             </button>
-            <button type="button" onClick={() => setHistoryExpanded((value) => !value)}>
-              {historyExpanded ? '收起经历' : `人生经历 ${lifeCount}`}<span>{historyExpanded ? '⌃' : '›'}</span>
+            <button type="button" onClick={historyExpanded ? closeHistory : openHistory}>
+              {historyExpanded ? '返回生活' : `人生经历 ${lifeCount}章`}<span>{historyExpanded ? '‹' : '›'}</span>
             </button>
           </footer>
         </aside>
@@ -449,6 +531,7 @@ export default function App() {
           <div className="dev-panel__row"><span>LifeEvent</span><b>{lifeView.event.id}</b></div>
           <div className="dev-panel__row"><span>阶段</span><b>{currentStage + 1}/3 · {lifeView.event.source?.label ?? '个人生活'}</b></div>
           <div className="dev-panel__row"><span>人生记录</span><b>{lifeView.event.recordToHistory ? '完成后进入人生经历' : '普通生活事件'}</b></div>
+          <div className="dev-panel__row"><span>面板模式</span><b>{historyExpanded ? '人生经历' : '当前生活'}</b></div>
           <div className="dev-panel__row"><span>家庭</span><b>Household {selectedResident.householdId} · {householdMembers.length} 位家人</b></div>
           <div className="dev-density">
             <span className={`density-chip is-${bodyDensity}`}>正文 {bodyLines.toFixed(1)} 行</span>
@@ -465,10 +548,10 @@ export default function App() {
             <button type="button" onClick={jumpToNextStage} disabled={currentStage === 2}>推进故事</button>
           </div>
           <div className="dev-buttons dev-buttons--two">
-            <button type="button" onClick={() => setFamilyOpen((value) => !value)}>展开家人</button>
+            <button type="button" onClick={toggleFamily}>展开家人</button>
             <button type="button" onClick={() => setMode('review')}>Legacy 审查器</button>
           </div>
-          <p>{unreadCount} 位居民有未查看的新故事阶段。当前面板不再保存独立“近况摘要”；只有重要故事完成后进入人生经历。</p>
+          <p>{unreadCount} 位居民有未查看的新故事阶段。人生模式只展示已经沉淀的人生章节，不混入此刻、当前故事和 Routine。</p>
         </aside>
       )}
 

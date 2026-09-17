@@ -37,11 +37,27 @@ await page.screenshot({ path: `${outDir}/02-life-event-continuation.png` });
 
 const historyButton = page.getByRole('button', { name: /人生经历/ });
 await historyButton.click();
-await page.waitForSelector('.resident-history-drawer');
-const storyChapter = page.locator('.resident-history-item.has-story button').first();
+await page.waitForSelector('.resident-history-mode');
+if ((await page.locator('.resident-activity').count()) !== 0) {
+  throw new Error('Life history mode must hide the current activity section.');
+}
+if ((await page.locator('.resident-recent').count()) !== 0) {
+  throw new Error('Life history mode must hide the current LifeEvent section.');
+}
+if ((await page.locator('.resident-routine-section').count()) !== 0) {
+  throw new Error('Life history mode must hide routine entries.');
+}
+if ((await page.locator('.resident-history-hero').count()) !== 1) {
+  throw new Error('Life history mode should render a dedicated biography header.');
+}
+if ((await page.locator('.resident-life-timeline').count()) !== 1) {
+  throw new Error('Life history mode should render the life chapter timeline.');
+}
+
+const storyChapter = page.locator('.resident-life-chapter.has-story button').first();
 if ((await storyChapter.count()) > 0) {
   await storyChapter.click();
-  await page.waitForSelector('.resident-history-story');
+  await page.waitForSelector('.resident-life-story');
 }
 await page.screenshot({ path: `${outDir}/03-life-history.png` });
 
