@@ -8,12 +8,15 @@ async function readJson(relativePath) {
   return JSON.parse(await readFile(join(root, relativePath), 'utf8'));
 }
 
-const surnames = await readJson('Content/Names/surnames.json');
-const givenNames = await readJson('Content/Names/given-names.json');
+const nameCatalog = await readJson('Web/public/generated/name-catalog-v2.json');
 const occupations = await readJson('Content/Occupations/occupations.json');
 const routines = await readJson('Content/Routines/routine-templates.json');
 const generation = await readJson('Content/Simulation/resident-generation.json');
 const lifeEvents = await readJson('Content/LifeEvents/life-events.json');
+
+if (nameCatalog.schema !== 'wanhu.name-catalog.v2') {
+  throw new Error(`ResidentGenerator expected wanhu.name-catalog.v2, got ${nameCatalog.schema}`);
+}
 
 const HISTORY_PHASES = [
   { id: 'school-age', minAge: 10, maxAge: 17 },
@@ -73,6 +76,16 @@ function lifeStageForAge(age) {
   return generation.lifeStages.find((stage) => age >= stage.minAge && age <= stage.maxAge)?.id ?? 'adult';
 }
 
+function nameGenerationGroupForAge(age) {
+  if (age <= 24) return 'young';
+  if (age <= 49) return 'middle';
+  return 'old';
+}
+
+function tokenAllowedForGeneration(item, generationGroup) {
+  return !Array.isArray(item.generationGroups) || item.generationGroups.length === 0 || item.generationGroups.includes(generationGroup);
+}
+
 function eligibleOccupations(age, gender) {
   const eligible = occupations.items.filter((item) => {
     if (age < item.minAge || age > item.maxAge) return false;
@@ -82,10 +95,30 @@ function eligibleOccupations(age, gender) {
   return eligible.length ? eligible : occupations.items.filter((item) => item.id === 'occupation.child');
 }
 
-function makeName(rng, gender, forcedSurname) {
-  const surname = forcedSurname ?? pick(rng, surnames.items);
-  const givenPool = gender === 'female' ? givenNames.female : givenNames.male;
-  return { surname, displayName: `${surname}${pick(rng, givenPool)}` };
+function makeName(rng, gender, age, forcedSurnameId) {
+  const generationGroup = nameGenerationGroupForAge(age);
+  const surnamePool = nameCatalog.surnames.filter((item) => tokenAllowedForGeneration(item, generationGroup));
+  if (!surnamePool.length) throw new Error(`No surname token for generation group ${generationGroup}.`);
+
+  let surname;
+  if (forcedSurnameId) {
+    surname = nameCatalog.surnames.find((item) => item.id === forcedSurnameId);
+    if (!surname) throw new Error(`Unknown forced surname id ${forcedSurnameId}.`);
+  } else {
+    surname = weightedPick(rng, surnamePool);
+  }
+
+  const givenPool = nameCatalog.givenNames.filter((item) =>
+    (item.gender === gender || item.gender === 'unisex') && tokenAllowedForGeneration(item, generationGroup));
+  if (!givenPool.length) throw new Error(`No ${gender} given-name token for generation group ${generationGroup}.`);
+  const givenName = weightedPick(rng, givenPool);
+
+  return {
+    surname: surname.text,
+    surnameId: surname.id,
+    givenNameId: givenName.id,
+    displayName: `${surname.text}${givenName.text}`,
+  };
 }
 
 function pickOccupation(rng, age, gender) {
@@ -129,17 +162,25 @@ function ageAtDay(resident, day) {
   return Math.max(0, Math.floor((day - resident.birthDay) / generation.daysPerYear));
 }
 
-function eventFitsResidentHistory(event, resident, phase, currentAge) {
+function eventFitsResidentHistory(event, resident, phase, currentAge, lifeTags) {
   if (!event.recordToHistory) return false;
   const rule = event.eligibility ?? {};
   const minAge = Math.max(phase.minAge, Number(rule.minAge ?? phase.minAge));
   const maxAge = Math.min(phase.maxAge, Number(rule.maxAge ?? phase.maxAge), currentAge - 1);
   if (minAge > maxAge) return false;
   if (Array.isArray(rule.occupations) && rule.occupations.length && !rule.occupations.includes(resident.occupationId)) return false;
+  if (Array.isArray(rule.occupationGroups) && rule.occupationGroups.length && !rule.occupationGroups.includes(resident.occupationGroupId)) return false;
   if (Array.isArray(rule.genders) && rule.genders.length && !rule.genders.includes(resident.gender)) return false;
   if (rule.minChildren !== undefined && resident.childCount < rule.minChildren) return false;
   if (rule.requireSpouse !== undefined && Boolean(resident.spouseId) !== rule.requireSpouse) return false;
+  if (rule.requiredTags?.some((tagId) => !lifeTags.has(tagId))) return false;
+  if (rule.forbiddenTags?.some((tagId) => lifeTags.has(tagId))) return false;
   return true;
+}
+
+function applyTagEffects(lifeTags, event) {
+  for (const tagId of event.effects?.removeTags ?? []) lifeTags.delete(tagId);
+  for (const tagId of event.effects?.addTags ?? []) lifeTags.add(tagId);
 }
 
 function buildStoryHistory(resident) {
@@ -152,49 +193,47 @@ function buildStoryHistory(resident) {
   const target = Math.min(desiredCount, livedPhases.length);
   if (!target) return [];
 
-  const candidates = [];
-  for (const phase of livedPhases) {
-    for (const event of lifeEvents.items) {
-      if (!eventFitsResidentHistory(event, resident, phase, currentAge)) continue;
-      const minAge = Math.max(phase.minAge, Number(event.eligibility?.minAge ?? phase.minAge));
-      const maxAge = Math.min(phase.maxAge, Number(event.eligibility?.maxAge ?? phase.maxAge), currentAge - 1);
-      candidates.push({
-        event,
-        phase,
-        minAge,
-        maxAge,
-        rank: hash32(`${resident.seed}:history-rank:${phase.id}:${event.id}`),
-      });
-    }
-  }
+  const selectedPhaseIds = new Set(
+    [...livedPhases]
+      .sort((left, right) => hash32(`${resident.seed}:history-phase:${left.id}`) - hash32(`${resident.seed}:history-phase:${right.id}`))
+      .slice(0, target)
+      .map((phase) => phase.id),
+  );
 
-  candidates.sort((left, right) => left.rank - right.rank);
-  const usedEvents = new Set();
-  const usedPhases = new Set();
   const selected = [];
-  for (const candidate of candidates) {
-    if (selected.length >= target) break;
-    if (usedEvents.has(candidate.event.id) || usedPhases.has(candidate.phase.id)) continue;
-    usedEvents.add(candidate.event.id);
-    usedPhases.add(candidate.phase.id);
-    selected.push(candidate);
-  }
+  const usedEvents = new Set();
+  const lifeTags = new Set();
 
-  return selected.map(({ event, phase, minAge, maxAge }) => {
-    const age = minAge + (hash32(`${resident.seed}:history-age:${phase.id}:${event.id}`) % (maxAge - minAge + 1));
-    const dayInYear = hash32(`${resident.seed}:history-day:${event.id}`) % generation.daysPerYear;
-    const day = Math.min(
-      generation.currentDay - 14,
-      resident.birthDay + age * generation.daysPerYear + dayInYear,
-    );
-    return {
-      id: `${resident.id}:story:${event.id}:${day}`,
+  for (const phase of livedPhases) {
+    if (!selectedPhaseIds.has(phase.id)) continue;
+    const candidates = lifeEvents.items
+      .filter((event) => !usedEvents.has(event.id) && eventFitsResidentHistory(event, resident, phase, currentAge, lifeTags))
+      .map((event) => ({
+        event,
+        rank: hash32(`${resident.seed}:history-rank:${phase.id}:${event.id}`),
+      }))
+      .sort((left, right) => left.rank - right.rank);
+    const chosen = candidates[0]?.event;
+    if (!chosen) continue;
+
+    const minAge = Math.max(phase.minAge, Number(chosen.eligibility?.minAge ?? phase.minAge));
+    const maxAge = Math.min(phase.maxAge, Number(chosen.eligibility?.maxAge ?? phase.maxAge), currentAge - 1);
+    const age = minAge + (hash32(`${resident.seed}:history-age:${phase.id}:${chosen.id}`) % (maxAge - minAge + 1));
+    const dayInYear = hash32(`${resident.seed}:history-day:${chosen.id}`) % generation.daysPerYear;
+    const day = Math.min(generation.currentDay - 14, resident.birthDay + age * generation.daysPerYear + dayInYear);
+
+    selected.push({
+      id: `${resident.id}:story:${chosen.id}:${day}`,
       day,
       type: 'story',
-      title: event.title,
-      sourceEventId: event.id,
-    };
-  });
+      title: chosen.title,
+      sourceEventId: chosen.id,
+    });
+    usedEvents.add(chosen.id);
+    applyTagEffects(lifeTags, chosen);
+  }
+
+  return selected;
 }
 
 let nextResidentId = 1001;
@@ -202,11 +241,11 @@ let nextHouseholdId = 81;
 const residents = [];
 const households = [];
 
-function createResident({ age, gender, householdId, districtId, forcedSurname = null }) {
+function createResident({ age, gender, householdId, districtId, forcedSurnameId = null }) {
   const id = nextResidentId++;
   const seed = hash32(`${generation.citySeed}:resident:${id}`);
   const rng = createRng(seed);
-  const { surname, displayName } = makeName(rng, gender, forcedSurname);
+  const { surname, surnameId, givenNameId, displayName } = makeName(rng, gender, age, forcedSurnameId);
   const occupation = pickOccupation(rng, age, gender);
   const birthDay = generation.currentDay - age * generation.daysPerYear - randomInt(rng, 0, generation.daysPerYear - 1);
   const workplaceId = occupation.workplaceType
@@ -222,11 +261,14 @@ function createResident({ age, gender, householdId, districtId, forcedSurname = 
     seed,
     displayName,
     surname,
+    surnameId,
+    givenNameId,
     birthDay,
     gender,
     portraitSeed: hash32(`${seed}:portrait`),
     districtId,
     occupationId: occupation.id,
+    occupationGroupId: occupation.groupId,
     workplaceId,
     employmentStartDay,
     householdId,
@@ -238,6 +280,7 @@ function createResident({ age, gender, householdId, districtId, forcedSurname = 
     lifeStage: lifeStageForAge(age),
     stateBits: 0,
     activeStoryId: null,
+    lifeTags: [],
     recentLifeLog: [],
     majorLifeHistory: [],
   };
@@ -272,7 +315,7 @@ function createHousehold(archetypeId, remaining, rng) {
         gender: rng() < 0.5 ? 'male' : 'female',
         householdId,
         districtId: district.id,
-        forcedSurname: father.surname,
+        forcedSurnameId: father.surnameId,
       });
       child.fatherId = father.id;
       child.motherId = mother.id;
@@ -298,7 +341,7 @@ function createHousehold(archetypeId, remaining, rng) {
       gender: rng() < 0.5 ? 'male' : 'female',
       householdId,
       districtId: district.id,
-      forcedSurname: elder.surname,
+      forcedSurnameId: elder.surnameId,
     });
     if (elderGender === 'male') child.fatherId = elder.id;
     else child.motherId = elder.id;
@@ -377,9 +420,9 @@ for (const resident of residents) {
 const definitions = {
   schema: 'wanhu.resident-definitions.v1',
   names: {
-    surnames: surnames.items,
-    maleGivenNames: givenNames.male,
-    femaleGivenNames: givenNames.female,
+    surnames: nameCatalog.surnames.map((item) => item.text),
+    maleGivenNames: nameCatalog.givenNames.filter((item) => item.gender === 'male').map((item) => item.text),
+    femaleGivenNames: nameCatalog.givenNames.filter((item) => item.gender === 'female').map((item) => item.text),
   },
   occupations: occupations.items,
   routines: routines.items,
@@ -387,7 +430,7 @@ const definitions = {
 };
 
 const snapshot = {
-  schema: 'wanhu.resident-snapshot.v1',
+  schema: 'wanhu.resident-snapshot.v2',
   citySeed: generation.citySeed,
   currentDay: generation.currentDay,
   residents: residents.slice(0, generation.residentCount),
@@ -398,4 +441,4 @@ await mkdir(outputDir, { recursive: true });
 await writeFile(join(outputDir, 'definitions.json'), `${JSON.stringify(definitions, null, 2)}\n`, 'utf8');
 await writeFile(join(outputDir, 'resident-snapshot.json'), `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
 
-console.log(`Generated ${snapshot.residents.length} residents in ${snapshot.households.length} households.`);
+console.log(`Generated ${snapshot.residents.length} residents in ${snapshot.households.length} households directly from Name V2 tokens.`);
