@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wanhu.local/schemas/life-event.schema.json",
+  "title": "Wanhu Resident Life Events V2",
+  "type": "object",
+  "required": ["schema", "items"],
+  "properties": {
+    "schema": { "const": "wanhu.life-events.v2" },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "weight", "eligibility", "stages"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "weight": { "type": "number", "minimum": 0 },
+          "eligibility": {
+            "type": "object",
+            "properties": {
+              "occupations": { "type": "array", "items": { "type": "string" } },
+              "genders": { "type": "array", "items": { "enum": ["male", "female"] } },
+              "minAge": { "type": "integer", "minimum": 0 },
+              "maxAge": { "type": "integer", "minimum": 0 },
+              "minChildren": { "type": "integer", "minimum": 0 },
+              "requireSpouse": { "type": "boolean" }
+            },
+            "additionalProperties": false
+          },
+          "source": {
+            "type": "object",
+            "required": ["type", "label"],
+            "properties": {
+              "type": { "enum": ["city", "family", "work", "weather", "personal"] },
+              "label": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          },
+          "stages": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+              "type": "object",
+              "required": ["delayDays", "title", "text", "summary"],
+              "properties": {
+                "delayDays": {
+                  "type": "object",
+                  "required": ["min", "max"],
+                  "properties": {
+                    "min": { "type": "integer", "minimum": 0 },
+                    "max": { "type": "integer", "minimum": 0 }
+                  },
+                  "additionalProperties": false
+                },
+                "title": { "type": "string", "minLength": 1 },
+                "text": { "type": "string", "minLength": 1 },
+                "summary": { "type": "string", "minLength": 1 },
+                "activityOverride": { "type": "string" }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

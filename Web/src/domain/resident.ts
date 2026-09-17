@@ -79,6 +79,39 @@ export type RoutineDefinition = {
   season?: string[];
 };
 
+export type LifeEventSourceType = 'city' | 'family' | 'work' | 'weather' | 'personal';
+
+export type LifeEventSource = {
+  type: LifeEventSourceType;
+  label: string;
+};
+
+export type LifeEventEligibility = {
+  occupations?: string[];
+  genders?: Gender[];
+  minAge?: number;
+  maxAge?: number;
+  minChildren?: number;
+  requireSpouse?: boolean;
+};
+
+export type LifeEventStageDefinition = {
+  delayDays: { min: number; max: number };
+  title: string;
+  text: string;
+  summary: string;
+  activityOverride?: string;
+};
+
+export type LifeEventDefinition = {
+  id: string;
+  title: string;
+  weight: number;
+  eligibility: LifeEventEligibility;
+  source?: LifeEventSource;
+  stages: [LifeEventStageDefinition, LifeEventStageDefinition, LifeEventStageDefinition];
+};
+
 export type ResidentGenerationDefinition = {
   schema: 'wanhu.resident-generation.v1';
   citySeed: number;
@@ -94,7 +127,7 @@ export type ResidentGenerationDefinition = {
 };
 
 export type ResidentDefinitions = {
-  schema: 'wanhu.resident-definitions.v1';
+  schema: 'wanhu.resident-definitions.v2';
   names: {
     surnames: string[];
     maleGivenNames: string[];
@@ -102,6 +135,7 @@ export type ResidentDefinitions = {
   };
   occupations: OccupationDefinition[];
   routines: RoutineDefinition[];
+  lifeEvents: LifeEventDefinition[];
   generation: ResidentGenerationDefinition;
 };
 

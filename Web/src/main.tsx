@@ -5,6 +5,7 @@ import './styles.css';
 import './game-validation.css';
 import './life-log.css';
 import './resident-avatar.css';
+import './resident-panel-v2.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -1,37 +1,35 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
-  buildResidentLife,
-  compactText,
-  nodeFor,
-  pickDemoStoryIndex,
-  recentLifeEntries,
-  scheduleFor,
-  stageAtDay,
-  type ResidentAssignment,
-  type StageIndex,
-} from './life-log';
-import {
   ageAtDay,
   districtName,
   familySummary,
   occupationFor,
+  type HouseholdRecord,
   type ResidentDefinitions,
   type ResidentRecord,
   type ResidentWorldSnapshot,
 } from './domain/resident';
 import { ResidentAvatar } from './resident/ResidentAvatar';
+import {
+  assignmentForEvent,
+  buildResidentLifeView,
+  chooseLifeEvent,
+  eligibleLifeEvents,
+  nextStageDay,
+  stageForAssignment,
+  type LifeEventAssignment,
+} from './simulation/life-events';
 import { StoryReviewView } from './StoryReviewView';
-import type { Story, StoryBranch, StoryCollection } from './types';
+import type { StoryCollection } from './types';
 
 type AppMode = 'game' | 'review';
 
-const START_OFFSETS = [0, 9, 22, 45, 76, 14, 105, 33];
+const START_OFFSETS = [0, 3, 8, 14, 21, 2, 5, 11, 18, 27, 6, 16];
 
-function pickRandomIndex(length: number, except?: number) {
-  if (length <= 1) return 0;
-  let next = Math.floor(Math.random() * length);
-  if (except !== undefined && next === except) next = (next + 1 + Math.floor(Math.random() * (length - 1))) % length;
-  return next;
+async function loadJson<T>(url: string, label: string): Promise<T> {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`${label}读取失败：HTTP ${response.status}`);
+  return response.json() as Promise<T>;
 }
 
 function relativeDayLabel(days: number) {
@@ -43,62 +41,41 @@ function relativeDayLabel(days: number) {
   return `${Math.max(1, Math.round(months / 12))}年前`;
 }
 
-async function loadJson<T>(url: string, label: string): Promise<T> {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`${label}读取失败：HTTP ${response.status}`);
-  return response.json() as Promise<T>;
-}
-
-function branchHasFutureStep(branch: StoryBranch) {
-  const stage2 = branch.stage2.time.maxDays ?? branch.stage2.time.minDays ?? 7;
-  const stage3 = branch.stage3.time.maxDays ?? branch.stage3.time.minDays ?? 10;
-  return stage2 > 0 && stage3 > 0;
-}
-
-function createAssignments(
-  stories: Story[],
-  residents: ResidentRecord[],
-  definitions: ResidentDefinitions,
-  currentDay: number,
-): Record<number, ResidentAssignment> {
-  return Object.fromEntries(residents.map((resident, index) => {
-    const fallbackIndex = stories.length ? (index * 7 + 3) % stories.length : 0;
-    let storyIndex = pickDemoStoryIndex(stories, resident, definitions, fallbackIndex);
-    let story = stories[storyIndex];
-    let branchIndex = story?.branches.length ? (index * 3 + 1) % story.branches.length : 0;
-
-    if (index === 0) {
-      outer: for (let candidateStoryIndex = 0; candidateStoryIndex < stories.length; candidateStoryIndex += 1) {
-        const candidateStory = stories[candidateStoryIndex];
-        for (let candidateBranchIndex = 0; candidateBranchIndex < candidateStory.branches.length; candidateBranchIndex += 1) {
-          if (branchHasFutureStep(candidateStory.branches[candidateBranchIndex])) {
-            storyIndex = candidateStoryIndex;
-            story = candidateStory;
-            branchIndex = candidateBranchIndex;
-            break outer;
-          }
-        }
-      }
-    }
-
-    return [resident.id, {
-      storyIndex,
-      branchIndex,
-      startDay: currentDay - START_OFFSETS[index % START_OFFSETS.length],
-    }];
-  }));
-}
-
-function summarize(text: string | undefined, limit = 38) {
-  if (!text) return '';
-  const compact = compactText(text);
-  return compact.length > limit ? `${compact.slice(0, limit)}…` : compact;
-}
-
 function markerPosition(resident: ResidentRecord, index: number) {
   const x = 10 + ((resident.seed + index * 31) % 78);
   const y = 20 + ((Math.floor(resident.seed / 97) + index * 17) % 58);
   return { x, y };
+}
+
+function sourceTypeLabel(type: string | undefined) {
+  if (type === 'city') return '城市影响';
+  if (type === 'family') return '家里';
+  if (type === 'work') return '营生';
+  if (type === 'weather') return '天气';
+  return '生活';
+}
+
+function relationLabel(owner: ResidentRecord, member: ResidentRecord) {
+  if (owner.spouseId === member.id) return '配偶';
+  if (owner.fatherId === member.id) return '父亲';
+  if (owner.motherId === member.id) return '母亲';
+  if (member.fatherId === owner.id || member.motherId === owner.id) return member.gender === 'male' ? '儿子' : '女儿';
+  return '家人';
+}
+
+function createAssignments(
+  residents: ResidentRecord[],
+  households: HouseholdRecord[],
+  definitions: ResidentDefinitions,
+  currentDay: number,
+): Record<number, LifeEventAssignment> {
+  const householdById = new Map(households.map((item) => [item.id, item]));
+  return Object.fromEntries(residents.map((resident, index) => {
+    const household = householdById.get(resident.householdId);
+    const event = chooseLifeEvent(resident, household, definitions, currentDay, `initial:${index}`);
+    const startDay = currentDay - START_OFFSETS[index % START_OFFSETS.length];
+    return [resident.id, assignmentForEvent(resident, event, startDay)];
+  }));
 }
 
 export default function App() {
@@ -109,11 +86,14 @@ export default function App() {
   const [mode, setMode] = useState<AppMode>('game');
   const [gameDay, setGameDay] = useState(120);
   const [selectedResidentId, setSelectedResidentId] = useState<number | null>(null);
-  const [assignments, setAssignments] = useState<Record<number, ResidentAssignment>>({});
+  const [assignments, setAssignments] = useState<Record<number, LifeEventAssignment>>({});
   const [seenStages, setSeenStages] = useState<Record<number, number>>({});
   const [showDev, setShowDev] = useState(true);
   const [panelOpen, setPanelOpen] = useState(true);
+  const [familyOpen, setFamilyOpen] = useState(false);
   const [historyExpanded, setHistoryExpanded] = useState(false);
+  const [followed, setFollowed] = useState<Record<number, boolean>>({});
+  const [locationNotice, setLocationNotice] = useState('');
   const [bodyLines, setBodyLines] = useState(0);
   const [titleLines, setTitleLines] = useState(0);
   const bodyRef = useRef<HTMLParagraphElement>(null);
@@ -128,12 +108,13 @@ export default function App() {
     ])
       .then(([storyData, definitionData, snapshotData]) => {
         if (cancelled) return;
+        if (!definitionData.lifeEvents?.length) throw new Error('LifeEvent V2 定义为空');
         setCollection(storyData);
         setDefinitions(definitionData);
         setResidentSnapshot(snapshotData);
         setGameDay(snapshotData.currentDay);
         setSelectedResidentId(snapshotData.residents[0]?.id ?? null);
-        setAssignments(createAssignments(storyData.stories, snapshotData.residents, definitionData, snapshotData.currentDay));
+        setAssignments(createAssignments(snapshotData.residents, snapshotData.households, definitionData, snapshotData.currentDay));
       })
       .catch((error: Error) => {
         if (!cancelled) setLoadError(error.message);
@@ -141,37 +122,28 @@ export default function App() {
     return () => { cancelled = true; };
   }, []);
 
-  const stories = collection?.stories ?? [];
   const residents = residentSnapshot?.residents ?? [];
   const selectedResident = residents.find((item) => item.id === selectedResidentId) ?? residents[0];
   const selectedHousehold = residentSnapshot?.households.find((item) => item.id === selectedResident?.householdId);
   const assignment = selectedResident ? assignments[selectedResident.id] : undefined;
-  const story = assignment && stories.length ? stories[assignment.storyIndex % stories.length] : undefined;
-  const branch = story && assignment ? (story.branches[assignment.branchIndex] ?? story.branches[0]) : undefined;
-  const schedule = assignment && branch ? scheduleFor(assignment, branch) : undefined;
-  const stage = schedule ? stageAtDay(gameDay, schedule) : 0;
-  const currentNode = story && branch ? nodeFor(story, branch, stage) : undefined;
-  const residentLife = selectedResident && definitions && residentSnapshot && story && branch && assignment && schedule
-    ? buildResidentLife(
-      selectedResident,
-      definitions,
-      story,
-      branch,
-      assignment,
-      schedule,
-      stage,
-      residentSnapshot.currentDay,
-      gameDay,
-    )
-    : undefined;
+  const lifeView = selectedResident && selectedHousehold && definitions && residentSnapshot && assignment
+    ? buildResidentLifeView(selectedResident, selectedHousehold, residentSnapshot, definitions, assignment, gameDay)
+    : selectedResident && definitions && residentSnapshot && assignment
+      ? buildResidentLifeView(selectedResident, undefined, residentSnapshot, definitions, assignment, gameDay)
+      : undefined;
 
   useEffect(() => {
-    if (!panelOpen || !selectedResident || !schedule) return;
-    setSeenStages((current) => ({ ...current, [selectedResident.id]: stage }));
-  }, [panelOpen, selectedResident?.id, stage, schedule]);
+    if (!panelOpen || !selectedResident || !assignment) return;
+    setSeenStages((current) => ({
+      ...current,
+      [selectedResident.id]: stageForAssignment(gameDay, assignment),
+    }));
+  }, [panelOpen, selectedResident?.id, assignment, gameDay]);
 
   useEffect(() => {
+    setFamilyOpen(false);
     setHistoryExpanded(false);
+    setLocationNotice('');
   }, [selectedResidentId]);
 
   useLayoutEffect(() => {
@@ -188,25 +160,25 @@ export default function App() {
       setTitleLines(measure(titleRef.current));
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [residentLife?.latestStoryEntry.id, selectedResidentId, gameDay]);
+  }, [lifeView?.currentStage, selectedResidentId, gameDay]);
 
-  const stageByResident = useMemo(() => {
-    if (!stories.length) return {} as Record<number, StageIndex>;
-    return Object.fromEntries(residents.map((resident) => {
-      const currentAssignment = assignments[resident.id];
-      if (!currentAssignment) return [resident.id, 0];
-      const currentStory = stories[currentAssignment.storyIndex % stories.length];
-      const currentBranch = currentStory?.branches[currentAssignment.branchIndex] ?? currentStory?.branches[0];
-      if (!currentBranch) return [resident.id, 0];
-      return [resident.id, stageAtDay(gameDay, scheduleFor(currentAssignment, currentBranch))];
-    })) as Record<number, StageIndex>;
-  }, [assignments, gameDay, residents, stories]);
+  const stageByResident = useMemo(() => Object.fromEntries(residents.map((resident) => {
+    const currentAssignment = assignments[resident.id];
+    return [resident.id, currentAssignment ? stageForAssignment(gameDay, currentAssignment) : 0];
+  })) as Record<number, number>, [assignments, gameDay, residents]);
 
   const markerResidents = useMemo(() => {
     const visible = residents.slice(0, 18);
     if (selectedResident && !visible.some((item) => item.id === selectedResident.id)) visible.push(selectedResident);
     return visible;
   }, [residents, selectedResident]);
+
+  const householdMembers = selectedHousehold && selectedResident
+    ? selectedHousehold.memberIds
+      .filter((id) => id !== selectedResident.id)
+      .map((id) => residents.find((item) => item.id === id))
+      .filter((item): item is ResidentRecord => Boolean(item))
+    : [];
 
   function selectResident(id: number) {
     setSelectedResidentId(id);
@@ -217,44 +189,31 @@ export default function App() {
     if (!residents.length || !selectedResident) return;
     const currentIndex = residents.findIndex((item) => item.id === selectedResident.id);
     const nextIndex = (currentIndex + offset + residents.length) % residents.length;
-    setSelectedResidentId(residents[nextIndex].id);
-    setPanelOpen(true);
+    selectResident(residents[nextIndex].id);
   }
 
-  function rerollStory() {
-    if (!selectedResident || !stories.length || !story) return;
-    const nextStoryIndex = pickRandomIndex(stories.length, assignment?.storyIndex);
-    const nextStory = stories[nextStoryIndex];
+  function rerollEvent() {
+    if (!selectedResident || !definitions) return;
+    const eligible = eligibleLifeEvents(selectedResident, selectedHousehold, definitions, gameDay);
+    if (!eligible.length) return;
+    const currentId = assignment?.eventId;
+    const currentIndex = Math.max(0, eligible.findIndex((item) => item.id === currentId));
+    const next = eligible[(currentIndex + 1) % eligible.length];
     setAssignments((current) => ({
       ...current,
-      [selectedResident.id]: {
-        storyIndex: nextStoryIndex,
-        branchIndex: pickRandomIndex(nextStory.branches.length),
-        startDay: gameDay,
-      },
+      [selectedResident.id]: assignmentForEvent(selectedResident, next, gameDay),
     }));
     setSeenStages((current) => ({ ...current, [selectedResident.id]: -1 }));
     setHistoryExpanded(false);
   }
 
-  function rerollBranch() {
-    if (!selectedResident || !story || !assignment || story.branches.length <= 1) return;
-    setAssignments((current) => ({
-      ...current,
-      [selectedResident.id]: {
-        ...assignment,
-        branchIndex: pickRandomIndex(story.branches.length, assignment.branchIndex),
-        startDay: gameDay,
-      },
-    }));
-    setSeenStages((current) => ({ ...current, [selectedResident.id]: -1 }));
-    setHistoryExpanded(false);
+  function jumpToNextStage() {
+    if (!assignment) return;
+    setGameDay((day) => Math.max(day, nextStageDay(day, assignment)));
   }
 
-  function jumpToNextNode() {
-    if (!schedule) return;
-    if (stage === 0) setGameDay((day) => Math.max(day, schedule.stage2Day));
-    else if (stage === 1) setGameDay((day) => Math.max(day, schedule.stage3Day));
+  function focusLocation(label: string) {
+    setLocationNotice(`镜头定位 · ${label}`);
   }
 
   if (loadError) {
@@ -269,7 +228,7 @@ export default function App() {
     );
   }
 
-  if (!collection || !definitions || !residentSnapshot || !selectedResident || !assignment || !story || !branch || !schedule || !currentNode || !residentLife) {
+  if (!collection || !definitions || !residentSnapshot || !selectedResident || !assignment || !lifeView) {
     return (
       <main className="app-shell center-state">
         <section className="state-card">
@@ -282,18 +241,22 @@ export default function App() {
 
   if (mode === 'review') return <StoryReviewView collection={collection} onExit={() => setMode('game')} />;
 
-  const latestStoryEntry = residentLife.latestStoryEntry;
-  const visibleEntries = historyExpanded
-    ? residentLife.entries.slice(0, definitions.generation.recentLifeLogCapacity)
-    : recentLifeEntries(residentLife.entries, latestStoryEntry, 5);
-  const unreadCount = residents.filter((resident) => (stageByResident[resident.id] ?? 0) > (seenStages[resident.id] ?? -1)).length;
-  const bodyDensity = bodyLines <= 4.5 ? 'good' : bodyLines <= 5.8 ? 'warn' : 'bad';
-  const titleDensity = titleLines <= 2.05 ? 'good' : 'bad';
-  const lifeCount = selectedResident.majorLifeHistory.length + residentLife.entries.filter((entry) => entry.kind === 'story').length;
+  const occupation = occupationFor(definitions, selectedResident.occupationId);
   const selectedAge = ageAtDay(selectedResident, gameDay, definitions.generation.daysPerYear);
   const selectedFamily = familySummary(selectedResident, selectedHousehold);
   const selectedDistrict = districtName(definitions, selectedResident.districtId);
   const selectedIndex = residents.findIndex((item) => item.id === selectedResident.id);
+  const currentEventEntry = lifeView.eventEntries.at(-1)!;
+  const previousEventEntry = lifeView.priorEventEntries[0];
+  const unreadCount = residents.filter((resident) => (stageByResident[resident.id] ?? 0) > (seenStages[resident.id] ?? -1)).length;
+  const currentStage = lifeView.currentStage;
+  const bodyDensity = bodyLines <= 3.5 ? 'good' : bodyLines <= 4.8 ? 'warn' : 'bad';
+  const titleDensity = titleLines <= 2.05 ? 'good' : 'bad';
+  const lifeCount = selectedResident.majorLifeHistory.length + lifeView.eventEntries.length;
+  const historyItems = [
+    ...lifeView.eventEntries.map((entry) => ({ id: entry.id, day: entry.day, title: entry.title })),
+    ...selectedResident.majorLifeHistory,
+  ].sort((a, b) => b.day - a.day);
 
   return (
     <main className="sim-game" data-dev={showDev ? 'true' : 'false'}>
@@ -320,11 +283,10 @@ export default function App() {
 
       <section className="resident-markers" aria-label="模拟居民">
         {markerResidents.map((resident, index) => {
-          const residentStage = stageByResident[resident.id] ?? 0;
-          const isUnread = residentStage > (seenStages[resident.id] ?? -1);
+          const isUnread = (stageByResident[resident.id] ?? 0) > (seenStages[resident.id] ?? -1);
           const isSelected = resident.id === selectedResident.id && panelOpen;
           const position = markerPosition(resident, index);
-          const occupation = occupationFor(definitions, resident.occupationId)?.name ?? '居民';
+          const residentOccupation = occupationFor(definitions, resident.occupationId)?.name ?? '居民';
           return (
             <button
               key={resident.id}
@@ -336,14 +298,14 @@ export default function App() {
             >
               <span className="resident-marker__person">人</span>
               {isUnread && !isSelected && <i className="resident-marker__new" />}
-              <span className="resident-marker__label"><b>{resident.displayName}</b><small>{occupation}</small></span>
+              <span className="resident-marker__label"><b>{resident.displayName}</b><small>{residentOccupation}</small></span>
             </button>
           );
         })}
       </section>
 
       {panelOpen && (
-        <aside className="resident-panel" aria-label={`${selectedResident.displayName}的居民信息`}>
+        <aside className="resident-panel resident-panel--v2" aria-label={`${selectedResident.displayName}的居民信息`}>
           <header className="resident-panel__header">
             <div className="resident-avatar">
               <ResidentAvatar
@@ -354,68 +316,100 @@ export default function App() {
               />
             </div>
             <div className="resident-identity">
-              <div><b>{selectedResident.displayName}</b><span>{selectedAge}岁 · {residentLife.presentation.occupation}</span></div>
+              <div><b>{selectedResident.displayName}</b><span>{selectedAge}岁 · {occupation?.name ?? '居民'}</span></div>
               <small>{selectedDistrict} · {selectedFamily}</small>
             </div>
             <button className="resident-panel__close" type="button" onClick={() => setPanelOpen(false)} aria-label="关闭居民面板">×</button>
           </header>
 
-          <div className="resident-panel__body">
+          <div className="resident-world-links" aria-label="居民世界关联">
+            <button type="button" onClick={() => focusLocation(`${selectedDistrict} · 住处 ${selectedHousehold?.homeId ?? ''}`)}>⌂ <span>住处</span></button>
+            <button type="button" disabled={!selectedResident.workplaceId} onClick={() => focusLocation(`${occupation?.name ?? '工作地'} · ${selectedResident.workplaceId}`)}>⚒ <span>工作地</span></button>
+            <button type="button" disabled={!householdMembers.length} className={familyOpen ? 'is-active' : ''} onClick={() => setFamilyOpen((value) => !value)}>♡ <span>家人 {householdMembers.length}</span></button>
+          </div>
+
+          {familyOpen && (
+            <section className="resident-family-drawer">
+              <div className="resident-family-drawer__heading"><b>同住家人</b><span>点名字可以继续查看</span></div>
+              {householdMembers.map((member) => (
+                <button key={member.id} type="button" onClick={() => selectResident(member.id)}>
+                  <span>{relationLabel(selectedResident, member)}</span>
+                  <b>{member.displayName}</b>
+                  <small>{ageAtDay(member, gameDay, definitions.generation.daysPerYear)}岁 · {occupationFor(definitions, member.occupationId)?.name ?? '居民'}</small>
+                </button>
+              ))}
+            </section>
+          )}
+
+          <div className="resident-panel__body resident-panel__body--v2">
             <section className="resident-activity">
               <span>此刻</span>
-              <p>{residentLife.presentation.activity}</p>
+              <p>{lifeView.activity}</p>
             </section>
 
-            <section className="resident-life">
-              <div className="resident-life__heading"><b>最近</b></div>
+            <section className="resident-summary">
+              <span>近况</span>
+              <p>{lifeView.summary}</p>
+            </section>
 
-              <div className="resident-life__feed">
-                {visibleEntries.map((entry) => {
-                  const isLatestStory = entry.id === latestStoryEntry.id;
-                  const isOlderStory = entry.kind === 'story' && !isLatestStory;
-                  const relativeDays = Math.max(0, gameDay - entry.day);
-                  return (
-                    <article
-                      key={entry.id}
-                      className={`life-entry life-entry--${entry.kind} ${isLatestStory ? 'is-featured' : ''} ${isOlderStory ? 'is-story-history' : ''}`}
-                    >
-                      <div className="life-entry__rail" aria-hidden="true"><i /></div>
-                      <div className="life-entry__content">
-                        <div className="life-entry__meta">
-                          <time>{relativeDayLabel(relativeDays)}</time>
-                          {isLatestStory && <span>生活近况</span>}
-                          {isOlderStory && <span>前情</span>}
-                          {entry.kind === 'state' && <span>人生变化</span>}
-                        </div>
+            <section className="resident-recent">
+              <div className="resident-recent__heading"><b>最近</b></div>
+              <article className="life-event-card">
+                <div className="life-event-card__meta">
+                  <time>{relativeDayLabel(Math.max(0, gameDay - currentEventEntry.day))}</time>
+                  {lifeView.event.source && (
+                    <button type="button" className={`life-event-source is-${lifeView.event.source.type}`} onClick={() => focusLocation(lifeView.event.source!.label)}>
+                      {sourceTypeLabel(lifeView.event.source.type)} · {lifeView.event.source.label}
+                    </button>
+                  )}
+                </div>
+                <h2 ref={titleRef}>{currentEventEntry.title}</h2>
+                <p ref={bodyRef}>{currentEventEntry.text}</p>
+                {previousEventEntry && (
+                  <div className="life-event-prior">
+                    <span>└ {relativeDayLabel(Math.max(0, gameDay - previousEventEntry.day))}</span>
+                    <b>{previousEventEntry.title}</b>
+                  </div>
+                )}
+              </article>
 
-                        {isLatestStory ? (
-                          <>
-                            <h2 ref={titleRef}>{entry.title}</h2>
-                            <p className="life-entry__story-text" ref={bodyRef}>{entry.text}</p>
-                          </>
-                        ) : entry.kind === 'story' ? (
-                          <>
-                            <h3>{entry.title}</h3>
-                            <p className="life-entry__summary">{summarize(entry.text)}</p>
-                          </>
-                        ) : (
-                          <p className="life-entry__routine-text">{entry.title}</p>
-                        )}
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
+              {lifeView.routines.length > 0 && (
+                <ul className="resident-routine-list">
+                  {lifeView.routines.slice(0, 3).map((entry) => (
+                    <li key={entry.id}>
+                      <time>{relativeDayLabel(Math.max(0, gameDay - entry.day))}</time>
+                      <span>{entry.title}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {historyExpanded && (
+                <section className="resident-history-drawer">
+                  <div className="resident-history-drawer__heading"><b>人生经历</b><span>重要变化与当前事件</span></div>
+                  {historyItems.slice(0, 10).map((entry) => (
+                    <div key={entry.id}>
+                      <time>{relativeDayLabel(Math.max(0, gameDay - entry.day))}</time>
+                      <span>{entry.title}</span>
+                    </div>
+                  ))}
+                </section>
+              )}
             </section>
           </div>
 
-          <footer className="resident-panel__footer">
+          <footer className="resident-panel__footer resident-panel__footer--v2">
+            <button type="button" className={followed[selectedResident.id] ? 'is-followed' : ''} onClick={() => setFollowed((current) => ({ ...current, [selectedResident.id]: !current[selectedResident.id] }))}>
+              {followed[selectedResident.id] ? '★ 已关注' : '☆ 关注'}
+            </button>
             <button type="button" onClick={() => setHistoryExpanded((value) => !value)}>
-              {historyExpanded ? '收起' : `往事 ${lifeCount}`}<span>{historyExpanded ? '⌃' : '›'}</span>
+              {historyExpanded ? '收起经历' : `人生经历 ${lifeCount}`}<span>{historyExpanded ? '⌃' : '›'}</span>
             </button>
           </footer>
         </aside>
       )}
+
+      {locationNotice && <button type="button" className="resident-location-toast" onClick={() => setLocationNotice('')}>{locationNotice}<span>×</span></button>}
 
       <nav className="sim-command-dock" aria-label="模拟游戏主工具栏">
         {['道路', '桥梁', '建筑', '城墙', '装饰'].map((label, index) => (
@@ -427,13 +421,11 @@ export default function App() {
 
       {showDev && (
         <aside className="dev-panel">
-          <header><b>RESIDENT GENERATOR V1</b><button type="button" onClick={() => setShowDev(false)}>隐藏</button></header>
-          <div className="dev-panel__row"><span>城市 Seed</span><b>{residentSnapshot.citySeed}</b></div>
-          <div className="dev-panel__row"><span>当前居民</span><b>{selectedIndex + 1} / {residents.length} · {selectedResident.displayName}</b></div>
-          <div className="dev-panel__row"><span>Resident</span><b>#{selectedResident.id} · Seed {selectedResident.seed}</b></div>
-          <div className="dev-panel__row"><span>职业 / 家庭</span><b>{residentLife.presentation.occupation} · {selectedFamily}</b></div>
-          <div className="dev-panel__row"><span>Story</span><b>{story.id}</b></div>
-          <div className="dev-panel__row"><span>Branch</span><b>{branch.id} · Stage {stage + 1}</b></div>
+          <header><b>RESIDENT PANEL V2</b><button type="button" onClick={() => setShowDev(false)}>隐藏</button></header>
+          <div className="dev-panel__row"><span>居民</span><b>{selectedResident.displayName} · {selectedIndex + 1}/{residents.length}</b></div>
+          <div className="dev-panel__row"><span>LifeEvent</span><b>{lifeView.event.id}</b></div>
+          <div className="dev-panel__row"><span>阶段</span><b>{currentStage + 1}/3 · {lifeView.event.source?.label ?? '个人生活'}</b></div>
+          <div className="dev-panel__row"><span>家庭</span><b>Household {selectedResident.householdId} · {householdMembers.length} 位家人</b></div>
           <div className="dev-density">
             <span className={`density-chip is-${bodyDensity}`}>正文 {bodyLines.toFixed(1)} 行</span>
             <span className={`density-chip is-${titleDensity}`}>标题 {titleLines.toFixed(1)} 行</span>
@@ -441,18 +433,18 @@ export default function App() {
           <div className="dev-buttons dev-buttons--three">
             <button type="button" onClick={() => selectRelativeResident(-1)}>上一居民</button>
             <button type="button" onClick={() => selectRelativeResident(1)}>下一居民</button>
-            <button type="button" onClick={rerollStory}>重抽故事</button>
+            <button type="button" onClick={rerollEvent}>换一件事</button>
           </div>
           <div className="dev-buttons dev-buttons--three">
             <button type="button" onClick={() => setGameDay((day) => day + 1)}>+1 天</button>
             <button type="button" onClick={() => setGameDay((day) => day + 10)}>+10 天</button>
-            <button type="button" onClick={jumpToNextNode} disabled={stage === 2}>推进节点</button>
+            <button type="button" onClick={jumpToNextStage} disabled={currentStage === 2}>推进近况</button>
           </div>
           <div className="dev-buttons dev-buttons--two">
-            <button type="button" onClick={rerollBranch}>重抽分支</button>
-            <button type="button" onClick={() => setMode('review')}>完整审查器</button>
+            <button type="button" onClick={() => setFamilyOpen((value) => !value)}>展开家人</button>
+            <button type="button" onClick={() => setMode('review')}>Legacy 审查器</button>
           </div>
-          <p>{unreadCount} 位居民有未查看的故事进展。姓名、年龄、职业、家庭、近期生活均来自确定性居民快照。</p>
+          <p>{unreadCount} 位居民有未查看的新近况。默认玩家面板已改用 LifeEvent V2；Legacy Story 只保留在内容审查器。</p>
         </aside>
       )}
 

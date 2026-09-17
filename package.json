@@ -10,7 +10,7 @@
     "Web"
   ],
   "scripts": {
-    "build-content": "node Tools/StoryCompiler/compile.mjs && node Tools/ResidentGenerator/generate.mjs",
+    "build-content": "node Tools/StoryCompiler/compile.mjs && node Tools/ResidentGenerator/generate.mjs && node Tools/LifeEventCompiler/compile.mjs",
     "dev": "npm run build-content && npm run dev -w Web",
     "build": "npm run build-content && npm run build -w Web",
     "preview": "npm run preview -w Web"

@@ -4,11 +4,12 @@
 
 ## 工作边界
 
-- `Content/Stories/` 是新故事的规范目录。
-- `居民故事/` 是现有 Legacy 内容目录；编译器暂时兼容，后续逐步迁移。
+- `Content/LifeEvents/` 是默认玩家居民面板使用的短生活事件定义。
+- `Content/Stories/` 与 `居民故事/` 保留较长的 Legacy Story；默认不再直接进入玩家 Resident Panel，只供素材与完整审查器使用。
 - `Documentation/` 只记录稳定、长期值得维护的设计事实与规则。
-- `Tools/StoryCompiler/` 是故事 Markdown 到标准数据的唯一编译入口。
+- `Tools/StoryCompiler/` 负责 Legacy Story Markdown 标准化。
 - `Tools/ResidentGenerator/` 负责从稳定定义与 Seed 生成居民验证快照。
+- `Tools/LifeEventCompiler/` 负责把 LifeEvent V2 合并进 generated definitions。
 - `Web/` 只负责展示、模拟验证与审查，不自行发明另一套 Story / Resident 数据规则。
 - Unity 后续消费编译结果，不在 Runtime 解析 Markdown / JSON。
 
@@ -21,37 +22,39 @@
 - 当前活动优先在玩家查看时根据职业、时间和状态推导，不为所有后台居民做逐小时完整日程仿真。
 - 姓名允许重复；同一 Seed 必须稳定得到相同身份、家庭基础数据与 PortraitSeed。
 
-## 故事规则
+## 玩家居民面板规则
 
-- 采用三阶段结构：第一阶段为公共起点；运行时只选一个分支；该分支包含第二、第三阶段。
-- 普通故事约 3 个结局，重要故事约 4 个，核心人生事件最多 5 个。
-- 第一阶段约 40～70 个中文字符；第二、第三阶段约 40～80 个中文字符；每次点击约 2～4 个短句。
-- 分支标题仅供作者侧概括。造成分支的决定、发现或意外必须写进第二阶段正文。
-- 第三阶段必须能直接承接第二阶段，不能依赖隐藏标题补足因果。
-- 明确时间锚点优先于通用时间范围。例如“七日后取货”必须与节点时间一致。
-- 不把一个连续场景硬拆成两个跨日节点。
-- 第一人称为默认视角；避免复盘式说教结尾，优先用具体动作、关系变化或物件变化收束。
-- 文件名使用故事标题本身，不使用“最终版、修正版、重新审查版”等版本后缀；历史交给 Git。
+- 玩家点击居民优先回答：他是谁、属于哪里、现在做什么、最近过得怎样、过去经历过什么。
+- 住处、工作地、家庭使用已有 ID / Household 冷数据建立可点击关联，不新增关系传播。
+- LifeEvent V2 当前 Stage 完整显示，同一事件旧 Stage 只保留轻量前情。
+- Routine 视觉级别低于 LifeEvent，不与重要事件争夺正文空间。
+- LifeEvent 可以用 `source` 标记城市、家庭、营生、天气或个人来源，让玩家理解城市变化如何作用到具体居民。
+- `activityOverride` 只在事件确实改变当前活动时使用，例如服役期间覆盖原职业活动。
+- LifeEvent V2 标题尽量 8～18 个中文字符，正文通常 25～55 字，摘要通常 15～30 字。
+- 不为了兼容旧 Story 篇幅而牺牲 Resident Panel 的玩家体验；不合适的 Legacy Story 可以重写、仅作素材或淘汰。
+
+## Legacy Story 规则
+
+- Legacy Story 仍采用三阶段分支结构，主要用于内容素材与完整审查器。
+- 分支标题仅供作者侧概括，关键因果必须写入正文。
+- 明确时间锚点优先于通用时间范围。
+- 文件名使用故事标题本身，不使用“最终版、修正版、重新审查版”等长期版本后缀；历史交给 Git。
 
 ## 代码规则
 
 - Parser / Validator / Exporter 分工清晰。
-- 修改故事格式时先更新 `Documentation/故事格式规范.md` 与 Schema，再修改 Parser。
-- 修改居民标准数据契约时同步更新对应 Schema 与长期设计文档。
-- 稳定 ID 不应由显示标题决定。标题可变，ID 用于程序引用、测试和后续 Unity 数据。
-- 编译器对结构错误给出明确文件路径和原因；字数、版本后缀等内容问题优先作为 Warning。
-- Web 组件只使用编译后的 generated 数据，不直接把人工维护源文件当运行时实例。
+- 修改稳定数据格式时同步更新 Schema 与长期设计文档。
+- 稳定 ID 不应由显示标题决定。
+- Web 组件只使用 compiled/generated 数据，不直接把人工维护源文件当运行时实例。
 
 ## Git 与部署工作流
 
 - 一个逻辑功能批次尽量只产生一个进入 `main` 的 commit。
 - 同一功能涉及多个文件时，先完成整批修改，再一次性提交；不要按“一个文件一个 commit”的方式连续推进 `main`。
 - 自动化助手修改多个文件时，优先使用 Git tree / 单次 commit 的方式写入仓库。
-- GitHub Actions 是主要的构建与类型验证入口；Visual Review Artifact 是主要 UI 截图审查入口。
+- GitHub Actions 是主要构建与类型验证入口；Visual Review Artifact 是主要 UI 截图审查入口。
 - Vercel 用于阶段性 Production 交互验证，不作为每次微小改动后的逐文件编译器。
-- 如果 GitHub build 成功而 Vercel 因 deployment/build rate limit 失败，应视为部署平台限制，不视为代码错误。
-- 遇到 Vercel 频率限制时，不连续推空 commit 或重复 redeploy；继续按功能批次工作，限制解除后只部署当时最新 `main`。
-- Vercel Deployment 列表可能落后于 GitHub `main`。仓库版本以 GitHub `main` 为准，线上版本以 Vercel Production Deployment 对应 commit SHA 为准。
+- 遇到 Vercel 频率限制时不连续推空 commit；限制解除后只部署当时最新 `main`。
 - 详细规则见 `Documentation/开发与部署工作流.md`。
 
 ## 文档原则
