@@ -103,7 +103,7 @@ await page.waitForSelector('.resident-history-mode');
 if (!(await page.locator('.resident-history-mode').innerText()).includes('这门亲事定下来了')) {
   throw new Error('A completed structural story should persist into life history in the Web prototype.');
 }
-await page.getByRole('button', { name: '返回生活', exact: true }).click();
+await page.getByRole('button', { name: /^返回生活/ }).click();
 
 await page.getByRole('button', { name: '换一件事', exact: true }).click();
 await page.waitForTimeout(60);
