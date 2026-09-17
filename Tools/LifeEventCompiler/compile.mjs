@@ -4,6 +4,8 @@ import { join } from 'node:path';
 const root = process.cwd();
 const sourcePath = join(root, 'Content', 'LifeEvents', 'life-events.json');
 const definitionsPath = join(root, 'Web', 'public', 'generated', 'definitions.json');
+const nameCatalogPath = join(root, 'Web', 'public', 'generated', 'name-catalog-v2.json');
+const lifeTagsPath = join(root, 'Web', 'public', 'generated', 'life-tags.json');
 
 const source = JSON.parse(await readFile(sourcePath, 'utf8'));
 if (source.schema !== 'wanhu.life-events.v2') {
@@ -34,7 +36,13 @@ for (const event of source.items) {
 }
 
 const definitions = JSON.parse(await readFile(definitionsPath, 'utf8'));
-definitions.schema = 'wanhu.resident-definitions.v2';
+const nameCatalog = JSON.parse(await readFile(nameCatalogPath, 'utf8'));
+const lifeTags = JSON.parse(await readFile(lifeTagsPath, 'utf8'));
+
+definitions.schema = 'wanhu.resident-definitions.v3';
+definitions.nameCatalog = nameCatalog;
+definitions.lifeTags = lifeTags.items;
 definitions.lifeEvents = source.items;
+
 await writeFile(definitionsPath, `${JSON.stringify(definitions, null, 2)}\n`, 'utf8');
-console.log(`Compiled ${source.items.length} LifeEvent V2 definitions.`);
+console.log(`Compiled ${source.items.length} LifeEvent V2 definitions, ${lifeTags.items.length} LifeTags and Name V2 catalog.`);
