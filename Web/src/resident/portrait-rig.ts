@@ -8,7 +8,20 @@ import type {
 
 export type PortraitFaceFamily = 'oval' | 'round' | 'long' | 'square' | 'broad';
 export type PortraitHairVisibility = 'full' | 'back-only' | 'hidden';
-export type PortraitLayer = 'hair' | 'brow' | 'facial-hair' | 'headwear' | 'outfit';
+export type PortraitLayer = 'hair' | 'back-hair' | 'front-hair' | 'brow' | 'facial-hair' | 'headwear' | 'outfit' | 'age-overlay';
+
+export const PORTRAIT_MASTER = {
+  width: 120,
+  height: 150,
+  safeX: 0,
+  safeY: 15,
+  safeWidth: 120,
+  safeHeight: 120,
+  sourceWidth: 1024,
+  sourceHeight: 1280,
+  sourceSafeY: 128,
+  sourceSafeSize: 1024,
+} as const;
 
 export type PortraitRig = {
   centerX: number;
@@ -36,6 +49,7 @@ type RiggedPart = AppearancePartDefinition & {
   preferredFaceFamilies?: PortraitFaceFamily[];
   avoidFaceFamilies?: PortraitFaceFamily[];
   hairVisibility?: PortraitHairVisibility;
+  silhouetteType?: string;
   rig?: PortraitRig;
 };
 
@@ -56,25 +70,23 @@ const DEFAULT_RIG: PortraitRig = {
 };
 
 const FALLBACK_FACE_FAMILIES: Record<string, PortraitFaceFamily> = {
-  'appearance.face.oval-01': 'oval',
-  'appearance.face.oval-02': 'oval',
-  'appearance.face.round-01': 'round',
-  'appearance.face.round-02': 'round',
-  'appearance.face.long-01': 'long',
-  'appearance.face.long-02': 'long',
-  'appearance.face.square-01': 'square',
-  'appearance.face.broad-01': 'broad',
-};
-
-const FALLBACK_RIGS: Record<string, PortraitRig> = {
-  'appearance.face.oval-01': DEFAULT_RIG,
-  'appearance.face.oval-02': { ...DEFAULT_RIG, topY: 21, hairlineY: 35, browY: 45.5, eyeY: 52.5, noseY: 60.5, mouthY: 68.5, chinY: 85, faceWidth: 40, jawWidth: 25, earY: 53.5, neckTopY: 80, shoulderY: 88 },
-  'appearance.face.round-01': { ...DEFAULT_RIG, topY: 24, hairlineY: 37, browY: 47, eyeY: 54, noseY: 61.5, mouthY: 68.5, chinY: 82, faceWidth: 44, jawWidth: 31, neckTopY: 77, shoulderY: 86 },
-  'appearance.face.round-02': { ...DEFAULT_RIG, topY: 23, hairlineY: 36, browY: 46.5, eyeY: 53.5, mouthY: 69, chinY: 83, faceWidth: 46, jawWidth: 32, neckTopY: 78 },
-  'appearance.face.long-01': { ...DEFAULT_RIG, topY: 20, hairlineY: 34, browY: 45, eyeY: 52, noseY: 61.5, mouthY: 71, chinY: 87, faceWidth: 40, jawWidth: 23, neckTopY: 82, shoulderY: 90 },
-  'appearance.face.long-02': { ...DEFAULT_RIG, topY: 19, hairlineY: 33, browY: 44.5, eyeY: 52, noseY: 62, mouthY: 72, chinY: 89, faceWidth: 39, jawWidth: 22, earY: 55, neckTopY: 84, shoulderY: 92 },
-  'appearance.face.square-01': { ...DEFAULT_RIG, topY: 23, hairlineY: 35, browY: 45.5, eyeY: 52.5, mouthY: 69.5, faceWidth: 43, jawWidth: 32, neckTopY: 79, shoulderY: 88 },
-  'appearance.face.broad-01': { ...DEFAULT_RIG, topY: 24, hairlineY: 36.5, browY: 46.5, eyeY: 53.5, noseY: 61.5, chinY: 82, faceWidth: 48, jawWidth: 35, neckTopY: 77, shoulderY: 86 },
+  'appearance.face.male-oval-01': 'oval',
+  'appearance.face.male-oval-02': 'oval',
+  'appearance.face.male-round-01': 'round',
+  'appearance.face.male-long-01': 'long',
+  'appearance.face.male-square-01': 'square',
+  'appearance.face.male-broad-01': 'broad',
+  'appearance.face.female-oval-01': 'oval',
+  'appearance.face.female-oval-02': 'oval',
+  'appearance.face.female-round-01': 'round',
+  'appearance.face.female-long-01': 'long',
+  'appearance.face.female-mature-01': 'oval',
+  'appearance.face.female-youth-01': 'round',
+  'appearance.face.female-youth-02': 'oval',
+  'appearance.face.female-adult-01': 'oval',
+  'appearance.face.female-adult-02': 'long',
+  'appearance.face.female-mature-02': 'broad',
+  'appearance.face.female-elder-01': 'oval',
 };
 
 function partFor(catalog: AppearanceCatalogDefinition | undefined, id: string) {
@@ -86,7 +98,7 @@ export function faceFamilyForId(catalog: AppearanceCatalogDefinition | undefined
 }
 
 export function portraitRigForFace(catalog: AppearanceCatalogDefinition | undefined, faceId: string): PortraitRig {
-  return partFor(catalog, faceId)?.rig ?? FALLBACK_RIGS[faceId] ?? DEFAULT_RIG;
+  return partFor(catalog, faceId)?.rig ?? DEFAULT_RIG;
 }
 
 export function compatibilityMultiplier(part: AppearancePartDefinition, faceFamily: PortraitFaceFamily) {
@@ -97,13 +109,21 @@ export function compatibilityMultiplier(part: AppearancePartDefinition, faceFami
   return multiplier;
 }
 
+export function silhouetteTypeForId(
+  catalog: AppearanceCatalogDefinition | undefined,
+  partId: string,
+  fallback = 'default',
+) {
+  return partFor(catalog, partId)?.silhouetteType ?? fallback;
+}
+
 export function hairVisibilityForHeadwear(
   catalog: AppearanceCatalogDefinition | undefined,
   headwearId: string,
 ): PortraitHairVisibility {
   const configured = partFor(catalog, headwearId)?.hairVisibility;
   if (configured) return configured;
-  if (headwearId.endsWith('.none') || headwearId.includes('sun-hat')) return 'full';
+  if (headwearId.endsWith('.none') || headwearId.includes('sun-hat') || headwearId.includes('hairpin') || headwearId.includes('hair-ribbon')) return 'full';
   return 'back-only';
 }
 
@@ -113,7 +133,12 @@ function validateRig(rig: PortraitRig) {
   if (!(rig.eyeY < rig.noseY && rig.noseY < rig.mouthY && rig.mouthY < rig.chinY)) errors.push('五官纵向锚点顺序异常');
   if (!(rig.chinY <= rig.shoulderY && rig.neckTopY < rig.shoulderY)) errors.push('下巴 / 脖颈 / 肩线顺序异常');
   if (rig.faceWidth <= 0 || rig.jawWidth <= 0 || rig.jawWidth > rig.faceWidth) errors.push('脸宽 / 下颌宽参数异常');
-  if (rig.centerX - rig.faceWidth / 2 < 22 || rig.centerX + rig.faceWidth / 2 > 98) errors.push('脸部超出头像安全区');
+
+  const faceLeft = rig.centerX - rig.faceWidth / 2;
+  const faceRight = rig.centerX + rig.faceWidth / 2;
+  if (faceLeft < 16 || faceRight > 104) errors.push('脸部超出 1:1 安全区的主构图范围');
+  if (rig.topY < PORTRAIT_MASTER.safeY || rig.chinY > PORTRAIT_MASTER.safeY + PORTRAIT_MASTER.safeHeight) errors.push('脸部超出 1:1 Safe Area');
+  if (rig.shoulderY > PORTRAIT_MASTER.safeY + PORTRAIT_MASTER.safeHeight) errors.push('主要肩线超出 1:1 Safe Area');
   return errors;
 }
 
@@ -137,6 +162,11 @@ export function portraitDiagnostics(
     const part = partFor(catalog, id);
     if (part?.avoidFaceFamilies?.includes(faceFamily)) warnings.push(`${part.label} 与${faceFamily}脸型兼容度较低`);
   }
+
+  const hair = partFor(catalog, appearance.hairId);
+  const outfit = partFor(catalog, appearance.outfitId);
+  if (hair && !hair.silhouetteType) warnings.push(`${hair.label} 未声明 silhouetteType`);
+  if (outfit && !outfit.silhouetteType) warnings.push(`${outfit.label} 未声明 silhouetteType`);
 
   const headwear = partFor(catalog, appearance.headwearId);
   if (headwear && headwear.slot === 'headwear' && !headwear.hairVisibility) warnings.push(`${headwear.label} 未声明头发遮挡规则`);

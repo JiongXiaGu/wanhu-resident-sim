@@ -23,3 +23,11 @@
     inset 0 0 0 1px rgba(231, 221, 191, .08),
     inset 0 -18px 28px rgba(8, 14, 12, .08);
 }
+
+.generated-portrait--crop {
+  aspect-ratio: 1;
+}
+
+.generated-portrait--master {
+  aspect-ratio: 4 / 5;
+}

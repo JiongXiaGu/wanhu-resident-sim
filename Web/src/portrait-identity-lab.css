@@ -23,3 +23,69 @@
 .portrait-lab-card[data-gender="female"] .portrait-lab-card__role {
   font-weight: 600;
 }
+
+.portrait-lab__metrics {
+  grid-template-columns: repeat(8, minmax(82px, 1fr));
+}
+
+.portrait-lab__hero--art-kit {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 3fr);
+  align-items: end;
+  gap: 10px;
+  width: auto;
+  height: auto;
+  aspect-ratio: auto;
+  padding: 12px;
+  background:
+    linear-gradient(180deg, rgba(229, 211, 164, .035), transparent),
+    rgba(22, 31, 28, .72);
+}
+
+.portrait-lab__preview {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.portrait-lab__preview > span {
+  color: rgba(231, 220, 196, .42);
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.portrait-lab__preview .generated-portrait {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.portrait-lab__preview--master .generated-portrait {
+  aspect-ratio: 4 / 5;
+}
+
+.portrait-lab__preview--crop .generated-portrait {
+  aspect-ratio: 1;
+}
+
+.portrait-lab__silhouette-readout {
+  display: block;
+  margin-top: 7px;
+  color: rgba(210, 197, 166, .42);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 9px;
+}
+
+@media (max-width: 1500px) {
+  .portrait-lab__metrics {
+    grid-template-columns: repeat(4, minmax(90px, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .portrait-lab__metrics {
+    grid-template-columns: repeat(2, minmax(90px, 1fr));
+  }
+}

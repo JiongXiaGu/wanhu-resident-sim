@@ -22,6 +22,7 @@ Documentation/居民面板与生活事件V2.md
 Documentation/居民生活记录与故事连续性.md
 Documentation/StoryBucket与内容覆盖V1.md
 Documentation/头像系统与美术资源规范V1.md
+Documentation/Portrait Art Kit V1.md
 ```
 
 然后检查 GitHub `main`、Actions 与必要代码。
@@ -231,19 +232,25 @@ lifetag.newly-married
 /?view=portraits
 ```
 
-它一次生成 64 个随机样本，并用 `AppearanceDNA` 驱动分层 SVG 头像。页面可以查看：
+它一次生成 64 个随机样本，并用 `AppearanceDNA` 驱动分层 SVG 头像。当前 Portrait Art Kit V1 使用 4:5 美术母版 + 1:1 Safe Area，同时验证女性长发轮廓、财富服装层次和同屏 silhouette 去重。
+
+页面可以查看：
 
 ```text
-Face / Hair / Brow / FacialHair
-Headwear / Outfit
+Face / Back Hair / Front Hair / Brow / FacialHair
+Headwear / Outfit / Age Overlay
 Skin / Hair / Clothing Palette
+4:5 Master / 1:1 Crop
 ```
 
-还支持性别、年龄筛选与“换一批”，用于观察重复率、异常组合和可辨认度。
+职业只作为居民信息显示，不参与服饰 Resolver。这套 SVG 只是 Web 表现层；未来 Unity 只需要复用 AppearanceDNA、PortraitRig、Safe Area、silhouetteType 与 Stable ID 语义，再重新映射到 Sprite、Mesh、Material 或其它资源。
 
-这套 SVG 只是 Web 表现层。未来 Unity 只需要复用 AppearanceDNA 的语义和 Stable ID，再重新映射到 Sprite、Mesh、Material 或其它资源。
+详细规则见：
 
-详细规则见 `Documentation/头像系统与美术资源规范V1.md`。
+```text
+Documentation/头像系统与美术资源规范V1.md
+Documentation/Portrait Art Kit V1.md
+```
 
 ## 内容生产原则
 
