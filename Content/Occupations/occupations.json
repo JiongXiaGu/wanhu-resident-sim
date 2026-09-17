@@ -1,0 +1,171 @@
+{
+  "schema": "wanhu.occupations.v1",
+  "items": [
+    {
+      "id": "occupation.child",
+      "name": "孩童",
+      "workplaceType": null,
+      "minAge": 0,
+      "maxAge": 12,
+      "weight": 8,
+      "storyHints": ["孩子", "朋友", "上学", "第一次"],
+      "workActivity": "正在家门附近玩耍",
+      "offActivity": "正在家里歇着"
+    },
+    {
+      "id": "occupation.student",
+      "name": "学生",
+      "workplaceType": "school.private",
+      "minAge": 7,
+      "maxAge": 18,
+      "weight": 6,
+      "storyHints": ["先生", "认字", "上学", "朋友"],
+      "workActivity": "正在私塾里听先生讲课",
+      "offActivity": "正在家里温习功课"
+    },
+    {
+      "id": "occupation.apprentice",
+      "name": "学徒",
+      "workplaceType": "workshop.generic",
+      "minAge": 13,
+      "maxAge": 25,
+      "weight": 8,
+      "storyHints": ["学徒", "第一次", "做活", "先生", "师傅"],
+      "workActivity": "正在跟着师傅做今天的活",
+      "offActivity": "正在收拾自己的工具"
+    },
+    {
+      "id": "occupation.cloth-worker",
+      "name": "布庄伙计",
+      "workplaceType": "shop.cloth",
+      "minAge": 18,
+      "maxAge": 68,
+      "weight": 7,
+      "storyHints": ["布", "铺", "掌柜", "货", "账"],
+      "workActivity": "正在布庄整理今日新到的布匹",
+      "offActivity": "今日不当值，正在家里歇着"
+    },
+    {
+      "id": "occupation.potter",
+      "name": "陶工",
+      "workplaceType": "workshop.kiln",
+      "minAge": 18,
+      "maxAge": 68,
+      "weight": 7,
+      "storyHints": ["陶", "窑", "坛", "酒"],
+      "workActivity": "正在窑口查看新烧出的陶器",
+      "offActivity": "今日歇窑，正在整理旧工具"
+    },
+    {
+      "id": "occupation.carpenter",
+      "name": "木工",
+      "workplaceType": "workshop.wood",
+      "minAge": 18,
+      "maxAge": 70,
+      "weight": 7,
+      "storyHints": ["木", "修", "屋", "手艺"],
+      "workActivity": "正在木作铺里做一件新活",
+      "offActivity": "正在家门口修整自己的工具"
+    },
+    {
+      "id": "occupation.account-clerk",
+      "name": "账房",
+      "workplaceType": "shop.accounting",
+      "minAge": 20,
+      "maxAge": 72,
+      "weight": 5,
+      "storyHints": ["账", "钱", "作保", "老友", "生意"],
+      "workActivity": "正在柜后核对今日的账目",
+      "offActivity": "今日无账可算，正在茶铺坐着"
+    },
+    {
+      "id": "occupation.physician",
+      "name": "郎中",
+      "workplaceType": "clinic",
+      "minAge": 24,
+      "maxAge": 75,
+      "weight": 3,
+      "storyHints": ["病", "药", "郎中", "看病"],
+      "workActivity": "正在替一户人家看诊",
+      "offActivity": "正在家里整理药箱"
+    },
+    {
+      "id": "occupation.lock-keeper",
+      "name": "守闸人",
+      "workplaceType": "infrastructure.lock",
+      "minAge": 20,
+      "maxAge": 70,
+      "weight": 3,
+      "storyHints": ["河", "闸", "船", "桥", "水"],
+      "workActivity": "正在河边记录今日过闸的船",
+      "offActivity": "今日船少，正在闸房里歇着"
+    },
+    {
+      "id": "occupation.vendor",
+      "name": "小贩",
+      "workplaceType": "market.stall",
+      "minAge": 18,
+      "maxAge": 72,
+      "weight": 7,
+      "storyHints": ["市", "摊", "买卖", "客人", "秤"],
+      "workActivity": "正在市口照看自己的摊子",
+      "offActivity": "今日没有出摊，正在家里理货"
+    },
+    {
+      "id": "occupation.farmer",
+      "name": "农户",
+      "workplaceType": "field",
+      "minAge": 18,
+      "maxAge": 72,
+      "weight": 8,
+      "storyHints": ["田", "收成", "歉收", "粮", "地"],
+      "workActivity": "正在城外地里忙活",
+      "offActivity": "今日没有下地，正在家里修农具"
+    },
+    {
+      "id": "occupation.courier",
+      "name": "脚夫",
+      "workplaceType": "transport",
+      "minAge": 18,
+      "maxAge": 58,
+      "weight": 5,
+      "storyHints": ["送", "车", "货", "商队", "急件"],
+      "workActivity": "正在替人送一趟货",
+      "offActivity": "今日没有接活，正在街口等差事"
+    },
+    {
+      "id": "occupation.performer",
+      "name": "戏班演员",
+      "workplaceType": "theatre",
+      "minAge": 16,
+      "maxAge": 62,
+      "weight": 3,
+      "storyHints": ["戏", "台", "唱", "乐师"],
+      "workActivity": "正在戏园后台准备今日的场子",
+      "offActivity": "今日没有演出，正在练一段旧戏"
+    },
+    {
+      "id": "occupation.midwife",
+      "name": "稳婆",
+      "workplaceType": "service.midwife",
+      "minAge": 28,
+      "maxAge": 72,
+      "weight": 2,
+      "genders": ["female"],
+      "storyHints": ["孩子", "生产", "产妇", "稳婆"],
+      "workActivity": "正在收拾接生时常用的东西",
+      "offActivity": "今日没有人来请，正在家中歇着"
+    },
+    {
+      "id": "occupation.retired-craftsman",
+      "name": "退下来的手艺人",
+      "workplaceType": null,
+      "minAge": 58,
+      "maxAge": 100,
+      "weight": 5,
+      "storyHints": ["老", "修", "手艺", "认字", "朋友"],
+      "workActivity": "正在门前慢慢修一件旧物",
+      "offActivity": "正在巷口和几个熟人闲坐"
+    }
+  ]
+}
