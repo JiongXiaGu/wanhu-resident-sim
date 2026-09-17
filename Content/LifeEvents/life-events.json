@@ -11,106 +11,45 @@
       },
       "source": { "type": "city", "label": "北市坊排水工程" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "街口开始挖排水沟",
-          "text": "铺门前围起木栏，客人得绕路进来。今天的生意明显少了。",
-          "activityOverride": "正在从后门搬运今天要用的东西"
-        },
-        {
-          "delayDays": { "min": 3, "max": 5 },
-          "title": "工人铺了一条临时木板路",
-          "text": "收工后留下了一条窄路，熟客终于能从后门进来。总算还能继续接活。",
-          "activityOverride": "正在从后门招呼刚到的客人"
-        },
-        {
-          "delayDays": { "min": 8, "max": 12 },
-          "title": "正门重新通了",
-          "text": "围栏撤走，门前也不再积水。今天进门的客人比前几日多了不少。"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"街口开始挖排水沟","text":"铺门前围起木栏，客人得绕路进来。今天的生意明显少了。","activityOverride":"正在从后门搬运今天要用的东西"},
+        {"delayDays":{"min":3,"max":5},"title":"工人铺了一条临时木板路","text":"收工后留下了一条窄路，熟客终于能从后门进来。总算还能继续接活。","activityOverride":"正在从后门招呼刚到的客人"},
+        {"delayDays":{"min":8,"max":12},"title":"正门重新通了","text":"围栏撤走，门前也不再积水。今天进门的客人比前几日多了不少。"}
       ]
     },
     {
       "id": "lifeevent.new-bridge-route",
       "title": "新桥改变了来回的路",
       "weight": 5,
-      "eligibility": {
-        "occupations": ["occupation.courier", "occupation.lock-keeper", "occupation.vendor"],
-        "minAge": 18
-      },
+      "eligibility": {"occupations":["occupation.courier","occupation.lock-keeper","occupation.vendor"],"minAge":18},
       "source": { "type": "city", "label": "河中新桥" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "新桥今日通行",
-          "text": "以前过河总得等渡船。桥一开，我先走了一趟，来回比从前快了许多。",
-          "activityOverride": "正在试着改走新桥办今天的差事"
-        },
-        {
-          "delayDays": { "min": 4, "max": 7 },
-          "title": "我开始把几趟活改走新桥",
-          "text": "赶路省下来的时辰，刚好多接一趟活。连常走的客人也慢慢换了路线。"
-        },
-        {
-          "delayDays": { "min": 12, "max": 18 },
-          "title": "这条路已经走顺了",
-          "text": "如今出门前不用再问渡船什么时候开。河还是那条河，来回却没那么费事了。"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"新桥今日通行","text":"以前过河总得等渡船。桥一开，我先走了一趟，来回比从前快了许多。","activityOverride":"正在试着改走新桥办今天的差事"},
+        {"delayDays":{"min":4,"max":7},"title":"我开始把几趟活改走新桥","text":"赶路省下来的时辰，刚好多接一趟活。连常走的客人也慢慢换了路线。"},
+        {"delayDays":{"min":12,"max":18},"title":"这条路已经走顺了","text":"如今出门前不用再问渡船什么时候开。河还是那条河，来回却没那么费事了。"}
       ]
     },
     {
       "id": "lifeevent.craft-busy-orders",
       "title": "最近的活忽然多了",
       "weight": 7,
-      "eligibility": {
-        "occupations": ["occupation.carpenter", "occupation.potter", "occupation.cloth-worker", "occupation.apprentice"],
-        "minAge": 15
-      },
+      "eligibility": {"occupations":["occupation.carpenter","occupation.potter","occupation.cloth-worker","occupation.apprentice"],"minAge":15},
       "source": { "type": "work", "label": "近来订单增多" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "一连来了几笔新活",
-          "text": "原本排好的活还没做完，又有人来催新的。最近几日，收工总比平时晚。",
-          "activityOverride": "正在赶一件已经答应客人的活"
-        },
-        {
-          "delayDays": { "min": 5, "max": 8 },
-          "title": "手里的活终于排顺了",
-          "text": "我把急活和慢活重新排了一遍，也推掉两件来不及做的。忙还是忙，总算不再乱。"
-        },
-        {
-          "delayDays": { "min": 10, "max": 15 },
-          "title": "这一阵忙活总算过去了",
-          "text": "最后一件赶活交出去时，我才发现这阵子攒下了不少工钱。也算没白忙。"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"一连来了几笔新活","text":"原本排好的活还没做完，又有人来催新的。最近几日，收工总比平时晚。","activityOverride":"正在赶一件已经答应客人的活"},
+        {"delayDays":{"min":5,"max":8},"title":"手里的活终于排顺了","text":"我把急活和慢活重新排了一遍，也推掉两件来不及做的。忙还是忙，总算不再乱。"},
+        {"delayDays":{"min":10,"max":15},"title":"这一阵忙活总算过去了","text":"最后一件赶活交出去时，我才发现这阵子攒下了不少工钱。也算没白忙。"}
       ]
     },
     {
       "id": "lifeevent.market-opening",
       "title": "新菜市开张以后",
       "weight": 5,
-      "eligibility": {
-        "occupations": ["occupation.vendor", "occupation.cloth-worker", "occupation.account-clerk"],
-        "minAge": 18
-      },
+      "eligibility": {"occupations":["occupation.vendor","occupation.cloth-worker","occupation.account-clerk"],"minAge":18},
       "source": { "type": "city", "label": "城中新菜市" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "新菜市今天开张",
-          "text": "街上比往常挤得多，许多生面孔都顺路走到了这边。午前就来了不少新客。"
-        },
-        {
-          "delayDays": { "min": 6, "max": 10 },
-          "title": "几个新客开始常来了",
-          "text": "最初只是顺路看看，如今已有几个人会直接来找我。街上的生意慢慢有了新样子。"
-        },
-        {
-          "delayDays": { "min": 18, "max": 25 },
-          "title": "街上的人流已经稳定下来",
-          "text": "菜市最热闹的那几日过去了，可留下的客人没有全散。现在每天都比从前多些生意。"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"新菜市今天开张","text":"街上比往常挤得多，许多生面孔都顺路走到了这边。午前就来了不少新客。"},
+        {"delayDays":{"min":6,"max":10},"title":"几个新客开始常来了","text":"最初只是顺路看看，如今已有几个人会直接来找我。街上的生意慢慢有了新样子。"},
+        {"delayDays":{"min":18,"max":25},"title":"街上的人流已经稳定下来","text":"菜市最热闹的那几日过去了，可留下的客人没有全散。现在每天都比从前多些生意。"}
       ]
     },
     {
@@ -118,132 +57,53 @@
       "title": "轮到我去服役",
       "weight": 3,
       "recordToHistory": true,
-      "eligibility": {
-        "occupations": ["occupation.carpenter", "occupation.potter", "occupation.cloth-worker", "occupation.account-clerk", "occupation.physician", "occupation.vendor", "occupation.farmer", "occupation.courier"],
-        "genders": ["male"],
-        "minAge": 18,
-        "maxAge": 55,
-        "forbiddenTags": ["lifetag.served-military"]
-      },
-      "effects": {
-        "addTags": ["lifetag.served-military"]
-      },
+      "memoryText": "那年名册上轮到了我，我去城北修了十几日官道。每天点名以后便搬石填土，肩背一直酸着。回城时鞋底都磨薄了，原来的活还在等我，第二天我又照常忙了起来。",
+      "eligibility": {"occupations":["occupation.carpenter","occupation.potter","occupation.cloth-worker","occupation.account-clerk","occupation.physician","occupation.vendor","occupation.farmer","occupation.courier"],"genders":["male"],"minAge":18,"maxAge":55,"forbiddenTags":["lifetag.served-military"]},
+      "effects": {"addTags":["lifetag.served-military"]},
       "source": { "type": "city", "label": "城北官道修缮" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "名册上轮到我了",
-          "text": "这次要去城北修官道，少说也得十几日。我把家里的事交代好，准备明早出发。",
-          "activityOverride": "正在收拾服役要带的东西"
-        },
-        {
-          "delayDays": { "min": 4, "max": 7 },
-          "title": "每天都在官道上搬石填土",
-          "text": "天亮点名以后便分队干活。肩背都酸得厉害，只盼这段差事早点结束。",
-          "activityOverride": "正在城北官道上服役"
-        },
-        {
-          "delayDays": { "min": 12, "max": 18 },
-          "title": "终于回到家里",
-          "text": "回城时鞋底已经磨薄了。原来的活还在等着我，明日又要重新忙起来。"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"名册上轮到我了","text":"这次要去城北修官道，少说也得十几日。我把家里的事交代好，准备明早出发。","activityOverride":"正在收拾服役要带的东西"},
+        {"delayDays":{"min":4,"max":7},"title":"每天都在官道上搬石填土","text":"天亮点名以后便分队干活。肩背都酸得厉害，只盼这段差事早点结束。","activityOverride":"正在城北官道上服役"},
+        {"delayDays":{"min":12,"max":18},"title":"终于回到家里","text":"回城时鞋底已经磨薄了。原来的活还在等着我，明日又要重新忙起来。"}
       ]
     },
     {
       "id": "lifeevent.old-service-companion",
       "title": "旧同伍进城了",
       "weight": 4,
-      "eligibility": {
-        "genders": ["male"],
-        "minAge": 26,
-        "maxAge": 72,
-        "requiredTags": ["lifetag.served-military"]
-      },
+      "eligibility": {"genders":["male"],"minAge":26,"maxAge":72,"requiredTags":["lifetag.served-military"]},
       "source": { "type": "personal", "label": "旧日同伍" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "门口来了个多年没见的熟面孔",
-          "text": "我一时没认出来，直到他提起当年修官道的那队人。原来他这次进城办事，顺路找到了我。"
-        },
-        {
-          "delayDays": { "min": 2, "max": 4 },
-          "title": "我们坐下来聊了半日旧事",
-          "text": "当年总嫌日子难熬，如今说起来却记得许多小事。谁去了哪里，谁又换了营生，一件件都接得上。"
-        },
-        {
-          "delayDays": { "min": 5, "max": 8 },
-          "title": "送他出城后，我又回去做自己的事",
-          "text": "临走前约好以后有机会再见。街上还是照常热闹，只是忽然想起很多年前那段日子。"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"门口来了个多年没见的熟面孔","text":"我一时没认出来，直到他提起当年修官道的那队人。原来他这次进城办事，顺路找到了我。"},
+        {"delayDays":{"min":2,"max":4},"title":"我们坐下来聊了半日旧事","text":"当年总嫌日子难熬，如今说起来却记得许多小事。谁去了哪里，谁又换了营生，一件件都接得上。"},
+        {"delayDays":{"min":5,"max":8},"title":"送他出城后，我又回去做自己的事","text":"临走前约好以后有机会再见。街上还是照常热闹，只是忽然想起很多年前那段日子。"}
       ]
     },
     {
       "id": "lifeevent.marriage-introduction",
       "title": "这门亲事定下来了",
       "weight": 5,
-      "eligibility": {
-        "minAge": 20,
-        "maxAge": 45,
-        "requireSpouse": false
-      },
-      "effects": {
-        "addTags": ["lifetag.newly-married"],
-        "structuralRequests": [
-          { "type": "formMarriage" }
-        ]
-      },
+      "memoryText": "那阵子亲友替我牵了线，我起初只是去茶铺见了一面，后来又见过几回，把各自的营生和家里情况都说清楚了。两边最后都点了头，屋里也从那以后多了一个一起过日子的人。",
+      "eligibility": {"minAge":20,"maxAge":45,"requireSpouse":false},
+      "effects": {"addTags":["lifetag.newly-married"],"structuralRequests":[{"type":"formMarriage"}]},
       "source": { "type": "family", "label": "亲友牵线" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "亲友问我愿不愿意见一面",
-          "text": "亲友前些日子问我愿不愿意见一面。我原本没抱太多念头，今日还是收拾整齐，去茶铺坐了坐。",
-          "activityOverride": "正在赴一场亲友牵线的见面"
-        },
-        {
-          "delayDays": { "min": 5, "max": 9 },
-          "title": "后来又见了两回",
-          "text": "后来又见了两回，也把各自的营生和家里情况说清楚。没有什么轰轰烈烈的，只觉得往后的日子似乎可以一起过。"
-        },
-        {
-          "delayDays": { "min": 12, "max": 20 },
-          "title": "今天把婚事正式定下了",
-          "text": "两边都点了头，今天把婚事正式定下。亲友来帮着搬了几样东西，屋里从今以后多了一个一起过日子的人。",
-          "activityOverride": "正在和家里一起收拾成婚后的住处"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"亲友问我愿不愿意见一面","text":"亲友前些日子问我愿不愿意见一面。我原本没抱太多念头，今日还是收拾整齐，去茶铺坐了坐。","activityOverride":"正在赴一场亲友牵线的见面"},
+        {"delayDays":{"min":5,"max":9},"title":"后来又见了两回","text":"后来又见了两回，也把各自的营生和家里情况说清楚。没有什么轰轰烈烈的，只觉得往后的日子似乎可以一起过。"},
+        {"delayDays":{"min":12,"max":20},"title":"今天把婚事正式定下了","text":"两边都点了头，今天把婚事正式定下。亲友来帮着搬了几样东西，屋里从今以后多了一个一起过日子的人。","activityOverride":"正在和家里一起收拾成婚后的住处"}
       ]
     },
     {
       "id": "lifeevent.newlywed-settling",
       "title": "两个人一起过日子以后",
       "weight": 7,
-      "eligibility": {
-        "minAge": 20,
-        "maxAge": 50,
-        "requireSpouse": true,
-        "requiredTags": ["lifetag.newly-married"]
-      },
-      "effects": {
-        "removeTags": ["lifetag.newly-married"]
-      },
+      "eligibility": {"minAge":20,"maxAge":50,"requireSpouse":true,"requiredTags":["lifetag.newly-married"]},
+      "effects": {"removeTags":["lifetag.newly-married"]},
       "source": { "type": "family", "label": "新婚后的日常" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "屋里忽然多了另一个人的东西",
-          "text": "成婚以后，屋里的东西一下多了不少。碗筷、衣物、做活用的物件都得重新找地方，我一时还有些不习惯。"
-        },
-        {
-          "delayDays": { "min": 4, "max": 7 },
-          "title": "我们慢慢分清了谁做哪些事",
-          "text": "谁先出门，谁顺手买菜，晚上谁记得添灯油，都是过了几日才慢慢顺下来。小事很多，好在都能商量。"
-        },
-        {
-          "delayDays": { "min": 10, "max": 15 },
-          "title": "日子终于有了新的顺手法子",
-          "text": "现在回家时已经不会觉得屋里突然多了个人。许多事情不用特意说，也知道该给彼此留一份。"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"屋里忽然多了另一个人的东西","text":"成婚以后，屋里的东西一下多了不少。碗筷、衣物、做活用的物件都得重新找地方，我一时还有些不习惯。"},
+        {"delayDays":{"min":4,"max":7},"title":"我们慢慢分清了谁做哪些事","text":"谁先出门，谁顺手买菜，晚上谁记得添灯油，都是过了几日才慢慢顺下来。小事很多，好在都能商量。"},
+        {"delayDays":{"min":10,"max":15},"title":"日子终于有了新的顺手法子","text":"现在回家时已经不会觉得屋里突然多了个人。许多事情不用特意说，也知道该给彼此留一份。"}
       ]
     },
     {
@@ -251,62 +111,26 @@
       "title": "孩子到了该认字的年纪",
       "weight": 4,
       "recordToHistory": true,
-      "eligibility": {
-        "minAge": 25,
-        "maxAge": 58,
-        "minChildren": 1,
-        "forbiddenTags": ["lifetag.child-started-school"]
-      },
-      "effects": {
-        "addTags": ["lifetag.child-started-school"]
-      },
+      "memoryText": "我开始问附近哪家私塾合适。孩子那阵子总爱盯着牌匾上的字，我和家里商量，想着该让他正经认字了。送到门口时他还一直回头看，先生领进去以后，我反倒在门外站了一会儿才走。后来有一天回家路上，他忽然把一家铺子的招牌念了出来，虽然只认得几个字，也够他高兴一路。",
+      "eligibility": {"minAge":25,"maxAge":58,"minChildren":1,"forbiddenTags":["lifetag.child-started-school"]},
+      "effects": {"addTags":["lifetag.child-started-school"]},
       "source": { "type": "family", "label": "家里的孩子" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "我开始问附近哪家私塾合适",
-          "text": "孩子最近总爱问招牌上的字。我和家里商量，想着该让他正经学认字了。"
-        },
-        {
-          "delayDays": { "min": 5, "max": 9 },
-          "title": "孩子第一次自己走进私塾",
-          "text": "送到门口时还一直回头看。先生领进去以后，我反倒在门外站了一会儿才走。",
-          "activityOverride": "刚把孩子送到私塾，正准备去做今天的事"
-        },
-        {
-          "delayDays": { "min": 15, "max": 22 },
-          "title": "他已经认识几个常见的字了",
-          "text": "回家路上，他突然把一家铺子的招牌念了出来。虽然只认得几个字，也够他高兴一路。"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"我开始问附近哪家私塾合适","text":"孩子最近总爱问招牌上的字。我和家里商量，想着该让他正经学认字了。"},
+        {"delayDays":{"min":5,"max":9},"title":"孩子第一次自己走进私塾","text":"送到门口时还一直回头看。先生领进去以后，我反倒在门外站了一会儿才走。","activityOverride":"刚把孩子送到私塾，正准备去做今天的事"},
+        {"delayDays":{"min":15,"max":22},"title":"他已经认识几个常见的字了","text":"回家路上，他突然把一家铺子的招牌念了出来。虽然只认得几个字，也够他高兴一路。"}
       ]
     },
     {
       "id": "lifeevent.rain-delay",
       "title": "这阵雨耽误了不少活",
       "weight": 4,
-      "eligibility": {
-        "occupations": ["occupation.farmer", "occupation.courier", "occupation.carpenter", "occupation.potter"],
-        "minAge": 18
-      },
+      "eligibility": {"occupations":["occupation.farmer","occupation.courier","occupation.carpenter","occupation.potter"],"minAge":18},
       "source": { "type": "weather", "label": "连日秋雨" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "雨从早上下到傍晚",
-          "text": "今天不少活都没法照常做，只能先收拾能在屋里处理的东西。",
-          "activityOverride": "正在屋里收拾被雨耽误的活"
-        },
-        {
-          "delayDays": { "min": 3, "max": 6 },
-          "title": "雨终于小了些",
-          "text": "积下来的活一下全挤到这几日。我得趁天气转好，先把最急的几件补上。",
-          "activityOverride": "正在赶被雨耽误的活"
-        },
-        {
-          "delayDays": { "min": 8, "max": 13 },
-          "title": "积下来的活已经补得差不多",
-          "text": "这几天忙得厉害，好在最急的都补上了。日子终于又回到平常的节奏。"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"雨从早上下到傍晚","text":"今天不少活都没法照常做，只能先收拾能在屋里处理的东西。","activityOverride":"正在屋里收拾被雨耽误的活"},
+        {"delayDays":{"min":3,"max":6},"title":"雨终于小了些","text":"积下来的活一下全挤到这几日。我得趁天气转好，先把最急的几件补上。","activityOverride":"正在赶被雨耽误的活"},
+        {"delayDays":{"min":8,"max":13},"title":"积下来的活已经补得差不多","text":"这几天忙得厉害，好在最急的都补上了。日子终于又回到平常的节奏。"}
       ]
     },
     {
@@ -314,33 +138,14 @@
       "title": "第一次让我独自做一件活",
       "weight": 8,
       "recordToHistory": true,
-      "eligibility": {
-        "occupations": ["occupation.apprentice"],
-        "minAge": 13,
-        "maxAge": 25,
-        "forbiddenTags": ["lifetag.first-independent-task"]
-      },
-      "effects": {
-        "addTags": ["lifetag.first-independent-task"]
-      },
+      "memoryText": "师傅第一次把一件小活完整交给我，只说了尺寸，剩下的让我自己想办法。我第一遍做得不够齐，拆掉重来了一次。交活时师傅翻看了几遍，没有再替我改，只说下次可以再快些。那是我第一次觉得，手里的活真是自己做完的。",
+      "eligibility": {"occupations":["occupation.apprentice"],"minAge":13,"maxAge":25,"forbiddenTags":["lifetag.first-independent-task"]},
+      "effects": {"addTags":["lifetag.first-independent-task"]},
       "source": { "type": "work", "label": "师傅交来的活" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "师傅把一件小活单独交给了我",
-          "text": "以前总有人在旁边盯着，这回只告诉我尺寸，剩下的让我自己想办法。",
-          "activityOverride": "正在独自做师傅交下来的小活"
-        },
-        {
-          "delayDays": { "min": 2, "max": 4 },
-          "title": "中间还是返工了一次",
-          "text": "第一遍做得不够齐，我拆掉重新来。虽然慢了些，第二遍总算像样。"
-        },
-        {
-          "delayDays": { "min": 5, "max": 8 },
-          "title": "师傅没再替我改",
-          "text": "交活时他翻看了几遍，只说下次可以再快些。东西最后是我自己做完的。"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"师傅把一件小活单独交给了我","text":"以前总有人在旁边盯着，这回只告诉我尺寸，剩下的让我自己想办法。","activityOverride":"正在独自做师傅交下来的小活"},
+        {"delayDays":{"min":2,"max":4},"title":"中间还是返工了一次","text":"第一遍做得不够齐，我拆掉重新来。虽然慢了些，第二遍总算像样。"},
+        {"delayDays":{"min":5,"max":8},"title":"师傅没再替我改","text":"交活时他翻看了几遍，只说下次可以再快些。东西最后是我自己做完的。"}
       ]
     },
     {
@@ -348,33 +153,14 @@
       "title": "第一次独自替家里办事",
       "weight": 7,
       "recordToHistory": true,
-      "eligibility": {
-        "occupations": ["occupation.student"],
-        "minAge": 10,
-        "maxAge": 18,
-        "forbiddenTags": ["lifetag.first-family-errand"]
-      },
-      "effects": {
-        "addTags": ["lifetag.first-family-errand"]
-      },
+      "memoryText": "家里第一次让我一个人去东市买东西，只给了钱和一张小纸条。回来的时候我还绕错了一条巷子，好在东西和剩下的钱都没有丢。后来再去时，家里也不再反复叮嘱，我自己已经认得回来的路了。",
+      "eligibility": {"occupations":["occupation.student"],"minAge":10,"maxAge":18,"forbiddenTags":["lifetag.first-family-errand"]},
+      "effects": {"addTags":["lifetag.first-family-errand"]},
       "source": { "type": "family", "label": "家里交代的小事" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "家里让我一个人去东市买东西",
-          "text": "以前总有人陪着，这回只给了钱和一张小纸条，让我自己认路过去。",
-          "activityOverride": "正在往东市走，替家里买东西"
-        },
-        {
-          "delayDays": { "min": 1, "max": 2 },
-          "title": "我真的一个人把事情办完了",
-          "text": "回来的路上还绕错了一条巷子，好在东西和剩下的钱都没丢。"
-        },
-        {
-          "delayDays": { "min": 4, "max": 7 },
-          "title": "第二次再去时已经没那么紧张",
-          "text": "这回家里没再反复叮嘱。我也不用一路捏着钱袋，知道该从哪条街回来。"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"家里让我一个人去东市买东西","text":"以前总有人陪着，这回只给了钱和一张小纸条，让我自己认路过去。","activityOverride":"正在往东市走，替家里买东西"},
+        {"delayDays":{"min":1,"max":2},"title":"我真的一个人把事情办完了","text":"回来的路上还绕错了一条巷子，好在东西和剩下的钱都没丢。"},
+        {"delayDays":{"min":4,"max":7},"title":"第二次再去时已经没那么紧张","text":"这回家里没再反复叮嘱。我也不用一路捏着钱袋，知道该从哪条街回来。"}
       ]
     },
     {
@@ -382,57 +168,26 @@
       "title": "闲下来以后也有了自己的去处",
       "weight": 8,
       "recordToHistory": true,
-      "eligibility": {
-        "occupations": ["occupation.retired-craftsman"],
-        "minAge": 58,
-        "forbiddenTags": ["lifetag.retirement-routine"]
-      },
-      "effects": {
-        "addTags": ["lifetag.retirement-routine"]
-      },
+      "memoryText": "闲下来以后，街口几个人叫我坐下来下了一盘棋。我第一回输得很快，第二天却又去了。后来去晚了有人给我留位置，有一回我先到，还顺手把棋盘摆好了。以前出门总是为了办事，那以后也有了只是自己想去的地方。",
+      "eligibility": {"occupations":["occupation.retired-craftsman"],"minAge":58,"forbiddenTags":["lifetag.retirement-routine"]},
+      "effects": {"addTags":["lifetag.retirement-routine"]},
       "source": { "type": "personal", "label": "日常生活" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "街口几个人叫我坐下来下棋",
-          "text": "我原本只想看一会儿，后来还是坐下下了一盘。输得很快，第二日却又去了。"
-        },
-        {
-          "delayDays": { "min": 7, "max": 12 },
-          "title": "如今去晚了，还有人给我留位置",
-          "text": "棋还是输多赢少，可大家已经习惯我每天过去坐一阵。"
-        },
-        {
-          "delayDays": { "min": 18, "max": 28 },
-          "title": "我也开始等别人来了",
-          "text": "有一天我先到，顺手把棋盘摆好。以前出门总为办事，如今也有只是想去的地方。"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"街口几个人叫我坐下来下棋","text":"我原本只想看一会儿，后来还是坐下下了一盘。输得很快，第二日却又去了。"},
+        {"delayDays":{"min":7,"max":12},"title":"如今去晚了，还有人给我留位置","text":"棋还是输多赢少，可大家已经习惯我每天过去坐一阵。"},
+        {"delayDays":{"min":18,"max":28},"title":"我也开始等别人来了","text":"有一天我先到，顺手把棋盘摆好。以前出门总为办事，如今也有只是想去的地方。"}
       ]
     },
     {
       "id": "lifeevent.neighbor-small-favor",
       "title": "邻居来借了一次手",
       "weight": 2,
-      "eligibility": {
-        "minAge": 18
-      },
+      "eligibility": {"minAge":18},
       "source": { "type": "personal", "label": "邻里日常" },
       "stages": [
-        {
-          "delayDays": { "min": 0, "max": 0 },
-          "title": "隔壁来问我能不能帮一把",
-          "text": "其实只是件不大的事，我顺手帮他做完。他临走时说明日把借走的东西送回来。"
-        },
-        {
-          "delayDays": { "min": 2, "max": 4 },
-          "title": "他把东西送回来，还带了些吃食",
-          "text": "我说不用这么客气，他还是放下才走。以后见面也比从前多说两句话。"
-        },
-        {
-          "delayDays": { "min": 10, "max": 16 },
-          "title": "现在偶尔也会互相搭把手",
-          "text": "谁家临时缺个东西，就去对面问一句。算不上多亲近，可住在一条巷里方便多了。"
-        }
+        {"delayDays":{"min":0,"max":0},"title":"隔壁来问我能不能帮一把","text":"其实只是件不大的事，我顺手帮他做完。他临走时说明日把借走的东西送回来。"},
+        {"delayDays":{"min":2,"max":4},"title":"他把东西送回来，还带了些吃食","text":"我说不用这么客气，他还是放下才走。以后见面也比从前多说两句话。"},
+        {"delayDays":{"min":10,"max":16},"title":"现在偶尔也会互相搭把手","text":"谁家临时缺个东西，就去对面问一句。算不上多亲近，可住在一条巷里方便多了。"}
       ]
     }
   ]

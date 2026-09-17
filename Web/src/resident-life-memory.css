@@ -1,0 +1,59 @@
+.resident-life-timeline--continuous {
+  padding-top: 14px;
+}
+
+.resident-life-timeline__chapters {
+  margin-left: 10px;
+  padding-left: 19px;
+}
+
+.resident-life-timeline__chapters::before {
+  top: 8px;
+  bottom: 8px;
+  background: linear-gradient(180deg, rgba(201,165,95,.22), rgba(239,233,221,.06));
+}
+
+.resident-life-timeline--continuous .resident-life-chapter {
+  padding: 3px 0 7px;
+}
+
+.resident-life-timeline--continuous .resident-life-chapter__row {
+  min-height: 38px;
+  grid-template-columns: 46px minmax(0,1fr) auto;
+  gap: 9px;
+  padding: 5px 8px;
+}
+
+.resident-life-timeline--continuous .resident-life-chapter__row--fact {
+  grid-template-columns: 46px minmax(0,1fr);
+}
+
+.resident-life-timeline--continuous .resident-life-chapter__row time {
+  font-size: 8px;
+}
+
+.resident-life-timeline--continuous .resident-life-chapter__row > span {
+  font-size: 9.4px;
+}
+
+.resident-life-memory {
+  margin: 4px 0 10px 46px;
+  padding: 12px 13px;
+  border: 1px solid rgba(218,198,150,.09);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,.016), rgba(9,15,12,.08));
+}
+
+.resident-life-memory p {
+  margin: 0;
+  color: #a6ada5;
+  font-family: 'Songti SC', 'STSong', 'Noto Serif CJK SC', serif;
+  font-size: 9.1px;
+  line-height: 1.78;
+  letter-spacing: .01em;
+  white-space: normal;
+}
+
+.resident-life-timeline--continuous .resident-life-now {
+  margin-top: 12px;
+}
