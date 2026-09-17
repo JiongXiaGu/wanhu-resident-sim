@@ -26,7 +26,7 @@ permissions:
 jobs:
   capture:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 7
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -63,8 +63,12 @@ jobs:
           done
           cat /tmp/wanhu-resident-vite.log
           exit 1
+      - name: Gate Portrait Art V2 quality
+        run: node scripts/assert-portrait-v2-quality.mjs
       - name: Capture resident review screenshots
         run: node scripts/capture-resident-review.mjs
+      - name: Capture Portrait Art V2 review screenshots
+        run: node scripts/capture-portrait-art-v2-review.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots

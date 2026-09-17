@@ -65,10 +65,8 @@ function assignHouseholdAppearanceProfile(household) {
 for (const household of snapshot.households) assignHouseholdAppearanceProfile(household);
 
 function compatibilityWeight(item, faceFamily) {
-  let multiplier = 1;
-  if (item.preferredFaceFamilies?.includes(faceFamily)) multiplier *= 1.35;
-  if (item.avoidFaceFamilies?.includes(faceFamily)) multiplier *= 0.3;
-  return multiplier;
+  if (item.avoidFaceFamilies?.includes(faceFamily)) return 0;
+  return item.preferredFaceFamilies?.includes(faceFamily) ? 1.35 : 1;
 }
 
 function silhouetteMultiplier(item, recentSilhouettes) {
@@ -90,13 +88,15 @@ function weightedPick(seed, salt, items, faceFamily = null, recentSilhouettes = 
     return base * compatibility * silhouetteMultiplier(item, recentSilhouettes);
   };
   const total = items.reduce((sum, item) => sum + weightOf(item), 0);
-  if (total <= 0) return items[0];
+  if (total <= 0) throw new Error(`No compatible appearance candidates for ${salt}.`);
   let cursor = (hash32(`${seed}:appearance:${salt}`) / 4294967296) * total;
   for (const item of items) {
-    cursor -= weightOf(item);
+    const weight = weightOf(item);
+    if (weight <= 0) continue;
+    cursor -= weight;
     if (cursor <= 0) return item;
   }
-  return items.at(-1);
+  return [...items].reverse().find((item) => weightOf(item) > 0);
 }
 
 function matches(item, resident, household) {
@@ -218,4 +218,4 @@ snapshot.schema = 'wanhu.resident-snapshot.v3';
 await writeFile(join(generatedDir, 'resident-snapshot.json'), `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
 
 const wealthSummary = Object.fromEntries([...validWealthTiers].map((tier) => [tier, snapshot.households.filter((item) => item.wealthTier === tier).length]));
-console.log(`Compiled wealth-driven AppearanceDNA for ${snapshot.residents.length} residents across ${snapshot.households.length} households with silhouette-aware hair selection. ${JSON.stringify(wealthSummary)}`);
+console.log(`Compiled wealth-driven AppearanceDNA for ${snapshot.residents.length} residents across ${snapshot.households.length} households with silhouette-aware hair selection and hard pairing rejection. ${JSON.stringify(wealthSummary)}`);

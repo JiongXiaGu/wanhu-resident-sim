@@ -129,13 +129,20 @@ function createRng(seed: number) {
 
 function weightedPick<T>(items: T[], rng: () => number, weightOf: (item: T) => number): T {
   if (!items.length) throw new Error('头像实验室候选池为空');
-  const total = items.reduce((sum, item) => sum + Math.max(0, weightOf(item)), 0);
-  let cursor = rng() * Math.max(1, total);
-  for (const item of items) {
-    cursor -= Math.max(0, weightOf(item));
-    if (cursor <= 0) return item;
+  const weights = items.map((item) => Math.max(0, weightOf(item)));
+  const total = weights.reduce((sum, weight) => sum + weight, 0);
+  if (total <= 0) throw new Error('头像实验室没有可用的兼容候选');
+  let cursor = rng() * total;
+  for (let index = 0; index < items.length; index += 1) {
+    const weight = weights[index];
+    if (weight <= 0) continue;
+    cursor -= weight;
+    if (cursor <= 0) return items[index];
   }
-  return items[items.length - 1];
+  for (let index = items.length - 1; index >= 0; index -= 1) {
+    if (weights[index] > 0) return items[index];
+  }
+  throw new Error('头像实验室兼容候选选择失败');
 }
 
 function matchesAppearanceRule(
@@ -177,7 +184,23 @@ function choosePart(
     if (item.lifeStages?.length && !item.lifeStages.includes(lifeStage)) return false;
     return !item.wealthTiers?.length && !item.presentationStyles?.length;
   });
-  let candidates = exact.length ? exact : relaxedStyle.length ? relaxedStyle : generic.length ? generic : slotItems;
+
+  const compatible = (items: ExtendedPart[]) => faceFamily
+    ? items.filter((item) => compatibilityMultiplier(item, faceFamily) > 0)
+    : items;
+  const exactCompatible = compatible(exact);
+  const relaxedCompatible = compatible(relaxedStyle);
+  const genericCompatible = compatible(generic);
+  const allCompatible = compatible(slotItems);
+  let candidates = exactCompatible.length
+    ? exactCompatible
+    : relaxedCompatible.length
+      ? relaxedCompatible
+      : genericCompatible.length
+        ? genericCompatible
+        : allCompatible;
+
+  if (!candidates.length) throw new Error(`头像实验室没有兼容的 ${slot} 候选`);
 
   if (preferredSilhouette) {
     const preferred = candidates.filter((item) => item.silhouetteType === preferredSilhouette);
@@ -427,9 +450,9 @@ export function PortraitArtLab() {
     <main className="portrait-lab">
       <header className="portrait-lab__header">
         <div>
-          <span className="portrait-lab__eyebrow">PORTRAIT ART KIT V1 · 4:5 MASTER / 1:1 SAFE AREA</span>
+          <span className="portrait-lab__eyebrow">PORTRAIT ART KIT V2 · 4:5 MASTER / 1:1 SAFE AREA</span>
           <h1>居民头像实验室</h1>
-          <p>扁平古风 + 轻纸片拼贴感。左侧 64 人验证轮廓差异与财富层次；检查器同时显示 4:5 美术母版和 1:1 实际裁切。职业只作为居民信息，不参与头像服饰候选。</p>
+          <p>正式美术生产基线。左侧 64 人验证男女 Face Base、轮廓差异与财富层次；检查器同时显示 4:5 美术母版和 1:1 实际裁切。职业只作为居民信息，不参与头像服饰候选。</p>
         </div>
         <div className="portrait-lab__header-actions">
           <button type="button" onClick={() => { setBatchSeed((value) => value + 1); setSelectedId(null); }}>换一批</button>
@@ -503,7 +526,7 @@ export function PortraitArtLab() {
               <small className="portrait-lab__silhouette-readout">Hair silhouette · {selected.hairSilhouette}</small>
             </div>
             <div className="portrait-lab__diagnostic-controls">
-              <div className="portrait-lab__diagnostic-heading"><b>Portrait Art Kit V1</b><span>Hair {selectedHairVisibility}</span></div>
+              <div className="portrait-lab__diagnostic-heading"><b>Portrait Art Kit V2</b><span>Hair {selectedHairVisibility}</span></div>
               <div className="portrait-lab__layer-buttons">
                 <button type="button" className={showRig ? 'is-active' : ''} onClick={() => setShowRig((value) => !value)}>{showRig ? '隐藏锚点' : '显示锚点'}</button>
                 {DIAGNOSTIC_LAYERS.map((layer) => <button key={layer.id} type="button" className={!hiddenLayers.includes(layer.id) ? 'is-active' : ''} onClick={() => toggleLayer(layer.id)}>{layer.label}</button>)}
@@ -527,7 +550,7 @@ export function PortraitArtLab() {
                 <div><dt>Clothing</dt><dd>{shortId(selected.appearance.clothingPaletteId)}</dd></div>
               </dl>
             </div>
-            <p className="portrait-lab__note">4:5 只属于美术母版；居民列表仍按 1:1 Safe Area 裁切。Gender / LifeStage / Household Wealth / Presentation 决定候选池，silhouetteType 再用于同屏去重。职业不参与服饰 Resolver。</p>
+            <p className="portrait-lab__note">4:5 只属于美术母版；居民列表仍按 1:1 Safe Area 裁切。Gender / LifeStage / Household Wealth / Presentation 决定候选池，silhouetteType 再用于同屏去重；avoidFaceFamilies 属于硬拒绝。职业不参与服饰 Resolver。</p>
           </aside>
         )}
       </div>

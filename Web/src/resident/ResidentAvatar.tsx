@@ -1,1 +1,1 @@
-export { ResidentAvatar, appearanceSignature } from './ResidentAvatarArtV1';
+export { ResidentAvatar, appearanceSignature } from './ResidentAvatarArtV2';

@@ -103,10 +103,8 @@ export function portraitRigForFace(catalog: AppearanceCatalogDefinition | undefi
 
 export function compatibilityMultiplier(part: AppearancePartDefinition, faceFamily: PortraitFaceFamily) {
   const rigged = part as RiggedPart;
-  let multiplier = 1;
-  if (rigged.preferredFaceFamilies?.includes(faceFamily)) multiplier *= 1.35;
-  if (rigged.avoidFaceFamilies?.includes(faceFamily)) multiplier *= 0.3;
-  return multiplier;
+  if (rigged.avoidFaceFamilies?.includes(faceFamily)) return 0;
+  return rigged.preferredFaceFamilies?.includes(faceFamily) ? 1.35 : 1;
 }
 
 export function silhouetteTypeForId(
