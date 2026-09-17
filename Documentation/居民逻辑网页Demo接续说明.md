@@ -30,7 +30,7 @@ GitHub: JiongXiaGu/wanhu-resident-sim
    - `Documentation/居民生活记录与故事连续性.md`
    - `Documentation/开发与部署工作流.md`
 6. 检查最新 GitHub Actions Build / Resident Visual Review。
-7. 如果用户问线上版本，再比较 Vercel Production 的 commit SHA 与 GitHub `main`。
+7. 如果用户问线上版本，再比较 Vercel 对应环境的 commit SHA 与 GitHub 分支 SHA：`main` 对 Production，`tmp-*` 对 Preview。
 
 回答“做到哪了”时，以仓库与 CI 的实时状态为准，而不是复述旧对话中的阶段。
 
@@ -339,6 +339,7 @@ UI 审查参考 `wanhu-ui-prototype`：
 - 截取不同 Resident Panel 状态。
 - 压缩成 WebP。
 - 上传 Visual Review Artifact。
+- `tmp-*` 同时允许生成 Vercel Preview，用于真实交互检查。
 
 当前截图重点：
 
@@ -367,6 +368,8 @@ tmp-* branch
 ↓
 GitHub Build + Visual Review
 ↓
+Vercel Preview
+↓
 确认
 ↓
 一次推进 main
@@ -374,11 +377,13 @@ GitHub Build + Visual Review
 Vercel Production
 ```
 
-`tmp-*` 不触发 Vercel 自动部署，避免频繁 AI/UI 修改消耗部署额度。
+`tmp-*` 允许 Vercel Preview，与 `wanhu-ui-prototype` 保持一致。Visual Review 负责稳定截图审查，Preview 负责交互验证。
 
 自动化助手在更新 main 前必须重新读取 main SHA，不基于过期 SHA 强行覆盖 main。
 
-如果 Vercel 看起来没更新，比较 GitHub `main` SHA 与 Vercel Production SHA，而不是只看页面或时间。
+如果 Vercel 看起来没更新，比较 GitHub 分支 SHA 与对应 Vercel Deployment SHA，而不是只看页面或时间。
+
+遇到 Vercel deployment/build rate limit 时，不连续推空 commit；等待限制解除或继续依赖 GitHub Actions / Visual Review 验证。
 
 ---
 
@@ -389,6 +394,6 @@ Vercel Production
 3. 引入极少量稳定 LifeTag / Story Anchor，让过去的重要经历在几年或十几年后偶尔产生回响。
 4. 强化城市建设 / 天气 / 营生变化对当前 LifeEvent 的可见反馈，但普通事件不要污染永久历史。
 5. 继续保持居民独立并行，避免演化成高成本社会关系图。
-6. 每轮 UI 改动继续用约 400px 左下 Resident Panel 和 Visual Review 截图验证。
+6. 每轮 UI 改动继续用约 400px 左下 Resident Panel、Visual Review 截图和必要的 Vercel Preview 交互验证。
 
 继续开发时优先完善“一个居民几十年的人生是否成立”，而不是继续扩大基础框架。

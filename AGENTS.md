@@ -71,16 +71,15 @@
 ## Git 与部署工作流
 
 - 高频迭代优先在 `tmp-*` 临时分支完成；Build 与 Resident Visual Review 都应支持 `tmp-*`。
-- `tmp-*` 不触发 Vercel 自动部署；确认后再把一个完整逻辑批次推进到 `main`。
+- `tmp-*` 允许触发 Vercel Preview，便于直接交互检查网页；`main` 对应 Vercel Production。
 - 一个逻辑功能批次尽量只产生一个进入 `main` 的 commit。
 - 同一功能涉及多个文件时，先完成整批修改，再一次性提交；不要按“一个文件一个 commit”的方式连续推进 `main`。
 - 自动化助手修改多个文件时，优先使用 Git tree / 单次 commit 的方式写入仓库。
 - 准备更新 `main` 前必须重新读取当前 main SHA；如果 main 已前进，先合并 / 重放，不基于过期 SHA 强制覆盖 main。
-- GitHub Actions 是主要构建与类型验证入口；Visual Review Artifact 是主要 UI 截图审查入口。
+- GitHub Actions 是主要构建与类型验证入口；Visual Review Artifact 是主要稳定截图审查入口；Vercel Preview 用于交互检查。
 - UI 审查结果默认解压 Artifact 后直接给用户关键单张 WebP 链接，不只发 ZIP；完整包仅在用户需要时提供。
-- Vercel 用于阶段性 Production 交互验证，不作为每次微小改动后的逐文件编译器。
-- 遇到 Vercel 频率限制时不连续推空 commit；限制解除后只部署当时最新 `main`。
-- 判断 Vercel 是否更新必须比较 Production Deployment 的 Git SHA 与 GitHub `main` SHA。
+- 不为了触发 Vercel 连续推空 commit；遇到部署频率限制时保留当前代码状态，等待限制解除或使用已有 Preview / Visual Review。
+- 判断 Production 是否更新必须比较 Vercel Production Deployment 的 Git SHA 与 GitHub `main` SHA；判断 Preview 是否更新则比较对应临时分支 SHA。
 - 详细规则见 `Documentation/开发与部署工作流.md`。
 
 ## 文档原则

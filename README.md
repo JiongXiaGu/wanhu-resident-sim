@@ -137,18 +137,16 @@ npm run build
 ```text
 tmp-* 分支
 ↓
-GitHub Build
+GitHub Build + Resident Visual Review
 ↓
-Resident Visual Review
-↓
-直接查看压缩后的单张截图
+Vercel Preview
 ↓
 确认后一次推进 main
 ↓
 Vercel Production
 ```
 
-Build 和 Visual Review 都支持 `tmp-*`；`vercel.json` 禁止 `tmp-*` 自动部署，因此高频 UI/逻辑迭代不会持续触发 Vercel。
+`tmp-*` 允许正常触发 Vercel Preview，便于直接交互检查网页；GitHub Visual Review 继续负责稳定的截图审查。不要为了触发部署连续提交空 commit，高频修改仍应尽量在同一临时分支集中完成。
 
 Vercel 从仓库根目录构建：
 
@@ -157,6 +155,6 @@ Build Command: npm run build
 Output Directory: Web/dist
 ```
 
-判断线上是否已经更新时，必须比较 Vercel Production Deployment 的 Git SHA 与 GitHub `main` SHA。
+判断线上 Production 是否已经更新时，必须比较 Vercel Production Deployment 的 Git SHA 与 GitHub `main` SHA。Preview 则以对应 `tmp-*` 分支的 Git SHA 为准。
 
 详细流程见 `Documentation/开发与部署工作流.md`。
