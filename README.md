@@ -18,30 +18,13 @@ Web Demo 是玩法原型，不是 Unity Runtime 设计稿。Unity ECS 组件、B
 README.md
 AGENTS.md
 Documentation/居民逻辑网页Demo接续说明.md
-Documentation/人生经历与生活界面玩法规则V1.md
 Documentation/居民面板与生活事件V2.md
 Documentation/居民生活记录与故事连续性.md
-Documentation/开发与部署工作流.md
+Documentation/StoryBucket与内容覆盖V1.md
+Documentation/头像系统与美术资源规范V1.md
 ```
 
 然后检查 GitHub `main`、Actions 与必要代码。
-
-## Web Demo 的验收问题
-
-当前实现优先回答：
-
-```text
-1. 点一个陌生居民，我有没有兴趣继续看？
-2. 他现在的生活是否可信？
-3. 从小时候一路往下读，是否像一个人的一生？
-4. 展开后的往事是否像角色自己的回忆？
-5. 过去发生的事情是否真的会影响后来？
-6. 家庭 / 职业等状态变化后，人物是否真的发生变化？
-7. 城市建设与世界变化能否反馈到具体居民？
-8. 连续查看十几个居民后，会不会明显重复？
-```
-
-只要某项实现不能帮助回答这些问题，就不应在 Web Demo 中继续扩展。
 
 ## 当前结构
 
@@ -50,7 +33,7 @@ wanhu-resident-sim/
 ├─ 居民故事/                         # Legacy Story 素材
 ├─ Content/                          # 人工维护的原型内容源
 │  ├─ Stories/                       # Legacy Story Markdown
-│  ├─ LifeEvents/                    # LifeEvent + memoryText
+│  ├─ LifeEvents/                    # Resident Panel 短生活事件
 │  ├─ Names/                         # Name V2
 │  ├─ Occupations/                   # 职业 + Occupation Group
 │  ├─ Tags/                          # LifeTag Registry
@@ -67,9 +50,27 @@ wanhu-resident-sim/
 └─ vercel.json
 ```
 
+## Web Demo 的验收问题
+
+当前所有实现都优先服务下面这些问题：
+
+```text
+1. 点一个陌生居民，我有没有兴趣继续看？
+2. 他现在的生活是否可信？
+3. 几段故事组合起来是否像一个人的人生？
+4. 过去发生的事情是否真的会影响后来？
+5. 家庭 / 职业等状态变化以后，人物是否真的发生变化？
+6. 城市建设与世界变化能否反馈到具体居民？
+7. 连续查看十几个居民以后，会不会明显重复？
+8. “人生经历”是否值得玩家主动翻阅？
+9. 连续看几十个居民时，头像能否稳定、可辨认、不过度重复？
+```
+
+只要某项实现不能帮助回答这些问题，就不应在 Web Demo 中继续扩展。
+
 ## 当前内容编译链
 
-`npm run build-content`：
+`npm run build-content` 当前执行：
 
 ```text
 ContentContractCompiler
@@ -116,7 +117,7 @@ resident-snapshot.json wanhu.resident-snapshot.v3
 
 ## 已经可以验证的玩法
 
-### 当前生活
+### 居民当前生活
 
 玩家可以看到：
 
@@ -129,56 +130,22 @@ resident-snapshot.json wanhu.resident-snapshot.v3
 
 Routine 只负责生活感，不进入永久人生经历。
 
-### LifeEvent 三阶段过程
+### LifeEvent 三阶段故事
 
-LifeEvent 在生活模式里随时间推进三个 Stage，并保留上一阶段作为轻量前情。
-
-```text
-Stage 1
-↓
-Stage 2
-↓
-Stage 3
-```
-
-完成后普通事件逐渐淡出；重要事件可以沉淀为一个 Life Chapter。
+LifeEvent 会随时间推进三个阶段，并保留前一阶段作为轻量上下文。完成后，普通事件逐渐淡出；重要事件进入人生经历。
 
 ### 人生经历
 
-人生模式与当前生活模式完全分开。
-
-人生页现在是 **一条按年龄从小到大排列的连续时间轴**：
+人生模式与当前生活模式分离。打开后只看已经沉淀的过去：
 
 ```text
-13岁 · 第一次独自替家里办事        展开
-18岁 · 开始做木工
-23岁 · 成了家
-27岁 · 轮到我去服役                展开
-31岁 · 家里添了孩子
-37岁 · 如今
+按年龄从小到大排列的一条时间轴
+事实型人生节点
+可展开的一段 memoryText 回忆
+如今
 ```
 
-规则：
-
-- 不显示“少年 / 青年 / 壮年”等年龄阶段分组；
-- 一个节点只代表一件人生事件；
-- Fact Chapter 只显示 `年龄 + 标题`；
-- Story Chapter 默认收起；
-- Story Chapter 展开后显示一段完整第一人称 `memoryText`；
-- 不在人生页重放三个 Stage，也不显示“起初 / 后来 / 最后”；
-- 不混入当前 Activity、当前 LifeEvent 和 Routine。
-
-### Stage Text / Memory Text
-
-```text
-stages
-→ 服务“现在正在发生什么”
-
-memoryText
-→ 服务“这个人后来怎样记得这件事”
-```
-
-重要人生故事必须单独写 `memoryText`，不能机械拼接三个 Stage。
+不会混入当前 Activity、当前 LifeEvent 和 Routine，也不再显示“少年 / 青年 / 壮年”等阶段分组。
 
 ### LifeTag 连续性
 
@@ -189,7 +156,7 @@ requiredTags / forbiddenTags
 addTags / removeTags
 ```
 
-过去故事可以留下轻量事实，后续故事读取它产生回响。例如：
+过去故事可以留下一个轻量事实，后续故事读取它形成回响。例如：
 
 ```text
 曾经服役
@@ -197,11 +164,25 @@ addTags / removeTags
 多年后旧同伍进城
 ```
 
+### Story Bucket
+
+Web Selector 已真正使用：
+
+```text
+LifeStage + OccupationGroup
+↓
+粗候选池
+↓
+Age / Gender / Family / LifeTag 精确过滤
+```
+
+Story Bucket 的目的只是让原型能扩到更大的内容量，并继续观察重复率和覆盖缺口。
+
 ### Prototype Effect
 
-Web Demo 允许完成故事后直接改变 Demo 内的居民状态。
+Web Demo 现在允许完成故事后直接改变 Demo 内的居民状态。
 
-当前用于验证：
+当前用于验证的效果包括：
 
 ```text
 LifeTag 增减
@@ -210,7 +191,23 @@ LifeTag 增减
 成婚
 ```
 
-例如：
+这只是 **玩法原型 reducer**，不是 Unity 的结构变更架构。
+
+结构型故事在 Web 中完成后可以：
+
+```text
+故事完成
+↓
+居民状态真的变化
+↓
+人生经历留下章节
+↓
+新的 Family / Occupation / LifeTag 条件进入候选池
+↓
+出现后续故事
+```
+
+当前已有一条专门用于验收的连续链：
 
 ```text
 这门亲事定下来了
@@ -224,46 +221,69 @@ lifetag.newly-married
 后续完成后临时 Tag 消失
 ```
 
-这只是玩法原型，不代表 Unity 结构变更架构。
+这条链由 Resident Visual Review 自动验证。
 
-### Story Bucket / Coverage
+### AppearanceDNA / 头像实验室
 
-Web Selector 使用：
+当前已经有独立的随机头像验证页：
 
 ```text
-LifeStage + OccupationGroup
-↓
-粗候选池
-↓
-Age / Gender / Family / LifeTag 精确过滤
+/?view=portraits
 ```
 
-年龄阶段在这里是 **内部候选池条件**，不是人生页 UI 分组。
+它一次生成 64 个随机样本，并用 `AppearanceDNA` 驱动分层 SVG 头像。页面可以查看：
 
-Coverage 用来观察内容缺口与重复风险，不为了条数机械扩写。
+```text
+Face / Hair / Brow / FacialHair
+Headwear / Outfit
+Skin / Hair / Clothing Palette
+```
 
-### AppearanceDNA
+还支持性别、年龄筛选与“换一批”，用于观察重复率、异常组合和可辨认度。
 
-AppearanceDNA 只负责验证：
+这套 SVG 只是 Web 表现层。未来 Unity 只需要复用 AppearanceDNA 的语义和 Stable ID，再重新映射到 Sprite、Mesh、Material 或其它资源。
 
-> 同一个居民在原型里应保持稳定、可辨认的外观身份。
+详细规则见 `Documentation/头像系统与美术资源规范V1.md`。
 
-它不是未来 Unity 角色数据格式。
+## 内容生产原则
+
+为了方便后续批量生产，当前仍保留：
+
+```text
+Stable ID
+Schema / Reference Validation
+Name V2
+LifeTag Registry
+Occupation Group
+Story Bucket
+Coverage Report
+Appearance Catalog
+```
+
+它们的目的不是提前设计正式存档，而是保证：
+
+- AI / 人工可以批量生产内容而不把引用写乱。
+- 同一故事不会因为改标题就失去身份。
+- 可以统计年龄、职业、性别、家庭等内容缺口。
+- Web Demo 可以稳定重现问题和验收结果。
 
 ## 当前玩法验证路线
 
+后续优先级改为：
+
 ```text
-1. 人生经历阅读体验 / memoryText
+1. 人生经历阅读体验与回忆文本
 2. Story Effect 真正改变人物
 3. 过去经历 → 后续故事连续性
-4. 城市 / 世界变化 → 具体居民故事
-5. 同一居民有限并行生活线与互斥规则
-6. 故事密度、重复率和人生节奏
-7. Coverage 驱动的内容扩充
-8. 玩家实际试玩与反馈迭代
+4. 头像随机组合、年龄感和家庭相似度
+5. 城市 / 世界变化 → 具体居民故事
+6. 同一居民有限的并行生活线与互斥规则
+7. 故事密度、重复率和人生节奏
+8. 按 Coverage Matrix 批量扩充内容
+9. 玩家实际试玩与反馈迭代
 ```
 
-Unity Save、Blob、ECS Runtime Contract 不再是本仓库的下一阶段任务。
+不再把 Unity Save、Blob、ECS Runtime Contract 作为 Web Demo 的下一阶段任务。
 
 ## 本地运行
 
@@ -284,38 +304,18 @@ npm run build
 npm run build-content
 ```
 
-## GitHub Actions / Visual Review / Vercel
-
-目标流程：
+头像实验室：
 
 ```text
-最新 main
-↓
-建立 tmp-*
-↓
-集中完成一个逻辑批次
-↓
-一个聚合 commit / 一次 push
-↓
-Content Compile + Build
-↓
-Resident Visual Review
-↓
-Vercel Preview
-↓
-验收
-↓
-重新读取 main SHA
-↓
-一次推进 main
-↓
-Vercel Production
+http://localhost:5173/?view=portraits
 ```
 
-`tmp-*` 允许正常触发 Vercel Preview，因此 **不要再把同一批次拆成一连串远端小 commit**。每次 push 都可能请求新的 GitHub Actions 和 Vercel Deployment。
+## GitHub Actions / Visual Review / Vercel
 
-如果 Preview 需要修正，先把这一轮修正全部准备好，再一次性推一个修正 commit。
+一次逻辑开发批次先聚合修改，再只向远端 `tmp-*` 推送一个 commit。Build 与 Resident Visual Review 通过后，再一次推进 `main`。
 
-不要为了刷新部署连续推空 commit。
+Build 会上传 `resident-generated-data` Artifact；Resident Visual Review 会同时检查居民玩法链和头像实验室。
 
-详细规则见 `Documentation/开发与部署工作流.md`。
+不要为了刷新 Vercel 连续制造空提交或逐文件远端提交。Vercel 当前只作为部署结果，不作为 Web 原型逻辑正确性的唯一依据。
+
+详细流程见 `Documentation/开发与部署工作流.md`。
