@@ -89,8 +89,6 @@ await page.getByRole('button', { name: '下一居民', exact: true }).click();
 await page.waitForTimeout(100);
 await page.screenshot({ path: `${outDir}/04-dev-density.png` });
 
-// Gameplay validation: a completed story should change the actual resident state,
-// persist as one life-memory node, and unlock a lightweight follow-up through LifeTag.
 await open();
 await chooseLifeEvent('lifeevent.marriage-introduction');
 await page.getByRole('button', { name: '推进故事', exact: true }).click();
@@ -135,8 +133,7 @@ if ((await currentLifeEventId()) === 'lifeevent.newlywed-settling') {
   throw new Error('The temporary newly-married LifeTag should be removed after the follow-up finishes.');
 }
 
-// Portrait Lab validation: deterministic AppearanceDNA should produce a broad set of
-// reusable layered portraits, and rerolling the lab batch must actually change the set.
+// PortraitRig V2 validation: all generated samples must resolve through a valid rig.
 await page.goto(`${baseUrl}/?view=portraits`, { waitUntil: 'networkidle' });
 await page.waitForSelector('.portrait-lab-card');
 await page.waitForTimeout(120);
@@ -152,7 +149,25 @@ if (uniqueSignatureCount < 48) {
 if ((await page.locator('.portrait-lab__dna dd').count()) < 9) {
   throw new Error('Portrait Lab inspector should expose the complete AppearanceDNA.');
 }
-await page.screenshot({ path: `${outDir}/06-portrait-lab.png` });
+const rigErrorCount = await page.locator('.portrait-lab-card').evaluateAll((items) => items.reduce((sum, item) => sum + Number(item.getAttribute('data-rig-errors') ?? 0), 0));
+if (rigErrorCount !== 0) {
+  throw new Error(`PortraitRig V2 should produce zero hard assembly errors in the default 64-sample batch. Errors=${rigErrorCount}`);
+}
+const avatarRigStates = await page.locator('.portrait-lab-card .generated-portrait').evaluateAll((items) => items.map((item) => item.getAttribute('data-rig-state')));
+if (avatarRigStates.some((state) => state !== 'ok')) {
+  throw new Error('Every default Portrait Lab avatar should resolve a valid PortraitRig.');
+}
+
+await page.getByRole('button', { name: '显示锚点', exact: true }).click();
+await page.waitForSelector('.portrait-rig-debug');
+if ((await page.locator('.portrait-lab__hero .generated-portrait').getAttribute('data-debug-rig')) !== 'true') {
+  throw new Error('Portrait Lab should expose a rig overlay for diagnosing attachment points.');
+}
+await page.screenshot({ path: `${outDir}/06-portrait-rig-diagnostics.png` });
+
+await page.getByRole('button', { name: '胡须', exact: true }).click();
+await page.getByRole('button', { name: '头饰', exact: true }).click();
+await page.screenshot({ path: `${outDir}/07-portrait-layer-isolation.png` });
 
 const firstSignature = firstBatchSignatures[0];
 await page.getByRole('button', { name: '换一批', exact: true }).click();
@@ -161,6 +176,6 @@ const nextSignature = await page.locator('.portrait-lab-card').first().getAttrib
 if (!nextSignature || nextSignature === firstSignature) {
   throw new Error('Portrait Lab reroll should change the generated appearance batch.');
 }
-await page.screenshot({ path: `${outDir}/07-portrait-lab-reroll.png` });
+await page.screenshot({ path: `${outDir}/08-portrait-lab-reroll.png` });
 
 await browser.close();
