@@ -1,0 +1,43 @@
+{
+  "schema": "wanhu.routines.v1",
+  "items": [
+    { "id": "routine.generic.market", "occupation": null, "text": "去早市买了些家里缺的东西", "weight": 2 },
+    { "id": "routine.generic.neighbor", "occupation": null, "text": "和邻居在巷口说了一会儿话", "weight": 2 },
+    { "id": "routine.generic.rain", "occupation": null, "text": "午后下了阵雨，比平日早些收了工", "weight": 1, "weather": ["rain"] },
+    { "id": "routine.generic.food", "occupation": null, "text": "回家时顺手带了些吃食", "weight": 2 },
+    { "id": "routine.generic.evening", "occupation": null, "text": "晚上在门口坐了一阵才进屋", "weight": 1 },
+
+    { "id": "routine.student.copy", "occupation": "occupation.student", "text": "把先生留的几行字重新誊了一遍", "weight": 2 },
+    { "id": "routine.student.friend", "occupation": "occupation.student", "text": "放学后和同窗一路走回了坊里", "weight": 1 },
+    { "id": "routine.apprentice.tools", "occupation": "occupation.apprentice", "text": "收工前把今天用过的工具擦干净了", "weight": 2 },
+    { "id": "routine.apprentice.errand", "occupation": "occupation.apprentice", "text": "替师傅跑了一趟腿才回家", "weight": 1 },
+
+    { "id": "routine.cloth.stock", "occupation": "occupation.cloth-worker", "text": "午后盘了一遍架上的布", "weight": 2 },
+    { "id": "routine.cloth.customer", "occupation": "occupation.cloth-worker", "text": "替熟客留下一匹常买的布", "weight": 1 },
+    { "id": "routine.cloth.close", "occupation": "occupation.cloth-worker", "text": "收铺前又清点了一遍柜后的货", "weight": 2 },
+
+    { "id": "routine.potter.kiln", "occupation": "occupation.potter", "text": "天没亮就去看了一遍窑火", "weight": 2 },
+    { "id": "routine.potter.clay", "occupation": "occupation.potter", "text": "去泥场看了看新送来的陶土", "weight": 1 },
+    { "id": "routine.potter.crack", "occupation": "occupation.potter", "text": "午后挑掉了两只裂口的旧坛", "weight": 1 },
+
+    { "id": "routine.carpenter.tool", "occupation": "occupation.carpenter", "text": "收工前把刨子重新磨了一遍", "weight": 2 },
+    { "id": "routine.carpenter.repair", "occupation": "occupation.carpenter", "text": "顺手替邻居修好了一只旧门栓", "weight": 1 },
+    { "id": "routine.account.check", "occupation": "occupation.account-clerk", "text": "上午对完了昨日留下的几笔旧账", "weight": 2 },
+    { "id": "routine.account.tea", "occupation": "occupation.account-clerk", "text": "午后去茶铺见了一个旧相识", "weight": 1 },
+    { "id": "routine.physician.medicine", "occupation": "occupation.physician", "text": "回家前去药铺补了几味常用药", "weight": 2 },
+    { "id": "routine.physician.quiet", "occupation": "occupation.physician", "text": "今日没有急症，难得按时吃了晚饭", "weight": 1 },
+    { "id": "routine.lock.water", "occupation": "occupation.lock-keeper", "text": "天亮后先看了一遍河面水位", "weight": 2 },
+    { "id": "routine.lock.grass", "occupation": "occupation.lock-keeper", "text": "收工前清掉了闸边缠住的水草", "weight": 1 },
+    { "id": "routine.vendor.stock", "occupation": "occupation.vendor", "text": "收摊前把剩下的货重新理了一遍", "weight": 2 },
+    { "id": "routine.vendor.change", "occupation": "occupation.vendor", "text": "今日客人不多，比往常早些收了摊", "weight": 1 },
+    { "id": "routine.farmer.tool", "occupation": "occupation.farmer", "text": "回家后把明日要用的农具修了一遍", "weight": 2 },
+    { "id": "routine.farmer.field", "occupation": "occupation.farmer", "text": "清早去地里看了看新长出的苗", "weight": 2 },
+    { "id": "routine.courier.wait", "occupation": "occupation.courier", "text": "在街口等了半日才接到一趟活", "weight": 1 },
+    { "id": "routine.courier.shoes", "occupation": "occupation.courier", "text": "回家后把磨开的鞋底重新补了补", "weight": 1 },
+    { "id": "routine.performer.practice", "occupation": "occupation.performer", "text": "散场后又把一段没唱稳的地方练了几遍", "weight": 2 },
+    { "id": "routine.performer.costume", "occupation": "occupation.performer", "text": "午后帮着把几件旧戏服重新理好", "weight": 1 },
+    { "id": "routine.midwife.prepare", "occupation": "occupation.midwife", "text": "把接生常用的布和剪子重新收拾了一遍", "weight": 2 },
+    { "id": "routine.retired.repair", "occupation": "occupation.retired-craftsman", "text": "坐在门前修了一只旧木凳", "weight": 2 },
+    { "id": "routine.retired.friends", "occupation": "occupation.retired-craftsman", "text": "午后和几个老熟人说了会儿话", "weight": 1 }
+  ]
+}
