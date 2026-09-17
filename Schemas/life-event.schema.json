@@ -25,6 +25,7 @@
             "type": "object",
             "properties": {
               "occupations": { "type": "array", "items": { "$ref": "#/$defs/stableId" }, "uniqueItems": true },
+              "occupationGroups": { "type": "array", "items": { "$ref": "#/$defs/stableId" }, "uniqueItems": true },
               "genders": { "type": "array", "items": { "enum": ["male", "female"] }, "uniqueItems": true },
               "minAge": { "type": "integer", "minimum": 0 },
               "maxAge": { "type": "integer", "minimum": 0 },
