@@ -122,7 +122,11 @@
         "occupations": ["occupation.carpenter", "occupation.potter", "occupation.cloth-worker", "occupation.account-clerk", "occupation.physician", "occupation.vendor", "occupation.farmer", "occupation.courier"],
         "genders": ["male"],
         "minAge": 18,
-        "maxAge": 55
+        "maxAge": 55,
+        "forbiddenTags": ["lifetag.served-military"]
+      },
+      "effects": {
+        "addTags": ["lifetag.served-military"]
       },
       "source": { "type": "city", "label": "城北官道修缮" },
       "stages": [
@@ -146,6 +150,35 @@
       ]
     },
     {
+      "id": "lifeevent.old-service-companion",
+      "title": "旧同伍进城了",
+      "weight": 4,
+      "eligibility": {
+        "genders": ["male"],
+        "minAge": 26,
+        "maxAge": 72,
+        "requiredTags": ["lifetag.served-military"]
+      },
+      "source": { "type": "personal", "label": "旧日同伍" },
+      "stages": [
+        {
+          "delayDays": { "min": 0, "max": 0 },
+          "title": "门口来了个多年没见的熟面孔",
+          "text": "我一时没认出来，直到他提起当年修官道的那队人。原来他这次进城办事，顺路找到了我。"
+        },
+        {
+          "delayDays": { "min": 2, "max": 4 },
+          "title": "我们坐下来聊了半日旧事",
+          "text": "当年总嫌日子难熬，如今说起来却记得许多小事。谁去了哪里，谁又换了营生，一件件都接得上。"
+        },
+        {
+          "delayDays": { "min": 5, "max": 8 },
+          "title": "送他出城后，我又回去做自己的事",
+          "text": "临走前约好以后有机会再见。街上还是照常热闹，只是忽然想起很多年前那段日子。"
+        }
+      ]
+    },
+    {
       "id": "lifeevent.child-schooling",
       "title": "孩子到了该认字的年纪",
       "weight": 4,
@@ -153,7 +186,11 @@
       "eligibility": {
         "minAge": 25,
         "maxAge": 58,
-        "minChildren": 1
+        "minChildren": 1,
+        "forbiddenTags": ["lifetag.child-started-school"]
+      },
+      "effects": {
+        "addTags": ["lifetag.child-started-school"]
       },
       "source": { "type": "family", "label": "家里的孩子" },
       "stages": [
@@ -212,7 +249,11 @@
       "eligibility": {
         "occupations": ["occupation.apprentice"],
         "minAge": 13,
-        "maxAge": 25
+        "maxAge": 25,
+        "forbiddenTags": ["lifetag.first-independent-task"]
+      },
+      "effects": {
+        "addTags": ["lifetag.first-independent-task"]
       },
       "source": { "type": "work", "label": "师傅交来的活" },
       "stages": [
@@ -242,7 +283,11 @@
       "eligibility": {
         "occupations": ["occupation.student"],
         "minAge": 10,
-        "maxAge": 18
+        "maxAge": 18,
+        "forbiddenTags": ["lifetag.first-family-errand"]
+      },
+      "effects": {
+        "addTags": ["lifetag.first-family-errand"]
       },
       "source": { "type": "family", "label": "家里交代的小事" },
       "stages": [
@@ -271,7 +316,11 @@
       "recordToHistory": true,
       "eligibility": {
         "occupations": ["occupation.retired-craftsman"],
-        "minAge": 58
+        "minAge": 58,
+        "forbiddenTags": ["lifetag.retirement-routine"]
+      },
+      "effects": {
+        "addTags": ["lifetag.retirement-routine"]
       },
       "source": { "type": "personal", "label": "日常生活" },
       "stages": [

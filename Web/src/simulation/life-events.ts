@@ -77,6 +77,7 @@ export function eligibleLifeEvents(
       .map((entry) => entry.sourceEventId)
       .filter((eventId): eventId is string => Boolean(eventId)),
   );
+  const lifeTags = new Set(resident.lifeTags ?? []);
 
   return definitions.lifeEvents.filter((event) => {
     const rule = event.eligibility;
@@ -87,6 +88,8 @@ export function eligibleLifeEvents(
     if (rule.maxAge !== undefined && age > rule.maxAge) return false;
     if (rule.minChildren !== undefined && resident.childCount < rule.minChildren) return false;
     if (rule.requireSpouse !== undefined && Boolean(resident.spouseId) !== rule.requireSpouse) return false;
+    if (rule.requiredTags?.some((tagId) => !lifeTags.has(tagId))) return false;
+    if (rule.forbiddenTags?.some((tagId) => lifeTags.has(tagId))) return false;
     if (!household && (rule.minChildren || rule.requireSpouse)) return false;
     return true;
   });

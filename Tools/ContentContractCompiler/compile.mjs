@@ -8,6 +8,8 @@ async function readJson(relativePath) {
   return JSON.parse(await readFile(join(root, relativePath), 'utf8'));
 }
 
+const legacySurnames = await readJson('Content/Names/surnames.json');
+const legacyGivenNames = await readJson('Content/Names/given-names.json');
 const surnames = await readJson('Content/Names/surnames-v2.json');
 const givenNames = await readJson('Content/Names/given-names-v2.json');
 const lifeTags = await readJson('Content/Tags/life-tags.json');
@@ -18,6 +20,7 @@ const lifeEvents = await readJson('Content/LifeEvents/life-events.json');
 if (surnames.schema !== 'wanhu.surnames.v2') throw new Error(`Unsupported surname schema: ${surnames.schema}`);
 if (givenNames.schema !== 'wanhu.given-names.v2') throw new Error(`Unsupported given-name schema: ${givenNames.schema}`);
 if (lifeTags.schema !== 'wanhu.life-tags.v1') throw new Error(`Unsupported life-tag schema: ${lifeTags.schema}`);
+if (lifeEvents.schema !== 'wanhu.life-events.v2') throw new Error(`Unsupported LifeEvent schema: ${lifeEvents.schema}`);
 
 const stableIdPattern = /^[a-z][a-z0-9]*(?:\.[a-z][a-z0-9-]*)+$/;
 
@@ -65,6 +68,29 @@ function validateWeight(value, label) {
   if (!Number.isFinite(value) || value <= 0) throw new Error(`${label}.weight must be > 0.`);
 }
 
+function assertUniqueStrings(items, label) {
+  const seen = new Set();
+  for (const value of items ?? []) {
+    if (seen.has(value)) throw new Error(`${label} contains duplicate value ${value}.`);
+    seen.add(value);
+  }
+}
+
+function assertLegacyMirror() {
+  const v2SurnameTexts = surnames.items.map((item) => item.text);
+  if (JSON.stringify(v2SurnameTexts) !== JSON.stringify(legacySurnames.items)) {
+    throw new Error('Name V1/V2 surname bridge drifted. V2 must mirror the current demo surname pool during migration.');
+  }
+  const v2Male = givenNames.items.filter((item) => item.gender === 'male').map((item) => item.text);
+  const v2Female = givenNames.items.filter((item) => item.gender === 'female').map((item) => item.text);
+  if (JSON.stringify(v2Male) !== JSON.stringify(legacyGivenNames.male)) {
+    throw new Error('Name V1/V2 male given-name bridge drifted.');
+  }
+  if (JSON.stringify(v2Female) !== JSON.stringify(legacyGivenNames.female)) {
+    throw new Error('Name V1/V2 female given-name bridge drifted.');
+  }
+}
+
 requireArray(surnames.items, 'Surname V2');
 const surnameTexts = new Set();
 for (const item of surnames.items) {
@@ -74,6 +100,8 @@ for (const item of surnames.items) {
   validateWeight(item.weight, item.id);
   if (surnameTexts.has(item.text)) throw new Error(`${item.id}: duplicate surname text "${item.text}".`);
   surnameTexts.add(item.text);
+  assertUniqueStrings(item.styles, `${item.id}.styles`);
+  assertUniqueStrings(item.generationGroups, `${item.id}.generationGroups`);
 }
 
 requireArray(givenNames.items, 'Given Name V2');
@@ -87,6 +115,8 @@ for (const item of givenNames.items) {
   const textKey = `${item.gender}:${item.text}`;
   if (givenTextByGender.has(textKey)) throw new Error(`${item.id}: duplicate ${item.gender} given-name text "${item.text}".`);
   givenTextByGender.add(textKey);
+  assertUniqueStrings(item.styles, `${item.id}.styles`);
+  assertUniqueStrings(item.generationGroups, `${item.id}.generationGroups`);
 }
 
 requireArray(lifeTags.items, 'LifeTag registry');
@@ -100,6 +130,45 @@ for (const item of occupations.items ?? []) register(item.id, 'occupation', 'Con
 for (const item of routines.items ?? []) register(item.id, 'routine', 'Content/Routines/routine-templates.json');
 for (const item of lifeEvents.items ?? []) register(item.id, 'life-event', 'Content/LifeEvents/life-events.json');
 
+const occupationIds = new Set((occupations.items ?? []).map((item) => item.id));
+const lifeTagIds = new Set(lifeTags.items.map((item) => item.id));
+
+for (const routine of routines.items ?? []) {
+  if (routine.occupation !== null && !occupationIds.has(routine.occupation)) {
+    throw new Error(`${routine.id}: references unknown occupation ${routine.occupation}.`);
+  }
+}
+
+for (const event of lifeEvents.items ?? []) {
+  const rule = event.eligibility ?? {};
+  const requiredTags = rule.requiredTags ?? [];
+  const forbiddenTags = rule.forbiddenTags ?? [];
+  const addTags = event.effects?.addTags ?? [];
+  const removeTags = event.effects?.removeTags ?? [];
+
+  for (const occupationId of rule.occupations ?? []) {
+    if (!occupationIds.has(occupationId)) throw new Error(`${event.id}: references unknown occupation ${occupationId}.`);
+  }
+  for (const tagId of [...requiredTags, ...forbiddenTags, ...addTags, ...removeTags]) {
+    if (!lifeTagIds.has(tagId)) throw new Error(`${event.id}: references unknown LifeTag ${tagId}.`);
+  }
+  assertUniqueStrings(requiredTags, `${event.id}.eligibility.requiredTags`);
+  assertUniqueStrings(forbiddenTags, `${event.id}.eligibility.forbiddenTags`);
+  assertUniqueStrings(addTags, `${event.id}.effects.addTags`);
+  assertUniqueStrings(removeTags, `${event.id}.effects.removeTags`);
+
+  const requiredSet = new Set(requiredTags);
+  for (const tagId of forbiddenTags) {
+    if (requiredSet.has(tagId)) throw new Error(`${event.id}: ${tagId} cannot be both required and forbidden.`);
+  }
+  const addSet = new Set(addTags);
+  for (const tagId of removeTags) {
+    if (addSet.has(tagId)) throw new Error(`${event.id}: ${tagId} cannot be both added and removed.`);
+  }
+}
+
+assertLegacyMirror();
+
 const registry = {
   schema: 'wanhu.stable-id-registry.v1',
   hashAlgorithm: 'fnv1a32-utf16',
@@ -112,9 +181,84 @@ const nameCatalog = {
   givenNames: givenNames.items,
 };
 
+const LIFE_PHASES = [
+  { id: 'child', minAge: 0, maxAge: 12 },
+  { id: 'teen', minAge: 13, maxAge: 17 },
+  { id: 'young-adult', minAge: 18, maxAge: 25 },
+  { id: 'adult', minAge: 26, maxAge: 39 },
+  { id: 'middle-age', minAge: 40, maxAge: 57 },
+  { id: 'elder', minAge: 58, maxAge: 100 },
+];
+
+function eventOverlapsPhase(event, phase) {
+  const minAge = Number(event.eligibility?.minAge ?? 0);
+  const maxAge = Number(event.eligibility?.maxAge ?? 200);
+  return minAge <= phase.maxAge && maxAge >= phase.minAge;
+}
+
+function eventMatchesOccupation(event, occupationId) {
+  const list = event.eligibility?.occupations;
+  return !Array.isArray(list) || list.length === 0 || list.includes(occupationId);
+}
+
+const phaseCoverage = LIFE_PHASES.map((phase) => ({
+  phase: phase.id,
+  lifeEvents: lifeEvents.items.filter((event) => eventOverlapsPhase(event, phase)).length,
+  lifeChapters: lifeEvents.items.filter((event) => event.recordToHistory && eventOverlapsPhase(event, phase)).length,
+}));
+
+const occupationCoverage = occupations.items.map((occupation) => ({
+  occupationId: occupation.id,
+  lifeEvents: lifeEvents.items.filter((event) => eventMatchesOccupation(event, occupation.id)).length,
+  lifeChapters: lifeEvents.items.filter((event) => event.recordToHistory && eventMatchesOccupation(event, occupation.id)).length,
+  routines: routines.items.filter((routine) => routine.occupation === occupation.id).length,
+}));
+
+const referencedTags = new Set();
+const producedTags = new Set();
+for (const event of lifeEvents.items) {
+  for (const tagId of [...(event.eligibility?.requiredTags ?? []), ...(event.eligibility?.forbiddenTags ?? [])]) referencedTags.add(tagId);
+  for (const tagId of event.effects?.addTags ?? []) producedTags.add(tagId);
+}
+
+const warnings = [];
+for (const phase of phaseCoverage) {
+  if (phase.lifeChapters === 0) warnings.push(`No recordable Life Chapter for phase ${phase.phase}.`);
+}
+for (const occupation of occupationCoverage) {
+  if (occupation.routines === 0) warnings.push(`${occupation.occupationId} has no occupation-specific Routine.`);
+}
+for (const tag of lifeTags.items) {
+  if (!referencedTags.has(tag.id) && !producedTags.has(tag.id)) warnings.push(`${tag.id} is registered but not yet used by LifeEvent eligibility/effects.`);
+}
+
+const coverage = {
+  schema: 'wanhu.resident-content-coverage.v1',
+  names: {
+    surnames: surnames.items.length,
+    maleGivenNames: givenNames.items.filter((item) => item.gender === 'male').length,
+    femaleGivenNames: givenNames.items.filter((item) => item.gender === 'female').length,
+    unisexGivenNames: givenNames.items.filter((item) => item.gender === 'unisex').length,
+  },
+  lifeTags: {
+    total: lifeTags.items.length,
+    referencedByEligibility: referencedTags.size,
+    producedByEffects: producedTags.size,
+  },
+  lifeEvents: {
+    total: lifeEvents.items.length,
+    recordable: lifeEvents.items.filter((item) => item.recordToHistory).length,
+    phaseCoverage,
+    occupationCoverage,
+  },
+  warnings,
+};
+
 await mkdir(generatedDir, { recursive: true });
 await writeFile(join(generatedDir, 'stable-id-registry.json'), `${JSON.stringify(registry, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'name-catalog-v2.json'), `${JSON.stringify(nameCatalog, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'life-tags.json'), `${JSON.stringify(lifeTags, null, 2)}\n`, 'utf8');
+await writeFile(join(generatedDir, 'content-coverage.json'), `${JSON.stringify(coverage, null, 2)}\n`, 'utf8');
 
-console.log(`Validated ${registry.items.length} Stable IDs, ${surnames.items.length} surnames, ${givenNames.items.length} given names, and ${lifeTags.items.length} LifeTags.`);
+console.log(`Validated ${registry.items.length} Stable IDs, ${surnames.items.length} surnames, ${givenNames.items.length} given names, ${lifeTags.items.length} LifeTags and ${lifeEvents.items.length} LifeEvents.`);
+console.log(`Coverage report emitted with ${warnings.length} non-fatal warning(s).`);
