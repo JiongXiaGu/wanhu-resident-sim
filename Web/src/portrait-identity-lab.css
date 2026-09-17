@@ -1,0 +1,21 @@
+.portrait-lab-card__role {
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(222, 210, 181, .055);
+  color: rgba(217, 196, 144, .56);
+  font-size: 9px;
+  line-height: 1.2;
+  letter-spacing: .02em;
+}
+
+.portrait-lab-card[data-showcase="true"] {
+  border-color: rgba(202, 174, 105, .16);
+}
+
+.portrait-lab-card[data-occupation-group="occupation-group.administration"] .portrait-lab-card__role {
+  color: rgba(225, 192, 113, .82);
+}
+
+.portrait-lab-card[data-gender="female"] .portrait-lab-card__role {
+  font-weight: 600;
+}

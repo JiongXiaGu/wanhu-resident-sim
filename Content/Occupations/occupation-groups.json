@@ -10,6 +10,7 @@
     {"id":"occupation-group.agriculture","label":"农事"},
     {"id":"occupation-group.transport","label":"运输"},
     {"id":"occupation-group.performance","label":"演艺"},
+    {"id":"occupation-group.administration","label":"官署与吏役"},
     {"id":"occupation-group.retired","label":"退养"}
   ]
 }

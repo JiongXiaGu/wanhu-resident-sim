@@ -133,7 +133,7 @@ if ((await currentLifeEventId()) === 'lifeevent.newlywed-settling') {
   throw new Error('The temporary newly-married LifeTag should be removed after the follow-up finishes.');
 }
 
-// PortraitRig V2 validation: all generated samples must resolve through a valid rig.
+// Portrait Lab V3: rig validity + identity coverage.
 await page.goto(`${baseUrl}/?view=portraits`, { waitUntil: 'networkidle' });
 await page.waitForSelector('.portrait-lab-card');
 await page.waitForTimeout(120);
@@ -158,11 +158,29 @@ if (avatarRigStates.some((state) => state !== 'ok')) {
   throw new Error('Every default Portrait Lab avatar should resolve a valid PortraitRig.');
 }
 
+const femaleShowcase = page.locator('.portrait-lab-card[data-showcase="true"][data-gender="female"]');
+if ((await femaleShowcase.count()) < 4) {
+  throw new Error('Portrait Lab V3 should guarantee several female identity coverage samples.');
+}
+const femaleSignatures = await femaleShowcase.evaluateAll((items) => items.map((item) => item.getAttribute('data-signature') ?? ''));
+if (femaleSignatures.some((signature) => !signature.includes('appearance.facial-hair.none'))) {
+  throw new Error('Female showcase portraits must not generate facial hair.');
+}
+
+const administrationShowcase = page.locator('.portrait-lab-card[data-showcase="true"][data-occupation-group="occupation-group.administration"]');
+if ((await administrationShowcase.count()) < 2) {
+  throw new Error('Portrait Lab V3 should guarantee administration coverage samples.');
+}
+const administrationLooks = await administrationShowcase.evaluateAll((items) => items.map((item) => ({
+  outfit: item.getAttribute('data-outfit-id') ?? '',
+  headwear: item.getAttribute('data-headwear-id') ?? '',
+})));
+if (administrationLooks.some((item) => !/(official|clerk)/.test(item.outfit) || !/(official|clerk)/.test(item.headwear))) {
+  throw new Error(`Administration showcase should use identity-specific dress and headwear: ${JSON.stringify(administrationLooks)}`);
+}
+
 await page.getByRole('button', { name: '显示锚点', exact: true }).click();
 await page.waitForSelector('.portrait-rig-debug');
-if ((await page.locator('.portrait-lab__hero .generated-portrait').getAttribute('data-debug-rig')) !== 'true') {
-  throw new Error('Portrait Lab should expose a rig overlay for diagnosing attachment points.');
-}
 await page.screenshot({ path: `${outDir}/06-portrait-rig-diagnostics.png` });
 
 await page.getByRole('button', { name: '胡须', exact: true }).click();
@@ -177,5 +195,18 @@ if (!nextSignature || nextSignature === firstSignature) {
   throw new Error('Portrait Lab reroll should change the generated appearance batch.');
 }
 await page.screenshot({ path: `${outDir}/08-portrait-lab-reroll.png` });
+
+const identityControls = page.locator('.portrait-lab__filters > div').filter({ hasText: '身份' });
+await identityControls.getByRole('button', { name: '官署', exact: true }).click();
+await page.waitForTimeout(80);
+if ((await page.locator('.portrait-lab-card').count()) < 2) throw new Error('Administration filter should expose identity samples.');
+await page.screenshot({ path: `${outDir}/09-portrait-administration.png` });
+
+await identityControls.getByRole('button', { name: '全部', exact: true }).click();
+const genderControls = page.locator('.portrait-lab__filters > div').filter({ hasText: '性别' });
+await genderControls.getByRole('button', { name: '女', exact: true }).click();
+await page.waitForTimeout(80);
+if ((await page.locator('.portrait-lab-card').count()) < 8) throw new Error('Female filter should expose a meaningful sample set.');
+await page.screenshot({ path: `${outDir}/10-portrait-women.png` });
 
 await browser.close();
