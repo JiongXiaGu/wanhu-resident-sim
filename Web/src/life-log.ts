@@ -1,4 +1,5 @@
-import type { MockResident } from './mock-residents';
+import type { ResidentDefinitions, ResidentRecord } from './domain/resident';
+import { occupationFor } from './domain/resident';
 import type { Story, StoryBranch, StoryNode, StoryTime } from './types';
 
 export type StageIndex = 0 | 1 | 2;
@@ -26,87 +27,8 @@ export type ResidentLifeEntry = {
 
 export type ResidentPresentation = {
   occupation: string;
-  family: string;
   activity: string;
 };
-
-const STORY_HINTS: Record<string, string[]> = {
-  '布庄伙计': ['布', '铺', '掌柜', '货', '账'],
-  '陶工': ['陶', '窑', '坛', '酒'],
-  '灯彩匠': ['灯', '庙会', '手艺'],
-  '账房': ['账', '钱', '作保', '老友', '生意'],
-  '学徒': ['学徒', '先生', '第一次', '做活'],
-  '退下来的木工': ['老', '木', '修', '手艺'],
-  '郎中': ['病', '药', '郎中', '看病'],
-  '守闸人': ['河', '闸', '船', '桥', '水'],
-};
-
-const ROUTINE_HINTS: Record<string, string[]> = {
-  '布庄伙计': [
-    '清早替铺里开了门',
-    '午后盘了一遍架上的布',
-    '回家前顺路买了些盐',
-    '替熟客留下一匹常买的布',
-    '下雨后把门口的货往里挪了挪',
-  ],
-  '陶工': [
-    '天没亮就去看了一遍窑火',
-    '把新拉好的坯子搬到阴处晾着',
-    '午后挑掉了两只裂口的旧坛',
-    '收工前又摸了一遍窑口的温度',
-    '去泥场看了看新送来的陶土',
-  ],
-  '灯彩匠': [
-    '替街口一户人家换了灯骨',
-    '把剩下的彩纸重新分了颜色',
-    '午后坐在门边削了一捆竹篾',
-    '有人来问旧灯还能不能修',
-    '收工前试亮了一盏刚糊好的灯',
-  ],
-  '账房': [
-    '上午对完了昨日的几笔旧账',
-    '替掌柜重新算了一遍货款',
-    '午后去茶铺见了一个旧相识',
-    '把月底要收的账单独夹了出来',
-    '收工前又核了一遍钱柜',
-  ],
-  '学徒': [
-    '一早替家里跑了一趟腿',
-    '午后跟着师傅做了一阵杂活',
-    '把今天用过的工具擦干净了',
-    '回家时和朋友在巷口站了一会儿',
-    '今天第一次独自做完一件小活',
-  ],
-  '退下来的木工': [
-    '坐在门前修了一只旧木凳',
-    '午后和几个老朋友说了会儿话',
-    '替邻居削好了一个新门栓',
-    '天气好，在巷口晒了半日太阳',
-    '把多年没用的旧工具又磨了一遍',
-  ],
-  '郎中': [
-    '清早出门看了两个病人',
-    '午后重新整理了一遍药柜',
-    '有人来问旧方子还能不能继续用',
-    '回家前去药铺补了几味常用药',
-    '今日没有急症，难得按时吃了晚饭',
-  ],
-  '守闸人': [
-    '天亮后先看了一遍河面水位',
-    '午后记下了今日过闸的几艘货船',
-    '替一艘外地船说明了过闸次序',
-    '收工前清掉了闸边缠住的水草',
-    '今日船少，比平时早些关了闸',
-  ],
-};
-
-const GENERIC_ROUTINES = [
-  '去早市买了些家里缺的东西',
-  '和邻居在巷口说了一会儿话',
-  '午后下了阵雨，早些收了工',
-  '回家时顺手带了些吃食',
-  '晚上在门口坐了一阵才进屋',
-];
 
 function hashText(value: string) {
   let hash = 2166136261;
@@ -127,9 +49,15 @@ function scoreStory(story: Story, hints: string[]) {
   }, 0);
 }
 
-export function pickDemoStoryIndex(stories: Story[], resident: MockResident, fallbackIndex: number) {
+export function pickDemoStoryIndex(
+  stories: Story[],
+  resident: ResidentRecord,
+  definitions: ResidentDefinitions,
+  fallbackIndex: number,
+) {
   if (!stories.length) return 0;
-  const hints = STORY_HINTS[resident.occupation] ?? [];
+  const occupation = occupationFor(definitions, resident.occupationId);
+  const hints = occupation?.storyHints ?? [];
   let bestIndex = -1;
   let bestScore = 0;
 
@@ -173,38 +101,62 @@ export function nodeFor(story: Story, branch: StoryBranch, stage: StageIndex): S
   return branch.stage3;
 }
 
-export function nodeDayFor(assignment: ResidentAssignment, schedule: StageSchedule, stage: StageIndex) {
-  if (stage === 0) return assignment.startDay;
-  if (stage === 1) return schedule.stage2Day;
-  return schedule.stage3Day;
-}
-
 export function compactText(text: string) {
   return text.split(/\n\s*\n/g).map((item) => item.trim()).filter(Boolean).join('');
 }
 
-function routineEntries(resident: MockResident, gameDay: number, storyDays: number[]) {
-  const templates = ROUTINE_HINTS[resident.occupation] ?? GENERIC_ROUTINES;
-  const phase = hashText(resident.id) % 8;
-  const startDay = Math.max(1, gameDay - 120);
-  const entries: ResidentLifeEntry[] = [];
+function routinePool(resident: ResidentRecord, definitions: ResidentDefinitions) {
+  const specific = definitions.routines.filter((item) => item.occupation === resident.occupationId && !item.weather && !item.season);
+  const generic = definitions.routines.filter((item) => item.occupation === null && !item.weather && !item.season);
+  return specific.length ? [...specific, ...generic] : generic;
+}
 
-  for (let day = phase; day <= gameDay; day += 8) {
-    if (day < startDay) continue;
-    if (storyDays.some((storyDay) => Math.abs(storyDay - day) <= 1)) continue;
-    const template = templates[hashText(`${resident.id}:${day}`) % templates.length];
-    entries.push({
-      id: `${resident.id}-routine-${day}`,
-      day,
-      kind: 'routine',
-      title: template,
-    });
+function routineEntries(
+  resident: ResidentRecord,
+  definitions: ResidentDefinitions,
+  baselineDay: number,
+  gameDay: number,
+  storyDays: number[],
+) {
+  const entries: ResidentLifeEntry[] = resident.recentLifeLog
+    .filter((entry) => entry.day <= gameDay)
+    .map((entry) => ({
+      id: entry.id,
+      day: entry.day,
+      kind: entry.kind,
+      title: entry.title,
+      text: entry.text,
+    }));
+
+  if (gameDay <= baselineDay) return entries;
+  const pool = routinePool(resident, definitions);
+  if (!pool.length) return entries;
+
+  const { min, max } = definitions.generation.routineIntervalDays;
+  let day = baselineDay + 2 + (resident.seed % 5);
+  while (day <= gameDay) {
+    if (!storyDays.some((storyDay) => Math.abs(storyDay - day) <= 1)) {
+      const template = pool[hashText(`${resident.seed}:routine:${day}`) % pool.length];
+      entries.push({
+        id: `${resident.id}:${template.id}:${day}`,
+        day,
+        kind: 'routine',
+        title: template.text,
+      });
+    }
+    day += min + (hashText(`${resident.seed}:interval:${day}`) % Math.max(1, max - min + 1));
   }
 
   return entries;
 }
 
-function storyEntries(story: Story, branch: StoryBranch, assignment: ResidentAssignment, schedule: StageSchedule, stage: StageIndex) {
+function storyEntries(
+  story: Story,
+  branch: StoryBranch,
+  assignment: ResidentAssignment,
+  schedule: StageSchedule,
+  stage: StageIndex,
+) {
   const entries: ResidentLifeEntry[] = [
     {
       id: `${story.id}-stage-1`,
@@ -244,82 +196,55 @@ function storyEntries(story: Story, branch: StoryBranch, assignment: ResidentAss
   return entries;
 }
 
-function applyStoryEffect(resident: MockResident, story: Story, stage: StageIndex): ResidentPresentation {
-  const presentation: ResidentPresentation = {
-    occupation: resident.occupation,
-    family: resident.family,
-    activity: resident.activity,
-  };
-
-  if (stage < 2) return presentation;
-  const title = story.title;
-
-  if (/布庄.*做主|女掌柜|自己的铺子|开自己的铺/.test(title)) {
-    presentation.occupation = '掌柜';
-    presentation.activity = '正在柜台后核对今日的账和货';
-  } else if (/丢了营生|没了营生/.test(title)) {
-    presentation.occupation = '暂时没有固定营生';
-    presentation.activity = '正在四处打听新的活计';
-  } else if (/去别人家做工/.test(title)) {
-    presentation.occupation = '受雇做工';
-    presentation.activity = '正在替东家做今日的活';
-  }
-
-  if (/母亲搬来和我同住/.test(title) && !presentation.family.includes('母亲')) {
-    presentation.family = `${presentation.family} · 母亲同住`;
-  }
-
-  if (/第一次有了自己的孩子|有了自己的孩子/.test(title) && !presentation.family.includes('新添')) {
-    presentation.family = `${presentation.family} · 新添孩子`;
-    presentation.activity = '忙完手里的活，准备早些回家';
-  }
-
-  return presentation;
+function majorHistoryEntries(resident: ResidentRecord, gameDay: number) {
+  return resident.majorLifeHistory
+    .filter((entry) => entry.day <= gameDay)
+    .map<ResidentLifeEntry>((entry) => ({
+      id: entry.id,
+      day: entry.day,
+      kind: 'state',
+      title: entry.title,
+    }));
 }
 
-function stateEntry(resident: MockResident, story: Story, schedule: StageSchedule, stage: StageIndex) {
-  const presentation = applyStoryEffect(resident, story, stage);
-  if (stage < 2) return { presentation, entry: null as ResidentLifeEntry | null };
-
-  const changes: string[] = [];
-  if (presentation.occupation !== resident.occupation) changes.push(`如今的营生变成了“${presentation.occupation}”`);
-  if (presentation.family !== resident.family) changes.push('家里的同住关系也有了变化');
-  if (!changes.length) return { presentation, entry: null as ResidentLifeEntry | null };
-
+function presentationFor(resident: ResidentRecord, definitions: ResidentDefinitions, gameDay: number): ResidentPresentation {
+  const occupation = occupationFor(definitions, resident.occupationId);
+  const isOffDay = ((gameDay + resident.seed) % 7) === 0;
   return {
-    presentation,
-    entry: {
-      id: `${resident.id}-${story.id}-state`,
-      day: schedule.stage3Day + 1,
-      kind: 'state' as const,
-      title: changes.join('，'),
-      storyId: story.id,
-    },
+    occupation: occupation?.name ?? '居民',
+    activity: isOffDay
+      ? occupation?.offActivity ?? '正在家里歇着'
+      : occupation?.workActivity ?? '正在忙今天的事情',
   };
 }
 
 export function buildResidentLife(
-  resident: MockResident,
+  resident: ResidentRecord,
+  definitions: ResidentDefinitions,
   story: Story,
   branch: StoryBranch,
   assignment: ResidentAssignment,
   schedule: StageSchedule,
   stage: StageIndex,
+  baselineDay: number,
   gameDay: number,
 ) {
   const stories = storyEntries(story, branch, assignment, schedule, stage);
   const storyDays = stories.map((item) => item.day);
-  const routines = routineEntries(resident, gameDay, storyDays);
-  const effect = stateEntry(resident, story, schedule, stage);
-  const all = [...stories, ...routines];
-  if (effect.entry && effect.entry.day <= gameDay) all.push(effect.entry);
-  all.sort((left, right) => right.day - left.day || right.id.localeCompare(left.id));
+  const routines = routineEntries(resident, definitions, baselineDay, gameDay, storyDays);
+  const history = majorHistoryEntries(resident, gameDay);
+  const all = [...stories, ...routines, ...history]
+    .filter((entry) => entry.day <= gameDay)
+    .sort((left, right) => right.day - left.day || right.id.localeCompare(left.id));
 
-  const latestStoryEntry = [...stories].sort((left, right) => right.day - left.day)[0];
+  const latestStoryEntry = [...stories]
+    .filter((entry) => entry.day <= gameDay)
+    .sort((left, right) => right.day - left.day)[0] ?? stories[0];
+
   return {
     entries: all,
     latestStoryEntry,
-    presentation: effect.presentation,
+    presentation: presentationFor(resident, definitions, gameDay),
   };
 }
 
