@@ -6,6 +6,7 @@ import './game-validation.css';
 import './life-log.css';
 import './resident-avatar.css';
 import './resident-panel-v2.css';
+import './resident-life-memory.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
