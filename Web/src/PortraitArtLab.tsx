@@ -184,7 +184,23 @@ function choosePart(
     if (item.lifeStages?.length && !item.lifeStages.includes(lifeStage)) return false;
     return !item.wealthTiers?.length && !item.presentationStyles?.length;
   });
-  let candidates = exact.length ? exact : relaxedStyle.length ? relaxedStyle : generic.length ? generic : slotItems;
+
+  const compatible = (items: ExtendedPart[]) => faceFamily
+    ? items.filter((item) => compatibilityMultiplier(item, faceFamily) > 0)
+    : items;
+  const exactCompatible = compatible(exact);
+  const relaxedCompatible = compatible(relaxedStyle);
+  const genericCompatible = compatible(generic);
+  const allCompatible = compatible(slotItems);
+  let candidates = exactCompatible.length
+    ? exactCompatible
+    : relaxedCompatible.length
+      ? relaxedCompatible
+      : genericCompatible.length
+        ? genericCompatible
+        : allCompatible;
+
+  if (!candidates.length) throw new Error(`头像实验室没有兼容的 ${slot} 候选`);
 
   if (preferredSilhouette) {
     const preferred = candidates.filter((item) => item.silhouetteType === preferredSilhouette);
