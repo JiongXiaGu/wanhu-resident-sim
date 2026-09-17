@@ -285,7 +285,6 @@ export default function App() {
             <section className="resident-life">
               <div className="resident-life__heading">
                 <b>最近</b>
-                <small>看看他最近过得怎么样</small>
               </div>
 
               <div className="resident-life__feed">
@@ -303,7 +302,7 @@ export default function App() {
                         <div className="life-entry__meta">
                           <time>{relativeDayLabel(relativeDays)}</time>
                           {isLatestStory && <span>生活近况</span>}
-                          {isOlderStory && <span>同一件事</span>}
+                          {isOlderStory && <span>前情</span>}
                           {entry.kind === 'state' && <span>生活变化</span>}
                         </div>
 
@@ -330,9 +329,8 @@ export default function App() {
 
           <footer className="resident-panel__footer">
             <button type="button" onClick={() => setHistoryExpanded((value) => !value)}>
-              {historyExpanded ? '收起最近记录' : `往事 ${lifeCount}`}<span>{historyExpanded ? '⌃' : '›'}</span>
+              {historyExpanded ? '收起' : `往事 ${lifeCount}`}<span>{historyExpanded ? '⌃' : '›'}</span>
             </button>
-            <small>{historyExpanded ? '显示更多生活记录' : `${visibleEntries.length} 条最近生活记录`}</small>
           </footer>
         </aside>
       )}
