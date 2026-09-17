@@ -1,11 +1,15 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wanhu.local/schemas/resident-snapshot.schema.json",
-  "title": "Wanhu Resident Snapshot V1",
+  "title": "Wanhu Resident Snapshot V2",
+  "$defs": {
+    "stableId": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9-]*)+$" },
+    "lifeTagId": { "type": "string", "pattern": "^lifetag\\.[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)*$" }
+  },
   "type": "object",
   "required": ["schema", "citySeed", "currentDay", "residents", "households"],
   "properties": {
-    "schema": { "const": "wanhu.resident-snapshot.v1" },
+    "schema": { "const": "wanhu.resident-snapshot.v2" },
     "citySeed": { "type": "integer" },
     "currentDay": { "type": "integer" },
     "residents": {
@@ -13,21 +17,23 @@
       "items": {
         "type": "object",
         "required": [
-          "id", "seed", "displayName", "birthDay", "gender", "portraitSeed",
+          "id", "seed", "displayName", "surname", "surnameId", "givenNameId", "birthDay", "gender", "portraitSeed",
           "districtId", "occupationId", "householdId", "fatherId", "motherId",
           "spouseId", "childCount", "nextUpdateDay", "lifeStage", "stateBits",
-          "recentLifeLog", "majorLifeHistory"
+          "lifeTags", "recentLifeLog", "majorLifeHistory"
         ],
         "properties": {
           "id": { "type": "integer" },
           "seed": { "type": "integer" },
           "displayName": { "type": "string", "minLength": 1 },
           "surname": { "type": "string", "minLength": 1 },
+          "surnameId": { "$ref": "#/$defs/stableId" },
+          "givenNameId": { "$ref": "#/$defs/stableId" },
           "birthDay": { "type": "integer" },
           "gender": { "enum": ["male", "female"] },
           "portraitSeed": { "type": "integer" },
           "districtId": { "type": "string" },
-          "occupationId": { "type": "string" },
+          "occupationId": { "$ref": "#/$defs/stableId" },
           "workplaceId": { "type": "integer" },
           "employmentStartDay": { "type": "integer" },
           "householdId": { "type": "integer" },
@@ -39,6 +45,7 @@
           "lifeStage": { "type": "string" },
           "stateBits": { "type": "integer" },
           "activeStoryId": { "type": ["string", "null"] },
+          "lifeTags": { "type": "array", "items": { "$ref": "#/$defs/lifeTagId" }, "uniqueItems": true },
           "recentLifeLog": { "type": "array" },
           "majorLifeHistory": {
             "type": "array",
@@ -50,7 +57,7 @@
                 "day": { "type": "integer" },
                 "type": { "type": "string", "minLength": 1 },
                 "title": { "type": "string", "minLength": 1 },
-                "sourceEventId": { "type": "string", "minLength": 1 }
+                "sourceEventId": { "$ref": "#/$defs/stableId" }
               },
               "additionalProperties": false
             }
