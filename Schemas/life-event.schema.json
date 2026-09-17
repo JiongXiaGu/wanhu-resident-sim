@@ -5,7 +5,45 @@
   "$defs": {
     "stableId": { "type": "string", "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$" },
     "lifeTagId": { "type": "string", "pattern": "^lifetag\\.[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)*$" },
-    "lifeTagList": { "type": "array", "items": { "$ref": "#/$defs/lifeTagId" }, "uniqueItems": true }
+    "lifeTagList": { "type": "array", "items": { "$ref": "#/$defs/lifeTagId" }, "uniqueItems": true },
+    "structuralRequest": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type", "occupationId"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "changeOccupation" },
+            "occupationId": { "$ref": "#/$defs/stableId" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["type", "policy"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "moveHousehold" },
+            "policy": { "enum": ["same-district", "different-district", "any-district"] }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "formMarriage" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "addChild" }
+          }
+        }
+      ]
+    }
   },
   "type": "object",
   "required": ["schema", "items"],
@@ -40,7 +78,12 @@
             "type": "object",
             "properties": {
               "addTags": { "$ref": "#/$defs/lifeTagList" },
-              "removeTags": { "$ref": "#/$defs/lifeTagList" }
+              "removeTags": { "$ref": "#/$defs/lifeTagList" },
+              "structuralRequests": {
+                "type": "array",
+                "items": { "$ref": "#/$defs/structuralRequest" },
+                "maxItems": 4
+              }
             },
             "additionalProperties": false
           },
