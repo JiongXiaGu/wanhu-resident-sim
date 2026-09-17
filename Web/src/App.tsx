@@ -318,7 +318,15 @@ export default function App() {
         <aside className={`resident-panel resident-panel--v2 ${historyExpanded ? 'is-history-mode' : ''}`} aria-label={`${selectedResident.displayName}的居民信息`}>
           <header className="resident-panel__header">
             <div className="resident-avatar">
-              <ResidentAvatar seed={selectedResident.portraitSeed} gender={selectedResident.gender} lifeStage={selectedResident.lifeStage} occupationId={selectedResident.occupationId} />
+              <ResidentAvatar
+                seed={selectedResident.portraitSeed}
+                gender={selectedResident.gender}
+                lifeStage={selectedResident.lifeStage}
+                occupationId={selectedResident.occupationId}
+                appearance={selectedResident.appearance}
+                catalog={definitions.appearanceCatalog}
+                label={`${selectedResident.displayName}的头像`}
+              />
             </div>
             <div className="resident-identity">
               <div><b>{selectedResident.displayName}</b><span>{selectedAge}岁 · {occupation?.name ?? '居民'}</span></div>
