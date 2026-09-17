@@ -33,7 +33,7 @@ wanhu-resident-sim/
 ├─ Content/                          # 人工维护的内容源
 │  ├─ Stories/                       # Legacy Story Markdown
 │  ├─ LifeEvents/                    # 玩家面板使用的 LifeEvent
-│  ├─ Names/                         # Name V1 迁移桥 + Name V2 Authoring
+│  ├─ Names/                         # Name V2 Authoring（唯一姓名内容源）
 │  ├─ Occupations/                   # 职业 + Occupation Group
 │  ├─ Tags/                          # LifeTag Registry
 │  ├─ Routines/                      # 普通生活表现模板
@@ -101,7 +101,7 @@ Web/public/generated/
 其中：
 
 - `stable-id-registry.json`：跨内容域 Stable ID + hash 校验结果。
-- `name-catalog-v2.json`：带 Stable ID 的姓名 token。
+- `name-catalog-v2.json`：带 Stable ID / weight / 代际条件的姓名 token；ResidentGenerator 已直接消费它。
 - `life-tags.json`：过去经历的轻量标签定义。
 - `occupation-groups.json`：故事粗筛使用的职业组。
 - `content-coverage.json`：按人生阶段、职业、职业组等统计的内容覆盖。
@@ -161,7 +161,7 @@ Documentation/居民模拟V1架构.md
 
 LifeEvent 可以设置 `recordToHistory: true`。只有真正值得长期回看的事件完成后才进入人生经历；普通天气、施工、忙季等不会永久污染历史。
 
-LifeEvent 已支持 `requiredTags / forbiddenTags` 与第一批 `addTags / removeTags`。过去人生章节可以留下 LifeTag，几年后另一条故事再读取它，形成低成本连续性。
+LifeEvent 已支持 `requiredTags / forbiddenTags` 与第一批 `addTags / removeTags`。过去人生章节可以留下 LifeTag，几年后另一条故事再读取它，形成低成本连续性。背景人生生成也按时间顺序应用这些标签，不会让后续回响故事先于前因出现。
 
 ## 核心性能方向
 
@@ -194,7 +194,7 @@ ResidentContentBlob、ECS Hot/Cold 数据、Save StableId
 按 Coverage Matrix 扩充故事、姓名和头像资源
 ```
 
-当前已经进入阶段 1 后半与阶段 2 的早期验证：Stable ID、LifeTag、Name V2 身份、Occupation Group、Coverage、Story Bucket 都已有真实 compiled 输出。
+当前已经进入阶段 1 后半与阶段 2 的早期验证：Stable ID、LifeTag、Name V2 直接生成、Occupation Group、Coverage、Story Bucket 都已有真实 compiled 输出。
 
 ## 本地运行
 
