@@ -1,0 +1,69 @@
+name: Resident Visual Review
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Web/src/**'
+      - '居民故事/**'
+      - 'Content/Stories/**'
+      - 'Tools/StoryCompiler/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'Web/package.json'
+      - '.github/workflows/visual-review.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: resident-visual-review-main
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install app dependencies
+        run: npm install --prefer-offline --no-audit --no-fund
+      - name: Cache Playwright browser
+        id: cache-playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-1.55.0-chromium
+      - name: Install screenshot packages
+        run: npm install --no-save --prefer-offline --no-audit --no-fund playwright@1.55.0 sharp@0.34.3
+      - name: Install Chromium
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+      - name: Build story data
+        run: npm run build-content
+      - name: Start Vite review server
+        run: |
+          npm run dev -w Web -- --host 127.0.0.1 --port 4173 > /tmp/wanhu-resident-vite.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/wanhu-resident-vite.log
+          exit 1
+      - name: Capture resident review screenshots
+        run: node scripts/capture-resident-review.mjs
+      - name: Compress review previews
+        run: node scripts/compress-review-screenshots.mjs
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: resident-visual-review
+          path: review-screenshots/
+          if-no-files-found: error
+          retention-days: 7
