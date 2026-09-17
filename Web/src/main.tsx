@@ -10,9 +10,18 @@ import './resident-panel-v2.css';
 import './resident-life-memory.css';
 import './portrait-lab.css';
 import './portrait-identity-lab.css';
+import './portrait-entry.css';
 
 const params = new URLSearchParams(window.location.search);
-const rootView = params.get('view') === 'portraits' ? <PortraitIdentityLab /> : <App />;
+const isPortraitView = params.get('view') === 'portraits';
+const rootView = isPortraitView
+  ? <PortraitIdentityLab />
+  : (
+    <>
+      <App />
+      <a className="portrait-view-entry" href="/?view=portraits">头像查看器</a>
+    </>
+  );
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

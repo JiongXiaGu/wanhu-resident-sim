@@ -1,0 +1,45 @@
+.portrait-view-entry {
+  position: fixed;
+  top: 78px;
+  right: 24px;
+  z-index: 90;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(213, 190, 132, .28);
+  border-radius: 10px;
+  background: rgba(28, 39, 34, .88);
+  color: rgba(235, 218, 171, .95);
+  box-shadow: 0 8px 24px rgba(8, 13, 11, .22);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: .04em;
+  text-decoration: none;
+  transition: background .15s ease, border-color .15s ease, transform .15s ease;
+}
+
+.portrait-view-entry:hover {
+  border-color: rgba(225, 199, 128, .48);
+  background: rgba(35, 48, 41, .94);
+  transform: translateY(-1px);
+}
+
+/* 旧故事审查器已退出当前 Web Demo 入口。 */
+.sim-game .dev-buttons--two button:last-child {
+  display: none;
+}
+
+.sim-game .dev-buttons--two {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (max-width: 900px) {
+  .portrait-view-entry {
+    top: 70px;
+    right: 14px;
+  }
+}
