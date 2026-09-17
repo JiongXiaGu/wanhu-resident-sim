@@ -3,7 +3,7 @@
   "$id": "https://wanhu.local/schemas/name-v2.schema.json",
   "title": "Wanhu Name Authoring V2",
   "$defs": {
-    "stableId": {"type":"string","pattern":"^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9-]*)+$"},
+    "stableId": {"type":"string","pattern":"^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$"},
     "weight": {"type":"number","exclusiveMinimum":0},
     "stringList": {"type":"array","items":{"type":"string","minLength":1},"uniqueItems":true}
   },
