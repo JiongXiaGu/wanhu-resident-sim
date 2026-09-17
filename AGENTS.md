@@ -8,8 +8,18 @@
 - `居民故事/` 是现有 Legacy 内容目录；编译器暂时兼容，后续逐步迁移。
 - `Documentation/` 只记录稳定、长期值得维护的设计事实与规则。
 - `Tools/StoryCompiler/` 是故事 Markdown 到标准数据的唯一编译入口。
-- `Web/` 只负责展示与审查，不自行发明另一套故事解析规则。
-- Unity 后续消费编译结果，不在 Runtime 解析 Markdown。
+- `Tools/ResidentGenerator/` 负责从稳定定义与 Seed 生成居民验证快照。
+- `Web/` 只负责展示、模拟验证与审查，不自行发明另一套 Story / Resident 数据规则。
+- Unity 后续消费编译结果，不在 Runtime 解析 Markdown / JSON。
+
+## 居民模拟规则
+
+- 居民常规后台模拟只读取自己的状态、全局只读世界快照和少量只读定义。
+- 允许保存父母、配偶、家庭等关系引用，但常规模拟不沿这些引用传播状态。
+- 结婚、出生、死亡、搬家等低频结构变化由集中结构系统处理，不进入高频居民并行更新。
+- `BirthDay`、职业、家庭与重要人生历史长期保存；普通 LifeLog 使用有限容量。
+- 当前活动优先在玩家查看时根据职业、时间和状态推导，不为所有后台居民做逐小时完整日程仿真。
+- 姓名允许重复；同一 Seed 必须稳定得到相同身份、家庭基础数据与 PortraitSeed。
 
 ## 故事规则
 
@@ -27,9 +37,22 @@
 
 - Parser / Validator / Exporter 分工清晰。
 - 修改故事格式时先更新 `Documentation/故事格式规范.md` 与 Schema，再修改 Parser。
+- 修改居民标准数据契约时同步更新对应 Schema 与长期设计文档。
 - 稳定 ID 不应由显示标题决定。标题可变，ID 用于程序引用、测试和后续 Unity 数据。
 - 编译器对结构错误给出明确文件路径和原因；字数、版本后缀等内容问题优先作为 Warning。
-- Web 组件只使用编译后的 `stories.json`。
+- Web 组件只使用编译后的 generated 数据，不直接把人工维护源文件当运行时实例。
+
+## Git 与部署工作流
+
+- 一个逻辑功能批次尽量只产生一个进入 `main` 的 commit。
+- 同一功能涉及多个文件时，先完成整批修改，再一次性提交；不要按“一个文件一个 commit”的方式连续推进 `main`。
+- 自动化助手修改多个文件时，优先使用 Git tree / 单次 commit 的方式写入仓库。
+- GitHub Actions 是主要的构建与类型验证入口；Visual Review Artifact 是主要 UI 截图审查入口。
+- Vercel 用于阶段性 Production 交互验证，不作为每次微小改动后的逐文件编译器。
+- 如果 GitHub build 成功而 Vercel 因 deployment/build rate limit 失败，应视为部署平台限制，不视为代码错误。
+- 遇到 Vercel 频率限制时，不连续推空 commit 或重复 redeploy；继续按功能批次工作，限制解除后只部署当时最新 `main`。
+- Vercel Deployment 列表可能落后于 GitHub `main`。仓库版本以 GitHub `main` 为准，线上版本以 Vercel Production Deployment 对应 commit SHA 为准。
+- 详细规则见 `Documentation/开发与部署工作流.md`。
 
 ## 文档原则
 

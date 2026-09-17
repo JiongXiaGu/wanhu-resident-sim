@@ -88,6 +88,10 @@ Build Command: npm run build
 Output Directory: Web/dist
 ```
 
+开发时不把 Vercel 当作逐文件编译器。一个逻辑功能批次应尽量整理成一个进入 `main` 的 commit，先由 GitHub Actions 完整构建和 Visual Review，再让 Vercel 部署最新 `main`。如果 Vercel 因部署频率限制跳过后续 commit，不需要逐个补部署；限制解除后只需要部署当时最新的 `main`。
+
+详细流程见 `Documentation/开发与部署工作流.md`。
+
 ## 核心原则
 
 - 居民常规后台模拟以“自己状态 + 全局只读快照”为输入，适合并行执行。
@@ -99,10 +103,12 @@ Output Directory: Web/dist
 - Markdown 是故事创作与审查的源文件。
 - Web 和未来 Unity 不各自维护一套故事规则；都消费同一标准化定义。
 - Unity Runtime 最终使用编译后的紧凑数据，不在 ECS Runtime 中解析 Markdown / JSON。
+- 一个逻辑功能批次尽量只产生一个进入 `main` 的 commit，避免无意义的重复 CI 与 Vercel Production Build。
 
 详细规则见 `Documentation/`，其中：
 
 - `居民模拟V1架构.md`：低成本并行居民模拟的核心边界
 - `网页居民模拟与数据组织.md`：Web、生成快照、目录与数据契约
 - `居民生活记录与故事连续性.md`：LifeLog 与 Story 连续展示
+- `开发与部署工作流.md`：GitHub Actions、批量提交、Visual Review 与 Vercel 部署规则
 - `故事格式规范.md` / `故事写作规范.md`：Story 内容规范
