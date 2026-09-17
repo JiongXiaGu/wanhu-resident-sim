@@ -4,95 +4,22 @@
 }
 
 .generated-portrait {
-  --skin: #c8a681;
-  --hair: #352e28;
-  --cloth: #6d786b;
   position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
   border-radius: inherit;
-  background: radial-gradient(circle at 50% 28%, rgba(255,255,255,.04), transparent 38%), rgba(130,111,82,.08);
+  background: #2d3934;
 }
 
-.generated-portrait__body {
-  position: absolute;
-  left: 4px;
-  right: 4px;
-  bottom: -11px;
-  height: 27px;
-  border-radius: 45% 45% 15% 15%;
-  background: var(--cloth);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+.generated-portrait--svg svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
-.generated-portrait__neck {
-  position: absolute;
-  left: 50%;
-  bottom: 14px;
-  width: 9px;
-  height: 10px;
-  transform: translateX(-50%);
-  border-radius: 3px;
-  background: var(--skin);
+.generated-portrait--svg {
+  box-shadow:
+    inset 0 0 0 1px rgba(231, 221, 191, .08),
+    inset 0 -18px 28px rgba(8, 14, 12, .08);
 }
-
-.generated-portrait__face {
-  position: absolute;
-  left: 50%;
-  top: 8px;
-  width: 23px;
-  height: 27px;
-  transform: translateX(-50%);
-  border-radius: 46% 46% 43% 43%;
-  background: var(--skin);
-  box-shadow: inset 0 -3px 5px rgba(89,54,35,.07);
-}
-
-.generated-portrait__hair {
-  position: absolute;
-  left: 50%;
-  top: 5px;
-  width: 26px;
-  height: 14px;
-  transform: translateX(-50%);
-  border-radius: 58% 58% 34% 34%;
-  background: var(--hair);
-}
-
-.generated-portrait__detail {
-  position: absolute;
-  left: 50%;
-  top: 20px;
-  width: 14px;
-  height: 4px;
-  transform: translateX(-50%);
-  border-top: 1px solid rgba(63,48,38,.44);
-  border-bottom: 1px solid rgba(63,48,38,.2);
-}
-
-.generated-portrait.gender-female .generated-portrait__hair { height: 18px; border-radius: 58% 58% 42% 42%; }
-.generated-portrait.age-child .generated-portrait__face,
-.generated-portrait.age-teen .generated-portrait__face { width: 22px; height: 25px; }
-.generated-portrait.age-elder { --hair: #8d887f; }
-.generated-portrait.age-middle-age .generated-portrait__detail,
-.generated-portrait.age-elder .generated-portrait__detail { border-bottom-color: rgba(85,67,53,.34); }
-
-.generated-portrait.face-1 { --skin: #b99372; }
-.generated-portrait.face-2 { --skin: #d1b08c; }
-.generated-portrait.face-3 { --skin: #bb9674; }
-.generated-portrait.face-4 { --skin: #c29b77; }
-.generated-portrait.hair-1 { --hair: #2d2926; }
-.generated-portrait.hair-2 { --hair: #42372f; }
-.generated-portrait.hair-3 { --hair: #282522; }
-.generated-portrait.hair-4 { --hair: #504239; }
-.generated-portrait.hair-5 { --hair: #312b27; }
-.generated-portrait.cloth-1 { --cloth: #596d70; }
-.generated-portrait.cloth-2 { --cloth: #786b58; }
-.generated-portrait.cloth-3 { --cloth: #6c625f; }
-
-.generated-portrait.occupation-occupation-physician { --cloth: #7b7668; }
-.generated-portrait.occupation-occupation-potter { --cloth: #725f4d; }
-.generated-portrait.occupation-occupation-lock-keeper { --cloth: #556a63; }
-.generated-portrait.occupation-occupation-cloth-worker { --cloth: #675f75; }
-.generated-portrait.occupation-occupation-student { --cloth: #667487; }

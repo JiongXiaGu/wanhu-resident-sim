@@ -135,4 +135,32 @@ if ((await currentLifeEventId()) === 'lifeevent.newlywed-settling') {
   throw new Error('The temporary newly-married LifeTag should be removed after the follow-up finishes.');
 }
 
+// Portrait Lab validation: deterministic AppearanceDNA should produce a broad set of
+// reusable layered portraits, and rerolling the lab batch must actually change the set.
+await page.goto(`${baseUrl}/?view=portraits`, { waitUntil: 'networkidle' });
+await page.waitForSelector('.portrait-lab-card');
+await page.waitForTimeout(120);
+const portraitCount = await page.locator('.portrait-lab-card').count();
+if (portraitCount !== 64) {
+  throw new Error(`Portrait Lab should render 64 samples. Current=${portraitCount}`);
+}
+const firstBatchSignatures = await page.locator('.portrait-lab-card').evaluateAll((items) => items.map((item) => item.getAttribute('data-signature') ?? ''));
+const uniqueSignatureCount = new Set(firstBatchSignatures).size;
+if (uniqueSignatureCount < 48) {
+  throw new Error(`Portrait Lab should keep most samples visually unique. Unique=${uniqueSignatureCount}/64`);
+}
+if ((await page.locator('.portrait-lab__dna dd').count()) < 9) {
+  throw new Error('Portrait Lab inspector should expose the complete AppearanceDNA.');
+}
+await page.screenshot({ path: `${outDir}/06-portrait-lab.png` });
+
+const firstSignature = firstBatchSignatures[0];
+await page.getByRole('button', { name: '换一批', exact: true }).click();
+await page.waitForTimeout(100);
+const nextSignature = await page.locator('.portrait-lab-card').first().getAttribute('data-signature');
+if (!nextSignature || nextSignature === firstSignature) {
+  throw new Error('Portrait Lab reroll should change the generated appearance batch.');
+}
+await page.screenshot({ path: `${outDir}/07-portrait-lab-reroll.png` });
+
 await browser.close();
