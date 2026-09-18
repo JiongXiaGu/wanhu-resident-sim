@@ -311,7 +311,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
   { id:'layer.body.youth', slot:'outfit', z:18, lods:[48,64,96], shapes:[
     { kind:'path', d:'M23 150 Q27 112 43 96 L50 91 L60 101 L73 90 L79 96 Q96 112 100 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.95 },
     { kind:'path', d:'M50 91 L60 101 L73 90', stroke:'accent', strokeWidth:2.7 },
-    { kind:'path', d:'M60 101 L78 112', stroke:'accent', strokeWidth:1.05, opacity:.72 },
+    { kind:'path', d:'M60 101 L71 108', stroke:'accent', strokeWidth:.92, opacity:.58 },
     { kind:'path', d:'M36 108 Q45 102 50 99', stroke:'accent', strokeWidth:.62, opacity:.4 },
   ]},
   { id:'layer.neck.adult', slot:'neck', z:17, lods:[48,64,96], shapes:[
@@ -321,7 +321,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
   { id:'layer.body.adult', slot:'outfit', z:18, lods:[48,64,96], shapes:[
     { kind:'path', d:'M16 150 Q20 108 43 95 L50 92 L60 101 L71 93 L77 95 Q100 108 104 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.2 },
     { kind:'path', d:'M50 92 L60 101 L71 93', stroke:'accent', strokeWidth:3.2 },
-    { kind:'path', d:'M60 101 L78 114', stroke:'accent', strokeWidth:1.12, opacity:.74 },
+    { kind:'path', d:'M60 101 L72 109', stroke:'accent', strokeWidth:.98, opacity:.6 },
     { kind:'path', d:'M53 96 L60 101 L68 96', stroke:'accent', strokeWidth:.74, opacity:.48 },
   ]},
   { id:'layer.neck.middle', slot:'neck', z:17, lods:[48,64,96], shapes:[
@@ -332,7 +332,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
   { id:'layer.body.middle', slot:'outfit', z:18, lods:[48,64,96], shapes:[
     { kind:'path', d:'M18 150 Q22 110 42 97 L49 94 L60 102 L73 95 L79 99 Q99 112 103 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.12 },
     { kind:'path', d:'M49 94 L60 102 L73 95', stroke:'accent', strokeWidth:2.85 },
-    { kind:'path', d:'M60 102 L77 113', stroke:'accent', strokeWidth:1.05, opacity:.7 },
+    { kind:'path', d:'M60 102 L71 109', stroke:'accent', strokeWidth:.92, opacity:.56 },
     { kind:'path', d:'M52 98 L60 102 L69 98', stroke:'accent', strokeWidth:.98, opacity:.7 },
     { kind:'path', d:'M55 100 L60 102 L66 100', stroke:'accent', strokeWidth:.58, opacity:.42 },
   ]},
@@ -345,7 +345,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M27 150 Q30 121 45 106 L50 102 Q60 106 70 102 L75 105 Q90 120 94 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.95 },
     { kind:'path', d:'M50 102 Q60 106 70 102', stroke:'accent', strokeWidth:2.3 },
     { kind:'path', d:'M52 104 Q60 108 68 103.5', stroke:'accent', strokeWidth:1.02, opacity:.72 },
-    { kind:'path', d:'M60 107 L70 112', stroke:'accent', strokeWidth:.82, opacity:.52 },
+    { kind:'path', d:'M60 107 L67 110', stroke:'accent', strokeWidth:.72, opacity:.44 },
   ]},
 
   // Wealth/detail overlays no longer define the whole body silhouette.
