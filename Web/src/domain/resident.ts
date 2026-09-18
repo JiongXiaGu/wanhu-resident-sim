@@ -28,18 +28,6 @@ export type ResidentPortraitDNA = {
   baseHairColorId: string;
 };
 
-export type ResidentAppearanceDNA = {
-  faceId: string;
-  hairId: string;
-  browId: string;
-  facialHairId: string;
-  headwearId: string;
-  outfitId: string;
-  skinPaletteId: string;
-  hairPaletteId: string;
-  clothingPaletteId: string;
-};
-
 export type ResidentRecord = {
   id: number;
   seed: number;
