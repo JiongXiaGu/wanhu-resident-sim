@@ -443,7 +443,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
   ]},
   { id:'layer.hair.elder-gray-bun.bun', slot:'back-hair', z:12, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
     { kind:'path', d:'M-7 -3 C-3 -6 3 -7 8 -5 C12 -3 14 0 13 3 C12 5 8 7 3 7 C-1 7 -5 5 -7 3 C-8 1 -8 -1 -7 -3Z', fill:'hair' },
-    { kind:'path', d:'M4 -5 C8 -5 12 -3 13 0 C14 3 10 6 6 7', stroke:'hair-accent', strokeWidth:.46, opacity:.48 },
+    { kind:'path', d:'M4 -5 C8 -5 12 -3 13 0 C14 3 10 6 6 7', stroke:'ink', strokeWidth:.42, opacity:.52 },
   ]},
   { id:'layer.hair.elder-gray-bun.coil', slot:'back-hair', z:13, lods:[64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
     { kind:'path', d:'M5 -4 Q9 -3 10 0', stroke:'hair-accent', strokeWidth:.26, opacity:.07 },
@@ -471,12 +471,12 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M1 3 Q2 5 3 7', stroke:'accessory-cloth', strokeWidth:.65 },
   ]},
   { id:'layer.accessory.wood-pin', slot:'accessory', z:80, lods:[64,96], coordinateSpace:'anchor-local', maskMode:'outside-face', shapes:[
-    { kind:'line', x1:-1, y1:-2.5, x2:8, y2:1.2, stroke:'accessory-wood', strokeWidth:1.05 },
-    { kind:'circle', cx:8.6, cy:1.45, r:.72, fill:'accessory-wood' },
+    { kind:'line', x1:-4, y1:-1, x2:5, y2:2, stroke:'accessory-wood', strokeWidth:1.02 },
+    { kind:'circle', cx:5.6, cy:2.2, r:.7, fill:'accessory-wood' },
   ]},
   { id:'layer.accessory.jade-pin', slot:'accessory', z:80, lods:[64,96], coordinateSpace:'anchor-local', maskMode:'outside-face', shapes:[
-    { kind:'line', x1:-1, y1:-2.5, x2:8, y2:1.2, stroke:'accessory-jade', strokeWidth:1.02 },
-    { kind:'circle', cx:8.8, cy:1.5, r:1.05, fill:'accessory-jade', stroke:'ink', strokeWidth:.3 },
+    { kind:'line', x1:-4, y1:-1, x2:5, y2:2, stroke:'accessory-jade', strokeWidth:1 },
+    { kind:'circle', cx:5.8, cy:2.25, r:.9, fill:'accessory-jade', stroke:'ink', strokeWidth:.28 },
   ]},
 ];
 
@@ -562,8 +562,8 @@ export const ACCESSORIES: AccessoryAsset[] = [
     layerAssetId:'layer.accessory.wood-pin',
     placementByHairBundle:{
       'hair.female.young-halfbound-backfall.v1':{anchor:'crownBack',transform:{translateX:1,translateY:2}},
-      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:5,translateY:-4}},
-      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:4,translateY:-4}},
+      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:4,translateY:0}},
+      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:3,translateY:0}},
     },
     baseWeight:2,
   },
@@ -573,8 +573,8 @@ export const ACCESSORIES: AccessoryAsset[] = [
     compatibleHairBundles:['hair.female.adult-low-bun.v1','hair.female.elder-gray-low-bun.v1'],
     layerAssetId:'layer.accessory.jade-pin',
     placementByHairBundle:{
-      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:5,translateY:-4}},
-      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:4,translateY:-4}},
+      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:4,translateY:0}},
+      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:3,translateY:0}},
     },
     baseWeight:1,
   },
