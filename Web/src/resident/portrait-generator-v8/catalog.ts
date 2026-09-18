@@ -235,10 +235,10 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'circle', cx:0, cy:2.5, r:1.2, fill:'accent', stroke:'ink', strokeWidth:.45 },
   ]},
   { id:'layer.accessory.wood-pin', slot:'accessory', z:80, lods:[64,96], coordinateSpace:'anchor-local', shapes:[
-    { kind:'line', x1:-2, y1:-4, x2:9, y2:1.5, stroke:'accent', strokeWidth:1.2 },
+    { kind:'line', x1:0, y1:-4, x2:9, y2:1.5, stroke:'accent', strokeWidth:1.2 },
   ]},
   { id:'layer.accessory.jade-pin', slot:'accessory', z:80, lods:[64,96], coordinateSpace:'anchor-local', shapes:[
-    { kind:'line', x1:-2, y1:-4, x2:9, y2:1.5, stroke:'accent', strokeWidth:1.15 },
+    { kind:'line', x1:0, y1:-4, x2:9, y2:1.5, stroke:'accent', strokeWidth:1.15 },
     { kind:'circle', cx:10, cy:1.8, r:1.35, fill:'accent' },
   ]},
 ];
@@ -325,8 +325,8 @@ export const ACCESSORIES: AccessoryAsset[] = [
     layerAssetId:'layer.accessory.wood-pin',
     placementByHairBundle:{
       'hair.female.young-halfbound-backfall.v1':{anchor:'crownBack',transform:{translateX:1,translateY:2}},
-      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:6,translateY:-5}},
-      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:6,translateY:-5}},
+      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:8,translateY:-5}},
+      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:8,translateY:-5}},
     },
     baseWeight:2,
   },
@@ -336,8 +336,8 @@ export const ACCESSORIES: AccessoryAsset[] = [
     compatibleHairBundles:['hair.female.adult-low-bun.v1','hair.female.elder-gray-low-bun.v1'],
     layerAssetId:'layer.accessory.jade-pin',
     placementByHairBundle:{
-      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:6,translateY:-5}},
-      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:6,translateY:-5}},
+      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:8,translateY:-5}},
+      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:8,translateY:-5}},
     },
     baseWeight:1,
   },
