@@ -6,7 +6,7 @@ import {
   WoodblockPortrait,
   type PortraitSize,
   type WoodblockPortraitSpec,
-} from './resident/portrait-woodblock-v6';
+} from './resident/portrait-woodblock-v7';
 
 function SizeStrip({ spec }: { spec: WoodblockPortraitSpec }) {
   const sizes: PortraitSize[] = [96, 64, 48];
@@ -56,13 +56,13 @@ export function PortraitStyleLab() {
   const elders = GOLDEN_PORTRAITS.filter((item) => item.lifeStage === 'elder').length;
 
   return (
-    <main className="portrait-style-lab woodblock-v6-lab" data-portrait-style-lab="woodblock-v6">
+    <main className="portrait-style-lab woodblock-v6-lab" data-portrait-style-lab="woodblock-v7">
       <header className="portrait-style-lab__header">
         <div>
-          <span className="portrait-style-lab__eyebrow">WOODBLOCK PORTRAIT V6 · GOLDEN RESIDENTS</span>
-          <h1>居民头像 · 套色木刻正式方向原型</h1>
+          <span className="portrait-style-lab__eyebrow">WOODBLOCK PORTRAIT V7 · CHINESE HISTORICAL FEMALE HAIR</span>
+          <h1>居民头像 · 套色木刻女性发式重做</h1>
           <p>
-            只保留套色木刻。当前重点不再是选画风，而是把预定义居民、女性、儿童、老人、财富层和长发 Rig 做到可进入正式资产生产。
+            只保留套色木刻。V7 专门重做女性脸型、发髻、鬓边与簪饰语义，移除胸前双粗垂发，目标是让女童、少女、成年妇人、中年与老年女性都明显属于中国古代居民语境。
           </p>
         </div>
         <nav>
@@ -76,7 +76,7 @@ export function PortraitStyleLab() {
         <div><b>{females}</b><span>女性角色</span></div>
         <div><b>{children}</b><span>儿童角色</span></div>
         <div><b>{elders}</b><span>老年角色</span></div>
-        <div><b>6</b><span>女性发型基准</span></div>
+        <div><b>8</b><span>女性发式基准</span></div>
         <div><b>4</b><span>财富层级</span></div>
       </section>
 
@@ -97,9 +97,9 @@ export function PortraitStyleLab() {
         <header className="woodblock-section__header">
           <div>
             <span>02 · HAIR STABILITY</span>
-            <h2>女性长发与发髻 Rig 审查</h2>
+            <h2>中国古代女性发式文化审查</h2>
           </div>
-          <p>长发不再使用两根自由黑条。Back Hair、Side Hair、Front Hair 统一从 skull / temple / ear / shoulder 锚点生成，并在 48px 自动简化发束。</p>
+          <p>正式池不再使用胸前双粗垂发。当前审查双小髻、半束后披、偏侧半束、低髻、盘发、中年当家髻与花白低髻；发型依附 crown / occipital / nape / bun 锚点，并使用红绳、布结、木簪、简钗和玉簪。</p>
         </header>
         <div className="woodblock-hair-grid">
           {HAIR_REVIEW_SAMPLES.map((spec) => (
@@ -107,6 +107,7 @@ export function PortraitStyleLab() {
               <WoodblockPortrait spec={spec} label={spec.name}/>
               <strong>{spec.name}</strong>
               <code>{spec.hairId}</code>
+              <small className="woodblock-hair-card__culture">中国古代居民发式 · {spec.accessory}</small>
               <SizeStrip spec={spec}/>
             </article>
           ))}
@@ -138,7 +139,7 @@ export function PortraitStyleLab() {
             <span>04 · CROWD REVIEW</span>
             <h2>32 人同屏轮廓稳定性</h2>
           </div>
-          <p>用于发现长发穿帮、儿童比例异常、老人不显老、女性轮廓重复等问题。当前是基于 V6 基准资产的确定性压力样本。</p>
+          <p>用于发现发髻穿帮、文化语义跑偏、儿童比例异常、老人不显老、女性轮廓重复等问题。当前是基于 V7 基准资产的确定性压力样本。</p>
         </header>
         <div className="woodblock-crowd-grid">
           {CROWD_REVIEW_SAMPLES.map((spec) => (

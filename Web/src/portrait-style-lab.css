@@ -237,7 +237,7 @@
 
 .woodblock-hair-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(165px, 1fr));
+  grid-template-columns: repeat(4, minmax(190px, 1fr));
   gap: 10px;
 }
 
@@ -262,6 +262,12 @@
 .woodblock-wealth-card code {
   color: rgba(166, 190, 177, .55);
   font-size: 8px;
+}
+
+.woodblock-hair-card__culture {
+  color: rgba(202, 183, 139, .56);
+  font-size: 8px;
+  line-height: 1.45;
 }
 
 .woodblock-hair-card .woodblock-size-strip {

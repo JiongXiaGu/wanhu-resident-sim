@@ -23,7 +23,7 @@ Documentation/居民生活记录与故事连续性.md
 Documentation/StoryBucket与内容覆盖V1.md
 Documentation/头像系统与美术资源规范V1.md
 Documentation/Portrait Art Kit V1.md
-Documentation/Woodblock Portrait V6.md
+Documentation/Woodblock Portrait V7.md
 ```
 
 然后检查 GitHub `main`、Actions 与必要代码。
@@ -324,7 +324,7 @@ http://localhost:5173/?view=portraits
 http://localhost:5173/?view=portrait-styles
 ```
 
-当前美术方向已经收敛为套色木刻。Woodblock Portrait V6 用 12 个 Golden Residents、6 个女性发型基准、四档财富对照和 32 人群像审查女性、儿童、老人、长发 Rig 与小尺寸可读性。
+当前美术方向已经收敛为套色木刻。Woodblock Portrait V7 专门重做中国古代女性发式与脸型：女童双髻、少女半束、成年低髻/盘发、中年当家妇人髻、老年花白髻，并继续用 12 个 Golden Residents、财富四档和 32 人群像做视觉审查。
 
 ## GitHub Actions / Visual Review / Vercel
 
