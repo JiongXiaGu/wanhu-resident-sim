@@ -100,13 +100,13 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
   {
     id:'stage.female.child.v1',
     lifeStages:['child','teen'],
-    viewBox:{x:4,y:13,width:112,height:112},
+    viewBox:{x:5,y:11,width:110,height:110},
     layerAssetIds:['layer.body.child','layer.neck.child'],
   },
   {
     id:'stage.female.youth.v1',
     lifeStages:['young-adult'],
-    viewBox:{x:2,y:13,width:116,height:118},
+    viewBox:{x:0,y:12,width:118,height:118},
     layerAssetIds:['layer.body.youth','layer.neck.youth'],
   },
   {
@@ -118,13 +118,13 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
   {
     id:'stage.female.middle.v1',
     lifeStages:['middle-age'],
-    viewBox:{x:1,y:16,width:118,height:119},
+    viewBox:{x:2,y:16,width:118,height:119},
     layerAssetIds:['layer.body.middle','layer.neck.middle'],
   },
   {
     id:'stage.female.elder.v1',
     lifeStages:['elder'],
-    viewBox:{x:2,y:17,width:116,height:118},
+    viewBox:{x:4,y:18,width:112,height:116},
     layerAssetIds:['layer.body.elder','layer.neck.elder'],
   },
 ];
@@ -162,6 +162,11 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'circle', cx:70, cy:51, r:.6, fill:'ink' },
   ]},
 
+  { id:'layer.age.middle', slot:'age-overlay', z:55, lods:[64,96], shapes:[
+    { kind:'path', d:'M44 59 Q49 61 53 60', stroke:'age', strokeWidth:.55, opacity:.28 },
+    { kind:'path', d:'M67 60 Q72 61 76 59', stroke:'age', strokeWidth:.55, opacity:.28 },
+    { kind:'path', d:'M72 73 Q70 78 68 80', stroke:'age', strokeWidth:.45, opacity:.22 },
+  ]},
   { id:'layer.age.elder', slot:'age-overlay', z:55, lods:[64,96], shapes:[
     { kind:'path', d:'M43 61 Q48 64 52 62', stroke:'age', strokeWidth:.8, opacity:.5 },
     { kind:'path', d:'M68 62 Q72 64 77 61', stroke:'age', strokeWidth:.8, opacity:.5 },
@@ -172,16 +177,17 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
   // V8.3 portrait staging. Age changes the body silhouette, collar, posture and crop;
   // wealth layers below only add social-detail overlays.
   { id:'layer.body.child', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M27 150 Q29 116 48 92 Q60 88 72 92 Q91 116 93 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.9 },
-    { kind:'path', d:'M49 92 L60 101 L71 92', stroke:'accent', strokeWidth:2.7 },
+    { kind:'path', d:'M34 150 Q35 119 49 95 Q60 91 71 95 Q85 119 86 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.8 },
+    { kind:'path', d:'M50 95 Q60 102 70 95', stroke:'accent', strokeWidth:2.5 },
+    { kind:'path', d:'M54 96 Q60 99 66 96', stroke:'accent', strokeWidth:.8, opacity:.55 },
   ]},
   { id:'layer.neck.child', slot:'neck', z:30, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M54 78 L66 78 L67 93 Q60 96 53 93Z', fill:'skin' },
+    { kind:'path', d:'M55 79 L65 79 L66 92 Q60 95 54 92Z', fill:'skin' },
   ]},
   { id:'layer.body.youth', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M21 150 Q24 112 46 92 Q59 96 73 91 Q96 111 101 150Z', fill:'cloth', stroke:'ink', strokeWidth:2 },
-    { kind:'path', d:'M47 92 L60 106 L73 91', stroke:'accent', strokeWidth:3.2 },
-    { kind:'path', d:'M31 106 Q43 100 49 99', stroke:'accent', strokeWidth:.7, opacity:.5 },
+    { kind:'path', d:'M23 150 Q26 112 48 92 Q60 95 75 89 Q96 112 100 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.95 },
+    { kind:'path', d:'M49 92 L60 106 L75 89', stroke:'accent', strokeWidth:3 },
+    { kind:'path', d:'M35 107 Q45 101 50 99', stroke:'accent', strokeWidth:.7, opacity:.48 },
   ]},
   { id:'layer.neck.youth', slot:'neck', z:30, lods:[48,64,96], shapes:[
     { kind:'path', d:'M54 83 L66 83 L67 99 Q60 102 53 99Z', fill:'skin' },
@@ -194,20 +200,22 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M54 88 L66 88 L67 102 Q60 105 53 102Z', fill:'skin' },
   ]},
   { id:'layer.body.middle', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M18 150 Q22 110 44 95 Q60 99 76 95 Q98 110 102 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.15 },
-    { kind:'path', d:'M46 95 L60 109 L74 95', stroke:'accent', strokeWidth:3.4 },
-    { kind:'path', d:'M50 99 L60 106 L70 99', stroke:'accent', strokeWidth:1.05, opacity:.72 },
+    { kind:'path', d:'M18 150 Q21 110 43 94 Q60 99 77 96 Q99 112 103 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.15 },
+    { kind:'path', d:'M45 95 L60 109 L76 96', stroke:'accent', strokeWidth:3.25 },
+    { kind:'path', d:'M49 99 L60 106 L71 100', stroke:'accent', strokeWidth:1.2, opacity:.76 },
+    { kind:'path', d:'M53 102 L60 106 L67 102', stroke:'accent', strokeWidth:.7, opacity:.5 },
   ]},
   { id:'layer.neck.middle', slot:'neck', z:30, lods:[48,64,96], shapes:[
     { kind:'path', d:'M54 89 L66 89 L67 102 Q60 105 53 102Z', fill:'skin' },
   ]},
   { id:'layer.body.elder', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M23 150 Q27 116 47 101 Q60 105 73 100 Q94 116 98 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.05 },
-    { kind:'path', d:'M48 100 L60 109 L72 100', stroke:'accent', strokeWidth:3.1 },
-    { kind:'path', d:'M51 103 L60 108 L69 103', stroke:'accent', strokeWidth:1.15, opacity:.72 },
+    { kind:'path', d:'M27 150 Q30 121 47 104 Q60 108 73 102 Q90 120 94 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.95 },
+    { kind:'path', d:'M49 103 Q60 111 71 102', stroke:'accent', strokeWidth:2.8 },
+    { kind:'path', d:'M52 105 Q60 110 68 104', stroke:'accent', strokeWidth:1.25, opacity:.78 },
+    { kind:'path', d:'M55 107 Q60 110 65 106', stroke:'accent', strokeWidth:.7, opacity:.52 },
   ]},
   { id:'layer.neck.elder', slot:'neck', z:30, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M55 91 L65 91 L66 102 Q60 104 54 102Z', fill:'skin' },
+    { kind:'path', d:'M56 92 L64 92 L65 101 Q60 103 55 101Z', fill:'skin' },
   ]},
 
   // Wealth/detail overlays no longer define the whole body silhouette.
@@ -455,7 +463,7 @@ export const FEATURE_LAYER_BY_SET: Record<string,string[]> = {
 
 export const AGE_LAYER_BY_ID: Record<string,string[]> = {
   'age.none':[],
-  'age.middle-soft':[],
+  'age.middle-soft':['layer.age.middle'],
   'age.elder-lines':['layer.age.elder'],
 };
 
