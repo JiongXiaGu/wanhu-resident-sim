@@ -274,7 +274,7 @@ export function PortraitV8Lab() {
       </section>
 
       <section className="v8-section v8-face-direction" data-v8-section="face-age-direction">
-        <header><div><span>02C · FACE AGE DIRECTION</span><h2>同一个人，但眼、鼻、嘴和面部张力随年龄变化</h2></div><p>Identity Morphology 不变；Stage Profile 只提供年龄导演。Child 眼更开、鼻更短、嘴更小；Youth 舒展；Adult 中性；Middle-age 眼睑和嘴角开始收；Elder 眼裂收窄、鼻长增加、嘴更薄并增加松弛刻线。</p></header>
+        <header><div><span>02C · FACE AGE DIRECTION</span><h2>同一个人，但眉、眼、鼻、嘴和面部张力随年龄变化</h2></div><p>Identity Morphology 不变；Stage Profile 可以替换同一 Feature Family 的年龄造型。Child 眉更轻、眼更开、鼻短嘴小；Youth 眉眼舒展；Adult 中性；Middle-age 眉眼压低、嘴趋平；Elder 眉毛变薄、眼裂收窄、鼻长增加、嘴角下沉并出现松弛刻线。</p></header>
         <div className="v8-face-grid">
           {ageDirectionResolved.map(({context,dna,plan})=>(
             <article

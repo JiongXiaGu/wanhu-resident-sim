@@ -104,10 +104,16 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
     layerAssetIds:['layer.body.child','layer.neck.child','layer.stage-face.child'],
     featureTransforms:{
       'layer.face.child':{scaleX:1.04,scaleY:.97,originX:60,originY:56},
-      'layer.feature.soft-a.eyes':{translateY:-1,scaleX:1.06,scaleY:1.08,originX:60,originY:49},
+      'layer.feature.soft-a.eyes.child':{translateY:-1,scaleX:1.06,scaleY:1.08,originX:60,originY:49},
+      'layer.feature.soft-a.brows.child':{translateY:-1,scaleX:1.04,originX:60,originY:45},
       'layer.feature.soft-a.96-detail':{translateY:-1,scaleX:1.06,scaleY:1.08,originX:60,originY:49},
       'layer.feature.soft-a.nose':{translateY:-1,scaleY:.78,originX:60,originY:54},
-      'layer.feature.soft-a.mouth':{translateY:-1,scaleX:.86,originX:60,originY:74},
+      'layer.feature.soft-a.mouth.child':{translateY:-1,scaleX:.92,originX:60,originY:74},
+    },
+    featureAssetOverrides:{
+      'layer.feature.soft-a.eyes':'layer.feature.soft-a.eyes.child',
+      'layer.feature.soft-a.brows':'layer.feature.soft-a.brows.child',
+      'layer.feature.soft-a.mouth':'layer.feature.soft-a.mouth.child',
     },
   },
   {
@@ -117,9 +123,13 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
     layerAssetIds:['layer.body.youth','layer.neck.youth'],
     featureTransforms:{
       'layer.feature.soft-a.eyes':{translateY:-.5,scaleX:1.03,scaleY:1.02,originX:60,originY:49},
+      'layer.feature.soft-a.brows.youth':{translateY:-.5,scaleX:1.02,originX:60,originY:45},
       'layer.feature.soft-a.96-detail':{translateY:-.5,scaleX:1.03,scaleY:1.02,originX:60,originY:49},
       'layer.feature.soft-a.nose':{scaleY:.92,originX:60,originY:54},
       'layer.feature.soft-a.mouth':{scaleX:.94,originX:60,originY:74},
+    },
+    featureAssetOverrides:{
+      'layer.feature.soft-a.brows':'layer.feature.soft-a.brows.youth',
     },
   },
   {
@@ -136,9 +146,14 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
     featureTransforms:{
       'layer.face.adult':{scaleX:.99,scaleY:1.015,originX:60,originY:60},
       'layer.feature.soft-a.eyes':{translateY:.8,scaleY:.94,originX:60,originY:49},
+      'layer.feature.soft-a.brows.middle':{translateY:.8,scaleY:.96,originX:60,originY:45},
       'layer.feature.soft-a.96-detail':{translateY:.8,scaleY:.94,originX:60,originY:49},
       'layer.feature.soft-a.nose':{scaleY:1.04,originX:60,originY:54},
-      'layer.feature.soft-a.mouth':{translateY:.8,scaleX:.94,scaleY:.95,originX:60,originY:74},
+      'layer.feature.soft-a.mouth.middle':{translateY:.8,scaleX:.96,originX:60,originY:75},
+    },
+    featureAssetOverrides:{
+      'layer.feature.soft-a.brows':'layer.feature.soft-a.brows.middle',
+      'layer.feature.soft-a.mouth':'layer.feature.soft-a.mouth.middle',
     },
   },
   {
@@ -148,10 +163,16 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
     layerAssetIds:['layer.body.elder','layer.neck.elder','layer.stage-face.elder'],
     featureTransforms:{
       'layer.face.elder':{scaleX:.98,scaleY:1.015,originX:60,originY:62},
-      'layer.feature.soft-a.eyes':{translateY:1.5,scaleX:.96,scaleY:.84,originX:60,originY:49},
-      'layer.feature.soft-a.96-detail':{translateY:1.5,scaleX:.96,scaleY:.84,originX:60,originY:49},
+      'layer.feature.soft-a.eyes.elder':{translateY:1.5,scaleX:.96,scaleY:.9,originX:60,originY:51},
+      'layer.feature.soft-a.brows.elder':{translateY:1.2,scaleX:.95,originX:60,originY:46},
+      'layer.feature.soft-a.96-detail':{translateY:1.5,scaleX:.96,scaleY:.9,originX:60,originY:51},
       'layer.feature.soft-a.nose':{translateY:.5,scaleY:1.12,originX:60,originY:54},
-      'layer.feature.soft-a.mouth':{translateY:1.5,scaleX:.88,scaleY:.86,originX:60,originY:74},
+      'layer.feature.soft-a.mouth.elder':{translateY:1.5,scaleX:.94,originX:60,originY:76},
+    },
+    featureAssetOverrides:{
+      'layer.feature.soft-a.eyes':'layer.feature.soft-a.eyes.elder',
+      'layer.feature.soft-a.brows':'layer.feature.soft-a.brows.elder',
+      'layer.feature.soft-a.mouth':'layer.feature.soft-a.mouth.elder',
     },
   },
 ];
@@ -171,18 +192,53 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M60 27 C47 27 41 37 41 53 C41 70 46 85 53 94 Q60 99 67 94 C74 85 79 70 79 53 C79 37 73 27 60 27Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
   ]},
 
-  // Split facial features so IdentityMorphology can survive age changes.
+  // Split facial features so IdentityMorphology survives age changes while stage art can replace shapes.
   { id:'layer.feature.soft-a.eyes', slot:'face-detail', z:50, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M45 51 Q50 48 55 51', stroke:'ink', strokeWidth:1.55 },
-    { kind:'path', d:'M65 51 Q70 48 75 51', stroke:'ink', strokeWidth:1.55 },
+    { kind:'path', d:'M45 51 Q50 48 55 51', stroke:'ink', strokeWidth:1.5 },
+    { kind:'path', d:'M65 51 Q70 48 75 51', stroke:'ink', strokeWidth:1.5 },
+  ]},
+  { id:'layer.feature.soft-a.eyes.child', slot:'face-detail', z:50, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M44.5 51 Q50 47 55.5 51', stroke:'ink', strokeWidth:1.4 },
+    { kind:'path', d:'M64.5 51 Q70 47 75.5 51', stroke:'ink', strokeWidth:1.4 },
+  ]},
+  { id:'layer.feature.soft-a.eyes.elder', slot:'face-detail', z:50, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M45 52 Q50 50 55 51.5', stroke:'ink', strokeWidth:1.3 },
+    { kind:'path', d:'M65 51.5 Q70 50 75 52', stroke:'ink', strokeWidth:1.3 },
+  ]},
+  { id:'layer.feature.soft-a.brows', slot:'face-detail', z:49, lods:[48,64,96], shapes:[
     { kind:'path', d:'M46 45 Q50 43 55 45', stroke:'ink', strokeWidth:1.9 },
     { kind:'path', d:'M65 45 Q70 43 74 45', stroke:'ink', strokeWidth:1.9 },
+  ]},
+  { id:'layer.feature.soft-a.brows.child', slot:'face-detail', z:49, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M47 45 Q50 44 54 45', stroke:'ink', strokeWidth:1.45 },
+    { kind:'path', d:'M66 45 Q70 44 73 45', stroke:'ink', strokeWidth:1.45 },
+  ]},
+  { id:'layer.feature.soft-a.brows.youth', slot:'face-detail', z:49, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M46 44.5 Q50 42.7 55 44.5', stroke:'ink', strokeWidth:1.7 },
+    { kind:'path', d:'M65 44.5 Q70 42.7 74 44.5', stroke:'ink', strokeWidth:1.7 },
+  ]},
+  { id:'layer.feature.soft-a.brows.middle', slot:'face-detail', z:49, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M46 45.7 Q50 44.4 55 45.2', stroke:'ink', strokeWidth:1.65 },
+    { kind:'path', d:'M65 45.2 Q70 44.4 74 45.7', stroke:'ink', strokeWidth:1.65 },
+  ]},
+  { id:'layer.feature.soft-a.brows.elder', slot:'face-detail', z:49, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M47 46 Q50 45 54 45.7', stroke:'ink', strokeWidth:1.3 },
+    { kind:'path', d:'M66 45.7 Q70 45 73 46', stroke:'ink', strokeWidth:1.3 },
   ]},
   { id:'layer.feature.soft-a.nose', slot:'face-detail', z:51, lods:[48,64,96], shapes:[
     { kind:'path', d:'M59 54 Q58 63 60 66 Q62 67 65 65', stroke:'ink', strokeWidth:1.1 },
   ]},
   { id:'layer.feature.soft-a.mouth', slot:'face-detail', z:52, lods:[48,64,96], shapes:[
     { kind:'path', d:'M54 74 Q60 77 66 74', stroke:'ink', strokeWidth:1.35 },
+  ]},
+  { id:'layer.feature.soft-a.mouth.child', slot:'face-detail', z:52, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M56 73 Q60 75 64 73', stroke:'ink', strokeWidth:1.15 },
+  ]},
+  { id:'layer.feature.soft-a.mouth.middle', slot:'face-detail', z:52, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M54.5 75 Q60 76 65.5 75', stroke:'ink', strokeWidth:1.25 },
+  ]},
+  { id:'layer.feature.soft-a.mouth.elder', slot:'face-detail', z:52, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M55 76 Q60 74.8 65 76', stroke:'ink', strokeWidth:1.15 },
   ]},
   { id:'layer.feature.soft-a.96-detail', slot:'face-detail', z:53, lods:[96], shapes:[
     { kind:'circle', cx:50, cy:51, r:.6, fill:'ink' },
@@ -499,6 +555,7 @@ export const FACE_LAYER_BY_HEAD_PROFILE: Record<string,string> = {
 
 export const FEATURE_LAYER_BY_SET: Record<string,string[]> = {
   'feature-set.female.soft-a':[
+    'layer.feature.soft-a.brows',
     'layer.feature.soft-a.eyes',
     'layer.feature.soft-a.nose',
     'layer.feature.soft-a.mouth',

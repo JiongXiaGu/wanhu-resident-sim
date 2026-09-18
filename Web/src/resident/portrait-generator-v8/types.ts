@@ -181,6 +181,7 @@ export type PortraitStageProfile = {
   viewBox: PortraitViewBox;
   layerAssetIds: string[];
   featureTransforms?: Record<string, PlacementTransform>;
+  featureAssetOverrides?: Record<string, string>;
 };
 
 export type OutfitBundle = {

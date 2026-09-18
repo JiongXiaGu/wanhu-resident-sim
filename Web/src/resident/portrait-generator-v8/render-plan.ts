@@ -101,21 +101,21 @@ function morphologyTransform(
       originY: 60,
     };
   }
-  if (assetId === 'layer.feature.soft-a.eyes' || assetId === 'layer.feature.soft-a.96-detail') {
+  if (assetId.startsWith('layer.feature.soft-a.eyes') || assetId.startsWith('layer.feature.soft-a.brows') || assetId.startsWith('layer.feature.soft-a.96-detail')) {
     return {
       scaleX: morphology.featureSpanScale,
       originX: 60,
       originY: 51,
     };
   }
-  if (assetId === 'layer.feature.soft-a.nose') {
+  if (assetId.startsWith('layer.feature.soft-a.nose')) {
     return {
       scaleY: morphology.noseLengthScale,
       originX: 60,
       originY: 54,
     };
   }
-  if (assetId === 'layer.feature.soft-a.mouth') {
+  if (assetId.startsWith('layer.feature.soft-a.mouth')) {
     return {
       scaleX: morphology.mouthWidthScale,
       originX: 60,
@@ -163,12 +163,15 @@ export function buildRenderPlan(
   const hairPlacement = hair.placementByHeadProfile[headProfile.id] ?? {};
   const hairAssetIds = new Set(hair.layerAssetIds);
   const accessoryAssetId = accessory.layerAssetId;
+  const resolvedFeatureAssetIds = (FEATURE_LAYER_BY_SET[dna.identity.featureSetId] ?? [])
+    .map((assetId)=>stageProfile.featureAssetOverrides?.[assetId] ?? assetId);
+
   const baseIds = [
     ...hair.layerAssetIds,
     ...stageProfile.layerAssetIds,
     ...outfit.layerAssetIds,
     FACE_LAYER_BY_HEAD_PROFILE[headProfile.id],
-    ...(FEATURE_LAYER_BY_SET[dna.identity.featureSetId] ?? []),
+    ...resolvedFeatureAssetIds,
     ...(AGE_LAYER_BY_ID[dna.presentation.ageOverlayId] ?? []),
     ...(accessoryAssetId ? [accessoryAssetId] : []),
   ].filter(Boolean);
