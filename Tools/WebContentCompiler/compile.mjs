@@ -11,7 +11,7 @@ async function readJson(name) {
 const definitions = await readJson('definitions.json');
 const storyBuckets = await readJson('story-buckets.json');
 const occupationGroups = await readJson('occupation-groups.json');
-const appearanceCatalog = await readJson('appearance-catalog.json');
+const portraitCatalog = await readJson('portrait-catalog.json');
 const stableIdRegistry = await readJson('stable-id-registry.json');
 
 if (definitions.schema !== 'wanhu.resident-definitions.v3') {
@@ -23,8 +23,8 @@ if (storyBuckets.schema !== 'wanhu.story-buckets.v1') {
 if (occupationGroups.schema !== 'wanhu.occupation-groups.v1') {
   throw new Error(`Unsupported occupation-group schema: ${occupationGroups.schema}`);
 }
-if (appearanceCatalog.schema !== 'wanhu.appearance-catalog.v1') {
-  throw new Error(`Unsupported appearance catalog schema: ${appearanceCatalog.schema}`);
+if (portraitCatalog.schema !== 'wanhu.portrait-catalog.v1') {
+  throw new Error(`Unsupported portrait catalog schema: ${portraitCatalog.schema}`);
 }
 if (stableIdRegistry.schema !== 'wanhu.stable-id-registry.v1') {
   throw new Error(`Unsupported Stable ID registry schema: ${stableIdRegistry.schema}`);
@@ -39,17 +39,18 @@ for (const bucket of storyBuckets.buckets) {
 
 const output = {
   ...definitions,
-  schema: 'wanhu.resident-definitions.v4',
+  schema: 'wanhu.resident-definitions.v5',
   occupationGroups: occupationGroups.items,
-  appearanceCatalog,
+  portraitCatalog,
   storyBuckets,
   contentMeta: {
     stableIdCount: stableIdRegistry.items.length,
     storyBucketCount: storyBuckets.buckets.length,
-    appearancePartCount: appearanceCatalog.parts.length,
-    appearancePaletteCount: appearanceCatalog.palettes.length,
+    portraitFaceFamilyCount: portraitCatalog.faceFamilies.length,
+    portraitHairStyleCount: portraitCatalog.hairStyles.length,
+    portraitOutfitStyleCount: portraitCatalog.outfitStyles.length,
   },
 };
 
 await writeFile(join(generatedDir, 'definitions.json'), `${JSON.stringify(output, null, 2)}\n`, 'utf8');
-console.log(`Assembled Web resident definitions v4 with ${storyBuckets.buckets.length} Story Buckets and ${appearanceCatalog.parts.length} appearance parts.`);
+console.log(`Assembled Web resident definitions v5 with ${storyBuckets.buckets.length} Story Buckets, ${portraitCatalog.faceFamilies.length} FaceFamilies and ${portraitCatalog.hairStyles.length} HairStyles.`);
