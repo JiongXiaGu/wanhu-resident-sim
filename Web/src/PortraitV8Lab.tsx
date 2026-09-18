@@ -260,7 +260,7 @@ export function PortraitV8Lab() {
       </section>
 
       <section className="v8-section v8-age-direction" data-v8-section="age-direction">
-        <header><div><span>02B · AGE DIRECTION / STAGING</span><h2>年龄不只改脸：衣装、肩线、颈长和取景一起变化</h2></div><p>同一居民、同一财富层级。Child 更窄肩且近景；Youth 颈部更修长、肩线轻微不对称；Adult 稳定正身；Middle-age 层领更厚；Elder 肩线下沉、领口提高并略收取景。</p></header>
+        <header><div><span>02B · AGE DIRECTION / STAGING</span><h2>年龄不只改脸：衣装、肩线、颈长、色调和取景一起变化</h2></div><p>同一居民、同一财富层级。Child 更窄肩、明亮暖底、近景；Youth 颈部修长、肩线轻微不对称、衣色偏青；Adult 稳定正身；Middle-age 层领更厚、色调收敛；Elder 肩线下沉、领口提高、衣色更灰并略收取景。</p></header>
         <div className="v8-age-grid">
           {ageDirectionResolved.map(({context,dna,plan})=>(
             <article className="v8-card v8-age-card" data-age-direction={context.lifeStage} data-stage-profile={plan.stageProfileId} key={context.lifeStage}>

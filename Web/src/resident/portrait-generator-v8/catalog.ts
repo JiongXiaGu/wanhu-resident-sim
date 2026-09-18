@@ -102,6 +102,8 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
     lifeStages:['child','teen'],
     viewBox:{x:5,y:11,width:110,height:110},
     layerAssetIds:['layer.body.child','layer.neck.child','layer.stage-face.child'],
+    backgroundColor:'#d7bf88',
+    clothByWealth:{poor:'#7a6857',plain:'#748391',comfortable:'#60756b',wealthy:'#73585d'},
     featureTransforms:{
       'layer.face.child':{scaleX:1.04,scaleY:.97,originX:60,originY:56},
       'layer.feature.soft-a.eyes.child':{translateY:-1,scaleX:1.06,scaleY:1.08,originX:60,originY:49},
@@ -121,6 +123,8 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
     lifeStages:['young-adult'],
     viewBox:{x:0,y:12,width:118,height:118},
     layerAssetIds:['layer.body.youth','layer.neck.youth'],
+    backgroundColor:'#cdb17a',
+    clothByWealth:{poor:'#75604f',plain:'#5f7880',comfortable:'#536f65',wealthy:'#70565c'},
     featureTransforms:{
       'layer.feature.soft-a.eyes':{translateY:-.5,scaleX:1.03,scaleY:1.02,originX:60,originY:49},
       'layer.feature.soft-a.brows.youth':{translateY:-.5,scaleX:1.02,originX:60,originY:45},
@@ -137,12 +141,16 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
     lifeStages:['adult'],
     viewBox:{x:0,y:15,width:120,height:120},
     layerAssetIds:['layer.body.adult','layer.neck.adult'],
+    backgroundColor:'#ccb074',
+    clothByWealth:{poor:'#76624f',plain:'#63717a',comfortable:'#4f6358',wealthy:'#6b5052'},
   },
   {
     id:'stage.female.middle.v1',
     lifeStages:['middle-age'],
     viewBox:{x:2,y:16,width:118,height:119},
     layerAssetIds:['layer.body.middle','layer.neck.middle','layer.stage-face.middle'],
+    backgroundColor:'#bea26f',
+    clothByWealth:{poor:'#706153',plain:'#66706f',comfortable:'#59695d',wealthy:'#695455'},
     featureTransforms:{
       'layer.face.adult':{scaleX:.99,scaleY:1.015,originX:60,originY:60},
       'layer.feature.soft-a.eyes':{translateY:.8,scaleY:.94,originX:60,originY:49},
@@ -161,6 +169,8 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
     lifeStages:['elder'],
     viewBox:{x:4,y:18,width:112,height:116},
     layerAssetIds:['layer.body.elder','layer.neck.elder','layer.stage-face.elder'],
+    backgroundColor:'#b9aa83',
+    clothByWealth:{poor:'#756a5f',plain:'#6f7370',comfortable:'#626b61',wealthy:'#66585a'},
     featureTransforms:{
       'layer.face.elder':{scaleX:.98,scaleY:1.015,originX:60,originY:62},
       'layer.feature.soft-a.eyes.elder':{translateY:1.5,scaleX:.96,scaleY:.9,originX:60,originY:51},
@@ -238,7 +248,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M54.5 75 Q60 76 65.5 75', stroke:'ink', strokeWidth:1.25 },
   ]},
   { id:'layer.feature.soft-a.mouth.elder', slot:'face-detail', z:52, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M55 76 Q60 74.8 65 76', stroke:'ink', strokeWidth:1.15 },
+    { kind:'path', d:'M55 76 Q60 75.7 65 76', stroke:'ink', strokeWidth:1.15 },
   ]},
   { id:'layer.feature.soft-a.96-detail', slot:'face-detail', z:53, lods:[96], shapes:[
     { kind:'circle', cx:50, cy:51, r:.6, fill:'ink' },

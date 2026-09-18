@@ -182,6 +182,8 @@ export type PortraitStageProfile = {
   layerAssetIds: string[];
   featureTransforms?: Record<string, PlacementTransform>;
   featureAssetOverrides?: Record<string, string>;
+  backgroundColor?: string;
+  clothByWealth?: Record<WealthTier, string>;
 };
 
 export type OutfitBundle = {
