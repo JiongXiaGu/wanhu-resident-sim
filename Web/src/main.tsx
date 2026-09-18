@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import { PortraitLab } from './PortraitLab';
 import { PortraitStyleStudy } from './portrait-style-study/PortraitStyleStudy';
+import { PortraitStyleBakeoff } from './portrait-style-bakeoff/PortraitStyleBakeoff';
 import './styles.css';
 import './game-validation.css';
 import './life-log.css';
@@ -18,7 +19,9 @@ const rootView = view === 'portraits'
   ? <PortraitLab />
   : view === 'portrait-style-study'
     ? <PortraitStyleStudy />
-    : (
+    : view === 'portrait-style-bakeoff'
+      ? <PortraitStyleBakeoff />
+      : (
     <>
       <App />
       <a className="portrait-view-entry" href="/?view=portraits">头像工作台</a>

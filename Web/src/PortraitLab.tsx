@@ -203,7 +203,7 @@ export function PortraitLab() {
           <h1>居民头像工作台：固定框架，中国古代居民气质</h1>
           <p>第一批正式替换资产落在 female.adult。脸、发式、衣着都直接按同一 Frame 作画：发式以束、挽、盘为主，服装以交领、叠领、对襟等日常轮廓为主，保持克制、低饱和，不做戏服式夸张。</p>
         </div>
-        <nav><a href="/?view=portrait-style-study">画风探索</a><a href="/">居民 Demo</a></nav>
+        <nav><a href="/?view=portrait-style-bakeoff">新画风竞标</a><a href="/?view=portrait-style-study">上一轮探索</a><a href="/">居民 Demo</a></nav>
       </header>
 
       <section className="portrait-review-status">
