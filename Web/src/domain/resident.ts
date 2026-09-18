@@ -20,6 +20,14 @@ export type ResidentMajorLifeEvent = {
   sourceEventId?: string;
 };
 
+export type ResidentPortraitDNA = {
+  faceFamilyId: string;
+  hairStyleId: string;
+  outfitStyleId: string;
+  skinPaletteId: string;
+  baseHairColorId: string;
+};
+
 export type ResidentAppearanceDNA = {
   faceId: string;
   hairId: string;
@@ -41,8 +49,7 @@ export type ResidentRecord = {
   givenNameId: string;
   birthDay: number;
   gender: Gender;
-  portraitSeed: number;
-  appearance: ResidentAppearanceDNA;
+  portrait: ResidentPortraitDNA;
   districtId: string;
   occupationId: string;
   workplaceId: number;
@@ -71,7 +78,7 @@ export type HouseholdRecord = {
 };
 
 export type ResidentWorldSnapshot = {
-  schema: 'wanhu.resident-snapshot.v3';
+  schema: 'wanhu.resident-snapshot.v4';
   citySeed: number;
   currentDay: number;
   residents: ResidentRecord[];
