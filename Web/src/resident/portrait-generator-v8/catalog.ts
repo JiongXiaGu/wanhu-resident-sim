@@ -415,7 +415,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M-7 -20 Q-3 -9 -3 6 Q-3 16 -1 21', stroke:'hair-accent', strokeWidth:.4, opacity:.11 },
   ]},
   { id:'layer.hair.adult-low-bun.nape-root', slot:'back-hair', z:11, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'nape', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M6 -17 C10 -19 14 -19 17 -16 C18 -14 17 -12 15 -10 C12 -8 9 -8 7 -10 C6 -12 5 -15 6 -17Z', fill:'hair' },
+    { kind:'path', d:'M5 -13 C8 -15 11 -14 13 -12 C14 -10 13 -8 11 -7 C8 -6 6 -7 5 -8 C4 -10 4 -12 5 -13Z', fill:'hair' },
   ]},
   { id:'layer.hair.adult-low-bun.bun', slot:'back-hair', z:12, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
     { kind:'path', d:'M-8 -3 C-3 -7 5 -8 11 -5 C15 -3 17 0 16 3 C15 6 10 8 4 8 C-1 8 -6 6 -8 3 C-9 1 -9 -1 -8 -3Z', fill:'hair' },
@@ -439,7 +439,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M-4 -27 C-11 -25 -14 -16 -14 -5 C-14 7 -11 17 -6 22 C-2 25 1 23 1 18 C0 10 1 3 3 -3 C6 -10 5 -19 2 -23 C0 -26 -2 -27 -4 -27Z', fill:'hair', stroke:'ink', strokeWidth:.62 },
   ]},
   { id:'layer.hair.elder-gray-bun.nape-root', slot:'back-hair', z:11, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'nape', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M6 -16 C9 -18 13 -18 15 -15 C17 -13 16 -11 14 -9 C11 -8 9 -8 7 -9 C6 -11 5 -14 6 -16Z', fill:'hair' },
+    { kind:'path', d:'M5 -12 C8 -14 10 -13 12 -11 C13 -9 12 -8 10 -7 C8 -6 6 -7 5 -8 C4 -9 4 -11 5 -12Z', fill:'hair' },
   ]},
   { id:'layer.hair.elder-gray-bun.bun', slot:'back-hair', z:12, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
     { kind:'path', d:'M-7 -3 C-3 -6 3 -7 8 -5 C12 -3 14 0 13 3 C12 5 8 7 3 7 C-1 7 -5 5 -7 3 C-8 1 -8 -1 -7 -3Z', fill:'hair' },
@@ -475,8 +475,8 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'circle', cx:5.6, cy:2.2, r:.7, fill:'accessory-wood' },
   ]},
   { id:'layer.accessory.jade-pin', slot:'accessory', z:80, lods:[64,96], coordinateSpace:'anchor-local', maskMode:'outside-face', shapes:[
-    { kind:'line', x1:-4, y1:-1, x2:5, y2:2, stroke:'accessory-jade', strokeWidth:1 },
-    { kind:'circle', cx:5.8, cy:2.25, r:.9, fill:'accessory-jade', stroke:'ink', strokeWidth:.28 },
+    { kind:'line', x1:-4, y1:-1, x2:4.8, y2:1.9, stroke:'accessory-jade', strokeWidth:1 },
+    { kind:'path', d:'M4.8 1.9 L6.3 1.2 L7 2.5 L5.5 3.2Z', fill:'accessory-jade', stroke:'ink', strokeWidth:.25 },
   ]},
 ];
 
