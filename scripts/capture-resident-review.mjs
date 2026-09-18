@@ -30,6 +30,10 @@ async function chooseLifeEvent(eventId) {
 
 await open();
 
+const livePortrait = page.locator('.resident-avatar .portrait-renderer');
+if ((await livePortrait.count()) !== 1) throw new Error('Live ResidentAvatar must use the unified PortraitRenderer.');
+if ((await livePortrait.getAttribute('data-render-contract')) !== '8.4') throw new Error('Live ResidentAvatar must use portrait contract 8.4.');
+
 if ((await page.locator('.resident-summary').count()) !== 0) {
   throw new Error('Resident Panel should not render a standalone recent-summary row.');
 }
