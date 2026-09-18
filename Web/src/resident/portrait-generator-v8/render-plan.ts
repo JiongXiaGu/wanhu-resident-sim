@@ -216,6 +216,7 @@ export function buildRenderPlan(
     'accessory-wood': '#74513a',
     'accessory-jade': '#829b83',
     'accessory-cloth': '#7e5046',
+    collar: stageProfile.collarColor ?? '#9f947a',
     cloth: stageProfile.clothByWealth?.[context.wealthTier] ?? clothByWealth[context.wealthTier],
     accent: context.wealthTier === 'wealthy' ? '#d4bd7d' : context.wealthTier === 'comfortable' ? '#b9aa83' : '#9e9176',
     ink: '#271f1a',

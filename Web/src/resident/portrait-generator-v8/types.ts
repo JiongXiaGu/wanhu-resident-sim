@@ -102,6 +102,7 @@ export type PaletteToken =
   | 'accessory-wood'
   | 'accessory-jade'
   | 'accessory-cloth'
+  | 'collar'
   | 'cloth'
   | 'accent'
   | 'ink'
@@ -184,6 +185,7 @@ export type PortraitStageProfile = {
   featureTransforms?: Record<string, PlacementTransform>;
   featureAssetOverrides?: Record<string, string>;
   backgroundColor?: string;
+  collarColor?: string;
   clothByWealth?: Record<WealthTier, string>;
 };
 
