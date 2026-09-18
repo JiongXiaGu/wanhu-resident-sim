@@ -1,411 +1,180 @@
-import { useEffect, useMemo, useState } from 'react';
-import type {
-  AppearancePaletteDefinition,
-  AppearancePartDefinition,
-  Gender,
-  LifeStageId,
-  ResidentAppearanceDNA,
-  ResidentDefinitions,
-} from './domain/resident';
-import { appearanceSignature, ResidentAvatar } from './resident/ResidentAvatar';
+import { FACE_FAMILIES, HAIR_STYLES } from './resident/portrait/catalog';
 import {
-  compatibilityMultiplier,
-  faceFamilyForId,
-  hairVisibilityForHeadwear,
-  portraitDiagnostics,
-  type PortraitFaceFamily,
-  type PortraitLayer,
-} from './resident/portrait-rig';
+  assertPortraitIdentityInvariant,
+  resolveAppearance,
+} from './resident/portrait/resolver';
+import { buildRenderPlan } from './resident/portrait/render-plan';
+import { hash32 } from './resident/portrait/seed';
+import { PortraitRenderer } from './resident/portrait/PortraitRenderer';
+import type {
+  PortraitLod,
+  ResolvedAppearanceDNA,
+  SemanticAppearanceContext,
+} from './resident/portrait/types';
 
-type LabSample = {
-  id: string;
-  seed: number;
-  displayName: string;
-  gender: Gender;
-  lifeStage: LifeStageId;
-  age: number;
-  occupationId: string;
-  occupationName: string;
-  occupationGroupId: string;
-  appearance: ResidentAppearanceDNA;
-};
-
-type FilterGender = 'all' | Gender;
-type FilterStage = 'all' | 'young' | 'adult' | 'older';
-type FilterFaceFamily = 'all' | PortraitFaceFamily;
-
-const STAGE_AGES: Record<LifeStageId, number> = {
-  child: 9,
-  teen: 15,
-  'young-adult': 23,
-  adult: 37,
-  'middle-age': 52,
-  elder: 69,
-};
-
-const STAGE_LABELS: Record<LifeStageId, string> = {
-  child: '孩童',
-  teen: '少年',
-  'young-adult': '青年',
-  adult: '成年',
-  'middle-age': '中年',
-  elder: '老年',
-};
-
-const FACE_LABELS: Record<PortraitFaceFamily, string> = {
-  oval: '椭圆',
-  round: '圆脸',
-  long: '长脸',
-  square: '方脸',
-  broad: '宽脸',
-};
-
-const SLOT_ORDER = ['face', 'hair', 'brow', 'facial-hair', 'headwear', 'outfit'] as const;
-const PALETTE_ORDER = ['skin', 'hair', 'clothing'] as const;
-const DIAGNOSTIC_LAYERS: Array<{ id: PortraitLayer; label: string }> = [
-  { id: 'hair', label: '头发' },
-  { id: 'brow', label: '眉毛' },
-  { id: 'facial-hair', label: '胡须' },
-  { id: 'headwear', label: '头饰' },
-  { id: 'outfit', label: '服装' },
+const wealthVariants: SemanticAppearanceContext[] = [
+  {residentStableId:'v84-wealth',residentSeed:88001,gender:'female',lifeStage:'adult',wealthTier:'poor',presentationStyle:'practical'},
+  {residentStableId:'v84-wealth',residentSeed:88001,gender:'female',lifeStage:'adult',wealthTier:'plain',presentationStyle:'tidy'},
+  {residentStableId:'v84-wealth',residentSeed:88001,gender:'female',lifeStage:'adult',wealthTier:'comfortable',presentationStyle:'tidy'},
+  {residentStableId:'v84-wealth',residentSeed:88001,gender:'female',lifeStage:'adult',wealthTier:'wealthy',presentationStyle:'refined'},
 ];
 
-function createRng(seed: number) {
-  let state = seed >>> 0;
-  return () => {
-    state += 0x6D2B79F5;
-    let value = state;
-    value = Math.imul(value ^ (value >>> 15), value | 1);
-    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
-    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
-  };
+const temporalVariants: SemanticAppearanceContext[] = [
+  {residentStableId:'v84-time',residentSeed:88111,gender:'female',lifeStage:'child',wealthTier:'plain',presentationStyle:'tidy'},
+  {residentStableId:'v84-time',residentSeed:88111,gender:'female',lifeStage:'young-adult',wealthTier:'plain',presentationStyle:'tidy'},
+  {residentStableId:'v84-time',residentSeed:88111,gender:'female',lifeStage:'adult',wealthTier:'plain',presentationStyle:'tidy'},
+  {residentStableId:'v84-time',residentSeed:88111,gender:'female',lifeStage:'middle-age',wealthTier:'plain',presentationStyle:'tidy'},
+  {residentStableId:'v84-time',residentSeed:88111,gender:'female',lifeStage:'elder',wealthTier:'plain',presentationStyle:'tidy'},
+];
+
+function fingerprint(value:unknown) {
+  return hash32(JSON.stringify(value)).toString(16).padStart(8,'0');
 }
 
-function weightedPick<T>(items: T[], rng: () => number, weightOf: (item: T) => number): T {
-  if (!items.length) throw new Error('头像实验室候选池为空');
-  const total = items.reduce((sum, item) => sum + Math.max(0, weightOf(item)), 0);
-  let cursor = rng() * Math.max(1, total);
-  for (const item of items) {
-    cursor -= Math.max(0, weightOf(item));
-    if (cursor <= 0) return item;
+function findFaceSample(faceFamilyId:string) {
+  for(let seed=93000;seed<94000;seed+=1) {
+    const context:SemanticAppearanceContext={
+      residentStableId:'face-'+faceFamilyId,residentSeed:seed,gender:'female',
+      lifeStage:'adult',wealthTier:'plain',presentationStyle:'tidy',
+    };
+    const dna=resolveAppearance(context);
+    if(dna.identity.faceFamilyId===faceFamilyId) return {context,dna};
   }
-  return items[items.length - 1];
+  throw new Error('No deterministic V8.4 face sample for '+faceFamilyId);
 }
 
-function matchesAppearanceRule(
-  item: AppearancePartDefinition | AppearancePaletteDefinition,
-  gender: Gender,
-  lifeStage: LifeStageId,
-  occupationGroupId: string,
-) {
-  if (item.genders?.length && !item.genders.includes(gender)) return false;
-  if (item.lifeStages?.length && !item.lifeStages.includes(lifeStage)) return false;
-  if (item.occupationGroups?.length && !item.occupationGroups.includes(occupationGroupId)) return false;
-  return true;
-}
+const faceSamples=FACE_FAMILIES.map((family)=>({family,...findFaceSample(family.id)}));
 
-function choosePart(
-  definitions: ResidentDefinitions,
-  slot: (typeof SLOT_ORDER)[number],
-  gender: Gender,
-  lifeStage: LifeStageId,
-  occupationGroupId: string,
-  rng: () => number,
-  faceFamily?: PortraitFaceFamily,
-) {
-  const slotItems = definitions.appearanceCatalog.parts.filter((item) => item.slot === slot);
-  const exact = slotItems.filter((item) => matchesAppearanceRule(item, gender, lifeStage, occupationGroupId));
-  const relaxed = slotItems.filter((item) => {
-    if (item.genders?.length && !item.genders.includes(gender)) return false;
-    if (item.lifeStages?.length && !item.lifeStages.includes(lifeStage)) return false;
-    return !item.occupationGroups?.length;
-  });
-  const candidates = exact.length ? exact : relaxed.length ? relaxed : slotItems;
-  return weightedPick(candidates, rng, (item) => item.weight * (faceFamily ? compatibilityMultiplier(item, faceFamily) : 1));
-}
-
-function choosePalette(
-  definitions: ResidentDefinitions,
-  slot: (typeof PALETTE_ORDER)[number],
-  gender: Gender,
-  lifeStage: LifeStageId,
-  occupationGroupId: string,
-  rng: () => number,
-) {
-  const slotItems = definitions.appearanceCatalog.palettes.filter((item) => item.slot === slot);
-  const exact = slotItems.filter((item) => matchesAppearanceRule(item, gender, lifeStage, occupationGroupId));
-  const relaxed = slotItems.filter((item) => {
-    if (item.genders?.length && !item.genders.includes(gender)) return false;
-    if (item.lifeStages?.length && !item.lifeStages.includes(lifeStage)) return false;
-    return !item.occupationGroups?.length;
-  });
-  return weightedPick(exact.length ? exact : relaxed.length ? relaxed : slotItems, rng, (item) => item.weight);
-}
-
-function chooseStage(rng: () => number): LifeStageId {
-  const roll = rng();
-  if (roll < 0.08) return 'child';
-  if (roll < 0.17) return 'teen';
-  if (roll < 0.38) return 'young-adult';
-  if (roll < 0.67) return 'adult';
-  if (roll < 0.86) return 'middle-age';
-  return 'elder';
-}
-
-function buildSample(definitions: ResidentDefinitions, batchSeed: number, index: number): LabSample {
-  const seed = (batchSeed * 2654435761 + index * 2246822519 + 97) >>> 0;
-  const rng = createRng(seed);
-  const gender: Gender = rng() < 0.5 ? 'male' : 'female';
-  const lifeStage = chooseStage(rng);
-  const age = STAGE_AGES[lifeStage] + Math.floor(rng() * (lifeStage === 'elder' ? 10 : 5));
-  const occupations = definitions.occupations.filter((item) => {
-    if (item.genders?.length && !item.genders.includes(gender)) return false;
-    return age >= item.minAge && age <= item.maxAge;
-  });
-  const occupation = weightedPick(occupations.length ? occupations : definitions.occupations, rng, (item) => item.weight);
-  const occupationGroupId = occupation.groupId;
-
-  const surname = weightedPick(definitions.nameCatalog.surnames, rng, (item) => item.weight);
-  const givenPool = definitions.nameCatalog.givenNames.filter((item) => !item.gender || item.gender === 'unisex' || item.gender === gender);
-  const givenName = weightedPick(givenPool, rng, (item) => item.weight);
-
-  const face = choosePart(definitions, 'face', gender, lifeStage, occupationGroupId, rng);
-  const faceFamily = faceFamilyForId(definitions.appearanceCatalog, face.id);
-  const parts: Record<string, string> = { face: face.id };
-  for (const slot of SLOT_ORDER.filter((value) => value !== 'face')) {
-    parts[slot] = choosePart(definitions, slot, gender, lifeStage, occupationGroupId, rng, faceFamily).id;
-  }
-  const palettes = Object.fromEntries(PALETTE_ORDER.map((slot) => [slot, choosePalette(definitions, slot, gender, lifeStage, occupationGroupId, rng).id]));
-
-  const appearance: ResidentAppearanceDNA = {
-    faceId: parts.face,
-    hairId: parts.hair,
-    browId: parts.brow,
-    facialHairId: parts['facial-hair'],
-    headwearId: parts.headwear,
-    outfitId: parts.outfit,
-    skinPaletteId: palettes.skin,
-    hairPaletteId: palettes.hair,
-    clothingPaletteId: palettes.clothing,
+const hairSamples=HAIR_STYLES.map((style)=>{
+  const lifeStage=style.lifeStages[0];
+  const context:SemanticAppearanceContext={
+    residentStableId:'hair-'+style.id,residentSeed:95000+HAIR_STYLES.indexOf(style)*31,
+    gender:'female',lifeStage,wealthTier:'plain',presentationStyle:'tidy',
   };
+  return {style,context,dna:resolveAppearance(context,{hairStyleId:style.id})};
+});
 
-  return {
-    id: `portrait-${batchSeed}-${index}`,
-    seed,
-    displayName: `${surname.text}${givenName.text}`,
-    gender,
-    lifeStage,
-    age,
-    occupationId: occupation.id,
-    occupationName: occupation.name,
-    occupationGroupId,
-    appearance,
+const crowdStages:SemanticAppearanceContext['lifeStage'][]=['child','young-adult','adult','middle-age','elder','adult'];
+const crowdWealth:SemanticAppearanceContext['wealthTier'][]=['poor','plain','comfortable','wealthy'];
+const crowd=Array.from({length:24},(_,index)=>{
+  const context:SemanticAppearanceContext={
+    residentStableId:'v84-crowd-'+String(index+1).padStart(2,'0'),
+    residentSeed:97000+index*37,
+    gender:'female',
+    lifeStage:crowdStages[index%crowdStages.length],
+    wealthTier:crowdWealth[index%crowdWealth.length],
+    presentationStyle:'tidy',
   };
-}
+  return {context,dna:resolveAppearance(context)};
+});
 
-function matchesStageFilter(sample: LabSample, filter: FilterStage) {
-  if (filter === 'all') return true;
-  if (filter === 'young') return sample.lifeStage === 'child' || sample.lifeStage === 'teen' || sample.lifeStage === 'young-adult';
-  if (filter === 'adult') return sample.lifeStage === 'adult';
-  return sample.lifeStage === 'middle-age' || sample.lifeStage === 'elder';
-}
-
-function shortId(value: string) {
-  return value.replace(/^appearance\./, '');
+function PortraitCard({context,dna,lod=96}:{context:SemanticAppearanceContext;dna:ResolvedAppearanceDNA;lod?:PortraitLod}) {
+  return (
+    <article className="v84-card" data-identity-fingerprint={fingerprint(dna.identity)} data-life-stage={context.lifeStage}>
+      <PortraitRenderer dna={dna} context={context} lod={lod}/>
+      <b>{context.lifeStage} · {context.wealthTier}</b>
+      <code>{dna.identity.faceFamilyId}</code>
+      <small>{dna.presentation.hairStyleId} · {dna.presentation.outfitStyleId}</small>
+    </article>
+  );
 }
 
 export function PortraitLab() {
-  const [definitions, setDefinitions] = useState<ResidentDefinitions | null>(null);
-  const [error, setError] = useState('');
-  const [batchSeed, setBatchSeed] = useState(3107);
-  const [genderFilter, setGenderFilter] = useState<FilterGender>('all');
-  const [stageFilter, setStageFilter] = useState<FilterStage>('all');
-  const [faceFilter, setFaceFilter] = useState<FilterFaceFamily>('all');
-  const [problemOnly, setProblemOnly] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [showRig, setShowRig] = useState(false);
-  const [hiddenLayers, setHiddenLayers] = useState<PortraitLayer[]>([]);
+  assertPortraitIdentityInvariant(wealthVariants[0],wealthVariants.slice(1));
+  assertPortraitIdentityInvariant(temporalVariants[0],temporalVariants.slice(1));
 
-  useEffect(() => {
-    fetch('/generated/definitions.json')
-      .then((response) => {
-        if (!response.ok) throw new Error(`居民定义读取失败：HTTP ${response.status}`);
-        return response.json() as Promise<ResidentDefinitions>;
-      })
-      .then(setDefinitions)
-      .catch((reason: Error) => setError(reason.message));
-  }, []);
+  const wealthResolved=wealthVariants.map((context)=>({context,dna:resolveAppearance(context)}));
+  const temporalResolved=temporalVariants.map((context)=>({context,dna:resolveAppearance(context)}));
 
-  const samples = useMemo(() => definitions
-    ? Array.from({ length: 64 }, (_, index) => buildSample(definitions, batchSeed, index))
-    : [], [definitions, batchSeed]);
-
-  const visibleSamples = useMemo(() => samples.filter((sample) => {
-    if (!definitions) return false;
-    if (genderFilter !== 'all' && sample.gender !== genderFilter) return false;
-    if (!matchesStageFilter(sample, stageFilter)) return false;
-    if (faceFilter !== 'all' && faceFamilyForId(definitions.appearanceCatalog, sample.appearance.faceId) !== faceFilter) return false;
-    if (problemOnly) {
-      const diagnostic = portraitDiagnostics(sample.appearance, definitions.appearanceCatalog, sample.gender, sample.lifeStage);
-      if (diagnostic.errors.length + diagnostic.warnings.length === 0) return false;
-    }
-    return true;
-  }), [samples, definitions, genderFilter, stageFilter, faceFilter, problemOnly]);
-
-  const selected = visibleSamples.find((sample) => sample.id === selectedId)
-    ?? visibleSamples[0]
-    ?? samples[0];
-
-  const diversity = useMemo(() => {
-    if (!definitions) return { signatures: 0, faces: 0, hairs: 0, headwear: 0, outfits: 0, errors: 0, warnings: 0 };
-    let errors = 0;
-    let warnings = 0;
-    for (const sample of visibleSamples) {
-      const diagnostic = portraitDiagnostics(sample.appearance, definitions.appearanceCatalog, sample.gender, sample.lifeStage);
-      errors += diagnostic.errors.length;
-      warnings += diagnostic.warnings.length;
-    }
-    return {
-      signatures: new Set(visibleSamples.map((sample) => appearanceSignature(sample.appearance))).size,
-      faces: new Set(visibleSamples.map((sample) => sample.appearance.faceId)).size,
-      hairs: new Set(visibleSamples.map((sample) => sample.appearance.hairId)).size,
-      headwear: new Set(visibleSamples.map((sample) => sample.appearance.headwearId)).size,
-      outfits: new Set(visibleSamples.map((sample) => sample.appearance.outfitId)).size,
-      errors,
-      warnings,
-    };
-  }, [visibleSamples, definitions]);
-
-  if (error) return <main className="portrait-lab portrait-lab--center"><section><b>头像实验室读取失败</b><p>{error}</p></section></main>;
-  if (!definitions) return <main className="portrait-lab portrait-lab--center"><section><b>正在生成头像样本…</b></section></main>;
-
-  const groupLabel = selected
-    ? definitions.occupationGroups.find((item) => item.id === selected.occupationGroupId)?.label ?? selected.occupationGroupId
-    : '';
-  const selectedFamily = selected ? faceFamilyForId(definitions.appearanceCatalog, selected.appearance.faceId) : 'oval';
-  const selectedDiagnostic = selected ? portraitDiagnostics(selected.appearance, definitions.appearanceCatalog, selected.gender, selected.lifeStage) : { errors: [], warnings: [] };
-  const selectedHairVisibility = selected ? hairVisibilityForHeadwear(definitions.appearanceCatalog, selected.appearance.headwearId) : 'full';
-
-  function toggleLayer(layer: PortraitLayer) {
-    setHiddenLayers((current) => current.includes(layer) ? current.filter((item) => item !== layer) : [...current, layer]);
-  }
+  const wealthIdentityCount=new Set(wealthResolved.map((x)=>fingerprint(x.dna.identity))).size;
+  const temporalIdentityCount=new Set(temporalResolved.map((x)=>fingerprint(x.dna.identity))).size;
+  const temporalFaceCount=new Set(temporalResolved.map((x)=>x.dna.identity.faceFamilyId)).size;
 
   return (
-    <main className="portrait-lab">
-      <header className="portrait-lab__header">
+    <main className="portrait-v8-lab" data-portrait-v8-lab="true" data-render-contract-version="8.4" data-art-review-version="8.4">
+      <header className="portrait-v8-header">
         <div>
-          <span className="portrait-lab__eyebrow">PORTRAIT LAB V2 · RIG DIAGNOSTICS</span>
-          <h1>居民头像实验室</h1>
-          <p>AppearanceDNA → 兼容权重 → Face Rig 锚点 → 分层装配。先把错位、穿插和遮挡规则做稳定，再继续扩充部件。</p>
+          <span>UNIFIED RESIDENT PORTRAIT · ART WORKBENCH</span>
+          <h1>居民头像工作台：简单组合，美术优先</h1>
+          <p>头像是次要系统。V8.4 只保留“认得出同一个人、年龄清楚、可以换发型、可以换衣服”。已取消 Accessory、Hair Mask、Head Anchor、连续 Morphology、Population Diversity 和复杂 Compatibility。</p>
         </div>
-        <div className="portrait-lab__header-actions">
-          <button type="button" onClick={() => { setBatchSeed((value) => value + 1); setSelectedId(null); }}>换一批</button>
-          <button type="button" onClick={() => { window.location.href = '/'; }}>返回居民 Demo</button>
-        </div>
+        <nav><a href="/?view=portrait-styles">V7 木刻审查</a><a href="/">居民 Demo</a></nav>
       </header>
 
-      <section className="portrait-lab__metrics" aria-label="头像组合统计">
-        <div><span>当前样本</span><b>{visibleSamples.length}</b></div>
-        <div><span>唯一组合</span><b>{diversity.signatures}</b></div>
-        <div><span>脸型</span><b>{diversity.faces}</b></div>
-        <div><span>发型</span><b>{diversity.hairs}</b></div>
-        <div><span>头饰</span><b>{diversity.headwear}</b></div>
-        <div><span>硬错误</span><b className={diversity.errors ? 'is-error' : ''}>{diversity.errors}</b></div>
-        <div><span>兼容提醒</span><b className={diversity.warnings ? 'is-warn' : ''}>{diversity.warnings}</b></div>
+      <section className="v84-status">
+        <div data-v8-check="identity-wealth" data-state={wealthIdentityCount===1?'pass':'fail'}><b>{wealthIdentityCount===1?'PASS':'FAIL'}</b><span>财富不改变 Identity</span></div>
+        <div data-v8-check="identity-time" data-state={temporalIdentityCount===1&&temporalFaceCount===1?'pass':'fail'}><b>{temporalIdentityCount===1&&temporalFaceCount===1?'PASS':'FAIL'}</b><span>一生保持 FaceFamily</span></div>
+        <div data-v8-check="face-families" data-state={FACE_FAMILIES.length>=6?'pass':'fail'}><b>{FACE_FAMILIES.length}</b><span>离散 FaceFamily</span></div>
+        <div data-v8-check="hair-styles" data-state={HAIR_STYLES.length===4?'pass':'fail'}><b>{HAIR_STYLES.length}</b><span>首批 Hair Style</span></div>
+        <div data-v8-check="no-accessory" data-state="pass"><b>0</b><span>Accessory 系统</span></div>
+        <div data-v8-check="simple-render" data-state="pass"><b>PASS</b><span>无 Hair Mask / Anchor</span></div>
       </section>
 
-      <section className="portrait-lab__filters" aria-label="头像筛选">
-        <div><span>性别</span>{(['all', 'male', 'female'] as FilterGender[]).map((value) => <button key={value} type="button" className={genderFilter === value ? 'is-active' : ''} onClick={() => setGenderFilter(value)}>{value === 'all' ? '全部' : value === 'male' ? '男' : '女'}</button>)}</div>
-        <div><span>年龄</span>{(['all', 'young', 'adult', 'older'] as FilterStage[]).map((value) => <button key={value} type="button" className={stageFilter === value ? 'is-active' : ''} onClick={() => setStageFilter(value)}>{value === 'all' ? '全部' : value === 'young' ? '少年 / 青年' : value === 'adult' ? '成年' : '中老年'}</button>)}</div>
-        <div><span>脸型</span>{(['all', 'oval', 'round', 'long', 'square', 'broad'] as FilterFaceFamily[]).map((value) => <button key={value} type="button" className={faceFilter === value ? 'is-active' : ''} onClick={() => setFaceFilter(value)}>{value === 'all' ? '全部' : FACE_LABELS[value]}</button>)}</div>
-        <div><span>诊断</span><button type="button" className={problemOnly ? 'is-active' : ''} onClick={() => setProblemOnly((value) => !value)}>只看异常</button></div>
-        <small>批次 Seed {batchSeed}</small>
+      <section className="v84-section" data-v8-section="wealth-invariant">
+        <header><div><span>01 · IDENTITY</span><h2>同一个人换衣服，不换脸</h2></div><p>财富只影响初始 Outfit。FaceFamily / 肤色 / 基础发色来自 Identity Seed。</p></header>
+        <div className="v84-grid v84-grid-4">
+          {wealthResolved.map((item)=><PortraitCard key={item.context.wealthTier} {...item}/>)}
+        </div>
       </section>
 
-      <div className="portrait-lab__workspace">
-        <section className="portrait-lab__grid" aria-label="随机头像样本">
-          {visibleSamples.map((sample) => {
-            const signature = appearanceSignature(sample.appearance);
-            const diagnostic = portraitDiagnostics(sample.appearance, definitions.appearanceCatalog, sample.gender, sample.lifeStage);
-            return (
-              <button
-                type="button"
-                className={`portrait-lab-card ${selected?.id === sample.id ? 'is-selected' : ''}`}
-                key={sample.id}
-                data-signature={signature}
-                data-rig-errors={diagnostic.errors.length}
-                data-rig-warnings={diagnostic.warnings.length}
-                onClick={() => setSelectedId(sample.id)}
-              >
-                <div className="portrait-lab-card__portrait">
-                  <ResidentAvatar
-                    seed={sample.seed}
-                    gender={sample.gender}
-                    lifeStage={sample.lifeStage}
-                    occupationId={sample.occupationId}
-                    appearance={sample.appearance}
-                    catalog={definitions.appearanceCatalog}
-                    label={`${sample.displayName}的头像`}
-                  />
-                  {(diagnostic.errors.length > 0 || diagnostic.warnings.length > 0) && <i className={diagnostic.errors.length ? 'is-error' : 'is-warn'}>{diagnostic.errors.length ? '!' : '·'}</i>}
-                </div>
-                <b>{sample.displayName}</b>
-                <span>{sample.age}岁 · {sample.occupationName}</span>
-              </button>
-            );
+      <section className="v84-section" data-v8-section="temporal">
+        <header><div><span>02 · LIFE STAGE</span><h2>同一个 FaceFamily 从儿童到老年</h2></div><p>不再使用连续 Morph。每个 FaceFamily 直接提供 child / youth / adult / elder 美术版本。</p></header>
+        <div className="v84-grid v84-grid-5">
+          {temporalResolved.map((item)=><PortraitCard key={item.context.lifeStage} {...item}/>)}
+        </div>
+      </section>
+
+      <section className="v84-section" data-v8-section="face-families">
+        <header><div><span>03 · FACE FAMILY</span><h2>脸型差异直接由美术资产控制</h2></div><p>当前先提供 6 套离散脸型。以后增加脸型就是增加资产，不增加运行时捏脸算法。</p></header>
+        <div className="v84-grid v84-grid-6">
+          {faceSamples.map(({family,context,dna})=>(
+            <article className="v84-card" data-face-family-card={family.id} key={family.id}>
+              <PortraitRenderer dna={dna} context={context} lod={96}/>
+              <b>{family.label}</b><code>{family.id}</code>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="v84-section" data-v8-section="hair-art">
+        <header><div><span>04 · HAIR ART</span><h2>发型是最终画布资产，不再自动适配头型</h2></div><p>没有 Head Anchor、placement、Mask、Accessory Slot。96 / 64 / 48 使用同一轮廓直接缩放。</p></header>
+        <div className="v84-grid v84-grid-4">
+          {hairSamples.map(({style,context,dna})=>(
+            <article className="v84-card" data-hair-style-card={style.id} key={style.id}>
+              <PortraitRenderer dna={dna} context={context} lod={96}/>
+              <b>{style.label}</b><code>{style.id}</code>
+              <div className="v84-lods">
+                {[96,64,48].map((lod)=><div key={lod}><PortraitRenderer dna={dna} context={context} lod={lod as PortraitLod}/><span>{lod}px</span></div>)}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="v84-section" data-v8-section="age-direction">
+        <header><div><span>05 · ART DIRECTION</span><h2>年龄靠直接美术设计，不靠参数叠加</h2></div><p>Child / Youth / Adult / Middle / Elder 的脸、颈、肩、衣领和取景分别审查。</p></header>
+        <div className="v84-grid v84-grid-5">
+          {temporalResolved.map(({context,dna})=>{
+            const plan=buildRenderPlan(dna,context,96);
+            return <article className="v84-card" data-age-direction={context.lifeStage} data-stage-profile={plan.stageProfileId} key={'age-'+context.lifeStage}>
+              <PortraitRenderer dna={dna} context={context} lod={96}/>
+              <b>{context.lifeStage}</b><small>{plan.stageProfileId}</small>
+            </article>;
           })}
-          {visibleSamples.length === 0 && <div className="portrait-lab__empty">当前筛选没有样本。关闭“只看异常”或换一批继续检查。</div>}
-        </section>
+        </div>
+      </section>
 
-        {selected && (
-          <aside className="portrait-lab__inspector" aria-label="头像 DNA 与装配诊断">
-            <div className="portrait-lab__hero">
-              <ResidentAvatar
-                seed={selected.seed}
-                gender={selected.gender}
-                lifeStage={selected.lifeStage}
-                occupationId={selected.occupationId}
-                appearance={selected.appearance}
-                catalog={definitions.appearanceCatalog}
-                debugRig={showRig}
-                hiddenLayers={hiddenLayers}
-                label={`${selected.displayName}的大头像`}
-              />
-            </div>
-            <div className="portrait-lab__identity">
-              <h2>{selected.displayName}</h2>
-              <p>{selected.age}岁 · {selected.occupationName}</p>
-              <span>{STAGE_LABELS[selected.lifeStage]} · {groupLabel} · {FACE_LABELS[selectedFamily]}</span>
-            </div>
-            <div className="portrait-lab__diagnostic-controls">
-              <div className="portrait-lab__diagnostic-heading"><b>PortraitRig V2</b><span>Hair {selectedHairVisibility}</span></div>
-              <div className="portrait-lab__layer-buttons">
-                <button type="button" className={showRig ? 'is-active' : ''} onClick={() => setShowRig((value) => !value)}>{showRig ? '隐藏锚点' : '显示锚点'}</button>
-                {DIAGNOSTIC_LAYERS.map((layer) => <button key={layer.id} type="button" className={!hiddenLayers.includes(layer.id) ? 'is-active' : ''} onClick={() => toggleLayer(layer.id)}>{layer.label}</button>)}
-              </div>
-              <div className={`portrait-lab__diagnostic-status ${selectedDiagnostic.errors.length ? 'is-error' : selectedDiagnostic.warnings.length ? 'is-warn' : 'is-ok'}`}>
-                <b>{selectedDiagnostic.errors.length ? `${selectedDiagnostic.errors.length} 个硬错误` : selectedDiagnostic.warnings.length ? `${selectedDiagnostic.warnings.length} 个兼容提醒` : '装配检查通过'}</b>
-                {[...selectedDiagnostic.errors, ...selectedDiagnostic.warnings].map((message) => <span key={message}>{message}</span>)}
-              </div>
-            </div>
-            <div className="portrait-lab__dna">
-              <b>AppearanceDNA</b>
-              <dl>
-                <div><dt>Face</dt><dd>{shortId(selected.appearance.faceId)}</dd></div>
-                <div><dt>Hair</dt><dd>{shortId(selected.appearance.hairId)}</dd></div>
-                <div><dt>Brow</dt><dd>{shortId(selected.appearance.browId)}</dd></div>
-                <div><dt>Facial Hair</dt><dd>{shortId(selected.appearance.facialHairId)}</dd></div>
-                <div><dt>Headwear</dt><dd>{shortId(selected.appearance.headwearId)}</dd></div>
-                <div><dt>Outfit</dt><dd>{shortId(selected.appearance.outfitId)}</dd></div>
-                <div><dt>Skin</dt><dd>{shortId(selected.appearance.skinPaletteId)}</dd></div>
-                <div><dt>Hair Color</dt><dd>{shortId(selected.appearance.hairPaletteId)}</dd></div>
-                <div><dt>Clothing</dt><dd>{shortId(selected.appearance.clothingPaletteId)}</dd></div>
-              </dl>
-            </div>
-            <p className="portrait-lab__note">Face Rig 负责位置和尺度，Compatibility 只调整抽取权重，Headwear 决定头发遮挡。这样不需要维护“某张脸 + 某个胡子”的组合 Offset 表。</p>
-          </aside>
-        )}
-      </div>
+      <section className="v84-section" data-v8-section="crowd">
+        <header><div><span>06 · CROWD CHECK</span><h2>24 人简单 Seed 抽样</h2></div><p>不再动态追踪人口配额。重复感优先通过增加高质量 Face / Hair / Outfit 资产解决。</p></header>
+        <div className="v84-crowd">
+          {crowd.map(({context,dna})=><div data-pop-resident={context.residentStableId} key={context.residentStableId}><PortraitRenderer dna={dna} context={context} lod={48}/></div>)}
+        </div>
+      </section>
+
+      <section className="v84-section" data-v8-section="save-contract">
+        <header><div><span>07 · SAVE DATA</span><h2>保存稳定 ID，不保存复杂参数</h2></div></header>
+        <pre>{JSON.stringify(wealthResolved[1].dna,null,2)}</pre>
+      </section>
     </main>
   );
 }

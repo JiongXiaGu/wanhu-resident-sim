@@ -32,7 +32,7 @@ function Shape({shape,palette}:{shape:VectorShape;palette:Record<string,string>}
     opacity={shape.opacity} strokeLinecap="round"/>;
 }
 
-export function PortraitV8Renderer({
+export function PortraitRenderer({
   dna,
   context,
   lod=96,

@@ -1,6 +1,6 @@
 import type { LifeStageId } from '../../domain/resident';
 import { FACE_FAMILIES, HAIR_STYLES, OUTFIT_STYLES } from './catalog';
-import { createIdentitySeedBank, createPresentationSeedBank } from './seed-bank';
+import { createIdentitySeedBank, createPresentationSeedBank } from './seed';
 import {
   PORTRAIT_GENERATOR_VERSION,
   type AppearanceIdentityDNA,

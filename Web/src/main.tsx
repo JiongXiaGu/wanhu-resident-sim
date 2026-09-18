@@ -1,9 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
-import { PortraitIdentityLab } from './PortraitIdentityLab';
-import { PortraitStyleLab } from './PortraitStyleLab';
-import { PortraitV8Lab } from './PortraitV8Lab';
+import { PortraitLab } from './PortraitLab';
 import './styles.css';
 import './game-validation.css';
 import './life-log.css';
@@ -11,28 +9,20 @@ import './resident-avatar.css';
 import './resident-panel-v2.css';
 import './resident-life-memory.css';
 import './portrait-lab.css';
-import './portrait-identity-lab.css';
-import './portrait-style-lab.css';
-import './portrait-v8-lab.css';
 import './portrait-entry.css';
 
 const params = new URLSearchParams(window.location.search);
 const view = params.get('view');
+const portraitViews = new Set(['portraits','portrait-v8','portrait-styles']);
 
-const rootView = view === 'portraits'
-  ? <PortraitIdentityLab />
-  : view === 'portrait-styles'
-    ? <PortraitStyleLab />
-    : view === 'portrait-v8'
-      ? <PortraitV8Lab />
-      : (
-      <>
-        <App />
-        <a className="portrait-view-entry" href="/?view=portraits">头像查看器</a>
-        <a className="portrait-style-entry" href="/?view=portrait-styles">木刻头像审查</a>
-        <a className="portrait-v8-entry" href="/?view=portrait-v8">头像算法 V8.2</a>
-      </>
-    );
+const rootView = view && portraitViews.has(view)
+  ? <PortraitLab />
+  : (
+    <>
+      <App />
+      <a className="portrait-view-entry" href="/?view=portraits">头像工作台</a>
+    </>
+  );
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
