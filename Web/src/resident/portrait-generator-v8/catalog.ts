@@ -157,10 +157,10 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
 
   // Local-space hair assets. (0,0) is the declared anchor from HeadProfile.
   { id:'layer.hair.girl-double-bun.back', slot:'back-hair', z:10, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'skullTop', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M-17 7 C-18 3 -16 -1 -13 -4 C-10 -6 -7 -5 -6 -2 C-5 1 -7 4 -9 6 C-11 8 -14 9 -17 7Z', fill:'hair', stroke:'ink', strokeWidth:.72 },
-    { kind:'path', d:'M16 6 C17 2 15 -2 12 -4 C9 -5 6 -3 6 0 C6 3 8 5 10 6 C12 8 15 8 16 6Z', fill:'hair', stroke:'ink', strokeWidth:.68 },
-    { kind:'path', d:'M-14 8 C-11 10 -9 13 -6 16 C-10 15 -13 13 -15 10Z', fill:'hair' },
-    { kind:'path', d:'M14 7 C11 10 9 12 6 15 C10 14 13 12 15 9Z', fill:'hair' },
+    { kind:'path', d:'M-16 8 C-16 5 -15 1 -13 -2 L-11 -6 C-8 -6 -6 -4 -6 -1 C-6 2 -8 5 -10 7 C-12 9 -14 10 -16 8Z', fill:'hair', stroke:'ink', strokeWidth:.68 },
+    { kind:'path', d:'M16 7 C16 4 15 1 13 -2 L11 -5 C8 -5 6 -3 6 0 C6 3 8 5 10 7 C12 9 15 9 16 7Z', fill:'hair', stroke:'ink', strokeWidth:.64 },
+    { kind:'path', d:'M-14 8 C-12 10 -9 13 -6 16 L-11 14 L-15 10Z', fill:'hair' },
+    { kind:'path', d:'M14 7 C12 10 9 12 6 15 L11 13 L15 9Z', fill:'hair' },
   ]},
   { id:'layer.hair.girl-double-bun.front', slot:'front-hair', z:70, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'skullTop', maskMode:'inside-skull', shapes:[
     { kind:'path', d:'M-20 21 Q-18 8 -8 3 Q-3 1 0 3 Q3 1 8 3 Q18 8 20 21 Q10 14 2 13 Q0 12 -2 13 Q-10 14 -20 21Z', fill:'hair' },
@@ -227,9 +227,9 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
 
   // Accessories use local coordinates; their final anchor comes from AccessoryAsset placement.
   { id:'layer.accessory.red-cord', slot:'accessory', z:80, lods:[64,96], coordinateSpace:'anchor-local', shapes:[
-    { kind:'path', d:'M-15 8 Q-11 10 -7 8 M7 8 Q11 10 15 8', stroke:'accent', strokeWidth:1.35 },
-    { kind:'line', x1:-11, y1:7, x2:-11, y2:11, stroke:'accent', strokeWidth:1 },
-    { kind:'line', x1:11, y1:7, x2:11, y2:11, stroke:'accent', strokeWidth:1 },
+    { kind:'path', d:'M-15 8 Q-11 10 -7 8 M7 8 Q11 10 15 8', stroke:'cord-red', strokeWidth:1.35 },
+    { kind:'line', x1:-11, y1:7, x2:-11, y2:11, stroke:'cord-red', strokeWidth:1 },
+    { kind:'line', x1:11, y1:7, x2:11, y2:11, stroke:'cord-red', strokeWidth:1 },
   ]},
   { id:'layer.accessory.cloth-knot', slot:'accessory', z:80, lods:[64,96], coordinateSpace:'anchor-local', shapes:[
     { kind:'path', d:'M0 2 C-3 -1 -7 0 -8 3 C-6 6 -3 5 0 3Z M0 2 C3 -1 7 0 8 3 C6 6 3 5 0 3Z', fill:'accent', stroke:'ink', strokeWidth:.55 },
