@@ -4,20 +4,20 @@ import {
   PORTRAIT_STYLES,
   PortraitStylePortrait,
   type PortraitStyleId,
-} from './resident/portrait-style-v3';
+} from './resident/portrait-style-v4';
 
 export function PortraitStyleLab() {
   const [candidate, setCandidate] = useState<PortraitStyleId | null>(null);
 
   return (
-    <main className="portrait-style-lab" data-portrait-style-lab="v3">
+    <main className="portrait-style-lab" data-portrait-style-lab="v4">
       <header className="portrait-style-lab__header">
         <div>
-          <span className="portrait-style-lab__eyebrow">PORTRAIT STYLE LAB V3 · ART DIRECTION SELECTION</span>
+          <span className="portrait-style-lab__eyebrow">PORTRAIT STYLE LAB V4 · 8-WAY ART DIRECTION SELECTION</span>
           <h1>居民头像美术方向对比</h1>
           <p>
             8 个 Golden Residents 保持同一身份、年龄、财富和轮廓，只更换美术语言。
-            先选方向，再扩正式资产；这一页不使用 V2 的程序参数脸。
+            当前同时比较成熟插画、Q 版、白描、陶俑、民俗套色等 8 条路线；先选方向，再扩正式资产。
           </p>
         </div>
         <nav>
@@ -53,7 +53,7 @@ export function PortraitStyleLab() {
         ))}
       </section>
 
-      <section className="portrait-style-lab__matrix" aria-label="四种头像美术横向对比">
+      <section className="portrait-style-lab__matrix" aria-label="八种头像美术横向对比">
         {GOLDEN_PORTRAITS.map((resident) => (
           <div className="portrait-style-row" data-resident={resident.id} key={resident.id}>
             <aside className="portrait-style-row__identity">

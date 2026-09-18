@@ -317,6 +317,14 @@ npm run build-content
 http://localhost:5173/?view=portraits
 ```
 
+美术风格对比实验室：
+
+```text
+http://localhost:5173/?view=portrait-styles
+```
+
+当前用同一批 Golden Residents 横向比较 8 种路线：纸片拼贴、墨线淡彩、套色木刻、简化写意、克制 Q 版、白描人物、陶俑泥塑、民俗年画套色。
+
 ## GitHub Actions / Visual Review / Vercel
 
 一次逻辑开发批次先聚合修改，再只向远端 `tmp-*` 推送一个 commit。Build 与 Resident Visual Review 通过后，再一次推进 `main`。

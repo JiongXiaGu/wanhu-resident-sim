@@ -6,7 +6,7 @@
 }
 
 .portrait-style-lab__header {
-  width: min(1580px, 100%);
+  width: min(2780px, 100%);
   margin: 0 auto 20px;
   display: flex;
   align-items: flex-start;
@@ -56,7 +56,7 @@
 }
 
 .portrait-style-lab__rules {
-  width: min(1580px, 100%);
+  width: min(2780px, 100%);
   margin: 0 auto 18px;
   display: flex;
   gap: 8px;
@@ -74,14 +74,14 @@
 
 .portrait-style-lab__style-headings,
 .portrait-style-row {
-  min-width: 1210px;
+  min-width: 2260px;
   display: grid;
-  grid-template-columns: 190px repeat(4, minmax(225px, 1fr));
-  gap: 12px;
+  grid-template-columns: 180px repeat(8, minmax(220px, 1fr));
+  gap: 10px;
 }
 
 .portrait-style-lab__style-headings {
-  width: min(1580px, 100%);
+  width: min(2780px, 100%);
   margin: 0 auto 12px;
 }
 
@@ -147,7 +147,7 @@
 }
 
 .portrait-style-lab__matrix {
-  width: min(1580px, 100%);
+  width: min(2780px, 100%);
   margin: 0 auto;
   display: grid;
   gap: 12px;
@@ -246,6 +246,10 @@
 .portrait-style-portrait--ink-flat { box-shadow: inset 0 0 0 1px rgba(74, 57, 45, .16); }
 .portrait-style-portrait--woodblock { box-shadow: inset 0 0 0 2px rgba(53, 42, 32, .28); }
 .portrait-style-portrait--painterly { box-shadow: inset 0 0 0 1px rgba(235, 222, 190, .07); }
+.portrait-style-portrait--chibi { box-shadow: inset 0 0 0 1px rgba(231, 215, 176, .09); }
+.portrait-style-portrait--baimiao { box-shadow: inset 0 0 0 1px rgba(83, 68, 54, .15); }
+.portrait-style-portrait--clay { box-shadow: inset 0 0 0 1px rgba(216, 164, 124, .12); }
+.portrait-style-portrait--folk-print { box-shadow: inset 0 0 0 2px rgba(105, 56, 42, .18); }
 
 .portrait-style-card__sizes {
   margin-top: 10px;
@@ -290,4 +294,6 @@
   .portrait-style-lab { padding: 22px 14px 56px; }
   .portrait-style-lab__header { display: grid; }
   .portrait-style-lab__header nav { justify-content: flex-start; }
+  .portrait-style-lab__style-headings,
+  .portrait-style-row { min-width: 2260px; }
 }
