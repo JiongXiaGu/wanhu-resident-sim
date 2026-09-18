@@ -61,7 +61,7 @@ export const HEAD_PROFILES: HeadProfileDefinition[] = [
       skullTop: { x: 60, y: 21 }, templeLeft: { x: 42, y: 40 }, templeRight: { x: 78, y: 40 },
       earLeft: { x: 38, y: 56 }, earRight: { x: 82, y: 56 }, jawLeft: { x: 46, y: 80 }, jawRight: { x: 74, y: 80 },
       chin: { x: 60, y: 92 }, neckLeft: { x: 54, y: 88 }, neckRight: { x: 66, y: 88 },
-      crownBack: { x: 67, y: 26 }, bunLow: { x: 72, y: 82 }, occipitalLeft: { x: 45, y: 59 }, occipitalRight: { x: 75, y: 59 },
+      crownBack: { x: 67, y: 26 }, bunLow: { x: 73, y: 85 }, occipitalLeft: { x: 45, y: 59 }, occipitalRight: { x: 75, y: 59 },
       nape: { x: 60, y: 98 }, shoulderBackLeft: { x: 29, y: 108 }, shoulderBackRight: { x: 91, y: 108 },
     },
     masks: {
@@ -82,7 +82,7 @@ export const HEAD_PROFILES: HeadProfileDefinition[] = [
       skullTop: { x: 60, y: 24 }, templeLeft: { x: 43, y: 42 }, templeRight: { x: 77, y: 42 },
       earLeft: { x: 39, y: 58 }, earRight: { x: 81, y: 58 }, jawLeft: { x: 48, y: 83 }, jawRight: { x: 72, y: 83 },
       chin: { x: 60, y: 96 }, neckLeft: { x: 55, y: 91 }, neckRight: { x: 65, y: 91 },
-      crownBack: { x: 67, y: 29 }, bunLow: { x: 71, y: 85 }, occipitalLeft: { x: 46, y: 61 }, occipitalRight: { x: 74, y: 61 },
+      crownBack: { x: 67, y: 29 }, bunLow: { x: 72, y: 88 }, occipitalLeft: { x: 46, y: 61 }, occipitalRight: { x: 74, y: 61 },
       nape: { x: 60, y: 102 }, shoulderBackLeft: { x: 31, y: 110 }, shoulderBackRight: { x: 89, y: 110 },
     },
     masks: {
@@ -157,12 +157,12 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
 
   // Local-space hair assets. (0,0) is the declared anchor from HeadProfile.
   { id:'layer.hair.girl-double-bun.back', slot:'back-hair', z:10, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'skullTop', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M-15 5 C-15 2 -13 -1 -10 -2 C-7 -3 -5 -1 -5 1 C-5 4 -7 6 -9 7 C-11 8 -14 7 -15 5Z', fill:'hair' },
-    { kind:'path', d:'M15 4 C15 1 13 -1 10 -2 C7 -2 5 0 5 2 C5 5 7 6 10 7 C12 7 15 6 15 4Z', fill:'hair' },
-    { kind:'path', d:'M-15 5 C-15 2 -13 -1 -10 -2 C-7 -3 -5 -1 -5 1 C-5 4 -7 6 -9 7', stroke:'ink', strokeWidth:.68 },
-    { kind:'path', d:'M15 4 C15 1 13 -1 10 -2 C7 -2 5 0 5 2 C5 5 7 6 10 7', stroke:'ink', strokeWidth:.64 },
-    { kind:'path', d:'M-11 6 C-10 9 -8 11 -5 13 C-8 13 -11 11 -12 8Z', fill:'hair' },
-    { kind:'path', d:'M11 6 C10 9 8 11 5 13 C8 13 11 11 12 8Z', fill:'hair' },
+    { kind:'path', d:'M-15 6 C-15 3 -13 1 -10 0 C-7 -1 -5 1 -5 3 C-5 5 -7 7 -9 8 C-11 9 -14 8 -15 6Z', fill:'hair' },
+    { kind:'path', d:'M15 5 C15 2 13 0 10 0 C7 0 5 2 5 4 C5 6 7 7 10 8 C12 8 15 7 15 5Z', fill:'hair' },
+    { kind:'path', d:'M-15 6 C-15 3 -13 1 -10 0 C-7 -1 -5 1 -5 3 C-5 5 -7 7 -9 8', stroke:'ink', strokeWidth:.64 },
+    { kind:'path', d:'M15 5 C15 2 13 0 10 0 C7 0 5 2 5 4 C5 6 7 7 10 8', stroke:'ink', strokeWidth:.6 },
+    { kind:'path', d:'M-11 7 C-10 9 -8 11 -5 13 C-8 13 -11 11 -12 9Z', fill:'hair' },
+    { kind:'path', d:'M11 7 C10 9 8 11 5 13 C8 13 11 11 12 9Z', fill:'hair' },
   ]},
   { id:'layer.hair.girl-double-bun.front', slot:'front-hair', z:70, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'skullTop', maskMode:'inside-skull', shapes:[
     { kind:'path', d:'M-20 21 Q-18 8 -7 3 Q-2 1 0 4 Q3 1 8 3 Q18 8 20 21 Q11 14 3 13 Q0 12 -3 13 Q-11 14 -20 21Z', fill:'hair' },
@@ -203,8 +203,8 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M8 -20 C12 -22 17 -21 20 -17 C22 -14 20 -11 17 -9 C14 -7 11 -7 8 -9 C7 -13 7 -17 8 -20Z', fill:'hair' },
   ]},
   { id:'layer.hair.adult-low-bun.bun', slot:'back-hair', z:12, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M-7 -4 C-2 -8 4 -8 9 -5 C13 -3 14 0 12 3 C10 6 7 8 3 8 C0 8 -3 7 -5 5 C-7 3 -8 -1 -7 -4Z', fill:'hair' },
-    { kind:'path', d:'M2 -7 C8 -8 13 -4 14 0 C14 4 10 8 4 9', stroke:'ink', strokeWidth:.72 },
+    { kind:'path', d:'M-7 -5 C-2 -9 5 -9 10 -6 C14 -4 15 0 13 4 C11 7 8 9 4 9 C0 9 -3 8 -5 6 C-7 4 -8 -1 -7 -5Z', fill:'hair' },
+    { kind:'path', d:'M2 -8 C9 -9 14 -5 15 0 C15 5 11 9 4 10', stroke:'ink', strokeWidth:.7 },
   ]},
   { id:'layer.hair.adult-low-bun.coil', slot:'back-hair', z:13, lods:[64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
     { kind:'path', d:'M6 -5 Q11 -4 12 -1', stroke:'hair-accent', strokeWidth:.38, opacity:.1 },
@@ -226,8 +226,8 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M8 -18 C12 -20 16 -19 18 -16 C20 -13 18 -10 15 -8 C12 -7 10 -7 8 -9 C7 -12 7 -16 8 -18Z', fill:'hair' },
   ]},
   { id:'layer.hair.elder-gray-bun.bun', slot:'back-hair', z:12, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M-6 -4 C-2 -7 3 -7 7 -5 C11 -3 12 0 10 3 C9 6 6 7 3 7 C0 7 -3 6 -4 4 C-6 2 -7 -1 -6 -4Z', fill:'hair' },
-    { kind:'path', d:'M2 -6 C7 -7 11 -4 12 0 C12 3 9 6 4 8', stroke:'ink', strokeWidth:.6 },
+    { kind:'path', d:'M-6 -5 C-2 -8 4 -8 8 -6 C12 -4 13 0 11 3 C10 6 7 8 3 8 C0 8 -3 7 -5 5 C-6 3 -7 -2 -6 -5Z', fill:'hair' },
+    { kind:'path', d:'M2 -7 C8 -8 12 -4 13 0 C13 4 10 7 4 9', stroke:'ink', strokeWidth:.58 },
   ]},
   { id:'layer.hair.elder-gray-bun.coil', slot:'back-hair', z:13, lods:[64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
     { kind:'path', d:'M5 -4 Q9 -4 10 -1', stroke:'hair-accent', strokeWidth:.3, opacity:.07 },
@@ -251,16 +251,16 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'line', x1:13, y1:7, x2:13, y2:10, stroke:'cord-red', strokeWidth:.9 },
   ]},
   { id:'layer.accessory.cloth-knot', slot:'accessory', z:80, lods:[64,96], coordinateSpace:'anchor-local', shapes:[
-    { kind:'path', d:'M-5 1 Q-2 -1 0 2 Q2 -1 5 1 L4 4 Q2 3 0 3 Q-2 3 -4 4Z', fill:'accent', stroke:'ink', strokeWidth:.45 },
-    { kind:'path', d:'M-1 3 L-3 7 M1 3 L3 6', stroke:'accent', strokeWidth:.7 },
+    { kind:'path', d:'M-4 1 Q0 -1 4 1 Q1 3 -4 2Z', fill:'accent', stroke:'ink', strokeWidth:.42 },
+    { kind:'path', d:'M1 2 Q3 4 4 7', stroke:'accent', strokeWidth:.7 },
   ]},
   { id:'layer.accessory.wood-pin', slot:'accessory', z:80, lods:[64,96], coordinateSpace:'anchor-local', maskMode:'outside-face', shapes:[
-    { kind:'line', x1:-2, y1:-3, x2:10, y2:2, stroke:'accessory-wood', strokeWidth:1.12 },
-    { kind:'circle', cx:10.7, cy:2.3, r:.8, fill:'accessory-wood' },
+    { kind:'line', x1:-1, y1:-2.5, x2:8, y2:1.2, stroke:'accessory-wood', strokeWidth:1.05 },
+    { kind:'circle', cx:8.6, cy:1.45, r:.72, fill:'accessory-wood' },
   ]},
   { id:'layer.accessory.jade-pin', slot:'accessory', z:80, lods:[64,96], coordinateSpace:'anchor-local', maskMode:'outside-face', shapes:[
-    { kind:'line', x1:-2, y1:-3, x2:10, y2:2, stroke:'accessory-jade', strokeWidth:1.08 },
-    { kind:'circle', cx:11, cy:2.4, r:1.35, fill:'accessory-jade', stroke:'ink', strokeWidth:.35 },
+    { kind:'line', x1:-1, y1:-2.5, x2:8, y2:1.2, stroke:'accessory-jade', strokeWidth:1.02 },
+    { kind:'circle', cx:8.8, cy:1.5, r:1.05, fill:'accessory-jade', stroke:'ink', strokeWidth:.3 },
   ]},
 ];
 
@@ -346,8 +346,8 @@ export const ACCESSORIES: AccessoryAsset[] = [
     layerAssetId:'layer.accessory.wood-pin',
     placementByHairBundle:{
       'hair.female.young-halfbound-backfall.v1':{anchor:'crownBack',transform:{translateX:1,translateY:2}},
-      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:6,translateY:-3}},
-      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:5,translateY:-3}},
+      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:5,translateY:-4}},
+      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:4,translateY:-4}},
     },
     baseWeight:2,
   },
@@ -357,8 +357,8 @@ export const ACCESSORIES: AccessoryAsset[] = [
     compatibleHairBundles:['hair.female.adult-low-bun.v1','hair.female.elder-gray-low-bun.v1'],
     layerAssetId:'layer.accessory.jade-pin',
     placementByHairBundle:{
-      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:6,translateY:-3}},
-      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:5,translateY:-3}},
+      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:5,translateY:-4}},
+      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:4,translateY:-4}},
     },
     baseWeight:1,
   },
