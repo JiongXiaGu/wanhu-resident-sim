@@ -100,7 +100,7 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
   {
     id:'stage.female.child.v1',
     lifeStages:['child','teen'],
-    viewBox:{x:3,y:10,width:110,height:110},
+    viewBox:{x:5,y:12,width:104,height:104},
     layerAssetIds:['layer.body.child','layer.neck.child','layer.stage-face.child'],
     backgroundColor:'#d7bf88',
     clothByWealth:{poor:'#7a6857',plain:'#748391',comfortable:'#60756b',wealthy:'#73585d'},
@@ -109,19 +109,20 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
       'layer.feature.soft-a.eyes.child':{translateY:-1,scaleX:1.06,scaleY:1.08,originX:60,originY:49},
       'layer.feature.soft-a.brows.child':{translateY:-1,scaleX:1.04,originX:60,originY:45},
       'layer.feature.soft-a.96-detail':{translateY:-1,scaleX:1.06,scaleY:1.08,originX:60,originY:49},
-      'layer.feature.soft-a.nose':{translateY:-1,scaleY:.78,originX:60,originY:54},
+      'layer.feature.soft-a.nose.child':{translateY:-1,scaleY:.92,originX:60,originY:54},
       'layer.feature.soft-a.mouth.child':{translateY:-1,scaleX:.92,originX:60,originY:74},
     },
     featureAssetOverrides:{
       'layer.feature.soft-a.eyes':'layer.feature.soft-a.eyes.child',
       'layer.feature.soft-a.brows':'layer.feature.soft-a.brows.child',
+      'layer.feature.soft-a.nose':'layer.feature.soft-a.nose.child',
       'layer.feature.soft-a.mouth':'layer.feature.soft-a.mouth.child',
     },
   },
   {
     id:'stage.female.youth.v1',
     lifeStages:['young-adult'],
-    viewBox:{x:-2,y:11,width:118,height:118},
+    viewBox:{x:-2,y:10,width:122,height:124},
     layerAssetIds:['layer.body.youth','layer.neck.youth'],
     backgroundColor:'#cdb17a',
     clothByWealth:{poor:'#75604f',plain:'#5f7880',comfortable:'#536f65',wealthy:'#70565c'},
@@ -147,7 +148,7 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
   {
     id:'stage.female.middle.v1',
     lifeStages:['middle-age'],
-    viewBox:{x:4,y:16,width:118,height:119},
+    viewBox:{x:4,y:17,width:116,height:116},
     layerAssetIds:['layer.body.middle','layer.neck.middle','layer.stage-face.middle'],
     backgroundColor:'#bea26f',
     clothByWealth:{poor:'#706153',plain:'#66706f',comfortable:'#59695d',wealthy:'#695455'},
@@ -167,7 +168,7 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
   {
     id:'stage.female.elder.v1',
     lifeStages:['elder'],
-    viewBox:{x:6,y:18,width:112,height:116},
+    viewBox:{x:7,y:20,width:108,height:112},
     layerAssetIds:['layer.body.elder','layer.neck.elder','layer.stage-face.elder'],
     backgroundColor:'#b9aa83',
     clothByWealth:{poor:'#756a5f',plain:'#6f7370',comfortable:'#626b61',wealthy:'#66585a'},
@@ -176,12 +177,13 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
       'layer.feature.soft-a.eyes.elder':{translateY:1.5,scaleX:.96,scaleY:.9,originX:60,originY:51},
       'layer.feature.soft-a.brows.elder':{translateY:1.2,scaleX:.95,originX:60,originY:46},
       'layer.feature.soft-a.96-detail':{translateY:1.5,scaleX:.96,scaleY:.9,originX:60,originY:51},
-      'layer.feature.soft-a.nose':{translateY:.5,scaleY:1.12,originX:60,originY:54},
+      'layer.feature.soft-a.nose.elder':{translateY:.2,scaleY:1.04,originX:60,originY:54},
       'layer.feature.soft-a.mouth.elder':{translateY:1.5,scaleX:.94,originX:60,originY:76},
     },
     featureAssetOverrides:{
       'layer.feature.soft-a.eyes':'layer.feature.soft-a.eyes.elder',
       'layer.feature.soft-a.brows':'layer.feature.soft-a.brows.elder',
+      'layer.feature.soft-a.nose':'layer.feature.soft-a.nose.elder',
       'layer.feature.soft-a.mouth':'layer.feature.soft-a.mouth.elder',
     },
   },
@@ -220,8 +222,8 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M65 45 Q70 43 74 45', stroke:'ink', strokeWidth:1.9 },
   ]},
   { id:'layer.feature.soft-a.brows.child', slot:'face-detail', z:49, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M47 45 Q50 44 54 45', stroke:'ink', strokeWidth:1.45 },
-    { kind:'path', d:'M66 45 Q70 44 73 45', stroke:'ink', strokeWidth:1.45 },
+    { kind:'path', d:'M47.5 45 Q50.5 44.2 54 45', stroke:'ink', strokeWidth:1.22 },
+    { kind:'path', d:'M66 45 Q69.5 44.2 72.5 45', stroke:'ink', strokeWidth:1.22 },
   ]},
   { id:'layer.feature.soft-a.brows.youth', slot:'face-detail', z:49, lods:[48,64,96], shapes:[
     { kind:'path', d:'M46 44.5 Q50 42.7 55 44.5', stroke:'ink', strokeWidth:1.7 },
@@ -237,6 +239,12 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
   ]},
   { id:'layer.feature.soft-a.nose', slot:'face-detail', z:51, lods:[48,64,96], shapes:[
     { kind:'path', d:'M59 54 Q58 63 60 66 Q62 67 65 65', stroke:'ink', strokeWidth:1.1 },
+  ]},
+  { id:'layer.feature.soft-a.nose.child', slot:'face-detail', z:51, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M59.5 55 Q59 60 60.5 62 Q62 63 64 61.5', stroke:'ink', strokeWidth:1 },
+  ]},
+  { id:'layer.feature.soft-a.nose.elder', slot:'face-detail', z:51, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M59 54 Q58 65 60 68 Q63 69 66 66', stroke:'ink', strokeWidth:1.05 },
   ]},
   { id:'layer.feature.soft-a.mouth', slot:'face-detail', z:52, lods:[48,64,96], shapes:[
     { kind:'path', d:'M54 74 Q60 77 66 74', stroke:'ink', strokeWidth:1.35 },
