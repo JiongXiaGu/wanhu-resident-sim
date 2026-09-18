@@ -418,8 +418,8 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M5 -13 C8 -15 11 -14 13 -12 C14 -10 13 -8 11 -7 C8 -6 6 -7 5 -8 C4 -10 4 -12 5 -13Z', fill:'hair' },
   ]},
   { id:'layer.hair.adult-low-bun.bun', slot:'back-hair', z:12, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M-8 -3 C-3 -7 5 -8 11 -5 C15 -3 17 0 16 3 C15 6 10 8 4 8 C-1 8 -6 6 -8 3 C-9 1 -9 -1 -8 -3Z', fill:'hair' },
-    { kind:'path', d:'M4 -6 C10 -6 15 -3 16 1 C16 5 12 7 7 8', stroke:'ink', strokeWidth:.58 },
+    { kind:'path', d:'M-12 -1 C-9 -4 -6 -5 -3 -5 C2 -8 8 -7 12 -4 C16 -1 16 3 13 5 C9 8 3 8 -2 6 C-6 5 -9 3 -12 2Z', fill:'hair' },
+    { kind:'path', d:'M3 -6 C9 -6 14 -3 15 1 C15 4 12 6 8 7', stroke:'ink', strokeWidth:.56 },
   ]},
   { id:'layer.hair.adult-low-bun.coil', slot:'back-hair', z:13, lods:[64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
     { kind:'path', d:'M6 -4 Q11 -3 12 0', stroke:'hair-accent', strokeWidth:.32, opacity:.09 },
@@ -442,8 +442,8 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M5 -12 C8 -14 10 -13 12 -11 C13 -9 12 -8 10 -7 C8 -6 6 -7 5 -8 C4 -9 4 -11 5 -12Z', fill:'hair' },
   ]},
   { id:'layer.hair.elder-gray-bun.bun', slot:'back-hair', z:12, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M-7 -3 C-3 -6 3 -7 8 -5 C12 -3 14 0 13 3 C12 5 8 7 3 7 C-1 7 -5 5 -7 3 C-8 1 -8 -1 -7 -3Z', fill:'hair' },
-    { kind:'path', d:'M4 -5 C8 -5 12 -3 13 0 C14 3 10 6 6 7', stroke:'ink', strokeWidth:.42, opacity:.52 },
+    { kind:'path', d:'M-10 -1 C-7 -3 -5 -4 -2 -4 C2 -6 7 -6 10 -3 C13 -1 13 3 11 5 C7 7 2 7 -2 5 C-5 4 -8 2 -10 1Z', fill:'hair' },
+    { kind:'path', d:'M3 -5 C8 -5 12 -3 12 1 C12 4 9 6 6 6.5', stroke:'ink', strokeWidth:.4, opacity:.5 },
   ]},
   { id:'layer.hair.elder-gray-bun.coil', slot:'back-hair', z:13, lods:[64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
     { kind:'path', d:'M5 -4 Q9 -3 10 0', stroke:'hair-accent', strokeWidth:.26, opacity:.07 },
@@ -471,12 +471,12 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M1 3 Q2 5 3 7', stroke:'accessory-cloth', strokeWidth:.65 },
   ]},
   { id:'layer.accessory.wood-pin', slot:'accessory', z:80, lods:[64,96], coordinateSpace:'anchor-local', maskMode:'outside-face', shapes:[
-    { kind:'line', x1:-4, y1:-1, x2:5, y2:2, stroke:'accessory-wood', strokeWidth:1.02 },
-    { kind:'circle', cx:5.6, cy:2.2, r:.7, fill:'accessory-wood' },
+    { kind:'line', x1:-4, y1:-1, x2:4.5, y2:1.5, stroke:'accessory-wood', strokeWidth:1.02 },
+    { kind:'line', x1:4.5, y1:1.5, x2:6, y2:.7, stroke:'accessory-wood', strokeWidth:.88 },
   ]},
   { id:'layer.accessory.jade-pin', slot:'accessory', z:80, lods:[64,96], coordinateSpace:'anchor-local', maskMode:'outside-face', shapes:[
-    { kind:'line', x1:-4, y1:-1, x2:4.8, y2:1.9, stroke:'accessory-jade', strokeWidth:1 },
-    { kind:'path', d:'M4.8 1.9 L6.3 1.2 L7 2.5 L5.5 3.2Z', fill:'accessory-jade', stroke:'ink', strokeWidth:.25 },
+    { kind:'line', x1:-4, y1:-1, x2:4.5, y2:1.5, stroke:'accessory-jade', strokeWidth:1 },
+    { kind:'line', x1:4.2, y1:.55, x2:5.8, y2:2.35, stroke:'accessory-jade', strokeWidth:1.05 },
   ]},
 ];
 
