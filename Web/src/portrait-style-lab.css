@@ -1,0 +1,293 @@
+.portrait-style-lab {
+  min-height: 100vh;
+  padding: 34px 36px 72px;
+  color: #ece5d4;
+  background: linear-gradient(180deg, rgba(19, 26, 23, .97), rgba(13, 17, 15, .99)), #111714;
+}
+
+.portrait-style-lab__header {
+  width: min(1580px, 100%);
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.portrait-style-lab__header h1 {
+  margin: 7px 0 9px;
+  font-size: clamp(28px, 3vw, 46px);
+  font-weight: 720;
+  letter-spacing: -.03em;
+}
+
+.portrait-style-lab__header p {
+  max-width: 820px;
+  margin: 0;
+  color: rgba(229, 220, 198, .66);
+  line-height: 1.7;
+}
+
+.portrait-style-lab__header nav {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.portrait-style-lab__header a {
+  min-height: 36px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(210, 190, 144, .24);
+  border-radius: 10px;
+  color: #e9dec1;
+  background: rgba(255,255,255,.035);
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.portrait-style-lab__eyebrow {
+  color: #b8a982;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .14em;
+}
+
+.portrait-style-lab__rules {
+  width: min(1580px, 100%);
+  margin: 0 auto 18px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.portrait-style-lab__rules span {
+  padding: 6px 10px;
+  border: 1px solid rgba(180, 166, 126, .16);
+  border-radius: 999px;
+  color: rgba(226, 216, 190, .68);
+  background: rgba(255,255,255,.025);
+  font-size: 11px;
+}
+
+.portrait-style-lab__style-headings,
+.portrait-style-row {
+  min-width: 1210px;
+  display: grid;
+  grid-template-columns: 190px repeat(4, minmax(225px, 1fr));
+  gap: 12px;
+}
+
+.portrait-style-lab__style-headings {
+  width: min(1580px, 100%);
+  margin: 0 auto 12px;
+}
+
+.portrait-style-lab__identity-heading,
+.portrait-style-lab__style-headings button {
+  min-height: 118px;
+  padding: 15px;
+  border: 1px solid rgba(211, 192, 149, .13);
+  border-radius: 15px;
+  background: rgba(255,255,255,.025);
+  color: inherit;
+  text-align: left;
+}
+
+.portrait-style-lab__identity-heading {
+  display: grid;
+  align-content: center;
+  gap: 5px;
+}
+
+.portrait-style-lab__identity-heading small {
+  color: rgba(226, 216, 190, .48);
+}
+
+.portrait-style-lab__style-headings button {
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, transform .15s ease;
+}
+
+.portrait-style-lab__style-headings button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(213, 189, 129, .32);
+}
+
+.portrait-style-lab__style-headings button.is-candidate {
+  border-color: rgba(220, 191, 118, .6);
+  background: rgba(181, 143, 69, .1);
+}
+
+.portrait-style-lab__style-headings button b,
+.portrait-style-lab__style-headings button span,
+.portrait-style-lab__style-headings button i {
+  display: block;
+}
+
+.portrait-style-lab__style-headings button b {
+  margin-bottom: 7px;
+  font-size: 14px;
+}
+
+.portrait-style-lab__style-headings button span {
+  min-height: 34px;
+  color: rgba(226, 216, 190, .55);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.portrait-style-lab__style-headings button i {
+  margin-top: 8px;
+  color: rgba(214, 190, 132, .74);
+  font-size: 10px;
+  font-style: normal;
+}
+
+.portrait-style-lab__matrix {
+  width: min(1580px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 18px;
+}
+
+.portrait-style-row {
+  padding: 12px;
+  border: 1px solid rgba(211, 192, 149, .11);
+  border-radius: 18px;
+  background: rgba(255,255,255,.018);
+}
+
+.portrait-style-row__identity {
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.portrait-style-row__identity strong {
+  font-size: 19px;
+}
+
+.portrait-style-row__identity > span {
+  margin-top: 5px;
+  color: rgba(229, 220, 198, .65);
+  font-size: 12px;
+}
+
+.portrait-style-row__identity > small {
+  width: fit-content;
+  margin-top: 9px;
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: rgba(220, 192, 124, .09);
+  color: #cbb888;
+  font-size: 10px;
+}
+
+.portrait-style-row__identity dl {
+  margin: 16px 0 0;
+  display: grid;
+  gap: 5px;
+}
+
+.portrait-style-row__identity dl div {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 6px;
+  color: rgba(227, 217, 191, .42);
+  font-size: 9px;
+}
+
+.portrait-style-row__identity dt,
+.portrait-style-row__identity dd {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.portrait-style-card {
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.16);
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.portrait-style-card.is-dimmed {
+  opacity: .34;
+}
+
+.portrait-style-card__hero {
+  width: min(100%, 220px);
+  margin: 0 auto;
+}
+
+.portrait-style-portrait {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #334039;
+}
+
+.portrait-style-portrait svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.portrait-style-portrait--paper-cut { box-shadow: inset 0 0 0 1px rgba(226, 211, 170, .08); }
+.portrait-style-portrait--ink-flat { box-shadow: inset 0 0 0 1px rgba(74, 57, 45, .16); }
+.portrait-style-portrait--woodblock { box-shadow: inset 0 0 0 2px rgba(53, 42, 32, .28); }
+.portrait-style-portrait--painterly { box-shadow: inset 0 0 0 1px rgba(235, 222, 190, .07); }
+
+.portrait-style-card__sizes {
+  margin-top: 10px;
+  min-height: 104px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 9px;
+}
+
+.portrait-style-card__sizes > div {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+}
+
+.portrait-style-card__sizes > div:nth-child(1) .portrait-style-portrait { width: 96px; }
+.portrait-style-card__sizes > div:nth-child(2) .portrait-style-portrait { width: 64px; }
+.portrait-style-card__sizes > div:nth-child(3) .portrait-style-portrait { width: 48px; }
+
+.portrait-style-card__sizes span {
+  color: rgba(226, 216, 190, .45);
+  font-size: 9px;
+}
+
+.portrait-style-lab__footer {
+  width: min(1100px, 100%);
+  margin: 28px auto 0;
+  padding: 20px 22px;
+  border: 1px solid rgba(211, 192, 149, .12);
+  border-radius: 16px;
+  background: rgba(255,255,255,.02);
+}
+
+.portrait-style-lab__footer p {
+  margin: 7px 0 0;
+  color: rgba(229, 220, 198, .62);
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  .portrait-style-lab { padding: 22px 14px 56px; }
+  .portrait-style-lab__header { display: grid; }
+  .portrait-style-lab__header nav { justify-content: flex-start; }
+}
