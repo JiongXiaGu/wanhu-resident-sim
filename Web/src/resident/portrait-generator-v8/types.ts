@@ -101,6 +101,7 @@ export type PaletteToken =
   | 'cord-red'
   | 'accessory-wood'
   | 'accessory-jade'
+  | 'accessory-cloth'
   | 'cloth'
   | 'accent'
   | 'ink'

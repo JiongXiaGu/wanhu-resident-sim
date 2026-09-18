@@ -34,7 +34,7 @@ const hairColors: Record<string,string> = {
   'hair.dark-brown-black':'#352b25',
   'hair.soft-black':'#40352f',
   'hair-state.salt-pepper':'#625b54',
-  'hair-state.gray':'#948d84',
+  'hair-state.gray':'#7f7871',
 };
 
 const clothByWealth = {
@@ -211,10 +211,11 @@ export function buildRenderPlan(
     background: stageProfile.backgroundColor ?? backgroundByStage[context.lifeStage] ?? '#c8aa70',
     skin: skinColors[dna.identity.skinPaletteId] ?? '#c68b69',
     hair: hairColors[dna.presentation.hairColorStateId] ?? hairColors[dna.identity.baseHairColorId] ?? '#29231f',
-    'hair-accent': dna.presentation.hairColorStateId === 'hair-state.gray' ? '#c9c2b9' : dna.presentation.hairColorStateId === 'hair-state.salt-pepper' ? '#8e867d' : '#5b4c43',
+    'hair-accent': dna.presentation.hairColorStateId === 'hair-state.gray' ? '#b9b2aa' : dna.presentation.hairColorStateId === 'hair-state.salt-pepper' ? '#8e867d' : '#5b4c43',
     'cord-red': '#9b493d',
     'accessory-wood': '#74513a',
     'accessory-jade': '#829b83',
+    'accessory-cloth': '#7e5046',
     cloth: stageProfile.clothByWealth?.[context.wealthTier] ?? clothByWealth[context.wealthTier],
     accent: context.wealthTier === 'wealthy' ? '#d4bd7d' : context.wealthTier === 'comfortable' ? '#b9aa83' : '#9e9176',
     ink: '#271f1a',
