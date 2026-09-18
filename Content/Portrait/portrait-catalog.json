@@ -1,0 +1,223 @@
+{
+  "schema": "wanhu.portrait-catalog.v1",
+  "faceFamilies": [
+    {
+      "id": "face.soft-oval",
+      "genders": [
+        "female"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "face.round-soft",
+      "genders": [
+        "female"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "face.long-narrow",
+      "genders": [
+        "female"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "face.broad-cheek",
+      "genders": [
+        "female"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "face.square-soft",
+      "genders": [
+        "female"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "face.narrow-chin",
+      "genders": [
+        "female"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "face.male-oval",
+      "genders": [
+        "male"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "face.male-round",
+      "genders": [
+        "male"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "face.male-square",
+      "genders": [
+        "male"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "face.male-long",
+      "genders": [
+        "male"
+      ],
+      "weight": 1
+    }
+  ],
+  "hairStyles": [
+    {
+      "id": "hair.child.double-bun",
+      "genders": [
+        "female"
+      ],
+      "lifeStages": [
+        "child",
+        "teen"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "hair.youth.halfbound",
+      "genders": [
+        "female"
+      ],
+      "lifeStages": [
+        "young-adult"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "hair.adult.low-bun",
+      "genders": [
+        "female"
+      ],
+      "lifeStages": [
+        "adult",
+        "middle-age"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "hair.elder.low-bun",
+      "genders": [
+        "female"
+      ],
+      "lifeStages": [
+        "elder"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "hair.male.child-tied",
+      "genders": [
+        "male"
+      ],
+      "lifeStages": [
+        "child",
+        "teen"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "hair.male.youth-tied",
+      "genders": [
+        "male"
+      ],
+      "lifeStages": [
+        "young-adult"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "hair.male.adult-tied",
+      "genders": [
+        "male"
+      ],
+      "lifeStages": [
+        "adult",
+        "middle-age"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "hair.male.elder-tied",
+      "genders": [
+        "male"
+      ],
+      "lifeStages": [
+        "elder"
+      ],
+      "weight": 1
+    }
+  ],
+  "outfitStyles": [
+    {
+      "id": "outfit.poor.v2",
+      "wealthTiers": [
+        "poor"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "outfit.plain.v2",
+      "wealthTiers": [
+        "plain"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "outfit.comfortable.v2",
+      "wealthTiers": [
+        "comfortable"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "outfit.wealthy.v2",
+      "wealthTiers": [
+        "wealthy"
+      ],
+      "weight": 1
+    }
+  ],
+  "skinPalettes": [
+    {
+      "id": "skin.warm-light",
+      "weight": 3
+    },
+    {
+      "id": "skin.warm-medium",
+      "weight": 5
+    },
+    {
+      "id": "skin.warm-deep",
+      "weight": 4
+    },
+    {
+      "id": "skin.brown-deep",
+      "weight": 2
+    }
+  ],
+  "hairPalettes": [
+    {
+      "id": "hair.black",
+      "weight": 6
+    },
+    {
+      "id": "hair.dark-brown-black",
+      "weight": 4
+    },
+    {
+      "id": "hair.soft-black",
+      "weight": 3
+    }
+  ]
+}
