@@ -4,56 +4,54 @@ const C={paper:'#f1ebdf',ink:'#3b3733',skin:'#d6a17e',skinM:'#c98d69',hair:'#2c2
 
 type FaceKind='woman'|'man'|'elder'|'princess'|'emperor';
 const facePath:Record<FaceKind,string>={
-  woman:'M120 63C95 63 80 84 81 121c1 38 14 62 39 69 24-7 38-31 39-69 1-37-14-58-39-58Z',
-  man:'M120 61C90 61 74 84 76 122c2 39 17 64 44 71 28-7 44-32 46-71 2-38-16-61-46-61Z',
-  elder:'M120 60C94 60 79 82 80 122c1 43 15 69 40 77 24-8 39-34 40-77 1-40-14-62-40-62Z',
-  princess:'M120 64C97 64 83 85 83 121c0 38 14 60 37 66 23-6 37-28 37-66 0-36-14-57-37-57Z',
-  emperor:'M120 61C89 61 73 84 75 122c2 40 18 66 45 72 29-6 45-32 47-72 2-38-16-61-47-61Z',
+  woman:'M120 68C98 68 84 84 82 110c-2 22 5 46 19 64 7 9 13 14 19 17 7-3 14-8 21-17 13-18 20-42 18-64-2-26-16-42-39-42Z',
+  man:'M120 66C94 66 78 84 78 112c0 24 7 46 21 63l11 9q10 7 20 0l11-9c14-17 21-39 21-63 0-28-16-46-42-46Z',
+  elder:'M120 66C96 66 81 83 80 111c-1 27 6 51 19 70 7 10 14 16 21 19 7-3 14-9 21-19 13-19 20-43 19-70-1-28-16-45-40-45Z',
+  princess:'M120 70C100 70 87 85 85 109c-2 21 4 43 17 60 6 8 12 13 18 16 6-3 12-8 18-16 13-17 19-39 17-60-2-24-15-39-35-39Z',
+  emperor:'M120 66C93 66 77 84 77 112c0 25 7 48 22 65l12 9q9 7 19 0l12-9c15-17 22-40 22-65 0-28-16-46-44-46Z',
 };
 function Features({kind}:{kind:FaceKind}) {
   const male=kind==='man'||kind==='emperor';
   const elder=kind==='elder';
   const royal=kind==='princess'||kind==='emperor';
-  const ly=kind==='elder'?119:116;
   return <g fill="none" strokeLinecap="round">
-    <path d={male?'M89 106q10-5 21-1m20 0q11-4 21 1':'M92 106q9-4 18-1m20 0q9-3 18 1'} stroke={C.ink} strokeWidth={male?1.65:1.3}/>
-    <path d={elder?'M92 119q9-3 18 0m20 0q9-3 18 0':'M92 116q9-6 18 0m20 0q9-6 18 0'} stroke={C.ink} strokeWidth="1.15"/>
-    <path d="M94 120q7 2 14 0m24 0q7 2 14 0" stroke="#7b6b63" strokeWidth=".58" opacity=".55"/>
-    <circle cx="101" cy={ly-1} r={royal?2.35:1.95} fill={C.ink} stroke="none"/><circle cx="139" cy={ly-1} r={royal?2.35:1.95} fill={C.ink} stroke="none"/>
-    <path d={male?'M119 123q-1 10 4 15 4 1 9-3':'M119 122q-2 10 3 15 3 1 8-3'} stroke="#805b49" strokeWidth="1.1"/>
-    <path d={royal?'M108 157q12 6 24 0':'M108 158q12 4 24 0'} stroke={royal?'#925b59':'#805653'} strokeWidth="1.28"/>
-    {elder&&<path d="M87 136q10 4 19 2m28 0q10 2 19-2M92 150l-9 3m66-3 8 3" stroke="#9b725d" strokeWidth=".72" opacity=".68"/>}
+    <path d={male?'M89 105q10-4 21 0m20 0q11-4 21 0':'M92 105q9-4 18 0m20 0q9-4 18 0'} stroke={C.ink} strokeWidth={male?1.6:1.25}/>
+    <path d={elder?'M92 116q9-3 18 0m20 0q9-3 18 0':'M92 115q9-5 18 0m20 0q9-5 18 0'} stroke={C.ink} strokeWidth="1.1"/>
+    <path d="M94 118q7 2 14 0m24 0q7 2 14 0" stroke="#7b6b63" strokeWidth=".55" opacity=".52"/>
+    <circle cx="101" cy="116" r={royal?2.3:1.9} fill={C.ink} stroke="none"/><circle cx="139" cy="116" r={royal?2.3:1.9} fill={C.ink} stroke="none"/>
+    <path d={male?'M119 121q0 10 5 14 4 1 8-3':'M119 121q-1 10 3 14 4 1 8-3'} stroke="#805b49" strokeWidth="1.05"/>
+    <path d={royal?'M108 154q12 6 24 0':'M108 155q12 4 24 0'} stroke={royal?'#925b59':'#805653'} strokeWidth="1.25"/>
+    {elder&&<path d="M88 132q9 4 18 2m29 0q9 2 18-2M93 145l-8 3m64-3 8 3" stroke="#9b725d" strokeWidth=".7" opacity=".65"/>}
   </g>;
 }
 function Face({kind}:{kind:FaceKind}) {
   const male=kind==='man'||kind==='emperor';
-  return <g><path d={facePath[kind]} fill={kind==='elder'?'#c49575':male?C.skinM:C.skin} stroke={C.ink} strokeWidth="1.4"/><Features kind={kind}/></g>;
+  return <g><path d={facePath[kind]} fill={kind==='elder'?'#c49575':male?C.skinM:C.skin} stroke={C.ink} strokeWidth="1.35"/><Features kind={kind}/></g>;
 }
-function WomanHair({royal=false}:{royal?:boolean}){return <g fill={C.hair}>
-  <path d="M75 125q0-68 45-68 47 0 47 70l-14-41q-16-17-34-17-22 0-36 21Z"/>
-  <path d="M77 88q-10 43-3 87l15 18-1-80Zm85 0q10 43 3 87l-15 18 1-80Z"/>
-  {royal?<><ellipse cx="76" cy="58" rx="17" ry="19"/><ellipse cx="166" cy="60" rx="15" ry="18"/></>:<ellipse cx="71" cy="94" rx="11" ry="14"/>}
-  <path d="M84 82q15-19 35-27m42 28q-13-18-32-27" fill="none" stroke="#5d534d" strokeWidth="1.1" opacity=".5"/>
+function WomanHair({royal=false}:{royal?:boolean}){return <g>
+  <path d="M72 129q-4-77 48-77 54 0 49 80l-7 48-18 20H96l-20-20Z" fill={C.hair}/>
+  <path d="M81 98c8-25 22-37 39-37 19 0 33 13 41 38-15-5-28-14-41-26-10 12-23 21-39 25Z" fill={C.hair}/>
+  <path d="M77 101q-8 42-2 78l15 15-1-75m73-18q8 42 2 78l-15 15 1-75" fill="none" stroke="#5a514b" strokeWidth="1.1" opacity=".42"/>
+  {royal?<><ellipse cx="76" cy="59" rx="17" ry="19" fill={C.hair}/><ellipse cx="166" cy="61" rx="15" ry="18" fill={C.hair}/></>:<ellipse cx="70" cy="96" rx="11" ry="14" fill={C.hair}/>}
 </g>}
-function ManHair({elder=false}:{elder?:boolean}){const h=elder?C.gray:C.hair;return <g fill={h}>
-  <path d="M74 123q2-64 46-64 46 0 48 67l-14-39q-16-16-35-16-21 0-35 20Z"/>
-  <path d="M104 61q16-20 32 0l-3 17h-32Z"/>
-  {elder&&<path d="M85 87q17-15 34-21m35 21q-13-14-29-21" fill="none" stroke="#aaa39c" strokeWidth="1.1" opacity=".72"/>}
+function ManHair({elder=false}:{elder?:boolean}){const h=elder?C.gray:C.hair;return <g>
+  <path d="M75 127q-1-70 45-70 48 0 48 72l-5 35-18 24H96l-17-24Z" fill={h}/>
+  <path d="M82 98c9-23 22-35 39-35 18 0 31 12 39 35-14-5-27-13-39-24-11 11-24 19-39 24Z" fill={h}/>
+  <path d="M104 60q16-20 32 0l-3 17h-32Z" fill={h}/>
+  {elder&&<path d="M88 88q16-14 31-19m34 19q-13-13-28-19" fill="none" stroke="#aaa39c" strokeWidth="1" opacity=".7"/>}
 </g>}
-function Neck({male=false}:{male?:boolean}){return <path d={male?'M101 184q2 15-8 25 27 16 54 0-11-10-8-25Z':'M103 183q2 15-8 25 25 15 50 0-10-10-7-25Z'} fill={male?'#c6906f':'#cf9b78'}/>}
-function VCollar({left='#ddd1bb',right='#cbbfaa',stroke=true}:{left?:string;right?:string;stroke?:boolean}){return <g stroke={stroke?C.ink:'none'} strokeWidth="1">
-  <path d="M88 204 120 224 106 239 72 215Z" fill={left}/><path d="M152 204 120 224 135 239 168 215Z" fill={right}/>
-</g>}
-function RobeBase({fill,wider=false}:{fill:string;wider?:boolean}){return <path d={wider?'M39 300q6-61 49-100l32 21 33-21q43 39 49 100Z':'M49 300q5-58 42-96l29 18 30-18q37 37 42 96Z'} fill={fill} stroke={C.ink} strokeWidth="1.5"/>}
-function CommonWomanRobe(){return <g><RobeBase fill={C.jade}/><VCollar/><path d="M82 260q38 9 78 0" fill="none" stroke="#8fa39d" strokeWidth="1.3" opacity=".65"/></g>}
-function CommonManRobe(){return <g><RobeBase fill={C.blue}/><path d="M88 204 128 229 113 245 68 215Z" fill={C.cream} stroke={C.ink} strokeWidth="1"/><path d="M151 204 124 224 137 238 170 215Z" fill="#c8bca6" stroke={C.ink} strokeWidth="1"/></g>}
-function ElderRobe(){return <g><RobeBase fill="#746f68"/><VCollar left="#d7ccb7" right="#c6baa5"/><path d="M76 272q44 8 88 0" fill="none" stroke="#979087" strokeWidth="1.1"/></g>}
-function PrincessRobe(){return <g><RobeBase fill={C.wine} wider/><VCollar left="#e1d4bd" right="#d1c3ac"/><path d="M68 254q52 18 104 0M77 275q43 12 86 0" fill="none" stroke={C.gold} strokeWidth="2"/><path d="M106 262q14-15 28 0" fill="none" stroke={C.gold} strokeWidth="1.5"/></g>}
-function EmperorRobe(){return <g><RobeBase fill={C.red} wider/><VCollar left="#ded2bb" right="#cdbfa8"/><circle cx="120" cy="264" r="19" fill="none" stroke={C.gold} strokeWidth="2.1"/><path d="M108 266q12-18 24 0m-27-6q15-7 30 0" fill="none" stroke={C.gold} strokeWidth="1.6"/></g>}
+function Neck({male=false}:{male?:boolean}){return <path d={male?'M103 179q1 15-8 25 25 15 50 0-10-10-8-25Z':'M104 178q1 15-8 25 24 14 48 0-9-10-7-25Z'} fill={male?'#c6906f':'#cf9b78'}/>}
+function VCollar(){return <g stroke={C.ink} strokeWidth=".95"><path d="M96 203 120 218 109 231 82 211Z" fill={C.cream}/><path d="M144 203 120 218 132 231 158 211Z" fill="#cbbfa9"/></g>}
+function RobeBase({fill,wider=false}:{fill:string;wider?:boolean}){return <path d={wider?'M43 300q6-60 46-96l31 17 32-17q40 36 46 96Z':'M51 300q5-56 40-92l29 15 30-15q35 36 40 92Z'} fill={fill} stroke={C.ink} strokeWidth="1.45"/>}
+function CommonWomanRobe(){return <g><RobeBase fill={C.jade}/><VCollar/><path d="M82 260q38 9 78 0" fill="none" stroke="#8fa39d" strokeWidth="1.25" opacity=".62"/></g>}
+function CommonManRobe(){return <g><RobeBase fill={C.blue}/><path d="M94 203 128 223 115 237 80 211Z" fill={C.cream} stroke={C.ink} strokeWidth=".95"/><path d="M145 203 124 218 135 230 157 211Z" fill="#c8bca6" stroke={C.ink} strokeWidth=".95"/></g>}
+function ElderRobe(){return <g><RobeBase fill="#746f68"/><VCollar/><path d="M77 272q43 8 87 0" fill="none" stroke="#979087" strokeWidth="1"/></g>}
+function PrincessRobe(){return <g><RobeBase fill={C.wine} wider/><VCollar/><path d="M69 255q51 17 102 0M78 275q42 11 84 0" fill="none" stroke={C.gold} strokeWidth="1.9"/><path d="M108 262q12-13 24 0" fill="none" stroke={C.gold} strokeWidth="1.45"/></g>}
+function EmperorRobe(){return <g><RobeBase fill={C.red} wider/><VCollar/><circle cx="120" cy="264" r="18" fill="none" stroke={C.gold} strokeWidth="2"/><path d="M109 266q11-16 22 0m-25-6q14-6 28 0" fill="none" stroke={C.gold} strokeWidth="1.5"/></g>}
 function CommonWoman(){return <svg viewBox="0 0 240 300"><rect width="240" height="300" fill={C.paper}/><WomanHair/><Face kind="woman"/><Neck/><CommonWomanRobe/></svg>}
 function CommonMan(){return <svg viewBox="0 0 240 300"><rect width="240" height="300" fill="#ede6d8"/><ManHair/><Face kind="man"/><Neck male/><CommonManRobe/></svg>}
 function Elder(){return <svg viewBox="0 0 240 300"><rect width="240" height="300" fill="#efe8dc"/><ManHair elder/><Face kind="elder"/><Neck male/><ElderRobe/></svg>}
-function Princess(){return <svg viewBox="0 0 240 300"><rect width="240" height="300" fill="#f2ebdf"/><WomanHair royal/><path d="M59 51 79 28m102 24-18-24M74 33l3-15m91 18 5-16" stroke={C.gold} strokeWidth="2.8" strokeLinecap="round"/><circle cx="79" cy="27" r="4" fill="#b96865"/><circle cx="162" cy="28" r="4" fill="#b96865"/><Face kind="princess"/><Neck/><PrincessRobe/></svg>}
-function Emperor(){return <svg viewBox="0 0 240 300"><rect width="240" height="300" fill="#ece4d6"/><ManHair/><path d="M81 65h79l-6-29H88Z" fill="#282725"/><path d="M84 47 58 56m100-9 25 9" stroke="#282725" strokeWidth="6.5" strokeLinecap="round"/><Face kind="emperor"/><Neck male/><EmperorRobe/></svg>}
+function Princess(){return <svg viewBox="0 0 240 300"><rect width="240" height="300" fill="#f2ebdf"/><WomanHair royal/><path d="M60 52 79 29m101 24-17-23M75 34l3-15m89 18 5-16" stroke={C.gold} strokeWidth="2.7" strokeLinecap="round"/><circle cx="79" cy="28" r="3.8" fill="#b96865"/><circle cx="162" cy="29" r="3.8" fill="#b96865"/><Face kind="princess"/><Neck/><PrincessRobe/></svg>}
+function Emperor(){return <svg viewBox="0 0 240 300"><rect width="240" height="300" fill="#ece4d6"/><ManHair/><path d="M92 58h56l-5-25H98Z" fill="#282725"/><path d="M96 42 65 50m79-8 31 8" stroke="#282725" strokeWidth="5" strokeLinecap="round"/><Face kind="emperor"/><Neck male/><EmperorRobe/></svg>}
 function portrait(role:BakeoffRole){if(role==='common-woman')return <CommonWoman/>;if(role==='common-man')return <CommonMan/>;if(role==='elder')return <Elder/>;if(role==='princess')return <Princess/>;return <Emperor/>}
-export function ElegantFlatStudy(){return <StudySection id="elegant-flat" letter="A · ELEGANT FINE-LINE FLAT" title="雅致细线国风扁平" subtitle="五种身份使用不同脸型与服装结构：女性更柔、男性下颌更宽、老人更长、公主更小巧、皇帝更厚重。" tags={['角色脸型差异','细线','低饱和','层叠衣领']} renderPortrait={portrait}/>}
+export function ElegantFlatStudy(){return <StudySection id="elegant-flat" letter="A · ELEGANT FINE-LINE FLAT" title="雅致细线国风扁平" subtitle="脸部改为颧部—下颌—下巴结构，发际线真正覆盖额头；领口缩小到胸前局部，整体更接近可量产的游戏头像。" tags={['自然下颌','真实发际线','细线','小型层叠领']} renderPortrait={portrait}/>}
