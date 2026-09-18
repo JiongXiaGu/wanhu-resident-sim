@@ -6,6 +6,28 @@ This document is the canonical portrait-system design after Portrait Generator V
 
 The current `main` branch already contains the V8.4 simplified prototype. The next task is to make that design the **only runtime portrait system** used by the resident simulator, then remove the older experimental portrait stacks.
 
+## Cleanup progress — 2026-09-18
+
+Completed on the cleanup branch:
+
+- V8.4 is already merged into `main`.
+- The new canonical Web module is now `Web/src/resident/portrait/`.
+- Experimental `portrait-generator-v8` naming has been removed from the cleanup branch.
+- The multiple portrait lab routes now point to one `PortraitLab` workbench.
+- Historical V2 / V7 / V8 portrait screenshot jobs have been replaced by one unified portrait review script.
+- Resident UI screenshots and portrait screenshots are now separate responsibilities.
+- Build and the simplified visual-review workflow both pass.
+
+Still intentionally retained for now:
+
+- `ResidentAvatarArtV2.tsx`
+- `portrait-rig.ts`
+- `portrait-art-v2.ts`
+- `portrait-woodblock-v7.tsx`
+- the old appearance compiler / content schema
+
+These remain only because the real game `ResidentAvatar` and generated resident snapshot still depend on them. They are the next migration target and should not receive new feature work.
+
 The portrait is a secondary game system. The priority order is:
 
 1. The player can recognize the resident.
