@@ -62,7 +62,7 @@ export const HEAD_PROFILES: HeadProfileDefinition[] = [
       skullTop: { x: 60, y: 21 }, templeLeft: { x: 42, y: 40 }, templeRight: { x: 78, y: 40 },
       earLeft: { x: 38, y: 56 }, earRight: { x: 82, y: 56 }, jawLeft: { x: 46, y: 80 }, jawRight: { x: 74, y: 80 },
       chin: { x: 60, y: 92 }, neckLeft: { x: 54, y: 88 }, neckRight: { x: 66, y: 88 },
-      crownBack: { x: 67, y: 26 }, bunLow: { x: 68, y: 92 }, occipitalLeft: { x: 45, y: 59 }, occipitalRight: { x: 75, y: 59 },
+      crownBack: { x: 67, y: 26 }, bunLow: { x: 68, y: 86 }, occipitalLeft: { x: 45, y: 59 }, occipitalRight: { x: 75, y: 59 },
       nape: { x: 60, y: 98 }, shoulderBackLeft: { x: 29, y: 108 }, shoulderBackRight: { x: 91, y: 108 },
     },
     masks: {
@@ -83,7 +83,7 @@ export const HEAD_PROFILES: HeadProfileDefinition[] = [
       skullTop: { x: 60, y: 24 }, templeLeft: { x: 43, y: 42 }, templeRight: { x: 77, y: 42 },
       earLeft: { x: 39, y: 58 }, earRight: { x: 81, y: 58 }, jawLeft: { x: 48, y: 83 }, jawRight: { x: 72, y: 83 },
       chin: { x: 60, y: 96 }, neckLeft: { x: 55, y: 91 }, neckRight: { x: 65, y: 91 },
-      crownBack: { x: 67, y: 29 }, bunLow: { x: 67, y: 95 }, occipitalLeft: { x: 46, y: 61 }, occipitalRight: { x: 74, y: 61 },
+      crownBack: { x: 67, y: 29 }, bunLow: { x: 67, y: 89 }, occipitalLeft: { x: 46, y: 61 }, occipitalRight: { x: 74, y: 61 },
       nape: { x: 60, y: 102 }, shoulderBackLeft: { x: 31, y: 110 }, shoulderBackRight: { x: 89, y: 110 },
     },
     masks: {
