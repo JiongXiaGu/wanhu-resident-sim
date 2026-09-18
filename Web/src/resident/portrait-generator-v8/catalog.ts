@@ -296,48 +296,53 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
   // V8.3 portrait staging. Age changes the body silhouette, collar, posture and crop;
   // wealth layers below only add social-detail overlays.
   { id:'layer.neck.child', slot:'neck', z:17, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M55 78 C55 82 54 86 52 90 Q60 94 68 90 C66 86 65 82 65 78Z', fill:'skin' },
+    { kind:'path', d:'M55 78 C55 82 54 86 52.5 90.5 Q60 94 67.5 90.5 C66 86 65 82 65 78Z', fill:'skin' },
+    { kind:'path', d:'M55 80 Q54.5 85 53 89.5 M65 80 Q65.5 85 67 89.5', stroke:'ink', strokeWidth:.48, opacity:.52 },
   ]},
   { id:'layer.body.child', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M34 150 Q35 116 47 93 Q53 89 60 90 Q67 89 73 93 Q85 116 86 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.8 },
-    { kind:'path', d:'M49 93 Q60 99 71 93', stroke:'accent', strokeWidth:2.35 },
-    { kind:'path', d:'M53 93 Q60 97 67 93', stroke:'accent', strokeWidth:.82, opacity:.58 },
+    { kind:'path', d:'M34 150 Q35 116 47 93 L53 91 Q60 97 67 91 L73 93 Q85 116 86 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.8 },
+    { kind:'path', d:'M53 91 Q60 97 67 91', stroke:'accent', strokeWidth:2.15 },
+    { kind:'path', d:'M55 93 Q60 96 65 93', stroke:'accent', strokeWidth:.72, opacity:.52 },
   ]},
   { id:'layer.neck.youth', slot:'neck', z:17, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M54 82 C54 88 53 94 51 98 Q60 103 69 98 C67 93 66 88 66 82Z', fill:'skin' },
+    { kind:'path', d:'M54 82 C54 88 53 94 51.5 98.5 Q60 102 68.5 98.5 C67 94 66 88 66 82Z', fill:'skin' },
+    { kind:'path', d:'M54.5 84 Q53.5 91 52 97 M65.5 84 Q66.5 91 68 97', stroke:'ink', strokeWidth:.5, opacity:.56 },
   ]},
   { id:'layer.body.youth', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M23 150 Q27 112 43 96 L49 91 L60 104 L74 89 L79 96 Q96 112 100 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.95 },
-    { kind:'path', d:'M49 91 L60 104 L74 89', stroke:'accent', strokeWidth:2.9 },
-    { kind:'path', d:'M36 108 Q45 102 50 99', stroke:'accent', strokeWidth:.7, opacity:.46 },
+    { kind:'path', d:'M23 150 Q27 112 43 96 L50 91 L60 101 L73 90 L79 96 Q96 112 100 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.95 },
+    { kind:'path', d:'M50 91 L60 101 L73 90', stroke:'accent', strokeWidth:2.8 },
+    { kind:'path', d:'M36 108 Q45 102 50 99', stroke:'accent', strokeWidth:.68, opacity:.44 },
   ]},
   { id:'layer.neck.adult', slot:'neck', z:17, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M54 87 C54 91 53 96 51 100 Q60 105 69 100 C67 96 66 91 66 87Z', fill:'skin' },
+    { kind:'path', d:'M54 87 C54 91 53 96 51.5 100 Q60 104 68.5 100 C67 96 66 91 66 87Z', fill:'skin' },
+    { kind:'path', d:'M54.5 89 Q53.5 95 52 99 M65.5 89 Q66.5 95 68 99', stroke:'ink', strokeWidth:.52, opacity:.58 },
   ]},
   { id:'layer.body.adult', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M16 150 Q20 108 43 95 L48 91 L60 106 L72 92 L77 95 Q100 108 104 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.2 },
-    { kind:'path', d:'M48 91 L60 106 L72 92', stroke:'accent', strokeWidth:3.55 },
-    { kind:'path', d:'M51 96 L60 105 L69 96', stroke:'accent', strokeWidth:.85, opacity:.55 },
+    { kind:'path', d:'M16 150 Q20 108 43 95 L50 92 L60 101 L71 93 L77 95 Q100 108 104 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.2 },
+    { kind:'path', d:'M50 92 L60 101 L71 93', stroke:'accent', strokeWidth:3.35 },
+    { kind:'path', d:'M53 96 L60 101 L68 96', stroke:'accent', strokeWidth:.8, opacity:.52 },
   ]},
   { id:'layer.neck.middle', slot:'neck', z:17, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M54 88 C54 92 53 96 52 99 Q60 103 68 99 C67 95 66 92 66 88Z', fill:'skin' },
-    { kind:'path', d:'M56 93 Q57 97 56 100 M64 93 Q63 97 64 100', stroke:'age', strokeWidth:.34, opacity:.12 },
+    { kind:'path', d:'M54 88 C54 92 53 96 52 99.5 Q60 103 68 99.5 C67 96 66 92 66 88Z', fill:'skin' },
+    { kind:'path', d:'M54.5 90 Q53.8 95 52.5 99 M65.5 90 Q66.2 95 67.5 99', stroke:'ink', strokeWidth:.5, opacity:.54 },
+    { kind:'path', d:'M56 93 Q57 97 56.5 99.5 M64 93 Q63 97 63.5 99.5', stroke:'age', strokeWidth:.3, opacity:.1 },
   ]},
   { id:'layer.body.middle', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M18 150 Q22 110 42 97 L47 94 L60 105 L74 95 L79 99 Q99 112 103 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.12 },
-    { kind:'path', d:'M47 94 L60 105 L74 95', stroke:'accent', strokeWidth:3.1 },
-    { kind:'path', d:'M50 98 L60 105 L70 98', stroke:'accent', strokeWidth:1.15, opacity:.78 },
-    { kind:'path', d:'M53 101 L60 105 L67 101', stroke:'accent', strokeWidth:.66, opacity:.5 },
+    { kind:'path', d:'M18 150 Q22 110 42 97 L49 94 L60 102 L73 95 L79 99 Q99 112 103 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.12 },
+    { kind:'path', d:'M49 94 L60 102 L73 95', stroke:'accent', strokeWidth:3.0 },
+    { kind:'path', d:'M52 98 L60 102 L69 98', stroke:'accent', strokeWidth:1.05, opacity:.74 },
+    { kind:'path', d:'M55 100 L60 102 L66 100', stroke:'accent', strokeWidth:.62, opacity:.46 },
   ]},
   { id:'layer.neck.elder', slot:'neck', z:17, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M56 91 C56 94 55 97 54 99 Q60 102 66 99 C65 96 64 94 64 91Z', fill:'skin' },
-    { kind:'path', d:'M57 94 Q58 97 57 100 M63 94 Q62 97 63 100', stroke:'age', strokeWidth:.38, opacity:.18 },
+    { kind:'path', d:'M55.5 91 C55.5 94 55 97 54.5 99.5 Q60 102 65.5 99.5 C65 97 64.5 94 64.5 91Z', fill:'skin' },
+    { kind:'path', d:'M56 93 Q55.5 96.5 55 99 M64 93 Q64.5 96.5 65 99', stroke:'ink', strokeWidth:.46, opacity:.46 },
+    { kind:'path', d:'M57 94 Q58 97 57.5 99.5 M63 94 Q62 97 62.5 99.5', stroke:'age', strokeWidth:.34, opacity:.14 },
   ]},
   { id:'layer.body.elder', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M27 150 Q30 121 45 106 L50 101 Q60 106 70 101 L75 105 Q90 120 94 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.95 },
-    { kind:'path', d:'M49 101 Q60 108 71 101', stroke:'accent', strokeWidth:2.7 },
-    { kind:'path', d:'M53 103 Q60 107 67 103', stroke:'accent', strokeWidth:1.18, opacity:.8 },
-    { kind:'path', d:'M56 105 Q60 107 64 105', stroke:'accent', strokeWidth:.64, opacity:.5 },
+    { kind:'path', d:'M27 150 Q30 121 45 106 L50 102 Q60 106 70 102 L75 105 Q90 120 94 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.95 },
+    { kind:'path', d:'M50 102 Q60 106 70 102', stroke:'accent', strokeWidth:2.45 },
+    { kind:'path', d:'M53 103.5 Q60 106 67 103.5', stroke:'accent', strokeWidth:1.08, opacity:.76 },
+    { kind:'path', d:'M56 105 Q60 106 64 105', stroke:'accent', strokeWidth:.58, opacity:.46 },
   ]},
 
   // Wealth/detail overlays no longer define the whole body silhouette.
