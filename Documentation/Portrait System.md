@@ -256,7 +256,7 @@ assets/outfits.ts
 assets/necks.ts
 ~~~
 
-`catalog.ts` only joins metadata with art and provides lookup maps.
+`catalog.ts` only joins the generated mirror of the Content metadata with Web art and provides lookup maps. Web runtime code does not import `Content/` directly.
 
 ## Stable data
 

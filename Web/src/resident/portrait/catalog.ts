@@ -1,4 +1,4 @@
-import portraitCatalogJson from '../../../../Content/Portrait/portrait-catalog.json';
+import portraitCatalogJson from '../../../public/generated/portrait-catalog.json';
 import artManifestJson from './assets/art-manifest.json';
 import { FACE_LAYERS } from './assets/faces';
 import { HAIR_LAYERS } from './assets/hair';
