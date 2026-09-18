@@ -62,7 +62,7 @@ export const HEAD_PROFILES: HeadProfileDefinition[] = [
       skullTop: { x: 60, y: 21 }, templeLeft: { x: 42, y: 40 }, templeRight: { x: 78, y: 40 },
       earLeft: { x: 38, y: 56 }, earRight: { x: 82, y: 56 }, jawLeft: { x: 46, y: 80 }, jawRight: { x: 74, y: 80 },
       chin: { x: 60, y: 92 }, neckLeft: { x: 54, y: 88 }, neckRight: { x: 66, y: 88 },
-      crownBack: { x: 67, y: 26 }, bunLow: { x: 73, y: 85 }, occipitalLeft: { x: 45, y: 59 }, occipitalRight: { x: 75, y: 59 },
+      crownBack: { x: 67, y: 26 }, bunLow: { x: 70, y: 91 }, occipitalLeft: { x: 45, y: 59 }, occipitalRight: { x: 75, y: 59 },
       nape: { x: 60, y: 98 }, shoulderBackLeft: { x: 29, y: 108 }, shoulderBackRight: { x: 91, y: 108 },
     },
     masks: {
@@ -83,7 +83,7 @@ export const HEAD_PROFILES: HeadProfileDefinition[] = [
       skullTop: { x: 60, y: 24 }, templeLeft: { x: 43, y: 42 }, templeRight: { x: 77, y: 42 },
       earLeft: { x: 39, y: 58 }, earRight: { x: 81, y: 58 }, jawLeft: { x: 48, y: 83 }, jawRight: { x: 72, y: 83 },
       chin: { x: 60, y: 96 }, neckLeft: { x: 55, y: 91 }, neckRight: { x: 65, y: 91 },
-      crownBack: { x: 67, y: 29 }, bunLow: { x: 72, y: 88 }, occipitalLeft: { x: 46, y: 61 }, occipitalRight: { x: 74, y: 61 },
+      crownBack: { x: 67, y: 29 }, bunLow: { x: 69, y: 94 }, occipitalLeft: { x: 46, y: 61 }, occipitalRight: { x: 74, y: 61 },
       nape: { x: 60, y: 102 }, shoulderBackLeft: { x: 31, y: 110 }, shoulderBackRight: { x: 89, y: 110 },
     },
     masks: {
@@ -172,7 +172,7 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
     backgroundColor:'#b9aa83',
     clothByWealth:{poor:'#756a5f',plain:'#6f7370',comfortable:'#626b61',wealthy:'#66585a'},
     featureTransforms:{
-      'layer.face.elder':{scaleX:.98,scaleY:1.015,originX:60,originY:62},
+      'layer.face.elder':{scaleX:1.01,scaleY:1,originX:60,originY:61},
       'layer.feature.soft-a.eyes.elder':{translateY:1.5,scaleX:.96,scaleY:.9,originX:60,originY:51},
       'layer.feature.soft-a.brows.elder':{translateY:1.2,scaleX:.95,originX:60,originY:46},
       'layer.feature.soft-a.96-detail':{translateY:1.5,scaleX:.96,scaleY:.9,originX:60,originY:51},
@@ -199,7 +199,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M60 24 C46 24 40 35 40 51 C40 68 46 82 53 90 Q60 95 67 90 C74 82 80 68 80 51 C80 35 74 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
   ]},
   { id:'layer.face.elder', slot:'face', z:40, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M60 27 C47 27 41 37 41 53 C41 70 46 85 53 94 Q60 99 67 94 C74 85 79 70 79 53 C79 37 73 27 60 27Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
+    { kind:'path', d:'M60 27 C46 27 40 37 40 53 C40 69 46 83 52 91 Q60 97 68 91 C74 83 80 69 80 53 C80 37 74 27 60 27Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
   ]},
 
   // Split facial features so IdentityMorphology survives age changes while stage art can replace shapes.
@@ -349,12 +349,12 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
 
   // Local-space hair assets. (0,0) is the declared anchor from HeadProfile.
   { id:'layer.hair.girl-double-bun.back', slot:'back-hair', z:10, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'skullTop', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M-15 6 C-15 3 -13 1 -10 0 C-7 -1 -5 1 -5 3 C-5 5 -7 7 -9 8 C-11 9 -14 8 -15 6Z', fill:'hair' },
-    { kind:'path', d:'M15 5 C15 2 13 0 10 0 C7 0 5 2 5 4 C5 6 7 7 10 8 C12 8 15 7 15 5Z', fill:'hair' },
-    { kind:'path', d:'M-15 6 C-15 3 -13 1 -10 0 C-7 -1 -5 1 -5 3 C-5 5 -7 7 -9 8', stroke:'ink', strokeWidth:.64 },
-    { kind:'path', d:'M15 5 C15 2 13 0 10 0 C7 0 5 2 5 4 C5 6 7 7 10 8', stroke:'ink', strokeWidth:.6 },
-    { kind:'path', d:'M-11 7 C-10 9 -8 11 -5 13 C-8 13 -11 11 -12 9Z', fill:'hair' },
-    { kind:'path', d:'M11 7 C10 9 8 11 5 13 C8 13 11 11 12 9Z', fill:'hair' },
+    { kind:'path', d:'M-16 7 C-17 5 -15 2 -12 1 C-9 0 -6 1 -5 3 C-4 5 -6 7 -9 8 C-12 9 -15 9 -16 7Z', fill:'hair' },
+    { kind:'path', d:'M16 6 C17 4 15 2 12 1 C9 0 6 1 5 3 C4 5 6 7 9 8 C12 9 15 8 16 6Z', fill:'hair' },
+    { kind:'path', d:'M-15 6 Q-12 3 -8 3', stroke:'hair-accent', strokeWidth:.42, opacity:.12 },
+    { kind:'path', d:'M15 5 Q12 3 8 3', stroke:'hair-accent', strokeWidth:.4, opacity:.1 },
+    { kind:'path', d:'M-11 8 C-10 10 -8 12 -5 13 C-8 14 -11 12 -12 10Z', fill:'hair' },
+    { kind:'path', d:'M11 8 C10 10 8 12 5 13 C8 14 11 12 12 10Z', fill:'hair' },
   ]},
   { id:'layer.hair.girl-double-bun.front', slot:'front-hair', z:70, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'skullTop', maskMode:'inside-skull', shapes:[
     { kind:'path', d:'M-20 21 Q-18 8 -7 3 Q-2 1 0 4 Q3 1 8 3 Q18 8 20 21 Q11 14 3 13 Q0 12 -3 13 Q-11 14 -20 21Z', fill:'hair' },
@@ -365,8 +365,8 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
   ]},
 
   { id:'layer.hair.youth-halfbound.crown', slot:'back-hair', z:10, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'crownBack', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M-4 2 C-3 -2 1 -4 5 -3 C9 -2 11 1 10 5 C8 8 5 9 2 8 C-1 7 -4 5 -4 2Z', fill:'hair', stroke:'ink', strokeWidth:.68 },
-    { kind:'path', d:'M-2 6 Q2 9 6 7', stroke:'hair-accent', strokeWidth:.42, opacity:.14 },
+    { kind:'path', d:'M-5 6 C-4 3 -1 1 3 1 C7 1 10 3 10 6 C9 8 6 9 2 9 C-1 8 -4 8 -5 6Z', fill:'hair' },
+    { kind:'path', d:'M2 2 Q7 3 9 6', stroke:'hair-accent', strokeWidth:.4, opacity:.12 },
   ]},
   { id:'layer.hair.youth-halfbound.back-left', slot:'back-hair', z:10, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'occipitalLeft', maskMode:'behind-head', shapes:[
     { kind:'path', d:'M4 -5 C8 4 9 16 8 28 C7 39 5 48 2 56 C0 62 -4 66 -7 64 C-9 61 -7 56 -5 51 C-2 42 0 32 0 22 C0 10 1 1 4 -5Z', fill:'hair', stroke:'ink', strokeWidth:.7 },
@@ -392,14 +392,15 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M-7 -20 Q-3 -9 -3 6 Q-3 16 -1 21', stroke:'hair-accent', strokeWidth:.4, opacity:.11 },
   ]},
   { id:'layer.hair.adult-low-bun.nape-root', slot:'back-hair', z:11, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'nape', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M8 -20 C12 -22 17 -21 20 -17 C22 -14 20 -11 17 -9 C14 -7 11 -7 8 -9 C7 -13 7 -17 8 -20Z', fill:'hair' },
+    { kind:'path', d:'M6 -20 C12 -23 19 -22 24 -18 C27 -15 26 -12 22 -9 C18 -6 13 -5 9 -7 C7 -10 5 -15 6 -20Z', fill:'hair' },
   ]},
   { id:'layer.hair.adult-low-bun.bun', slot:'back-hair', z:12, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M-7 -5 C-2 -9 5 -9 10 -6 C14 -4 15 0 13 4 C11 7 8 9 4 9 C0 9 -3 8 -5 6 C-7 4 -8 -1 -7 -5Z', fill:'hair' },
-    { kind:'path', d:'M2 -8 C9 -9 14 -5 15 0 C15 5 11 9 4 10', stroke:'ink', strokeWidth:.7 },
+    { kind:'path', d:'M-12 -5 C-7 -10 1 -12 9 -9 C15 -7 19 -3 19 2 C18 7 13 11 6 12 C0 12 -6 9 -10 5 C-12 2 -13 -2 -12 -5Z', fill:'hair' },
+    { kind:'path', d:'M4 -10 C12 -9 18 -5 19 1 C20 6 15 10 8 12', stroke:'ink', strokeWidth:.68 },
   ]},
   { id:'layer.hair.adult-low-bun.coil', slot:'back-hair', z:13, lods:[64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M6 -5 Q11 -4 12 -1', stroke:'hair-accent', strokeWidth:.38, opacity:.1 },
+    { kind:'path', d:'M7 -7 Q14 -5 15 -1', stroke:'hair-accent', strokeWidth:.36, opacity:.1 },
+    { kind:'path', d:'M9 8 Q13 7 15 4', stroke:'hair-accent', strokeWidth:.3, opacity:.08 },
   ]},
   { id:'layer.hair.adult-low-bun.front', slot:'front-hair', z:70, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'skullTop', maskMode:'inside-skull', shapes:[
     { kind:'path', d:'M-1 2 C-8 2 -15 8 -19 16 C-20 19 -20 22 -19 25 C-14 19 -9 16 -3 15 C-1 11 0 6 -1 2Z', fill:'hair' },
@@ -415,14 +416,14 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M-4 -27 C-11 -25 -14 -16 -14 -5 C-14 7 -11 17 -6 22 C-2 25 1 23 1 18 C0 10 1 3 3 -3 C6 -10 5 -19 2 -23 C0 -26 -2 -27 -4 -27Z', fill:'hair', stroke:'ink', strokeWidth:.62 },
   ]},
   { id:'layer.hair.elder-gray-bun.nape-root', slot:'back-hair', z:11, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'nape', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M8 -18 C12 -20 16 -19 18 -16 C20 -13 18 -10 15 -8 C12 -7 10 -7 8 -9 C7 -12 7 -16 8 -18Z', fill:'hair' },
+    { kind:'path', d:'M6 -18 C11 -21 17 -20 21 -17 C24 -14 23 -11 20 -9 C16 -6 12 -5 9 -7 C7 -10 5 -14 6 -18Z', fill:'hair' },
   ]},
   { id:'layer.hair.elder-gray-bun.bun', slot:'back-hair', z:12, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M-6 -5 C-2 -8 4 -8 8 -6 C12 -4 13 0 11 3 C10 6 7 8 3 8 C0 8 -3 7 -5 5 C-6 3 -7 -2 -6 -5Z', fill:'hair' },
-    { kind:'path', d:'M2 -7 C8 -8 12 -4 13 0 C13 4 10 7 4 9', stroke:'ink', strokeWidth:.58 },
+    { kind:'path', d:'M-10 -5 C-6 -9 1 -10 7 -8 C13 -6 16 -2 16 2 C15 6 11 9 5 10 C0 10 -5 8 -8 5 C-10 2 -11 -2 -10 -5Z', fill:'hair' },
+    { kind:'path', d:'M4 -8 C10 -7 15 -4 16 1 C17 5 13 8 7 10', stroke:'hair-accent', strokeWidth:.58, opacity:.55 },
   ]},
   { id:'layer.hair.elder-gray-bun.coil', slot:'back-hair', z:13, lods:[64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M5 -4 Q9 -4 10 -1', stroke:'hair-accent', strokeWidth:.3, opacity:.07 },
+    { kind:'path', d:'M6 -6 Q12 -4 13 -1', stroke:'hair-accent', strokeWidth:.3, opacity:.08 },
   ]},
   { id:'layer.hair.elder-gray-bun.front', slot:'front-hair', z:70, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'skullTop', maskMode:'inside-skull', shapes:[
     { kind:'path', d:'M-1 3 C-7 3 -13 8 -17 15 C-18 18 -18 22 -17 25 C-13 20 -8 17 -3 16 C-1 12 0 7 -1 3Z', fill:'hair' },
@@ -463,7 +464,7 @@ export const HAIR_BUNDLES: HairStyleBundle[] = [
     compatibleHeadProfiles:['head.female.soft-oval.child.v1'], silhouetteType:'double-crown-bun',
     baseWeight:1, targetShare:.18,
     layerAssetIds:['layer.hair.girl-double-bun.back','layer.hair.girl-double-bun.front','layer.hair.girl-double-bun.side'],
-    placementByHeadProfile:{'head.female.soft-oval.child.v1':{translateY:0}}, accessorySlots:['accessory.red-cord'],
+    placementByHeadProfile:{'head.female.soft-oval.child.v1':{translateY:1}}, accessorySlots:['accessory.red-cord'],
   },
   {
     id:'hair.female.young-halfbound-backfall.v1', label:'少女半束后披', cultureTag:'chinese-ancient',
@@ -538,8 +539,8 @@ export const ACCESSORIES: AccessoryAsset[] = [
     layerAssetId:'layer.accessory.wood-pin',
     placementByHairBundle:{
       'hair.female.young-halfbound-backfall.v1':{anchor:'crownBack',transform:{translateX:1,translateY:2}},
-      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:5,translateY:-4}},
-      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:4,translateY:-4}},
+      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:7,translateY:-5}},
+      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:6,translateY:-5}},
     },
     baseWeight:2,
   },
@@ -549,8 +550,8 @@ export const ACCESSORIES: AccessoryAsset[] = [
     compatibleHairBundles:['hair.female.adult-low-bun.v1','hair.female.elder-gray-low-bun.v1'],
     layerAssetId:'layer.accessory.jade-pin',
     placementByHairBundle:{
-      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:5,translateY:-4}},
-      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:4,translateY:-4}},
+      'hair.female.adult-low-bun.v1':{anchor:'bunLow',transform:{translateX:7,translateY:-5}},
+      'hair.female.elder-gray-low-bun.v1':{anchor:'bunLow',transform:{translateX:6,translateY:-5}},
     },
     baseWeight:1,
   },
