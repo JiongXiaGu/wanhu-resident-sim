@@ -80,12 +80,14 @@ export type VectorLayerAsset = {
 export type FaceFamilyDefinition = {
   id: string;
   label: string;
+  genders: Gender[];
   faceLayerByAge: Record<PortraitAgeGroup, string>;
 };
 
 export type HairStyleDefinition = {
   id: string;
   label: string;
+  genders: Gender[];
   lifeStages: LifeStageId[];
   backLayerId: string;
   frontLayerId: string;
@@ -105,7 +107,7 @@ export type PortraitStageProfile = {
   ageGroup: PortraitAgeGroup;
   viewBox: PortraitViewBox;
   layerAssetIds: string[];
-  featureLayerId: string;
+  featureLayerByGender: Record<Gender, string>;
   backgroundColor: string;
   collarColor: string;
   clothByWealth: Record<WealthTier, string>;
