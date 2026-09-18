@@ -1,4 +1,4 @@
-# Portrait Generator V8.4 — Simple Portrait
+> **Historical implementation note**: V8.4 has been merged to main, but the canonical forward-looking design and repository cleanup plan now lives in [Portrait System.md](./Portrait%20System.md). This file records the V8 experiment and should not be treated as the final runtime architecture.\n\n# Portrait Generator V8.4 — Simple Portrait
 
 ## 定位
 
