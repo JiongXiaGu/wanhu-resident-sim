@@ -23,6 +23,7 @@ Documentation/居民生活记录与故事连续性.md
 Documentation/StoryBucket与内容覆盖V1.md
 Documentation/头像系统与美术资源规范V1.md
 Documentation/Portrait Art Kit V1.md
+Documentation/Portrait Style Exploration V5.md
 ```
 
 然后检查 GitHub `main`、Actions 与必要代码。
@@ -323,7 +324,7 @@ http://localhost:5173/?view=portraits
 http://localhost:5173/?view=portrait-styles
 ```
 
-当前用同一批 Golden Residents 横向比较 8 种路线：纸片拼贴、墨线淡彩、套色木刻、简化写意、克制 Q 版、白描人物、陶俑泥塑、民俗年画套色。
+当前 V5 用同一批 Golden Residents 横向比较 4 套真正独立的画师体系：强化套色木刻、壁画化重彩、白描人物谱、绢本设色小像。四套体系不共享同一脸型或姿势模板，只共享居民身份语义。
 
 ## GitHub Actions / Visual Review / Vercel
 

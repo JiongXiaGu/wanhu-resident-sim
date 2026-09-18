@@ -4,39 +4,40 @@ import {
   PORTRAIT_STYLES,
   PortraitStylePortrait,
   type PortraitStyleId,
-} from './resident/portrait-style-v4';
+} from './resident/portrait-style-v5';
 
 export function PortraitStyleLab() {
   const [candidate, setCandidate] = useState<PortraitStyleId | null>(null);
 
   return (
-    <main className="portrait-style-lab" data-portrait-style-lab="v4">
+    <main className="portrait-style-lab" data-portrait-style-lab="v5">
       <header className="portrait-style-lab__header">
         <div>
-          <span className="portrait-style-lab__eyebrow">PORTRAIT STYLE LAB V4 · 8-WAY ART DIRECTION SELECTION</span>
-          <h1>居民头像美术方向对比</h1>
+          <span className="portrait-style-lab__eyebrow">PORTRAIT STYLE LAB V5 · TRUE ART DIRECTION SPLIT</span>
+          <h1>居民头像 · 四套独立画师体系</h1>
           <p>
-            8 个 Golden Residents 保持同一身份、年龄、财富和轮廓，只更换美术语言。
-            当前同时比较成熟插画、Q 版、白描、陶俑、民俗套色等 8 条路线；先选方向，再扩正式资产。
+            这一版不再用同一人物模板换滤镜。四个方向分别拥有独立脸型、五官、姿势、线条和服装概括规则。
+            同一行只保持“这是同一个居民”的身份信息，不要求共享同一套几何资产。
           </p>
         </div>
         <nav>
-          <a href="/?view=portraits">V2 头像实验室</a>
+          <a href="/?view=portraits">V2 随机头像实验室</a>
           <a href="/">返回居民 Demo</a>
         </nav>
       </header>
 
       <section className="portrait-style-lab__rules">
-        <span>同一人物横向比较</span>
+        <span>4 套独立 Geometry System</span>
+        <span>姿势允许不同</span>
+        <span>脸型与五官不共享模板</span>
         <span>背景无光环</span>
-        <span>手工 Face Base</span>
         <span>96 / 64 / 48px 实际尺寸</span>
       </section>
 
-      <section className="portrait-style-lab__style-headings" aria-label="美术风格说明">
+      <section className="portrait-style-lab__style-headings" aria-label="四套独立美术体系">
         <div className="portrait-style-lab__identity-heading">
           <b>Golden Resident</b>
-          <small>人物身份固定</small>
+          <small>只固定人物身份</small>
         </div>
         {PORTRAIT_STYLES.map((style) => (
           <button
@@ -48,22 +49,20 @@ export function PortraitStyleLab() {
           >
             <b>{style.name}</b>
             <span>{style.note}</span>
+            <small>{style.artSystem}</small>
             <i>{candidate === style.id ? '已标记为候选' : '点按标记候选'}</i>
           </button>
         ))}
       </section>
 
-      <section className="portrait-style-lab__matrix" aria-label="八种头像美术横向对比">
+      <section className="portrait-style-lab__matrix" aria-label="真正独立的四种头像美术横向对比">
         {GOLDEN_PORTRAITS.map((resident) => (
           <div className="portrait-style-row" data-resident={resident.id} key={resident.id}>
             <aside className="portrait-style-row__identity">
               <strong>{resident.name}</strong>
               <span>{resident.age}岁 · {resident.stageLabel}</span>
               <small>{resident.wealthLabel}</small>
-              <dl>
-                <div><dt>Face</dt><dd>{resident.faceAsset}</dd></div>
-                <div><dt>Hair</dt><dd>{resident.hairAsset}</dd></div>
-              </dl>
+              <p>{resident.gender === 'female' ? '女性' : '男性'} · {resident.wealth}</p>
             </aside>
 
             {PORTRAIT_STYLES.map((style) => (
@@ -95,10 +94,10 @@ export function PortraitStyleLab() {
       </section>
 
       <footer className="portrait-style-lab__footer">
-        <b>选择原则</b>
+        <b>这次真正要比较什么</b>
         <p>
-          不看哪张单独最精致，优先看：男女和年龄是否稳定成立、8 个人是否像不同的人、
-          48px 是否还能认、财富衣装是否克制可读，以及这种风格是否适合未来批量扩到数百个居民。
+          不再比较“哪套配色更好”。要看的是：如果四位不同画师分别负责《万户天工》居民头像，
+          哪一种造型体系最能同时满足古代气质、人物差异、小尺寸可读性和长期批量生产。
         </p>
       </footer>
     </main>
