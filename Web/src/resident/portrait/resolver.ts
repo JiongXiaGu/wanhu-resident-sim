@@ -1,4 +1,4 @@
-import type { LifeStageId } from '../../domain/resident';
+import type { LifeStageId, ResidentPortraitDNA } from '../../domain/resident';
 import { FACE_FAMILIES, HAIR_STYLES, OUTFIT_STYLES } from './catalog';
 import { createIdentitySeedBank, createPresentationSeedBank } from './seed';
 import {
@@ -35,15 +35,14 @@ function weightedPick<T>(items: T[], unit: number, weightOf: (item:T)=>number): 
 }
 
 export function resolveIdentity(context: SemanticAppearanceContext): AppearanceIdentityDNA {
-  if (context.gender !== 'female') {
-    throw new Error('Portrait Generator V8.4 currently contains female art only.');
-  }
   const seeds = createIdentitySeedBank(context.residentSeed);
+  const faceCandidates = FACE_FAMILIES.filter((family)=>family.genders.includes(context.gender));
+  if (!faceCandidates.length) throw new Error('No FaceFamily art for gender '+context.gender+'.');
   return {
     identitySchemaVersion: 3,
     residentStableId: context.residentStableId,
     identitySeed: seeds.base,
-    faceFamilyId: FACE_FAMILIES[seeds.pickIndex('face-family', FACE_FAMILIES.length)].id,
+    faceFamilyId: faceCandidates[seeds.pickIndex('face-family', faceCandidates.length)].id,
     skinPaletteId: skinPaletteIds[seeds.pickIndex('skin', skinPaletteIds.length)],
     baseHairColorId: hairPaletteIds[seeds.pickIndex('hair-color', hairPaletteIds.length)],
   };
@@ -62,7 +61,7 @@ export function resolvePresentation(
 ): AppearancePresentationDNA {
   const seeds = createPresentationSeedBank(context.residentSeed);
 
-  const ageCompatibleHair = HAIR_STYLES.filter((style)=>style.lifeStages.includes(context.lifeStage));
+  const ageCompatibleHair = HAIR_STYLES.filter((style)=>style.genders.includes(context.gender)&&style.lifeStages.includes(context.lifeStage));
   const requestedHair = override.hairStyleId
     ? ageCompatibleHair.find((style)=>style.id===override.hairStyleId)
     : undefined;
@@ -89,6 +88,41 @@ export function resolvePresentation(
     hairStyleId: hair.id,
     outfitStyleId: outfit.id,
     hairColorStateId: hairColorStateFor(context.lifeStage, identity),
+  };
+}
+
+
+export function resolveSavedPortrait(
+  context: SemanticAppearanceContext,
+  portrait: ResidentPortraitDNA,
+): ResolvedAppearanceDNA {
+  const identitySeeds=createIdentitySeedBank(context.residentSeed);
+  const presentationSeeds=createPresentationSeedBank(context.residentSeed);
+  return {
+    generatorVersion:PORTRAIT_GENERATOR_VERSION,
+    identity:{
+      identitySchemaVersion:3,
+      residentStableId:context.residentStableId,
+      identitySeed:identitySeeds.base,
+      faceFamilyId:portrait.faceFamilyId,
+      skinPaletteId:portrait.skinPaletteId,
+      baseHairColorId:portrait.baseHairColorId,
+    },
+    presentation:{
+      presentationSchemaVersion:2,
+      presentationSeed:presentationSeeds.base,
+      lifeStage:context.lifeStage,
+      hairStyleId:portrait.hairStyleId,
+      outfitStyleId:portrait.outfitStyleId,
+      hairColorStateId:hairColorStateFor(context.lifeStage,{
+        identitySchemaVersion:3,
+        residentStableId:context.residentStableId,
+        identitySeed:identitySeeds.base,
+        faceFamilyId:portrait.faceFamilyId,
+        skinPaletteId:portrait.skinPaletteId,
+        baseHairColorId:portrait.baseHairColorId,
+      }),
+    },
   };
 }
 

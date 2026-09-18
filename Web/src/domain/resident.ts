@@ -20,16 +20,12 @@ export type ResidentMajorLifeEvent = {
   sourceEventId?: string;
 };
 
-export type ResidentAppearanceDNA = {
-  faceId: string;
-  hairId: string;
-  browId: string;
-  facialHairId: string;
-  headwearId: string;
-  outfitId: string;
+export type ResidentPortraitDNA = {
+  faceFamilyId: string;
+  hairStyleId: string;
+  outfitStyleId: string;
   skinPaletteId: string;
-  hairPaletteId: string;
-  clothingPaletteId: string;
+  baseHairColorId: string;
 };
 
 export type ResidentRecord = {
@@ -41,8 +37,7 @@ export type ResidentRecord = {
   givenNameId: string;
   birthDay: number;
   gender: Gender;
-  portraitSeed: number;
-  appearance: ResidentAppearanceDNA;
+  portrait: ResidentPortraitDNA;
   districtId: string;
   occupationId: string;
   workplaceId: number;
@@ -71,7 +66,7 @@ export type HouseholdRecord = {
 };
 
 export type ResidentWorldSnapshot = {
-  schema: 'wanhu.resident-snapshot.v3';
+  schema: 'wanhu.resident-snapshot.v4';
   citySeed: number;
   currentDay: number;
   residents: ResidentRecord[];
@@ -128,38 +123,37 @@ export type RoutineDefinition = {
   season?: string[];
 };
 
-export type AppearancePartSlot = 'face' | 'hair' | 'brow' | 'facial-hair' | 'headwear' | 'outfit';
-export type AppearancePaletteSlot = 'skin' | 'hair' | 'clothing';
-
-export type AppearancePartDefinition = {
+export type PortraitCatalogFaceFamily = {
   id: string;
-  slot: AppearancePartSlot;
-  label: string;
+  genders: Gender[];
   weight: number;
-  genders?: Gender[];
-  lifeStages?: LifeStageId[];
-  wealthTiers?: WealthTier[];
-  presentationStyles?: PresentationStyle[];
-  occupationGroups?: string[];
-  assetKey?: string;
 };
 
-export type AppearancePaletteDefinition = {
+export type PortraitCatalogHairStyle = {
   id: string;
-  slot: AppearancePaletteSlot;
-  label: string;
+  genders: Gender[];
+  lifeStages: LifeStageId[];
   weight: number;
-  genders?: Gender[];
-  lifeStages?: LifeStageId[];
-  wealthTiers?: WealthTier[];
-  presentationStyles?: PresentationStyle[];
-  occupationGroups?: string[];
 };
 
-export type AppearanceCatalogDefinition = {
-  schema: 'wanhu.appearance-catalog.v1';
-  parts: AppearancePartDefinition[];
-  palettes: AppearancePaletteDefinition[];
+export type PortraitCatalogOutfitStyle = {
+  id: string;
+  wealthTiers: WealthTier[];
+  weight: number;
+};
+
+export type PortraitCatalogPalette = {
+  id: string;
+  weight: number;
+};
+
+export type PortraitCatalogDefinition = {
+  schema: 'wanhu.portrait-catalog.v1';
+  faceFamilies: PortraitCatalogFaceFamily[];
+  hairStyles: PortraitCatalogHairStyle[];
+  outfitStyles: PortraitCatalogOutfitStyle[];
+  skinPalettes: PortraitCatalogPalette[];
+  hairPalettes: PortraitCatalogPalette[];
 };
 
 export type LifeEventSourceType = 'city' | 'family' | 'work' | 'weather' | 'personal';
@@ -241,7 +235,7 @@ export type ResidentGenerationDefinition = {
 };
 
 export type ResidentDefinitions = {
-  schema: 'wanhu.resident-definitions.v4';
+  schema: 'wanhu.resident-definitions.v5';
   names: {
     surnames: string[];
     maleGivenNames: string[];
@@ -250,13 +244,14 @@ export type ResidentDefinitions = {
   nameCatalog: NameCatalogDefinition;
   lifeTags: LifeTagDefinition[];
   occupationGroups: OccupationGroupDefinition[];
-  appearanceCatalog: AppearanceCatalogDefinition;
+  portraitCatalog: PortraitCatalogDefinition;
   storyBuckets: StoryBucketCollection;
   contentMeta: {
     stableIdCount: number;
     storyBucketCount: number;
-    appearancePartCount: number;
-    appearancePaletteCount: number;
+    portraitFaceFamilyCount: number;
+    portraitHairStyleCount: number;
+    portraitOutfitStyleCount: number;
   };
   occupations: OccupationDefinition[];
   routines: RoutineDefinition[];

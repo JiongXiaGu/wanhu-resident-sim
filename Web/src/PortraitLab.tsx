@@ -34,7 +34,7 @@ function fingerprint(value:unknown) {
 function findFaceSample(faceFamilyId:string) {
   for(let seed=93000;seed<94000;seed+=1) {
     const context:SemanticAppearanceContext={
-      residentStableId:'face-'+faceFamilyId,residentSeed:seed,gender:'female',
+      residentStableId:'face-'+faceFamilyId,residentSeed:seed,gender:FACE_FAMILIES.find((family)=>family.id===faceFamilyId)!.genders[0],
       lifeStage:'adult',wealthTier:'plain',presentationStyle:'tidy',
     };
     const dna=resolveAppearance(context);
@@ -49,7 +49,7 @@ const hairSamples=HAIR_STYLES.map((style)=>{
   const lifeStage=style.lifeStages[0];
   const context:SemanticAppearanceContext={
     residentStableId:'hair-'+style.id,residentSeed:95000+HAIR_STYLES.indexOf(style)*31,
-    gender:'female',lifeStage,wealthTier:'plain',presentationStyle:'tidy',
+    gender:style.genders[0],lifeStage,wealthTier:'plain',presentationStyle:'tidy',
   };
   return {style,context,dna:resolveAppearance(context,{hairStyleId:style.id})};
 });
@@ -60,7 +60,7 @@ const crowd=Array.from({length:24},(_,index)=>{
   const context:SemanticAppearanceContext={
     residentStableId:'v84-crowd-'+String(index+1).padStart(2,'0'),
     residentSeed:97000+index*37,
-    gender:'female',
+    gender:index%2===0?'female':'male',
     lifeStage:crowdStages[index%crowdStages.length],
     wealthTier:crowdWealth[index%crowdWealth.length],
     presentationStyle:'tidy',
@@ -91,8 +91,8 @@ export function PortraitLab() {
   const temporalFaceCount=new Set(temporalResolved.map((x)=>x.dna.identity.faceFamilyId)).size;
 
   return (
-    <main className="portrait-v8-lab" data-portrait-v8-lab="true" data-render-contract-version="8.4" data-art-review-version="8.4">
-      <header className="portrait-v8-header">
+    <main className="portrait-lab" data-portrait-lab="true" data-render-contract-version="8.4" data-art-review-version="8.4">
+      <header className="portrait-lab-header">
         <div>
           <span>UNIFIED RESIDENT PORTRAIT · ART WORKBENCH</span>
           <h1>居民头像工作台：简单组合，美术优先</h1>
@@ -104,8 +104,8 @@ export function PortraitLab() {
       <section className="v84-status">
         <div data-v8-check="identity-wealth" data-state={wealthIdentityCount===1?'pass':'fail'}><b>{wealthIdentityCount===1?'PASS':'FAIL'}</b><span>财富不改变 Identity</span></div>
         <div data-v8-check="identity-time" data-state={temporalIdentityCount===1&&temporalFaceCount===1?'pass':'fail'}><b>{temporalIdentityCount===1&&temporalFaceCount===1?'PASS':'FAIL'}</b><span>一生保持 FaceFamily</span></div>
-        <div data-v8-check="face-families" data-state={FACE_FAMILIES.length>=6?'pass':'fail'}><b>{FACE_FAMILIES.length}</b><span>离散 FaceFamily</span></div>
-        <div data-v8-check="hair-styles" data-state={HAIR_STYLES.length===4?'pass':'fail'}><b>{HAIR_STYLES.length}</b><span>首批 Hair Style</span></div>
+        <div data-v8-check="face-families" data-state={FACE_FAMILIES.length>=10?'pass':'fail'}><b>{FACE_FAMILIES.length}</b><span>男女 FaceFamily</span></div>
+        <div data-v8-check="hair-styles" data-state={HAIR_STYLES.length===8?'pass':'fail'}><b>{HAIR_STYLES.length}</b><span>男女 Hair Style</span></div>
         <div data-v8-check="no-accessory" data-state="pass"><b>0</b><span>Accessory 系统</span></div>
         <div data-v8-check="simple-render" data-state="pass"><b>PASS</b><span>无 Hair Mask / Anchor</span></div>
       </section>
@@ -125,7 +125,7 @@ export function PortraitLab() {
       </section>
 
       <section className="v84-section" data-v8-section="face-families">
-        <header><div><span>03 · FACE FAMILY</span><h2>脸型差异直接由美术资产控制</h2></div><p>当前先提供 6 套离散脸型。以后增加脸型就是增加资产，不增加运行时捏脸算法。</p></header>
+        <header><div><span>03 · FACE FAMILY</span><h2>脸型差异直接由美术资产控制</h2></div><p>当前提供 6 套女性 + 4 套男性离散脸型。以后增加脸型就是增加资产，不增加运行时捏脸算法。</p></header>
         <div className="v84-grid v84-grid-6">
           {faceSamples.map(({family,context,dna})=>(
             <article className="v84-card" data-face-family-card={family.id} key={family.id}>

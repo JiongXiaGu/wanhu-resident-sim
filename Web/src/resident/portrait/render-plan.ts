@@ -51,7 +51,7 @@ export function buildRenderPlan(
     ...stage.layerAssetIds,
     ...outfit.layerAssetIds,
     faceLayerId,
-    stage.featureLayerId,
+    stage.featureLayerByGender[context.gender],
     hair.frontLayerId,
   ];
 

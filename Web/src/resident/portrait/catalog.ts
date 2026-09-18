@@ -7,91 +7,64 @@ import type {
 } from './types';
 
 export const FACE_FAMILIES: FaceFamilyDefinition[] = [
-  {
-    id:'face.soft-oval', label:'柔和鹅蛋脸',
-    faceLayerByAge:{
-      child:'layer.face.soft-oval.child', youth:'layer.face.soft-oval.youth',
-      adult:'layer.face.soft-oval.adult', elder:'layer.face.soft-oval.elder',
-    },
-  },
-  {
-    id:'face.round-soft', label:'圆润脸',
-    faceLayerByAge:{
-      child:'layer.face.round-soft.child', youth:'layer.face.round-soft.youth',
-      adult:'layer.face.round-soft.adult', elder:'layer.face.round-soft.elder',
-    },
-  },
-  {
-    id:'face.long-narrow', label:'长窄脸',
-    faceLayerByAge:{
-      child:'layer.face.long-narrow.child', youth:'layer.face.long-narrow.youth',
-      adult:'layer.face.long-narrow.adult', elder:'layer.face.long-narrow.elder',
-    },
-  },
-  {
-    id:'face.broad-cheek', label:'宽颊脸',
-    faceLayerByAge:{
-      child:'layer.face.broad-cheek.child', youth:'layer.face.broad-cheek.youth',
-      adult:'layer.face.broad-cheek.adult', elder:'layer.face.broad-cheek.elder',
-    },
-  },
-  {
-    id:'face.square-soft', label:'柔方脸',
-    faceLayerByAge:{
-      child:'layer.face.square-soft.child', youth:'layer.face.square-soft.youth',
-      adult:'layer.face.square-soft.adult', elder:'layer.face.square-soft.elder',
-    },
-  },
-  {
-    id:'face.narrow-chin', label:'窄下颌脸',
-    faceLayerByAge:{
-      child:'layer.face.narrow-chin.child', youth:'layer.face.narrow-chin.youth',
-      adult:'layer.face.narrow-chin.adult', elder:'layer.face.narrow-chin.elder',
-    },
-  },
+  { id:'face.soft-oval', label:'女子柔和鹅蛋脸', genders:['female'], faceLayerByAge:{
+    child:'layer.face.soft-oval.child', youth:'layer.face.soft-oval.youth', adult:'layer.face.soft-oval.adult', elder:'layer.face.soft-oval.elder',
+  }},
+  { id:'face.round-soft', label:'女子圆润脸', genders:['female'], faceLayerByAge:{
+    child:'layer.face.round-soft.child', youth:'layer.face.round-soft.youth', adult:'layer.face.round-soft.adult', elder:'layer.face.round-soft.elder',
+  }},
+  { id:'face.long-narrow', label:'女子长窄脸', genders:['female'], faceLayerByAge:{
+    child:'layer.face.long-narrow.child', youth:'layer.face.long-narrow.youth', adult:'layer.face.long-narrow.adult', elder:'layer.face.long-narrow.elder',
+  }},
+  { id:'face.broad-cheek', label:'女子宽颊脸', genders:['female'], faceLayerByAge:{
+    child:'layer.face.broad-cheek.child', youth:'layer.face.broad-cheek.youth', adult:'layer.face.broad-cheek.adult', elder:'layer.face.broad-cheek.elder',
+  }},
+  { id:'face.square-soft', label:'女子柔方脸', genders:['female'], faceLayerByAge:{
+    child:'layer.face.square-soft.child', youth:'layer.face.square-soft.youth', adult:'layer.face.square-soft.adult', elder:'layer.face.square-soft.elder',
+  }},
+  { id:'face.narrow-chin', label:'女子窄下颌脸', genders:['female'], faceLayerByAge:{
+    child:'layer.face.narrow-chin.child', youth:'layer.face.narrow-chin.youth', adult:'layer.face.narrow-chin.adult', elder:'layer.face.narrow-chin.elder',
+  }},
+  { id:'face.male-oval', label:'男子椭圆脸', genders:['male'], faceLayerByAge:{
+    child:'layer.face.male-oval.child', youth:'layer.face.male-oval.youth', adult:'layer.face.male-oval.adult', elder:'layer.face.male-oval.elder',
+  }},
+  { id:'face.male-round', label:'男子圆脸', genders:['male'], faceLayerByAge:{
+    child:'layer.face.male-round.child', youth:'layer.face.male-round.youth', adult:'layer.face.male-round.adult', elder:'layer.face.male-round.elder',
+  }},
+  { id:'face.male-square', label:'男子方脸', genders:['male'], faceLayerByAge:{
+    child:'layer.face.male-square.child', youth:'layer.face.male-square.youth', adult:'layer.face.male-square.adult', elder:'layer.face.male-square.elder',
+  }},
+  { id:'face.male-long', label:'男子长脸', genders:['male'], faceLayerByAge:{
+    child:'layer.face.male-long.child', youth:'layer.face.male-long.youth', adult:'layer.face.male-long.adult', elder:'layer.face.male-long.elder',
+  }},
 ];
 
 export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
-  {
-    id:'stage.female.child.v2', lifeStages:['child','teen'], ageGroup:'child',
-    viewBox:{x:5,y:12,width:104,height:104},
+  { id:'stage.child.v3', lifeStages:['child','teen'], ageGroup:'child', viewBox:{x:5,y:12,width:104,height:104},
     layerAssetIds:['layer.neck.child','layer.body.child'],
-    featureLayerId:'layer.features.child',
+    featureLayerByGender:{female:'layer.features.child',male:'layer.features.male.child'},
     backgroundColor:'#d7bf88', collarColor:'#a79b79',
-    clothByWealth:{poor:'#7a6857',plain:'#748391',comfortable:'#60756b',wealthy:'#73585d'},
-  },
-  {
-    id:'stage.female.youth.v2', lifeStages:['young-adult'], ageGroup:'youth',
-    viewBox:{x:-2,y:10,width:122,height:124},
+    clothByWealth:{poor:'#7a6857',plain:'#748391',comfortable:'#60756b',wealthy:'#73585d'} },
+  { id:'stage.youth.v3', lifeStages:['young-adult'], ageGroup:'youth', viewBox:{x:-2,y:10,width:122,height:124},
     layerAssetIds:['layer.neck.youth','layer.body.youth'],
-    featureLayerId:'layer.features.youth',
+    featureLayerByGender:{female:'layer.features.youth',male:'layer.features.male.youth'},
     backgroundColor:'#cdb17a', collarColor:'#a49a80',
-    clothByWealth:{poor:'#75604f',plain:'#5f7880',comfortable:'#536f65',wealthy:'#70565c'},
-  },
-  {
-    id:'stage.female.adult.v2', lifeStages:['adult'], ageGroup:'adult',
-    viewBox:{x:0,y:15,width:120,height:120},
+    clothByWealth:{poor:'#75604f',plain:'#5f7880',comfortable:'#536f65',wealthy:'#70565c'} },
+  { id:'stage.adult.v3', lifeStages:['adult'], ageGroup:'adult', viewBox:{x:0,y:15,width:120,height:120},
     layerAssetIds:['layer.neck.adult','layer.body.adult'],
-    featureLayerId:'layer.features.adult',
+    featureLayerByGender:{female:'layer.features.adult',male:'layer.features.male.adult'},
     backgroundColor:'#ccb074', collarColor:'#a1987f',
-    clothByWealth:{poor:'#76624f',plain:'#63717a',comfortable:'#4f6358',wealthy:'#6b5052'},
-  },
-  {
-    id:'stage.female.middle.v2', lifeStages:['middle-age'], ageGroup:'adult',
-    viewBox:{x:4,y:17,width:116,height:116},
+    clothByWealth:{poor:'#76624f',plain:'#63717a',comfortable:'#4f6358',wealthy:'#6b5052'} },
+  { id:'stage.middle.v3', lifeStages:['middle-age'], ageGroup:'adult', viewBox:{x:4,y:17,width:116,height:116},
     layerAssetIds:['layer.neck.middle','layer.body.middle'],
-    featureLayerId:'layer.features.middle',
+    featureLayerByGender:{female:'layer.features.middle',male:'layer.features.male.middle'},
     backgroundColor:'#bea26f', collarColor:'#968d77',
-    clothByWealth:{poor:'#706153',plain:'#66706f',comfortable:'#59695d',wealthy:'#695455'},
-  },
-  {
-    id:'stage.female.elder.v2', lifeStages:['elder'], ageGroup:'elder',
-    viewBox:{x:7,y:20,width:108,height:112},
+    clothByWealth:{poor:'#706153',plain:'#66706f',comfortable:'#59695d',wealthy:'#695455'} },
+  { id:'stage.elder.v3', lifeStages:['elder'], ageGroup:'elder', viewBox:{x:7,y:20,width:108,height:112},
     layerAssetIds:['layer.neck.elder','layer.body.elder'],
-    featureLayerId:'layer.features.elder',
+    featureLayerByGender:{female:'layer.features.elder',male:'layer.features.male.elder'},
     backgroundColor:'#b9aa83', collarColor:'#938b77',
-    clothByWealth:{poor:'#756a5f',plain:'#6f7370',comfortable:'#626b61',wealthy:'#66585a'},
-  },
+    clothByWealth:{poor:'#756a5f',plain:'#6f7370',comfortable:'#626b61',wealthy:'#66585a'} },
 ];
 
 export const VECTOR_LAYERS: VectorLayerAsset[] = [
@@ -174,6 +147,59 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M60 27 C45 27 39 38 39 54 C39 69 45 83 53 92 Q60 98 67 92 C75 83 81 69 81 54 C81 38 75 27 60 27Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
   ]},
 
+  // Minimal male FaceFamily coverage for the live ResidentAvatar migration.
+  { id:'layer.face.male-oval.child', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 30 C47 29 40 38 40 53 C40 67 46 78 53 83 Q60 87 67 83 C74 78 80 67 80 53 C80 38 73 29 60 30Z', fill:'skin', stroke:'ink', strokeWidth:2.25 },
+  ]},
+  { id:'layer.face.male-oval.youth', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 24 C46 24 39 35 39 51 C39 67 45 81 52 88 Q60 93 68 88 C75 81 81 67 81 51 C81 35 74 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.25 },
+  ]},
+  { id:'layer.face.male-oval.adult', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 24 C45 24 38 35 38 52 C38 68 44 82 51 90 Q60 95 69 90 C76 82 82 68 82 52 C82 35 75 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.3 },
+  ]},
+  { id:'layer.face.male-oval.elder', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 27 C45 27 38 38 38 54 C38 70 44 83 51 91 Q60 97 69 91 C76 83 82 70 82 54 C82 38 75 27 60 27Z', fill:'skin', stroke:'ink', strokeWidth:2.25 },
+  ]},
+
+  { id:'layer.face.male-round.child', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 31 C44 30 38 40 38 54 C38 67 45 78 52 82 Q60 87 68 82 C75 78 82 67 82 54 C82 40 76 30 60 31Z', fill:'skin', stroke:'ink', strokeWidth:2.25 },
+  ]},
+  { id:'layer.face.male-round.youth', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 25 C44 25 37 36 37 52 C37 66 44 79 52 86 Q60 91 68 86 C76 79 83 66 83 52 C83 36 76 25 60 25Z', fill:'skin', stroke:'ink', strokeWidth:2.3 },
+  ]},
+  { id:'layer.face.male-round.adult', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 25 C43 25 36 37 36 53 C36 68 43 81 51 88 Q60 94 69 88 C77 81 84 68 84 53 C84 37 77 25 60 25Z', fill:'skin', stroke:'ink', strokeWidth:2.35 },
+  ]},
+  { id:'layer.face.male-round.elder', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 28 C43 28 36 39 36 55 C36 69 43 81 51 88 Q60 95 69 88 C77 81 84 69 84 55 C84 39 77 28 60 28Z', fill:'skin', stroke:'ink', strokeWidth:2.3 },
+  ]},
+
+  { id:'layer.face.male-square.child', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 30 C46 30 39 39 39 54 C39 67 43 77 50 83 Q60 88 70 83 C77 77 81 67 81 54 C81 39 74 30 60 30Z', fill:'skin', stroke:'ink', strokeWidth:2.3 },
+  ]},
+  { id:'layer.face.male-square.youth', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 24 C45 24 38 35 38 51 C38 66 42 79 49 87 Q60 93 71 87 C78 79 82 66 82 51 C82 35 75 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.35 },
+  ]},
+  { id:'layer.face.male-square.adult', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 24 C44 24 37 35 37 52 C37 67 41 81 48 89 Q60 96 72 89 C79 81 83 67 83 52 C83 35 76 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.4 },
+  ]},
+  { id:'layer.face.male-square.elder', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 27 C44 27 37 38 37 54 C37 69 41 82 48 90 Q60 97 72 90 C79 82 83 69 83 54 C83 38 76 27 60 27Z', fill:'skin', stroke:'ink', strokeWidth:2.35 },
+  ]},
+
+  { id:'layer.face.male-long.child', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 29 C49 29 43 38 43 53 C43 69 48 81 53 85 Q60 89 67 85 C72 81 77 69 77 53 C77 38 71 29 60 29Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
+  ]},
+  { id:'layer.face.male-long.youth', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 23 C48 23 42 34 42 52 C42 69 47 83 53 90 Q60 95 67 90 C73 83 78 69 78 52 C78 34 72 23 60 23Z', fill:'skin', stroke:'ink', strokeWidth:2.25 },
+  ]},
+  { id:'layer.face.male-long.adult', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 23 C47 23 41 34 41 52 C41 70 46 86 52 94 Q60 99 68 94 C74 86 79 70 79 52 C79 34 73 23 60 23Z', fill:'skin', stroke:'ink', strokeWidth:2.25 },
+  ]},
+  { id:'layer.face.male-long.elder', slot:'face', z:40, shapes:[
+    { kind:'path', d:'M60 26 C47 26 41 37 41 54 C41 72 46 87 52 95 Q60 100 68 95 C74 87 79 72 79 54 C79 37 73 26 60 26Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
+  ]},
+
   // One direct feature asset per age stage. No runtime facial morph stack.
   { id:'layer.features.child', slot:'face-detail', z:50, shapes:[
     { kind:'path', d:'M47.5 45 Q50.5 44.2 54 45 M66 45 Q69.5 44.2 72.5 45', stroke:'ink', strokeWidth:1.22 },
@@ -212,6 +238,45 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M59 54 Q58 65 60 68 Q63 69 66 66', stroke:'ink', strokeWidth:1.05 },
     { kind:'path', d:'M55 77 Q60 76.5 65 77', stroke:'ink', strokeWidth:1.15 },
     { kind:'path', d:'M44 56 Q49 59 54 57 M66 57 Q71 59 76 56 M50 69 Q47 75 49 81 M70 69 Q73 75 71 81 M51 88 Q60 92 69 88', stroke:'age', strokeWidth:.5, opacity:.34 },
+  ]},
+
+  // Male facial art stays direct and age-specific; no beard/headwear system in the unified runtime.
+  { id:'layer.features.male.child', slot:'face-detail', z:50, shapes:[
+    { kind:'path', d:'M46.5 45 Q50 43.8 54.5 45 M65.5 45 Q70 43.8 73.5 45', stroke:'ink', strokeWidth:1.45 },
+    { kind:'path', d:'M44.5 51 Q50 48.5 55.5 51 M64.5 51 Q70 48.5 75.5 51', stroke:'ink', strokeWidth:1.4 },
+    { kind:'circle', cx:50, cy:51, r:.55, fill:'ink' }, { kind:'circle', cx:70, cy:51, r:.55, fill:'ink' },
+    { kind:'path', d:'M59 55 Q58.5 61 60.5 63 Q62 64 64.5 62', stroke:'ink', strokeWidth:1.05 },
+    { kind:'path', d:'M55 73 Q60 74.5 65 73', stroke:'ink', strokeWidth:1.15 },
+  ]},
+  { id:'layer.features.male.youth', slot:'face-detail', z:50, shapes:[
+    { kind:'path', d:'M45.5 45 Q50 42.7 55.5 45 M64.5 45 Q70 42.7 74.5 45', stroke:'ink', strokeWidth:1.95 },
+    { kind:'path', d:'M45 51 Q50 49 55 51 M65 51 Q70 49 75 51', stroke:'ink', strokeWidth:1.45 },
+    { kind:'circle', cx:50, cy:51, r:.58, fill:'ink' }, { kind:'circle', cx:70, cy:51, r:.58, fill:'ink' },
+    { kind:'path', d:'M59 54 Q58 63 60 66 Q62.5 67 65.5 64.5', stroke:'ink', strokeWidth:1.15 },
+    { kind:'path', d:'M54 75 Q60 76 66 75', stroke:'ink', strokeWidth:1.25 },
+  ]},
+  { id:'layer.features.male.adult', slot:'face-detail', z:50, shapes:[
+    { kind:'path', d:'M45 45.5 Q50 43 55.5 45.5 M64.5 45.5 Q70 43 75 45.5', stroke:'ink', strokeWidth:2.15 },
+    { kind:'path', d:'M45 52 Q50 49.5 55 52 M65 52 Q70 49.5 75 52', stroke:'ink', strokeWidth:1.45 },
+    { kind:'circle', cx:50, cy:52, r:.58, fill:'ink' }, { kind:'circle', cx:70, cy:52, r:.58, fill:'ink' },
+    { kind:'path', d:'M59 54 Q58 64 60 67 Q63 68 66 65', stroke:'ink', strokeWidth:1.2 },
+    { kind:'path', d:'M53.5 76 Q60 76.5 66.5 76', stroke:'ink', strokeWidth:1.3 },
+  ]},
+  { id:'layer.features.male.middle', slot:'face-detail', z:50, shapes:[
+    { kind:'path', d:'M45 46 Q50 44 55.5 46 M64.5 46 Q70 44 75 46', stroke:'ink', strokeWidth:2 },
+    { kind:'path', d:'M45 52.5 Q50 50.5 55 52.5 M65 52.5 Q70 50.5 75 52.5', stroke:'ink', strokeWidth:1.4 },
+    { kind:'circle', cx:50, cy:52.5, r:.56, fill:'ink' }, { kind:'circle', cx:70, cy:52.5, r:.56, fill:'ink' },
+    { kind:'path', d:'M59 54 Q58 65 60 68 Q63 69 66 66', stroke:'ink', strokeWidth:1.18 },
+    { kind:'path', d:'M53.5 77 Q60 77.2 66.5 77', stroke:'ink', strokeWidth:1.25 },
+    { kind:'path', d:'M44 61 Q49 63 53 62 M67 62 Q72 63 76 61', stroke:'age', strokeWidth:.5, opacity:.22 },
+  ]},
+  { id:'layer.features.male.elder', slot:'face-detail', z:50, shapes:[
+    { kind:'path', d:'M46 47 Q50 45.5 54.5 46.5 M65.5 46.5 Q70 45.5 74 47', stroke:'ink', strokeWidth:1.55 },
+    { kind:'path', d:'M45 53 Q50 51.5 55 53 M65 53 Q70 51.5 75 53', stroke:'ink', strokeWidth:1.3 },
+    { kind:'circle', cx:50, cy:53, r:.5, fill:'ink' }, { kind:'circle', cx:70, cy:53, r:.5, fill:'ink' },
+    { kind:'path', d:'M59 54 Q58 66 60 69 Q63 70 66.5 66.5', stroke:'ink', strokeWidth:1.12 },
+    { kind:'path', d:'M54 78 Q60 77.5 66 78', stroke:'ink', strokeWidth:1.15 },
+    { kind:'path', d:'M44 57 Q49 60 54 58 M66 58 Q71 60 76 57 M50 70 Q47 76 49 82 M70 70 Q73 76 71 82', stroke:'age', strokeWidth:.5, opacity:.3 },
   ]},
 
   // Stage body art. Neck is behind garment so the collar owns the neck root.
@@ -320,13 +385,47 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M60 27 Q60 31 60 35', stroke:'skin', strokeWidth:1.25, opacity:.92 },
     { kind:'path', d:'M49 38 Q53 34 57 32 M63 32 Q68 34 72 39', stroke:'hair-accent', strokeWidth:.26, opacity:.07 },
   ]},
+
+  // Minimal male hair set for live runtime coverage. Final-canvas art only.
+  { id:'layer.hair.male-child-tied.back', slot:'back-hair', z:10, shapes:[
+    { kind:'ellipse', cx:60, cy:28, rx:5.5, ry:4.2, fill:'hair', stroke:'ink', strokeWidth:.5 },
+  ]},
+  { id:'layer.hair.male-child-tied.front', slot:'front-hair', z:70, shapes:[
+    { kind:'path', d:'M40 51 C41 39 47 31 57 28 Q60 26 63 28 C73 31 79 39 80 51 C74 45 68 42 62 41 Q60 38 59 34 Q57 39 55 41 C49 42 44 46 40 51Z', fill:'hair' },
+  ]},
+  { id:'layer.hair.male-youth-tied.back', slot:'back-hair', z:10, shapes:[
+    { kind:'ellipse', cx:60, cy:22, rx:6.5, ry:5.2, fill:'hair', stroke:'ink', strokeWidth:.55 },
+    { kind:'path', d:'M76 44 Q80 57 78 72 Q77 80 74 84', stroke:'hair', strokeWidth:4.5, opacity:.95 },
+  ]},
+  { id:'layer.hair.male-youth-tied.front', slot:'front-hair', z:70, shapes:[
+    { kind:'path', d:'M39 51 Q41 33 53 25 Q60 20 67 24 Q78 31 81 51 Q72 43 64 41 Q60 37 60 31 Q58 37 55 41 Q47 43 39 51Z', fill:'hair' },
+  ]},
+  { id:'layer.hair.male-adult-tied.back', slot:'back-hair', z:10, shapes:[
+    { kind:'ellipse', cx:61, cy:21, rx:7, ry:5.4, fill:'hair', stroke:'ink', strokeWidth:.6 },
+    { kind:'path', d:'M77 45 Q81 59 79 74 Q78 82 74 87', stroke:'hair', strokeWidth:4.8, opacity:.95 },
+  ]},
+  { id:'layer.hair.male-adult-tied.front', slot:'front-hair', z:70, shapes:[
+    { kind:'path', d:'M38 52 Q40 33 52 25 Q60 20 68 24 Q80 32 82 52 Q73 43 64 41 Q60 37 60 31 Q57 37 54 41 Q46 43 38 52Z', fill:'hair' },
+  ]},
+  { id:'layer.hair.male-elder-tied.back', slot:'back-hair', z:10, shapes:[
+    { kind:'ellipse', cx:62, cy:25, rx:5.5, ry:4.2, fill:'hair', stroke:'ink', strokeWidth:.48 },
+    { kind:'path', d:'M76 49 Q79 61 77 75 Q76 82 73 86', stroke:'hair', strokeWidth:3.8, opacity:.88 },
+  ]},
+  { id:'layer.hair.male-elder-tied.front', slot:'front-hair', z:70, shapes:[
+    { kind:'path', d:'M41 53 Q43 39 51 31 Q56 27 59 29 Q61 27 65 29 Q75 35 79 53 Q72 47 65 44 Q62 40 60 34 Q58 40 55 44 Q48 46 41 53Z', fill:'hair' },
+    { kind:'path', d:'M60 29 L60 35', stroke:'skin', strokeWidth:1, opacity:.88 },
+  ]},
 ];
 
 export const HAIR_STYLES: HairStyleDefinition[] = [
-  { id:'hair.child.double-bun', label:'女童双小髻', lifeStages:['child','teen'], backLayerId:'layer.hair.child-double-bun.back', frontLayerId:'layer.hair.child-double-bun.front', baseWeight:1 },
-  { id:'hair.youth.halfbound', label:'少女半束后披', lifeStages:['young-adult'], backLayerId:'layer.hair.youth-halfbound.back', frontLayerId:'layer.hair.youth-halfbound.front', baseWeight:1 },
-  { id:'hair.adult.low-bun', label:'成年低髻', lifeStages:['adult','middle-age'], backLayerId:'layer.hair.adult-low-bun.back', frontLayerId:'layer.hair.adult-low-bun.front', baseWeight:1 },
-  { id:'hair.elder.low-bun', label:'老年花白低髻', lifeStages:['elder'], backLayerId:'layer.hair.elder-low-bun.back', frontLayerId:'layer.hair.elder-low-bun.front', baseWeight:1 },
+  { id:'hair.child.double-bun', label:'女童双小髻', genders:['female'], lifeStages:['child','teen'], backLayerId:'layer.hair.child-double-bun.back', frontLayerId:'layer.hair.child-double-bun.front', baseWeight:1 },
+  { id:'hair.youth.halfbound', label:'少女半束后披', genders:['female'], lifeStages:['young-adult'], backLayerId:'layer.hair.youth-halfbound.back', frontLayerId:'layer.hair.youth-halfbound.front', baseWeight:1 },
+  { id:'hair.adult.low-bun', label:'成年低髻', genders:['female'], lifeStages:['adult','middle-age'], backLayerId:'layer.hair.adult-low-bun.back', frontLayerId:'layer.hair.adult-low-bun.front', baseWeight:1 },
+  { id:'hair.elder.low-bun', label:'老年花白低髻', genders:['female'], lifeStages:['elder'], backLayerId:'layer.hair.elder-low-bun.back', frontLayerId:'layer.hair.elder-low-bun.front', baseWeight:1 },
+  { id:'hair.male.child-tied', label:'男童小束发', genders:['male'], lifeStages:['child','teen'], backLayerId:'layer.hair.male-child-tied.back', frontLayerId:'layer.hair.male-child-tied.front', baseWeight:1 },
+  { id:'hair.male.youth-tied', label:'青年男子束发', genders:['male'], lifeStages:['young-adult'], backLayerId:'layer.hair.male-youth-tied.back', frontLayerId:'layer.hair.male-youth-tied.front', baseWeight:1 },
+  { id:'hair.male.adult-tied', label:'成年男子束发', genders:['male'], lifeStages:['adult','middle-age'], backLayerId:'layer.hair.male-adult-tied.back', frontLayerId:'layer.hair.male-adult-tied.front', baseWeight:1 },
+  { id:'hair.male.elder-tied', label:'老年男子收束发', genders:['male'], lifeStages:['elder'], backLayerId:'layer.hair.male-elder-tied.back', frontLayerId:'layer.hair.male-elder-tied.front', baseWeight:1 },
 ];
 
 export const OUTFIT_STYLES: OutfitStyleDefinition[] = [

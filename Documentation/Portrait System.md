@@ -18,15 +18,30 @@ Completed on the cleanup branch:
 - Resident UI screenshots and portrait screenshots are now separate responsibilities.
 - Build and the simplified visual-review workflow both pass.
 
-Still intentionally retained for now:
+Runtime migration progress:
 
-- `ResidentAvatarArtV2.tsx`
-- `portrait-rig.ts`
-- `portrait-art-v2.ts`
-- `portrait-woodblock-v7.tsx`
-- the old appearance compiler / content schema
+- The live `ResidentAvatar` now renders through `Web/src/resident/portrait/PortraitRenderer.tsx`.
+- Minimal male FaceFamily / HairStyle coverage has been added so generated male residents no longer require the legacy renderer.
+- Live ResidentAvatar review now explicitly asserts render contract 8.4.
+- `ResidentAvatarArtV1.tsx`, `ResidentAvatarArtV2.tsx`, `portrait-rig.ts`, `portrait-art-v2.ts`, and `portrait-woodblock-v7.tsx` have been removed from the migration branch.
+- Build passes after removing the legacy Web renderer stack.
 
-These remain only because the real game `ResidentAvatar` and generated resident snapshot still depend on them. They are the next migration target and should not receive new feature work.
+Snapshot/compiler migration progress:
+
+- Final resident snapshots now use `wanhu.resident-snapshot.v4`.
+- Residents store compact `ResidentPortraitDNA`: FaceFamily / HairStyle / OutfitStyle / skin palette / base hair color.
+- The old `appearance` payload and `portraitSeed` are removed from final resident records.
+- `Tools/ResidentPortraitCompiler/` now performs deterministic seeded portrait selection.
+- The live ResidentAvatar consumes these saved stable IDs.
+- The old `ResidentAppearanceCompiler` has been removed.
+
+Final legacy authoring cleanup is also complete:
+
+- `Content/Appearance/` has been removed.
+- `Schemas/appearance.schema.json` has been removed.
+- ContentContractCompiler validates `Content/Portrait/portrait-catalog.json` directly.
+- WebContentCompiler publishes `portraitCatalog` in resident definitions v5.
+- No legacy appearance catalog is required by the build pipeline.
 
 The portrait is a secondary game system. The priority order is:
 
@@ -319,7 +334,7 @@ Names should no longer contain `v7`, `v8`, `art-v2`, or `generator-v8`.
 
 The system becomes the normal resident portrait implementation rather than an experiment.
 
-## Phase 2 — migrate the real ResidentAvatar
+## Phase 2 — migrate the real ResidentAvatar — completed on runtime-migration branch
 
 Replace:
 
@@ -348,7 +363,7 @@ Recommended minimal male coverage:
 
 Do not rebuild the old beard / headwear / rig complexity during this step.
 
-## Phase 3 — simplify snapshot appearance data
+## Phase 3 — simplify snapshot appearance data — completed on runtime-migration branch
 
 Replace the old `ResidentAppearanceDNA` with a compact `ResidentPortraitDNA`:
 
@@ -364,7 +379,7 @@ Optional future fields should only be added when a real gameplay feature require
 
 Update the snapshot schema in one migration.
 
-## Phase 4 — replace the appearance compiler
+## Phase 4 — replace the appearance compiler — completed on runtime-migration branch
 
 Current compiler complexity includes:
 
@@ -393,7 +408,7 @@ It should contain only metadata needed by the compiler:
 
 The Web renderer keeps vector geometry in the portrait art catalog.
 
-## Phase 5 — delete legacy runtime portrait stacks
+## Phase 5 — delete legacy runtime portrait stacks — completed on runtime-migration branch
 
 After the actual game uses the unified renderer, remove:
 
@@ -455,7 +470,7 @@ Delete the old V2 / V7 / V8 screenshot and quality scripts after the unified rev
 
 The visual-review workflow should become much shorter and faster.
 
-## Phase 8 — archive or delete historical documents
+## Phase 8 — archive or delete historical documents — completed on runtime-migration branch
 
 The canonical design is this document.
 

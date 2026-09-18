@@ -29,3 +29,17 @@
 .generated-portrait--master {
   aspect-ratio: 4 / 5;
 }
+
+
+.resident-avatar .portrait-renderer {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.resident-avatar .portrait-renderer svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

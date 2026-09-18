@@ -309,12 +309,13 @@ export default function App() {
           <header className="resident-panel__header">
             <div className="resident-avatar">
               <ResidentAvatar
-                seed={selectedResident.portraitSeed}
+                seed={selectedResident.seed}
+                residentStableId={selectedResident.id}
                 gender={selectedResident.gender}
                 lifeStage={selectedResident.lifeStage}
-                occupationId={selectedResident.occupationId}
-                appearance={selectedResident.appearance}
-                catalog={definitions.appearanceCatalog}
+                wealthTier={selectedHousehold?.wealthTier ?? 'plain'}
+                presentationStyle={selectedHousehold?.presentationStyle ?? 'tidy'}
+                portrait={selectedResident.portrait}
                 label={`${selectedResident.displayName}的头像`}
               />
             </div>
