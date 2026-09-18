@@ -449,11 +449,11 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M5 -4 Q9 -3 10 0', stroke:'hair-accent', strokeWidth:.26, opacity:.07 },
   ]},
   { id:'layer.hair.elder-gray-bun.front', slot:'front-hair', z:70, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'skullTop', maskMode:'inside-skull', shapes:[
-    { kind:'path', d:'M-3 4 C-9 5 -14 10 -17 17 C-18 20 -18 23 -17 26 C-13 21 -9 18 -4 17 C-2 13 -2 8 -3 4Z', fill:'hair' },
-    { kind:'path', d:'M3 5 C8 6 13 11 16 17 C17 20 17 23 16 25 C12 21 8 18 4 17 C2 13 2 9 3 5Z', fill:'hair' },
+    { kind:'path', d:'M-2 -2 C-9 -2 -15 4 -18 13 C-19 17 -19 22 -17 26 C-13 20 -9 17 -4 16 C-1 11 0 4 -2 -2Z', fill:'hair' },
+    { kind:'path', d:'M2 -1 C8 -1 14 5 17 13 C18 17 18 22 16 25 C12 20 8 17 4 16 C1 11 0 5 2 -1Z', fill:'hair' },
   ]},
   { id:'layer.hair.elder-gray-bun.detail', slot:'front-hair', z:71, lods:[64,96], coordinateSpace:'anchor-local', anchor:'skullTop', maskMode:'inside-skull', shapes:[
-    { kind:'path', d:'M-12 12 Q-7 8 -4 8 M4 9 Q8 10 12 13', stroke:'hair-accent', strokeWidth:.28, opacity:.07 },
+    { kind:'path', d:'M-10 9 Q-6 5 -3 4 M4 5 Q8 7 11 10', stroke:'hair-accent', strokeWidth:.26, opacity:.065 },
   ]},
   { id:'layer.hair.elder-gray-bun.side', slot:'side-hair', z:60, lods:[64,96], coordinateSpace:'anchor-local', anchor:'skullTop', maskMode:'outside-face', shapes:[
     { kind:'path', d:'M-14 24 Q-14.3 27 -13 29', stroke:'hair', strokeWidth:.66, opacity:.72 },
@@ -521,7 +521,7 @@ export const HAIR_BUNDLES: HairStyleBundle[] = [
     layerAssetIds:['layer.hair.elder-gray-bun.rear-flow','layer.hair.elder-gray-bun.nape-root','layer.hair.elder-gray-bun.bun','layer.hair.elder-gray-bun.coil','layer.hair.elder-gray-bun.front','layer.hair.elder-gray-bun.detail','layer.hair.elder-gray-bun.side'],
     placementByHeadProfile:{
       'head.female.soft-oval.adult.v1':{},
-      'head.female.soft-oval.elder.v1':{translateY:1,scaleX:.94,scaleY:.94},
+      'head.female.soft-oval.elder.v1':{translateY:0,scaleX:.98,scaleY:.98},
     },
     accessorySlots:['accessory.wood-pin','accessory.jade-pin'],
   },
