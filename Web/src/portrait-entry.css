@@ -1,5 +1,6 @@
 .portrait-view-entry,
-.portrait-style-entry {
+.portrait-style-entry,
+.portrait-v8-entry {
   position: fixed;
   left: 24px;
   z-index: 90;
@@ -24,9 +25,11 @@
 
 .portrait-view-entry { top: 78px; }
 .portrait-style-entry { top: 120px; }
+.portrait-v8-entry { top: 162px; }
 
 .portrait-view-entry:hover,
-.portrait-style-entry:hover {
+.portrait-style-entry:hover,
+.portrait-v8-entry:hover {
   border-color: rgba(225, 199, 128, .48);
   background: rgba(35, 48, 41, .94);
   transform: translateY(-1px);
@@ -34,7 +37,9 @@
 
 @media (max-width: 900px) {
   .portrait-view-entry,
-  .portrait-style-entry { left: 14px; }
+  .portrait-style-entry,
+  .portrait-v8-entry { left: 14px; }
   .portrait-view-entry { top: 70px; }
   .portrait-style-entry { top: 112px; }
+  .portrait-v8-entry { top: 154px; }
 }
