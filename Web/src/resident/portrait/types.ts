@@ -80,6 +80,7 @@ export type FaceFamilyDefinition = {
   label: string;
   genders: Gender[];
   faceLayerByAge: Record<PortraitAgeBand, string>;
+  baseWeight: number;
 };
 
 export type HairStyleDefinition = {

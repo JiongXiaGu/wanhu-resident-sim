@@ -255,6 +255,8 @@ female / male
 
 头像 Runtime 最终清理已完成：youth / middle StageProfile、共享 FeatureLayer、Stage Body 和 Frame 特判已经删除。游戏 LifeStage 仍保留，但头像只映射到 child / adult / elder 三个 AgeBand。
 
+头像代码整理也已收口：`portrait-catalog.json` 是逻辑元数据权威；Web 的 `art-manifest.json` 只记录美术 Layer 映射；Catalog Audit 会在 build-content 中检查两边一致性。Face / Hair / Outfit / Neck 几何已经拆分到独立 assets 文件。
+
 ## 当前玩法验证路线
 
 接下来按玩法问题推进：

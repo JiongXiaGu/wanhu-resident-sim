@@ -1,0 +1,299 @@
+{
+  "schema": "wanhu.portrait-art-manifest.v1",
+  "frames": {
+    "female.child": {
+      "neckLayerId": "layer.neck.female-child-frame",
+      "backgroundColor": "#d7bf88",
+      "collarColor": "#a79b79"
+    },
+    "female.adult": {
+      "neckLayerId": "layer.neck.female-adult-frame",
+      "backgroundColor": "#cbb07b",
+      "collarColor": "#b1a487"
+    },
+    "female.elder": {
+      "neckLayerId": "layer.neck.female-elder-frame",
+      "backgroundColor": "#b9aa83",
+      "collarColor": "#938b77"
+    },
+    "male.child": {
+      "neckLayerId": "layer.neck.male-child-frame",
+      "backgroundColor": "#d7bf88",
+      "collarColor": "#a79b79"
+    },
+    "male.adult": {
+      "neckLayerId": "layer.neck.male-adult-frame",
+      "backgroundColor": "#cbb07b",
+      "collarColor": "#aaa082"
+    },
+    "male.elder": {
+      "neckLayerId": "layer.neck.male-elder-frame",
+      "backgroundColor": "#b9aa83",
+      "collarColor": "#938b77"
+    }
+  },
+  "faceFamilies": [
+    {
+      "id": "face.soft-oval",
+      "label": "女子柔和鹅蛋脸",
+      "faceLayerByAge": {
+        "child": "layer.face.soft-oval.child",
+        "adult": "layer.face.soft-oval.adult",
+        "elder": "layer.face.soft-oval.elder"
+      }
+    },
+    {
+      "id": "face.round-soft",
+      "label": "女子圆润脸",
+      "faceLayerByAge": {
+        "child": "layer.face.round-soft.child",
+        "adult": "layer.face.round-soft.adult",
+        "elder": "layer.face.round-soft.elder"
+      }
+    },
+    {
+      "id": "face.long-narrow",
+      "label": "女子长窄脸",
+      "faceLayerByAge": {
+        "child": "layer.face.long-narrow.child",
+        "adult": "layer.face.long-narrow.adult",
+        "elder": "layer.face.long-narrow.elder"
+      }
+    },
+    {
+      "id": "face.broad-cheek",
+      "label": "女子宽颊脸",
+      "faceLayerByAge": {
+        "child": "layer.face.broad-cheek.child",
+        "adult": "layer.face.broad-cheek.adult",
+        "elder": "layer.face.broad-cheek.elder"
+      }
+    },
+    {
+      "id": "face.square-soft",
+      "label": "女子柔方脸",
+      "faceLayerByAge": {
+        "child": "layer.face.square-soft.child",
+        "adult": "layer.face.square-soft.adult",
+        "elder": "layer.face.square-soft.elder"
+      }
+    },
+    {
+      "id": "face.narrow-chin",
+      "label": "女子窄下颌脸",
+      "faceLayerByAge": {
+        "child": "layer.face.narrow-chin.child",
+        "adult": "layer.face.narrow-chin.adult",
+        "elder": "layer.face.narrow-chin.elder"
+      }
+    },
+    {
+      "id": "face.male-oval",
+      "label": "男子椭圆脸",
+      "faceLayerByAge": {
+        "child": "layer.face.male-oval.child",
+        "adult": "layer.face.male-oval.adult",
+        "elder": "layer.face.male-oval.elder"
+      }
+    },
+    {
+      "id": "face.male-round",
+      "label": "男子圆脸",
+      "faceLayerByAge": {
+        "child": "layer.face.male-round.child",
+        "adult": "layer.face.male-round.adult",
+        "elder": "layer.face.male-round.elder"
+      }
+    },
+    {
+      "id": "face.male-square",
+      "label": "男子方脸",
+      "faceLayerByAge": {
+        "child": "layer.face.male-square.child",
+        "adult": "layer.face.male-square.adult",
+        "elder": "layer.face.male-square.elder"
+      }
+    },
+    {
+      "id": "face.male-long",
+      "label": "男子长脸",
+      "faceLayerByAge": {
+        "child": "layer.face.male-long.child",
+        "adult": "layer.face.male-long.adult",
+        "elder": "layer.face.male-long.elder"
+      }
+    }
+  ],
+  "hairStyles": [
+    {
+      "id": "hair.child.double-bun",
+      "label": "女童双小髻",
+      "backLayerId": "layer.hair.child-double-bun.back",
+      "frontLayerId": "layer.hair.child-double-bun.front"
+    },
+    {
+      "id": "hair.female.adult.low-coil",
+      "label": "成年女子低挽圆髻",
+      "backLayerId": "layer.hair.female-adult-low-coil.back",
+      "frontLayerId": "layer.hair.female-adult-low-coil.front"
+    },
+    {
+      "id": "hair.female.adult.round-coil",
+      "label": "成年女子圆髻",
+      "backLayerId": "layer.hair.female-adult-round-coil.back",
+      "frontLayerId": "layer.hair.female-adult-round-coil.front"
+    },
+    {
+      "id": "hair.female.adult.half-bound",
+      "label": "成年女子半束垂发",
+      "backLayerId": "layer.hair.female-adult-half-bound.back",
+      "frontLayerId": "layer.hair.female-adult-half-bound.front"
+    },
+    {
+      "id": "hair.elder.low-bun",
+      "label": "老年花白低髻",
+      "backLayerId": "layer.hair.elder-low-bun.back",
+      "frontLayerId": "layer.hair.elder-low-bun.front"
+    },
+    {
+      "id": "hair.male.child-tied",
+      "label": "男童小束发",
+      "backLayerId": "layer.hair.male-child-tied.back",
+      "frontLayerId": "layer.hair.male-child-tied.front"
+    },
+    {
+      "id": "hair.male.adult-tied",
+      "label": "成年男子束发",
+      "backLayerId": "layer.hair.male-adult-tied.back",
+      "frontLayerId": "layer.hair.male-adult-tied.front"
+    },
+    {
+      "id": "hair.male.elder-tied",
+      "label": "老年男子收束发",
+      "backLayerId": "layer.hair.male-elder-tied.back",
+      "frontLayerId": "layer.hair.male-elder-tied.front"
+    }
+  ],
+  "outfitStyles": [
+    {
+      "id": "outfit.poor.v2",
+      "label": "贫寒单层衣",
+      "layerAssetIdsByFrame": {
+        "female.child": [
+          "layer.outfit.female-child.poor"
+        ],
+        "female.elder": [
+          "layer.outfit.female-elder.poor"
+        ],
+        "male.child": [
+          "layer.outfit.male-child.poor"
+        ],
+        "male.adult": [
+          "layer.outfit.male-adult.poor"
+        ],
+        "male.elder": [
+          "layer.outfit.male-elder.poor"
+        ]
+      }
+    },
+    {
+      "id": "outfit.plain.v2",
+      "label": "普通衣",
+      "layerAssetIdsByFrame": {
+        "female.child": [
+          "layer.outfit.female-child.plain"
+        ],
+        "female.elder": [
+          "layer.outfit.female-elder.plain"
+        ],
+        "male.child": [
+          "layer.outfit.male-child.plain"
+        ],
+        "male.adult": [
+          "layer.outfit.male-adult.plain"
+        ],
+        "male.elder": [
+          "layer.outfit.male-elder.plain"
+        ]
+      }
+    },
+    {
+      "id": "outfit.comfortable.v2",
+      "label": "殷实叠领衣",
+      "layerAssetIdsByFrame": {
+        "female.child": [
+          "layer.outfit.female-child.comfortable"
+        ],
+        "female.elder": [
+          "layer.outfit.female-elder.comfortable"
+        ],
+        "male.child": [
+          "layer.outfit.male-child.comfortable"
+        ],
+        "male.adult": [
+          "layer.outfit.male-adult.comfortable"
+        ],
+        "male.elder": [
+          "layer.outfit.male-elder.comfortable"
+        ]
+      }
+    },
+    {
+      "id": "outfit.wealthy.v2",
+      "label": "富裕层领衣",
+      "layerAssetIdsByFrame": {
+        "female.child": [
+          "layer.outfit.female-child.wealthy"
+        ],
+        "female.elder": [
+          "layer.outfit.female-elder.wealthy"
+        ],
+        "male.child": [
+          "layer.outfit.male-child.wealthy"
+        ],
+        "male.adult": [
+          "layer.outfit.male-adult.wealthy"
+        ],
+        "male.elder": [
+          "layer.outfit.male-elder.wealthy"
+        ]
+      }
+    },
+    {
+      "id": "outfit.female.adult.work-cross-collar",
+      "label": "成年女子粗布交领短衣",
+      "layerAssetIdsByFrame": {
+        "female.adult": [
+          "layer.outfit.female-adult.work-cross-collar"
+        ]
+      }
+    },
+    {
+      "id": "outfit.female.adult.plain-cross-collar",
+      "label": "成年女子素色交领衫",
+      "layerAssetIdsByFrame": {
+        "female.adult": [
+          "layer.outfit.female-adult.plain-cross-collar"
+        ]
+      }
+    },
+    {
+      "id": "outfit.female.adult.layered-cross-collar",
+      "label": "成年女子叠领襦衣",
+      "layerAssetIdsByFrame": {
+        "female.adult": [
+          "layer.outfit.female-adult.layered-cross-collar"
+        ]
+      }
+    },
+    {
+      "id": "outfit.female.adult.front-opening-jacket",
+      "label": "成年女子对襟罩衫",
+      "layerAssetIdsByFrame": {
+        "female.adult": [
+          "layer.outfit.female-adult.front-opening-jacket"
+        ]
+      }
+    }
+  ]
+}

@@ -111,7 +111,7 @@ Web/public/generated/
 
 ```text
 definitions.json       wanhu.resident-definitions.v6
-resident-snapshot.json wanhu.resident-snapshot.v4
+resident-snapshot.json wanhu.resident-snapshot.v5
 ```
 
 这些文件只服务 Web 原型、内容检查和自动测试，不代表未来 Unity 存档或 Runtime 格式。
@@ -266,7 +266,7 @@ Face、Hair、Outfit 都必须按同一个 Frame 规格制作。一张脸可以�
 /?view=portraits
 ```
 
-正式规则见 `Documentation/Portrait System.md`。
+正式规则见 `Documentation/Portrait System.md`。头像逻辑元数据以 `Content/Portrait/portrait-catalog.json` 为权威，Web 美术映射由 `assets/art-manifest.json` 管理，并由 Catalog Audit 自动检查一致性。
 
 ## 内容生产原则
 

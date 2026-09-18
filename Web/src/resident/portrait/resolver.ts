@@ -43,7 +43,7 @@ export function resolveIdentity(context: SemanticAppearanceContext): AppearanceI
     identitySchemaVersion: 3,
     residentStableId: context.residentStableId,
     identitySeed: seeds.base,
-    faceFamilyId: faceCandidates[seeds.pickIndex('face-family', faceCandidates.length)].id,
+    faceFamilyId: weightedPick(faceCandidates,seeds.unit('face-family'),(family)=>family.baseWeight).id,
     skinPaletteId: skinPaletteIds[seeds.pickIndex('skin', skinPaletteIds.length)],
     baseHairColorId: hairPaletteIds[seeds.pickIndex('hair-color', hairPaletteIds.length)],
   };
@@ -96,35 +96,44 @@ export function resolvePresentation(
 
 
 export function resolveSavedPortrait(
-  context: SemanticAppearanceContext,
-  portrait: ResidentPortraitDNA,
-): ResolvedAppearanceDNA {
+  context:SemanticAppearanceContext,
+  portrait:ResidentPortraitDNA,
+):ResolvedAppearanceDNA {
   const identitySeeds=createIdentitySeedBank(context.residentSeed);
   const presentationSeeds=createPresentationSeedBank(context.residentSeed);
+  const identity:AppearanceIdentityDNA={
+    identitySchemaVersion:3,
+    residentStableId:context.residentStableId,
+    identitySeed:identitySeeds.base,
+    faceFamilyId:portrait.faceFamilyId,
+    skinPaletteId:portrait.skinPaletteId,
+    baseHairColorId:portrait.baseHairColorId,
+  };
+
+  const frameId=portraitFrameIdFor(context.gender,context.lifeStage);
+  const compatibleHair=HAIR_STYLES.filter((style)=>style.genders.includes(context.gender)&&style.frameIds.includes(frameId));
+  const hair=compatibleHair.find((style)=>style.id===portrait.hairStyleId)
+    ?? weightedPick(compatibleHair,presentationSeeds.unit('hair',frameId),(style)=>style.baseWeight);
+
+  const compatibleOutfits=OUTFIT_STYLES.filter((style)=>style.frameIds.includes(frameId));
+  const defaultOutfits=compatibleOutfits.filter((style)=>style.initialWealthTiers.includes(context.wealthTier));
+  const outfit=compatibleOutfits.find((style)=>style.id===portrait.outfitStyleId)
+    ?? weightedPick(
+      defaultOutfits.length?defaultOutfits:compatibleOutfits,
+      presentationSeeds.unit('outfit',frameId+':'+context.wealthTier),
+      (style)=>style.baseWeight,
+    );
+
   return {
     generatorVersion:PORTRAIT_GENERATOR_VERSION,
-    identity:{
-      identitySchemaVersion:3,
-      residentStableId:context.residentStableId,
-      identitySeed:identitySeeds.base,
-      faceFamilyId:portrait.faceFamilyId,
-      skinPaletteId:portrait.skinPaletteId,
-      baseHairColorId:portrait.baseHairColorId,
-    },
+    identity,
     presentation:{
       presentationSchemaVersion:2,
       presentationSeed:presentationSeeds.base,
       lifeStage:context.lifeStage,
-      hairStyleId:portrait.hairStyleId,
-      outfitStyleId:portrait.outfitStyleId,
-      hairColorStateId:hairColorStateFor(context.lifeStage,{
-        identitySchemaVersion:3,
-        residentStableId:context.residentStableId,
-        identitySeed:identitySeeds.base,
-        faceFamilyId:portrait.faceFamilyId,
-        skinPaletteId:portrait.skinPaletteId,
-        baseHairColorId:portrait.baseHairColorId,
-      }),
+      hairStyleId:hair.id,
+      outfitStyleId:outfit.id,
+      hairColorStateId:hairColorStateFor(context.lifeStage,identity),
     },
   };
 }

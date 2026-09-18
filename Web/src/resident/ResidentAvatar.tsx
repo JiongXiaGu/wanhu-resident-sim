@@ -1,7 +1,6 @@
 import type { Gender, LifeStageId, ResidentPortraitDNA, WealthTier } from '../domain/resident';
 import { PortraitRenderer } from './portrait/PortraitRenderer';
 import { resolveAppearance, resolveSavedPortrait } from './portrait/resolver';
-import { hash32 } from './portrait/seed';
 
 type Props = {
   seed?: number;
@@ -14,10 +13,6 @@ type Props = {
   outfitStyleId?: string;
   label?: string;
 };
-
-export function appearanceSignature(value: unknown) {
-  return hash32(JSON.stringify(value)).toString(16).padStart(8,'0');
-}
 
 export function ResidentAvatar({
   seed=1,

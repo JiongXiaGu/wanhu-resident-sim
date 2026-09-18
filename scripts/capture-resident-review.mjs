@@ -41,6 +41,7 @@ if ((await page.locator('.resident-summary').count()) !== 0) {
 await page.getByRole('button', { name: '隐藏', exact: true }).click();
 await page.waitForSelector('.dev-reopen');
 await page.screenshot({ path: `${outDir}/01-player-resident.png` });
+await page.locator('.resident-panel__header').screenshot({ path: `${outDir}/01a-resident-header-closeup.png` });
 
 await page.getByRole('button', { name: 'DEV', exact: true }).click();
 await page.getByRole('button', { name: '推进故事', exact: true }).click();

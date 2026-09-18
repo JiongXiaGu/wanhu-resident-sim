@@ -2,7 +2,6 @@ export type Gender = 'male' | 'female';
 
 export type LifeStageId = 'child' | 'teen' | 'young-adult' | 'adult' | 'middle-age' | 'elder';
 export type WealthTier = 'poor' | 'plain' | 'comfortable' | 'wealthy';
-export type PresentationStyle = 'practical' | 'tidy' | 'refined';
 export type PortraitFrameId =
   | 'female.child'
   | 'female.adult'
@@ -69,11 +68,10 @@ export type HouseholdRecord = {
   districtId: string;
   memberIds: number[];
   wealthTier: WealthTier;
-  presentationStyle: PresentationStyle;
 };
 
 export type ResidentWorldSnapshot = {
-  schema: 'wanhu.resident-snapshot.v4';
+  schema: 'wanhu.resident-snapshot.v5';
   citySeed: number;
   currentDay: number;
   residents: ResidentRecord[];

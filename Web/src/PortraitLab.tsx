@@ -3,6 +3,7 @@ import { portraitFrameIdFor } from './resident/portrait/frame';
 import {
   assertPortraitIdentityInvariant,
   resolveAppearance,
+  resolveSavedPortrait,
 } from './resident/portrait/resolver';
 import { hash32 } from './resident/portrait/seed';
 import { PortraitRenderer } from './resident/portrait/PortraitRenderer';
@@ -136,18 +137,41 @@ const maleElderReview=maleAdultFaces.map((face,index)=>{
   return {face,context,dna:{...base,identity:{...base.identity,faceFamilyId:face.id}}};
 });
 
-const crowdStages:SemanticAppearanceContext['lifeStage'][]=['child','young-adult','adult','middle-age','elder','adult'];
+const crowdStages:SemanticAppearanceContext['lifeStage'][]=['child','young-adult','adult','middle-age','elder'];
 const crowdWealth:SemanticAppearanceContext['wealthTier'][]=['poor','plain','comfortable','wealthy'];
 const crowd=Array.from({length:24},(_,index)=>{
+  const residentSeed=97000+index*37;
   const context:SemanticAppearanceContext={
     residentStableId:'portrait-crowd-'+String(index+1).padStart(2,'0'),
-    residentSeed:97000+index*37,
-    gender:index%2===0?'female':'male',
-    lifeStage:crowdStages[index%crowdStages.length],
-    wealthTier:crowdWealth[index%crowdWealth.length],
+    residentSeed,
+    gender:(hash32('crowd-gender:'+residentSeed)%2===0)?'female':'male',
+    lifeStage:crowdStages[hash32('crowd-stage:'+residentSeed)%crowdStages.length],
+    wealthTier:crowdWealth[hash32('crowd-wealth:'+residentSeed)%crowdWealth.length],
   };
   return {context,dna:resolveAppearance(context)};
 });
+
+const agingAdultContext:SemanticAppearanceContext={
+  residentStableId:'portrait-aging-contract',
+  residentSeed:99661,
+  gender:'male',
+  lifeStage:'adult',
+  wealthTier:'plain',
+};
+const agingAdultDna=resolveAppearance(agingAdultContext);
+const agingSavedPortrait={
+  faceFamilyId:agingAdultDna.identity.faceFamilyId,
+  hairStyleId:agingAdultDna.presentation.hairStyleId,
+  outfitStyleId:agingAdultDna.presentation.outfitStyleId,
+  skinPaletteId:agingAdultDna.identity.skinPaletteId,
+  baseHairColorId:agingAdultDna.identity.baseHairColorId,
+};
+const agingElderContext={...agingAdultContext,lifeStage:'elder' as const};
+const agingElderDna=resolveSavedPortrait(agingElderContext,agingSavedPortrait);
+const ageTransitionPass=
+  HAIR_STYLES.some((style)=>style.id===agingElderDna.presentation.hairStyleId&&style.frameIds.includes('male.elder'))
+  && OUTFIT_STYLES.some((style)=>style.id===agingElderDna.presentation.outfitStyleId&&style.frameIds.includes('male.elder'))
+  && agingElderDna.identity.faceFamilyId===agingAdultDna.identity.faceFamilyId;
 
 function PortraitCard({context,dna,lod=96}:{context:SemanticAppearanceContext;dna:ResolvedAppearanceDNA;lod?:PortraitLod}) {
   return (
@@ -189,6 +213,7 @@ export function PortraitLab() {
         <div data-portrait-check="female-adult-outfit" data-state={femaleAdultOutfits.length===4?'pass':'fail'}><b>{femaleAdultOutfits.length}</b><span>成年女性衣着</span></div>
         <div data-portrait-check="frame-contract" data-state="pass"><b>6</b><span>PortraitFrame</span></div>
         <div data-portrait-check="proof-combinations" data-state={femaleAdultProof.length===72?'pass':'fail'}><b>{femaleAdultProof.length}</b><span>female.adult 组合</span></div>
+        <div data-portrait-check="saved-age-transition" data-state={ageTransitionPass?'pass':'fail'}><b>{ageTransitionPass?'PASS':'FAIL'}</b><span>跨年龄保存头像兼容</span></div>
       </section>
 
       <section className="portrait-review-section" data-portrait-section="face-close-review">
@@ -262,7 +287,7 @@ export function PortraitLab() {
       </section>
 
       <section className="portrait-review-section" data-portrait-section="hair-art">
-        <header><div><span>06 · HAIR ART</span><h2>束、挽、盘，而不是现代发型换皮</h2></div><p>female.adult 新增低挽圆髻、圆髻、半束垂发；其它年龄/男性仍是兼容资产，后续按相同 Frame 原则逐批替换。</p></header>
+        <header><div><span>06 · HAIR ART</span><h2>束、挽、盘，而不是现代发型换皮</h2></div><p>female.adult 已有低挽圆髻、圆髻、半束垂发；其它 Frame 仍有较早期的美术资产，但运行时已经完全使用同一固定 Frame 架构。</p></header>
         <div className="portrait-review-grid portrait-review-grid-4">
           {hairSamples.map(({style,context,dna})=>(
             <article className="portrait-review-card" data-hair-style-card={style.id} key={style.id}>
@@ -277,7 +302,7 @@ export function PortraitLab() {
       </section>
 
       <section className="portrait-review-section" data-portrait-section="temporal">
-        <header><div><span>07 · THREE AGE BANDS</span><h2>同一个 FaceFamily：儿童 / 成年 / 老年</h2></div><p>本轮只把 female.adult 替换成新 Frame 资产；儿童与老年仍保留兼容桥，下一批继续迁移。</p></header>
+        <header><div><span>07 · THREE AGE BANDS</span><h2>同一个 FaceFamily：儿童 / 成年 / 老年</h2></div><p>运行时已全部切到 child / adult / elder 固定 Frame；这里继续检查同一 FaceFamily 跨三个年龄段的身份连续性，儿童与老年仅剩美术质量需要继续提升。</p></header>
         <div className="portrait-review-grid portrait-review-grid-3">
           {temporalResolved.map((item)=><PortraitCard key={item.context.lifeStage} {...item}/>)}
         </div>

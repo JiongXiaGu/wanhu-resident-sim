@@ -86,7 +86,7 @@ WebContentCompiler
 ```
 
 最终 Web Definition Bundle：`wanhu.resident-definitions.v6`。
-最终 Web Snapshot：`wanhu.resident-snapshot.v4`。
+最终 Web Snapshot：`wanhu.resident-snapshot.v5`。
 
 这些都只是 Web / Compiler 验证格式。
 
@@ -167,6 +167,8 @@ Resident Visual Review 必须继续验证这条链，以及人生时间轴的年
 - Gender + AgeBand 产生六个固定 PortraitFrame。
 - Face / Hair / Outfit 必须按 Frame 直接作画；运行时不增加 Anchor、Mask、Offset Solver 或通用 Compatibility Engine。
 - 头像 Runtime 已完成最终清理：没有 PortraitStageProfile、共享 FeatureLayer、Stage Body 或 Frame 特判；所有 Frame 使用同一固定裁切与同一 RenderPlan。
+- `Content/Portrait/portrait-catalog.json` 是头像逻辑元数据唯一权威；`assets/art-manifest.json` 只负责 Web 美术映射。新增/删除头像 Stable ID 必须通过 PortraitCatalogAudit。
+- Face / Hair / Outfit / Neck 几何分别维护在 `portrait/assets/` 下，不再把全部 SVG Path 堆进 `catalog.ts`。
 - `female.adult` 已进入正式 Frame Proof：6 个 FaceFamily × 3 个 HairStyle × 4 个 OutfitStyle，Visual Review 必须覆盖全部 72 个组合。
 - 美术方向采用泛中国古代居民语汇：束/挽/盘发、交领/叠领/对襟常服、低饱和克制配色；不要靠夸张面部特征表达“中国感”。
 - 头像工作台唯一入口是 `/?view=portraits`。

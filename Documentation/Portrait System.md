@@ -111,7 +111,7 @@ center line: x=60
 
 The viewBox must not change per resident, FaceFamily, hairstyle or outfit.
 
-The current V8.4 stage-specific viewBoxes are temporary compatibility code and will be removed during asset replacement.
+All six PortraitFrames now use this same fixed viewBox. There is no stage-specific viewBox path in the active runtime.
 
 Recommended authoring guide ranges:
 
@@ -221,16 +221,42 @@ The intended simple layer stack is:
 ~~~text
 Background
 Back Hair
-Neutral Neck / Body Base
+Neck
 Outfit
 Face
-Face Detail
 Front Hair
 ~~~
 
 Accessories, hats, beard systems and generic overlay slots are out of scope for the first frozen version.
 
 ---
+
+## Catalog ownership
+
+There are now two deliberately different data sources:
+
+~~~text
+Content/Portrait/portrait-catalog.json
+= gameplay/content metadata authority
+  Stable ID / gender / Frame compatibility / initial wealth fit / weight
+
+Web/src/resident/portrait/assets/art-manifest.json
+= Web art mapping only
+  label / Face age layer IDs / Hair front+back layer IDs / Outfit layer IDs / Frame neck art
+~~~
+
+`Tools/PortraitCatalogAudit` runs during `build-content` and rejects mismatched IDs, missing Frame coverage, missing referenced layers, duplicate layers and unreferenced vector layers.
+
+The actual vector geometry is split into:
+
+~~~text
+assets/faces.ts
+assets/hair.ts
+assets/outfits.ts
+assets/necks.ts
+~~~
+
+`catalog.ts` only joins metadata with art and provides lookup maps.
 
 ## Stable data
 
@@ -250,6 +276,8 @@ Keep it.
 `ageBand` and `frameId` are derived from gender and current life stage. They are not additional saved DNA.
 
 The initial selections remain deterministic from the resident seed, then the resolved stable IDs are saved.
+
+If a saved HairStyle or OutfitStyle no longer supports the resident's current Frame after an AgeBand transition, the resolver deterministically selects a compatible presentation asset for the new Frame while keeping FaceFamily / skin / base hair identity stable. The Web prototype does not need a compatibility graph or offset migration table.
 
 ---
 

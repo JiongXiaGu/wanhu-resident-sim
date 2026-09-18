@@ -9,14 +9,10 @@ async function readJson(path) {
 }
 
 const snapshot=await readJson(join(generatedDir,'resident-snapshot.json'));
-const definitions=await readJson(join(generatedDir,'definitions.json'));
 const portraitCatalog=await readJson(join(root,'Content','Portrait','portrait-catalog.json'));
 
 if(snapshot.schema!=='wanhu.resident-snapshot.v2') {
   throw new Error(`ResidentPortraitCompiler expected wanhu.resident-snapshot.v2, got ${snapshot.schema}`);
-}
-if(definitions.schema!=='wanhu.resident-definitions.v3') {
-  throw new Error(`ResidentPortraitCompiler expected wanhu.resident-definitions.v3, got ${definitions.schema}`);
 }
 if(portraitCatalog.schema!=='wanhu.portrait-catalog.v2') {
   throw new Error(`Unsupported portrait catalog schema: ${portraitCatalog.schema}`);
@@ -48,20 +44,12 @@ function weightedPick(seed,salt,items) {
   return items.at(-1);
 }
 
-function assignHouseholdProfile(household) {
+function assignHouseholdWealth(household) {
   const wealthRoll=hash32(`${snapshot.citySeed}:household:${household.id}:wealth`)%100;
-  const wealthTier=wealthRoll<20?'poor':wealthRoll<65?'plain':wealthRoll<92?'comfortable':'wealthy';
-  const styleRoll=hash32(`${snapshot.citySeed}:household:${household.id}:presentation`)%100;
-  let presentationStyle;
-  if(wealthTier==='poor') presentationStyle=styleRoll<72?'practical':'tidy';
-  else if(wealthTier==='plain') presentationStyle=styleRoll<42?'practical':styleRoll<90?'tidy':'refined';
-  else if(wealthTier==='comfortable') presentationStyle=styleRoll<20?'practical':styleRoll<76?'tidy':'refined';
-  else presentationStyle=styleRoll<42?'tidy':'refined';
-  household.wealthTier=wealthTier;
-  household.presentationStyle=presentationStyle;
+  household.wealthTier=wealthRoll<20?'poor':wealthRoll<65?'plain':wealthRoll<92?'comfortable':'wealthy';
 }
 
-for(const household of snapshot.households) assignHouseholdProfile(household);
+for(const household of snapshot.households) assignHouseholdWealth(household);
 const householdById=new Map(snapshot.households.map((item)=>[item.id,item]));
 
 for(const resident of snapshot.residents) {
@@ -91,11 +79,9 @@ for(const resident of snapshot.residents) {
     skinPaletteId:weightedPick(resident.seed,'skin',portraitCatalog.skinPalettes).id,
     baseHairColorId:weightedPick(resident.seed,'hair-color',portraitCatalog.hairPalettes).id,
   };
-  delete resident.portraitSeed;
-  delete resident.appearance;
 }
 
-snapshot.schema='wanhu.resident-snapshot.v4';
+snapshot.schema='wanhu.resident-snapshot.v5';
 await writeFile(join(generatedDir,'resident-snapshot.json'),`${JSON.stringify(snapshot,null,2)}\n`,'utf8');
 
 const faceCounts=Object.fromEntries(portraitCatalog.faceFamilies.map((item)=>[

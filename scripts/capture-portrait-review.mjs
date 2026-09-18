@@ -54,6 +54,8 @@ if(new Set(temporalIds).size!==1) throw new Error('Age band changed identity.');
 if(await page.locator('[data-face-family-card]').count()!==10) throw new Error('Portrait review must show ten current FaceFamily assets.');
 if(await page.locator('[data-hair-style-card]').count()!==8) throw new Error('Portrait review must show eight active HairStyle assets.');
 if(await page.locator('[data-pop-resident]').count()!==24) throw new Error('Crowd review must show 24 seeded residents.');
+const crowdFrames=new Set(await page.locator('[data-pop-resident] .portrait-renderer').evaluateAll((items)=>items.map((item)=>item.getAttribute('data-frame-id'))));
+if(crowdFrames.size<4) throw new Error('Crowd fixture should cover at least four portrait frames.');
 
 const closeFaces=page.locator('[data-face-close-review]');
 if(await closeFaces.count()!==6) throw new Error('Face close review must show six female.adult FaceFamily assets.');
