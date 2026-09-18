@@ -91,3 +91,8 @@
 @media (max-width:760px) {
   .portrait-proof-grid { grid-template-columns:repeat(4,minmax(64px,1fr)); }
 }
+
+
+.portrait-face-close-card>.portrait-renderer {
+  width:min(100%,220px);
+}

@@ -47,7 +47,12 @@ export function buildRenderPlan(
   const hair = hairStyleById(dna.presentation.hairStyleId);
   const outfit = outfitStyleById(dna.presentation.outfitStyleId);
   const usesFemaleAdultFrame = frameId === 'female.adult' && outfit.fullFrame;
-  const faceLayerId = family.faceLayerByAge[usesFemaleAdultFrame ? 'adult' : stage.ageGroup];
+  const usesCompleteFemaleAdultFace = usesFemaleAdultFrame;
+  const usesCompleteMaleAdultFace = frameId === 'male.adult' && context.lifeStage === 'adult';
+  const usesMaleElderFrame = frameId === 'male.elder';
+  const faceLayerId = family.faceLayerByAge[
+    usesFemaleAdultFrame || usesCompleteMaleAdultFace ? 'adult' : stage.ageGroup
+  ];
 
   const layerIds = usesFemaleAdultFrame
     ? [
@@ -55,17 +60,34 @@ export function buildRenderPlan(
         'layer.neck.female-adult-frame',
         ...outfit.layerAssetIds,
         faceLayerId,
-        'layer.features.female-adult-frame',
         hair.frontLayerId,
       ]
-    : [
-        hair.backLayerId,
-        ...stage.layerAssetIds,
-        ...outfit.layerAssetIds,
-        faceLayerId,
-        stage.featureLayerByGender[context.gender],
-        hair.frontLayerId,
-      ];
+    : usesMaleElderFrame
+      ? [
+          hair.backLayerId,
+          'layer.neck.male-elder-frame',
+          'layer.body.male-elder-frame',
+          ...outfit.layerAssetIds,
+          faceLayerId,
+          'layer.features.male.elder',
+          hair.frontLayerId,
+        ]
+      : usesCompleteMaleAdultFace
+        ? [
+            hair.backLayerId,
+            ...stage.layerAssetIds,
+            ...outfit.layerAssetIds,
+            faceLayerId,
+            hair.frontLayerId,
+          ]
+        : [
+            hair.backLayerId,
+            ...stage.layerAssetIds,
+            ...outfit.layerAssetIds,
+            faceLayerId,
+            stage.featureLayerByGender[context.gender],
+            hair.frontLayerId,
+          ];
 
   const layers = layerIds.map(toRenderLayer).sort((a,b)=>a.z-b.z);
   const adultFrameCloth: Record<string,string> = {
@@ -99,7 +121,7 @@ export function buildRenderPlan(
     frameId,
     stageProfileId:stage.id,
     faceFamilyId:family.id,
-    viewBox:usesFemaleAdultFrame ? {x:0,y:15,width:120,height:120} : stage.viewBox,
+    viewBox:usesFemaleAdultFrame || usesMaleElderFrame ? {x:0,y:15,width:120,height:120} : stage.viewBox,
     dna,
     palette,
     layers,

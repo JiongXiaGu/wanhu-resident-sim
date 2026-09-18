@@ -49,11 +49,20 @@ if(await page.locator('[data-face-family-card]').count()!==10) throw new Error('
 if(await page.locator('[data-hair-style-card]').count()!==8) throw new Error('Portrait review must show eight active HairStyle assets.');
 if(await page.locator('[data-pop-resident]').count()!==24) throw new Error('Crowd review must show 24 seeded residents.');
 
+const closeFaces=page.locator('[data-face-close-review]');
+if(await closeFaces.count()!==6) throw new Error('Face close review must show six female.adult FaceFamily assets.');
+
+const maleElder=page.locator('[data-male-elder-review]');
+if(await maleElder.count()!==4) throw new Error('Male elder fix review must show four male FaceFamily assets.');
+const elderFrames=await maleElder.locator('.portrait-renderer').evaluateAll((items)=>items.map((item)=>item.getAttribute('data-frame-id')));
+if(elderFrames.some((value)=>value!=='male.elder')) throw new Error('Male elder review escaped male.elder frame.');
+
 await page.screenshot({path:outDir+'/42-portrait-overview.png',fullPage:true});
-await page.locator('[data-portrait-section="female-adult-proof"]').screenshot({path:outDir+'/43-female-adult-frame-proof.png'});
-await page.locator('[data-portrait-section="female-adult-outfits"]').screenshot({path:outDir+'/44-female-adult-outfits.png'});
-await page.locator('[data-portrait-section="face-families"]').screenshot({path:outDir+'/45-portrait-face-families.png'});
-await page.locator('[data-portrait-section="hair-art"]').screenshot({path:outDir+'/46-portrait-hair-art.png'});
-await page.locator('[data-portrait-section="crowd"]').screenshot({path:outDir+'/47-portrait-crowd.png'});
+await page.locator('[data-portrait-section="face-close-review"]').screenshot({path:outDir+'/43-face-close-review.png'});
+await page.locator('[data-portrait-section="male-elder-review"]').screenshot({path:outDir+'/44-male-elder-fix-review.png'});
+await page.locator('[data-portrait-section="female-adult-proof"]').screenshot({path:outDir+'/45-female-adult-frame-proof.png'});
+await page.locator('[data-portrait-section="female-adult-outfits"]').screenshot({path:outDir+'/46-female-adult-outfits.png'});
+await page.locator('[data-portrait-section="hair-art"]').screenshot({path:outDir+'/47-portrait-hair-art.png'});
+await page.locator('[data-portrait-section="crowd"]').screenshot({path:outDir+'/48-portrait-crowd.png'});
 
 await browser.close();

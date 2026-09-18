@@ -116,6 +116,26 @@ const outfitSamples=femaleAdultOutfits.map((style,index)=>{
   return {style,context,dna:resolveAppearance(context,{outfitStyleId:style.id,hairStyleId:femaleAdultHair[0].id})};
 });
 
+const femaleAdultFaceClose=femaleAdultFaces.map((face,index)=>{
+  const sample=proofDna(face.id,femaleAdultHair[0].id,femaleAdultOutfits[1].id,700+index);
+  return {face,...sample};
+});
+
+const maleAdultFaces=FACE_FAMILIES.filter((family)=>family.genders.includes('male'));
+const maleElderHair=HAIR_STYLES.find((style)=>style.frameIds.includes('male.elder'))!;
+const maleElderOutfit=OUTFIT_STYLES.find((style)=>style.id==='outfit.plain.v2')!;
+const maleElderReview=maleAdultFaces.map((face,index)=>{
+  const context:SemanticAppearanceContext={
+    residentStableId:'male-elder-review-'+index,
+    residentSeed:99000+index*29,
+    gender:'male',
+    lifeStage:'elder',
+    wealthTier:'plain',
+  };
+  const base=resolveAppearance(context,{hairStyleId:maleElderHair.id,outfitStyleId:maleElderOutfit.id});
+  return {face,context,dna:{...base,identity:{...base.identity,faceFamilyId:face.id}}};
+});
+
 const crowdStages:SemanticAppearanceContext['lifeStage'][]=['child','young-adult','adult','middle-age','elder','adult'];
 const crowdWealth:SemanticAppearanceContext['wealthTier'][]=['poor','plain','comfortable','wealthy'];
 const crowd=Array.from({length:24},(_,index)=>{
@@ -171,8 +191,35 @@ export function PortraitLab() {
         <div data-portrait-check="proof-combinations" data-state={femaleAdultProof.length===72?'pass':'fail'}><b>{femaleAdultProof.length}</b><span>female.adult 组合</span></div>
       </section>
 
+      <section className="portrait-review-section" data-portrait-section="face-close-review">
+        <header><div><span>01 · FACE CLOSE REVIEW</span><h2>六张成年女性完整脸</h2></div><p>每个 FaceFamily 现在直接拥有眉、眼、鼻、嘴。眼睛改为自然正视的上/下眼睑与可见瞳仁，不再使用统一眯眼弧线。</p></header>
+        <div className="portrait-review-grid portrait-review-grid-6">
+          {femaleAdultFaceClose.map(({face,context,dna})=>(
+            <article className="portrait-review-card portrait-face-close-card" data-face-close-review={face.id} key={'close-'+face.id}>
+              <PortraitRenderer dna={dna} context={context} lod={96}/>
+              <b>{face.label}</b><code>{face.id}</code>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="portrait-review-section" data-portrait-section="male-elder-review">
+        <header><div><span>02 · MALE ELDER FIX REVIEW</span><h2>老年男子：发式、头型、脖颈、领口</h2></div><p>顶部束发必须与头骨相连；灰发沿头型收束；领口放宽、缩短颈部，不再出现漂浮发髻和“脖子插进衣服”的拼接感。</p></header>
+        <div className="portrait-review-grid portrait-review-grid-4">
+          {maleElderReview.map(({face,context,dna})=>(
+            <article className="portrait-review-card" data-male-elder-review={face.id} key={'elder-'+face.id}>
+              <PortraitRenderer dna={dna} context={context} lod={96}/>
+              <b>{face.label}</b>
+              <div className="portrait-review-lods">
+                {[96,64,48].map((lod)=><div key={lod}><PortraitRenderer dna={dna} context={context} lod={lod as PortraitLod}/><span>{lod}px</span></div>)}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="portrait-review-section" data-portrait-section="female-adult-proof">
-        <header><div><span>01 · FEMALE.ADULT FRAME PROOF</span><h2>6 张脸 × 3 套发式 × 4 套衣服</h2></div><p>72 个组合全部使用同一固定坐标和同一裁切，不允许运行时 Offset。这里专门检查头发、脸、脖颈、衣领是否发生漂移。</p></header>
+        <header><div><span>03 · FEMALE.ADULT FRAME PROOF</span><h2>6 张脸 × 3 套发式 × 4 套衣服</h2></div><p>72 个组合全部使用同一固定坐标和同一裁切，不允许运行时 Offset。这里专门检查头发、脸、脖颈、衣领是否发生漂移。</p></header>
         <div className="portrait-proof-grid">
           {femaleAdultProof.map(({face,hair,outfit,context,dna})=>(
             <article
@@ -191,7 +238,7 @@ export function PortraitLab() {
       </section>
 
       <section className="portrait-review-section" data-portrait-section="female-adult-outfits">
-        <header><div><span>02 · CLOTHING</span><h2>成年女性常服轮廓</h2></div><p>粗布交领、素色交领、叠领襦衣、对襟罩衫。先用衣领与肩线体现生活条件，不靠艳色、头饰或职业制服。</p></header>
+        <header><div><span>04 · CLOTHING</span><h2>成年女性常服轮廓</h2></div><p>粗布交领、素色交领、叠领襦衣、对襟罩衫。先用衣领与肩线体现生活条件，不靠艳色、头饰或职业制服。</p></header>
         <div className="portrait-review-grid portrait-review-grid-4">
           {outfitSamples.map(({style,context,dna})=>(
             <article className="portrait-review-card" data-female-adult-outfit={style.id} key={style.id}>
@@ -203,7 +250,7 @@ export function PortraitLab() {
       </section>
 
       <section className="portrait-review-section" data-portrait-section="face-families">
-        <header><div><span>03 · FACE FAMILY</span><h2>脸型保持克制，不做模板化夸张</h2></div><p>成年女性 6 套 FaceFamily 已按同一头部区域重画；辨识度主要来自脸部轮廓与整体比例，文化气质更多交给发式与衣着承担。</p></header>
+        <header><div><span>05 · FACE FAMILY</span><h2>脸型保持克制，不做模板化夸张</h2></div><p>成年女性 6 套 FaceFamily 已按同一头部区域重画；辨识度主要来自脸部轮廓与整体比例，文化气质更多交给发式与衣着承担。</p></header>
         <div className="portrait-review-grid portrait-review-grid-6">
           {faceSamples.map(({family,context,dna})=>(
             <article className="portrait-review-card" data-face-family-card={family.id} key={family.id}>
@@ -215,7 +262,7 @@ export function PortraitLab() {
       </section>
 
       <section className="portrait-review-section" data-portrait-section="hair-art">
-        <header><div><span>04 · HAIR ART</span><h2>束、挽、盘，而不是现代发型换皮</h2></div><p>female.adult 新增低挽圆髻、圆髻、半束垂发；其它年龄/男性仍是兼容资产，后续按相同 Frame 原则逐批替换。</p></header>
+        <header><div><span>06 · HAIR ART</span><h2>束、挽、盘，而不是现代发型换皮</h2></div><p>female.adult 新增低挽圆髻、圆髻、半束垂发；其它年龄/男性仍是兼容资产，后续按相同 Frame 原则逐批替换。</p></header>
         <div className="portrait-review-grid portrait-review-grid-4">
           {hairSamples.map(({style,context,dna})=>(
             <article className="portrait-review-card" data-hair-style-card={style.id} key={style.id}>
@@ -230,21 +277,21 @@ export function PortraitLab() {
       </section>
 
       <section className="portrait-review-section" data-portrait-section="temporal">
-        <header><div><span>05 · THREE AGE BANDS</span><h2>同一个 FaceFamily：儿童 / 成年 / 老年</h2></div><p>本轮只把 female.adult 替换成新 Frame 资产；儿童与老年仍保留兼容桥，下一批继续迁移。</p></header>
+        <header><div><span>07 · THREE AGE BANDS</span><h2>同一个 FaceFamily：儿童 / 成年 / 老年</h2></div><p>本轮只把 female.adult 替换成新 Frame 资产；儿童与老年仍保留兼容桥，下一批继续迁移。</p></header>
         <div className="portrait-review-grid portrait-review-grid-3">
           {temporalResolved.map((item)=><PortraitCard key={item.context.lifeStage} {...item}/>)}
         </div>
       </section>
 
       <section className="portrait-review-section" data-portrait-section="crowd">
-        <header><div><span>06 · CROWD CHECK</span><h2>24 人 Seed 抽样</h2></div><p>成年女性现在会从 3 套发式与 4 套服装中按 Frame 组合；其它 Frame 暂不为了数量增加临时资产。</p></header>
+        <header><div><span>08 · CROWD CHECK</span><h2>24 人 Seed 抽样</h2></div><p>成年女性现在会从 3 套发式与 4 套服装中按 Frame 组合；其它 Frame 暂不为了数量增加临时资产。</p></header>
         <div className="portrait-review-crowd">
           {crowd.map(({context,dna})=><div data-pop-resident={context.residentStableId} key={context.residentStableId}><PortraitRenderer dna={dna} context={context} lod={48}/></div>)}
         </div>
       </section>
 
       <section className="portrait-review-section" data-portrait-section="save-contract">
-        <header><div><span>07 · SAVED IDS</span><h2>保存的仍然只是五个稳定 ID</h2></div></header>
+        <header><div><span>09 · SAVED IDS</span><h2>保存的仍然只是五个稳定 ID</h2></div></header>
         <pre>{JSON.stringify(wealthResolved[1].dna,null,2)}</pre>
       </section>
     </main>

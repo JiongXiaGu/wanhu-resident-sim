@@ -280,9 +280,11 @@ For the first production assets:
 - clothing favors restrained cross-collar, layered collar and front-opening everyday silhouettes;
 - wealth is read through fabric completeness, layering and finish rather than saturation;
 - face drawing stays natural and restrained; cultural recognition should come primarily from hair, dress and the overall illustration language rather than exaggerated facial stereotypes;
+- FaceFamily is a complete face asset for production frames: outline + brows + eyes + nose + mouth. Do not pair different face outlines with one universal feature layer.
+- eyes should read as natural forward-looking eyes at 48/64/96 px; avoid a repeated narrow-arc/squint motif as a cultural shorthand.
 - colors stay muted enough to work in the resident panel at 48 / 64 / 96 px.
 
-The first implemented proof is `female.adult`: six existing FaceFamily identities, three new hair styles and four new full-frame outfits all share one fixed canvas.
+The first implemented proof is `female.adult`: six complete FaceFamily identities, three hair styles and four full-frame outfits all share one fixed canvas. A dedicated Face Close Review is required before copying the frame to other age/gender groups.
 
 ## Asset replacement order
 
@@ -293,17 +295,23 @@ The first implemented proof is `female.adult`: six existing FaceFamily identitie
    4 OutfitStyles
    72 automated combination samples
 
-2. male.adult proof
+2. art-quality correction — implemented before expansion
+   complete female.adult face assets
+   natural eye construction
+   corrected female hairlines
+   corrected male.elder tied hair + neck/collar interface
 
-3. female.child / male.child
+3. male.adult proof
 
-4. female.elder / male.elder
+4. female.child / male.child
 
-5. crowd and 48px review
+5. female.elder / male.elder
 
-6. delete compatibility stage profiles
+6. crowd and 48px review
 
-7. freeze IDs and hand portrait assets to Unity
+7. delete compatibility stage profiles
+
+8. freeze IDs and hand portrait assets to Unity
 ~~~
 
 The adult female proof is now the first live fixed-frame asset set. It remains the reference gate for later male / child / elder migrations.
