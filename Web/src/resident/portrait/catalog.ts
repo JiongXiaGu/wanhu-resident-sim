@@ -339,10 +339,10 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M44 61 Q49 63 53 62 M67 62 Q72 63 76 61', stroke:'age', strokeWidth:.45, opacity:.18 },
   ]},
   { id:'layer.features.male.elder', slot:'face-detail', z:50, shapes:[
-    { kind:'path', d:'M46 46.6 Q50 45.5 54.5 46.2 M65.5 46.2 Q70 45.5 74 46.6', stroke:'ink', strokeWidth:1.25 },
-    { kind:'path', d:'M45.2 52.7 Q50 51.2 54.8 52.7 M65.2 52.7 Q70 51.2 74.8 52.7', stroke:'ink', strokeWidth:1.02 },
-    { kind:'path', d:'M46.5 54 Q50 54.5 53.5 53.9 M66.5 53.9 Q70 54.5 73.5 54', stroke:'ink', strokeWidth:.45, opacity:.52 },
-    { kind:'circle', cx:50, cy:53.1, r:.58, fill:'ink' }, { kind:'circle', cx:70, cy:53.1, r:.58, fill:'ink' },
+    { kind:'path', d:'M46 46.3 Q50 45.1 54.5 45.9 M65.5 45.9 Q70 45.1 74 46.3', stroke:'ink', strokeWidth:1.25 },
+    { kind:'path', d:'M45.2 52.2 Q50 50.6 54.8 52.2 M65.2 52.2 Q70 50.6 74.8 52.2', stroke:'ink', strokeWidth:1.02 },
+    { kind:'path', d:'M46.5 54.6 Q50 55.1 53.5 54.4 M66.5 54.4 Q70 55.1 73.5 54.6', stroke:'ink', strokeWidth:.45, opacity:.52 },
+    { kind:'circle', cx:50, cy:53.1, r:.68, fill:'ink' }, { kind:'circle', cx:70, cy:53.1, r:.68, fill:'ink' },
     { kind:'path', d:'M59 54.7 Q58.2 65.7 60.1 69 Q62.7 70 65.5 66.7', stroke:'ink', strokeWidth:1.05 },
     { kind:'path', d:'M54 78 Q60 77.5 66 78', stroke:'ink', strokeWidth:1.05 },
     { kind:'path', d:'M45 58.5 Q49 60 53 58.8 M67 58.8 Q71 60 75 58.5 M50 70 Q48 76 49 82 M70 70 Q72 76 71 82', stroke:'age', strokeWidth:.45, opacity:.26 },
@@ -450,9 +450,9 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M79 91 Q85 90 89 93', stroke:'hair-accent', strokeWidth:.3, opacity:.09 },
   ]},
   { id:'layer.hair.elder-low-bun.front', slot:'front-hair', z:70, shapes:[
-    { kind:'path', d:'M41 52 C41 40 47 31 56 27 Q59 26 60 29 Q61 26 64 27 C73 30 79 40 79 52 C74 46 69 43 63 42 Q61 37 60 30 Q59 37 57 42 C51 43 46 46 41 52Z', fill:'hair' },
-    { kind:'path', d:'M60 27 Q60 31 60 35', stroke:'skin', strokeWidth:1.25, opacity:.92 },
-    { kind:'path', d:'M49 38 Q53 34 57 32 M63 32 Q68 34 72 39', stroke:'hair-accent', strokeWidth:.26, opacity:.07 },
+    { kind:'path', d:'M41 52 C41.5 40 47.5 31.5 56.5 28 Q60 27 63.5 28 C72.5 31.5 78.5 40 79 52 C74 47 69 44 64 42.5 Q60 40.2 56 42.5 C51 44 46 47 41 52Z', fill:'hair' },
+    { kind:'path', d:'M60 28.5 Q60 31 60 34', stroke:'hair-accent', strokeWidth:.38, opacity:.32 },
+    { kind:'path', d:'M48 39 Q52 35.5 56 34 M64 34 Q68 35.5 72 39', stroke:'hair-accent', strokeWidth:.28, opacity:.13 },
   ]},
 
   // Minimal male hair set for live runtime coverage. Final-canvas art only.
@@ -482,7 +482,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M77 43 C79 54 78 67 75 77 Q73 84 69 88 L66 83 Q69 73 69 61 Q69 50 72 43Z', fill:'hair', stroke:'ink', strokeWidth:.48 },
   ]},
   { id:'layer.hair.male-elder-tied.front', slot:'front-hair', z:70, shapes:[
-    { kind:'path', d:'M42 49 C43 38.5 49.5 31 57 29 Q60 28 63 29 C70.5 31 77 38.5 78 49 C73.5 45 69 42.5 64 41 Q61.8 37.5 60 32 Q58.2 37.5 56 41 C51 42.5 46.5 45 42 49Z', fill:'hair' },
+    { kind:'path', d:'M42 49 C43 38.5 49.5 31 57 29 Q60 28 63 29 C70.5 31 77 38.5 78 49 C73.5 45 68.5 42.5 64 41.5 Q60 39.5 56 41.5 C51.5 42.5 46.5 45 42 49Z', fill:'hair' },
     { kind:'path', d:'M60 29.5 Q60 32 60 34.5', stroke:'hair-accent', strokeWidth:.42, opacity:.34 },
     { kind:'path', d:'M46 42 Q44.5 47 45 52 M74 42 Q75.5 47 75 52', stroke:'hair-accent', strokeWidth:.34, opacity:.26 },
   ]},
@@ -533,7 +533,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M74 42 C79 51 80 64 78 75 C77 82 74 88 70 91 C75 88 81 87 86 89 C92 91 94 95 91 99 C87 103 79 102 73 98 C68 94 67 90 70 85 C73 74 75 57 74 42Z', fill:'hair', stroke:'ink', strokeWidth:.65 },
   ]},
   { id:'layer.hair.female-adult-low-coil.front', slot:'front-hair', z:70, shapes:[
-    { kind:'path', d:'M39.5 48 C40.5 33 48 23.5 59.5 22.5 C71.5 23 79.5 33 80.5 48 C75.5 42.5 70 39 64 37.5 Q61.8 33.5 60 27.5 Q58.2 33.5 56 37.5 C50 39 44.5 42.5 39.5 48Z', fill:'hair' },
+    { kind:'path', d:'M39.5 48 C40.5 33 48 23.5 59.5 22.5 C71.5 23 79.5 33 80.5 48 C75.5 43 69.5 40.5 64 39.5 Q60 37.5 56 39.5 C50.5 40.5 44.5 43 39.5 48Z', fill:'hair' },
     { kind:'path', d:'M60 24.5 Q60 28 60 31', stroke:'hair-accent', strokeWidth:.42, opacity:.22 },
     { kind:'path', d:'M43 43 Q42.2 48 43.7 52 M77 43 Q77.8 48 76.3 52', stroke:'hair-accent', strokeWidth:.34, opacity:.16 },
   ]},
@@ -542,7 +542,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M45 43 Q42 58 45 75 Q47 84 51 90 M75 43 Q78 58 75 75 Q73 84 69 90', stroke:'hair', strokeWidth:5.2, opacity:.92 },
   ]},
   { id:'layer.hair.female-adult-round-coil.front', slot:'front-hair', z:70, shapes:[
-    { kind:'path', d:'M39 48 C40 33 47.5 23 59.5 22 C72 22.5 80 33 81 48 C76 42.5 70.5 39 64 37.5 Q61.8 33 60 27 Q58.2 33 56 37.5 C49.5 39 44 42.5 39 48Z', fill:'hair' },
+    { kind:'path', d:'M39 48 C40 33 47.5 23 59.5 22 C72 22.5 80 33 81 48 C76 43 70 40.5 64 39.5 Q60 37.2 56 39.5 C50 40.5 44 43 39 48Z', fill:'hair' },
     { kind:'path', d:'M60 23.5 Q60 27.5 60 30', stroke:'hair-accent', strokeWidth:.44, opacity:.22 },
   ]},
   { id:'layer.hair.female-adult-half-bound.back', slot:'back-hair', z:10, shapes:[
@@ -551,7 +551,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M73 48 C75 60 75 76 77 89 C78 98 81 107 84 114 C80 116 76 113 73 106 C70 97 68 84 68 71 C68 60 70 52 73 48Z', fill:'hair', stroke:'ink', strokeWidth:.62 },
   ]},
   { id:'layer.hair.female-adult-half-bound.front', slot:'front-hair', z:70, shapes:[
-    { kind:'path', d:'M39.8 48.5 C40.8 33.5 48 23.5 59.5 22.5 C71.5 23 79.2 33.5 80.2 48.5 C75.2 42.7 69.8 39.3 63.7 37.7 Q61.7 33.5 60 27.8 Q58.3 33.5 56.3 37.7 C50.2 39.3 44.8 42.7 39.8 48.5Z', fill:'hair' },
+    { kind:'path', d:'M39.8 48.5 C40.8 33.5 48 23.5 59.5 22.5 C71.5 23 79.2 33.5 80.2 48.5 C75.2 43 69.5 40.5 64 39.5 Q60 37.5 56 39.5 C50.5 40.5 44.8 43 39.8 48.5Z', fill:'hair' },
     { kind:'path', d:'M60 24.5 Q60 28 60 31', stroke:'hair-accent', strokeWidth:.42, opacity:.2 },
     { kind:'path', d:'M43.5 44.5 Q42.8 50 44 55 M76.5 44.5 Q77.2 50 76 55', stroke:'hair-accent', strokeWidth:.34, opacity:.18 },
   ]},
