@@ -46,7 +46,7 @@ export function PortraitRenderer({
   const plan=buildRenderPlan(dna,context,lod);
   return (
     <div
-      className="portrait-v8-renderer"
+      className="portrait-renderer"
       data-renderer="simple-render-plan"
       data-generator-version={plan.generatorVersion}
       data-render-contract={plan.renderContractVersion}
