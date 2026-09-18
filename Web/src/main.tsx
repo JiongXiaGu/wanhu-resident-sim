@@ -25,7 +25,7 @@ const rootView = view === 'portraits'
       <>
         <App />
         <a className="portrait-view-entry" href="/?view=portraits">头像查看器</a>
-        <a className="portrait-style-entry" href="/?view=portrait-styles">美术风格对比</a>
+        <a className="portrait-style-entry" href="/?view=portrait-styles">木刻头像审查</a>
       </>
     );
 

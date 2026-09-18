@@ -23,7 +23,7 @@ Documentation/居民生活记录与故事连续性.md
 Documentation/StoryBucket与内容覆盖V1.md
 Documentation/头像系统与美术资源规范V1.md
 Documentation/Portrait Art Kit V1.md
-Documentation/Portrait Style Exploration V5.md
+Documentation/Woodblock Portrait V6.md
 ```
 
 然后检查 GitHub `main`、Actions 与必要代码。
@@ -318,13 +318,13 @@ npm run build-content
 http://localhost:5173/?view=portraits
 ```
 
-美术风格对比实验室：
+套色木刻头像审查页：
 
 ```text
 http://localhost:5173/?view=portrait-styles
 ```
 
-当前 V5 用同一批 Golden Residents 横向比较 4 套真正独立的画师体系：强化套色木刻、壁画化重彩、白描人物谱、绢本设色小像。四套体系不共享同一脸型或姿势模板，只共享居民身份语义。
+当前美术方向已经收敛为套色木刻。Woodblock Portrait V6 用 12 个 Golden Residents、6 个女性发型基准、四档财富对照和 32 人群像审查女性、儿童、老人、长发 Rig 与小尺寸可读性。
 
 ## GitHub Actions / Visual Review / Vercel
 

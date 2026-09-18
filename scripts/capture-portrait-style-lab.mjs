@@ -6,51 +6,49 @@ const outDir = 'review-screenshots';
 await mkdir(outDir, { recursive: true });
 
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1800, height: 1200 }, deviceScaleFactor: 1 });
+const page = await browser.newPage({ viewport: { width: 1740, height: 1200 }, deviceScaleFactor: 1 });
 await page.goto(baseUrl + '/?view=portrait-styles', { waitUntil: 'networkidle' });
-await page.waitForSelector('.portrait-style-row');
+await page.waitForSelector('[data-portrait-style-lab="woodblock-v6"]');
 
-const rows = page.locator('.portrait-style-row');
-if ((await rows.count()) !== 8) throw new Error('Portrait Style Lab V5 must render exactly 8 Golden Residents.');
+const golden = page.locator('[data-golden-id]');
+if ((await golden.count()) !== 12) throw new Error('Woodblock V6 must render exactly 12 Golden Residents.');
 
-const cards = page.locator('.portrait-style-card');
-if ((await cards.count()) !== 32) throw new Error('Portrait Style Lab V5 must render 8 residents x 4 independent style packs.');
+const allPortraits = page.locator('.portrait-style-portrait');
+const haloStates = await allPortraits.evaluateAll((items) => items.map((item) => item.getAttribute('data-halo')));
+if (haloStates.some((value) => value !== 'none')) throw new Error('Woodblock V6 must keep all backgrounds halo-free.');
 
-const styles = ['woodblock', 'mural', 'baimiao', 'silk'];
-for (const style of styles) {
-  const styleCards = page.locator('.portrait-style-card[data-style="' + style + '"]');
-  if ((await styleCards.count()) !== 8) throw new Error('V5 style ' + style + ' must render all 8 Golden Residents.');
-}
+const artSystems = await allPortraits.evaluateAll((items) => items.map((item) => item.getAttribute('data-art-system')));
+if (artSystems.some((value) => value !== 'woodblock-v6')) throw new Error('Woodblock V6 page must contain only the woodblock art system.');
 
-for (let index = 0; index < 8; index += 1) {
-  const row = rows.nth(index);
-  if ((await row.locator('.portrait-style-card').count()) !== 4) {
-    throw new Error('Each Golden Resident must contain all four independent V5 style packs.');
-  }
+const women = golden.locator('.portrait-style-portrait[data-gender="female"]');
+if ((await women.count()) < 6) throw new Error('Woodblock V6 Golden set needs at least 6 female residents.');
 
-  const identities = await row.locator('.portrait-style-card__hero .portrait-style-portrait').evaluateAll((items) =>
-    items.map((item) => item.getAttribute('data-identity-source'))
-  );
-  if (new Set(identities).size !== 1) throw new Error('All four V5 art systems must still describe the same resident identity.');
+const children = golden.locator('.portrait-style-portrait[data-life-stage="child"]');
+if ((await children.count()) < 2) throw new Error('Woodblock V6 Golden set needs a boy and a girl.');
 
-  const artSystems = await row.locator('.portrait-style-card__hero .portrait-style-portrait').evaluateAll((items) =>
-    items.map((item) => item.getAttribute('data-art-system'))
-  );
-  if (new Set(artSystems).size !== 4) throw new Error('V5 requires four genuinely separate geometry / art systems.');
-}
+const elders = golden.locator('.portrait-style-portrait[data-life-stage="elder"]');
+if ((await elders.count()) < 3) throw new Error('Woodblock V6 Golden set needs explicit elder coverage.');
 
-const haloStates = await page.locator('.portrait-style-portrait').evaluateAll((items) =>
-  items.map((item) => item.getAttribute('data-halo'))
+const hairCards = page.locator('[data-hair-review]');
+if ((await hairCards.count()) !== 6) throw new Error('Woodblock V6 hair review must render 6 female hair baselines.');
+
+const longHair = hairCards.locator('.portrait-style-portrait[data-hair-anchor-mode="temple-ear-shoulder"]');
+if ((await longHair.count()) < 3) throw new Error('Woodblock V6 must validate at least 3 temple-ear-shoulder long hair samples.');
+
+const hairRigStates = await hairCards.locator('.portrait-style-portrait').evaluateAll((items) =>
+  items.map((item) => item.getAttribute('data-hair-rig-state'))
 );
-if (haloStates.some((value) => value !== 'none')) throw new Error('Portrait Style Lab V5 must keep every background halo-free.');
+if (hairRigStates.some((value) => value !== 'ok')) throw new Error('All V6 hair review samples must resolve against the portrait rig.');
 
-await page.screenshot({ path: outDir + '/17-portrait-style-lab-v5-four-artists.png', fullPage: true });
+const wealthCards = page.locator('[data-wealth-review]');
+if ((await wealthCards.count()) !== 4) throw new Error('Woodblock V6 must show all four wealth tiers.');
 
-for (const style of styles) {
-  await page.locator('[data-style-heading="' + style + '"]').click();
-  await page.waitForTimeout(60);
-  await rows.first().screenshot({ path: outDir + '/18-portrait-style-lab-v5-' + style + '-size-review.png' });
-  await page.locator('[data-style-heading="' + style + '"]').click();
-}
+const crowd = page.locator('[data-crowd-id]');
+if ((await crowd.count()) !== 32) throw new Error('Woodblock V6 crowd review must render 32 stress samples.');
+
+await page.screenshot({ path: outDir + '/17-woodblock-v6-golden-residents.png', fullPage: true });
+await page.locator('[data-review-section="hair"]').screenshot({ path: outDir + '/18-woodblock-v6-hair-stability.png' });
+await page.locator('[data-review-section="wealth"]').screenshot({ path: outDir + '/19-woodblock-v6-wealth.png' });
+await page.locator('[data-review-section="crowd"]').screenshot({ path: outDir + '/20-woodblock-v6-crowd.png' });
 
 await browser.close();

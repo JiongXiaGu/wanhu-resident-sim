@@ -69,7 +69,7 @@ jobs:
         run: node scripts/capture-resident-review.mjs
       - name: Capture Portrait Art V2 review screenshots
         run: node scripts/capture-portrait-art-v2-review.mjs
-      - name: Capture Portrait Style Lab V5 screenshots
+      - name: Capture Woodblock Portrait V6 screenshots
         run: node scripts/capture-portrait-style-lab.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs
