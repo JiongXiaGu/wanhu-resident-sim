@@ -26,5 +26,5 @@ export function createIdentitySeedBank(residentSeed: number) {
 }
 
 export function createPresentationSeedBank(residentSeed: number) {
-  return createSeedBank(residentSeed, 'portrait.presentation.v8');
+  return createSeedBank(residentSeed, 'portrait.presentation.frame-v1');
 }

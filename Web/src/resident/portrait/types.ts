@@ -1,10 +1,9 @@
 import type { Gender, LifeStageId, WealthTier } from '../../domain/resident';
 
-export const PORTRAIT_GENERATOR_VERSION = 8 as const;
-export const PORTRAIT_RENDER_CONTRACT_VERSION = '8.4' as const;
+export const PORTRAIT_GENERATOR_VERSION = 9 as const;
+export const PORTRAIT_RENDER_CONTRACT_VERSION = '9.0' as const;
 export type PortraitGeneratorVersion = typeof PORTRAIT_GENERATOR_VERSION;
 export type PortraitLod = 48 | 64 | 96;
-export type PortraitAgeGroup = 'child' | 'youth' | 'adult' | 'elder';
 export type PortraitAgeBand = 'child' | 'adult' | 'elder';
 export type PortraitFrameId = `${Gender}.${PortraitAgeBand}`;
 
@@ -54,8 +53,7 @@ export type PaletteToken =
   | 'cloth'
   | 'accent'
   | 'ink'
-  | 'age'
-  | 'none';
+  | 'age';
 
 export type VectorShape =
   | { kind: 'path'; d: string; fill?: PaletteToken; stroke?: PaletteToken; strokeWidth?: number; opacity?: number }
@@ -68,7 +66,6 @@ export type PortraitLayerSlot =
   | 'outfit'
   | 'neck'
   | 'face'
-  | 'face-detail'
   | 'front-hair';
 
 export type VectorLayerAsset = {
@@ -82,7 +79,7 @@ export type FaceFamilyDefinition = {
   id: string;
   label: string;
   genders: Gender[];
-  faceLayerByAge: Record<PortraitAgeGroup, string>;
+  faceLayerByAge: Record<PortraitAgeBand, string>;
 };
 
 export type HairStyleDefinition = {
@@ -102,13 +99,12 @@ export type PortraitViewBox = {
   height: number;
 };
 
-export type PortraitStageProfile = {
-  id: string;
-  lifeStages: LifeStageId[];
-  ageGroup: PortraitAgeGroup;
+export type PortraitFrameDefinition = {
+  id: PortraitFrameId;
+  gender: Gender;
+  ageBand: PortraitAgeBand;
   viewBox: PortraitViewBox;
-  layerAssetIds: string[];
-  featureLayerByGender: Record<Gender, string>;
+  neckLayerId: string;
   backgroundColor: string;
   collarColor: string;
   clothByWealth: Record<WealthTier, string>;
@@ -119,8 +115,7 @@ export type OutfitStyleDefinition = {
   label: string;
   frameIds: PortraitFrameId[];
   initialWealthTiers: WealthTier[];
-  layerAssetIds: string[];
-  fullFrame?: boolean;
+  layerAssetIdsByFrame: Partial<Record<PortraitFrameId, string[]>>;
   baseWeight: number;
 };
 
@@ -137,10 +132,9 @@ export type PortraitRenderPlan = {
   residentStableId: string;
   lod: PortraitLod;
   frameId: PortraitFrameId;
-  stageProfileId: string;
   faceFamilyId: string;
   viewBox: PortraitViewBox;
   dna: ResolvedAppearanceDNA;
-  palette: Record<Exclude<PaletteToken, 'none'>, string>;
+  palette: Record<PaletteToken, string>;
   layers: RenderLayer[];
 };

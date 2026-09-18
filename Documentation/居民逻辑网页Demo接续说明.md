@@ -253,7 +253,7 @@ female / male
 
 同一 Frame 内允许 Face / Hair / Outfit 独立替换；所有资产必须直接符合 Frame，不允许运行时 Anchor / Mask / Offset 自动适配。
 
-当前 V8.4 的 youth / middle 等 stage profile 仅作为资产替换前兼容桥，不再增加新功能。
+头像 Runtime 最终清理已完成：youth / middle StageProfile、共享 FeatureLayer、Stage Body 和 Frame 特判已经删除。游戏 LifeStage 仍保留，但头像只映射到 child / adult / elder 三个 AgeBand。
 
 ## 当前玩法验证路线
 

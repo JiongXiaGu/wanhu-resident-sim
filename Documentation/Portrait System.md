@@ -4,7 +4,7 @@
 
 This is the canonical portrait design after the 2026-09-19 simplification decision.
 
-The current V8.4 renderer is only a compatibility bridge while the art assets are replaced. The target is a small **dress-up style portrait framework** that can be frozen and handed to Unity without carrying the old experimental rig systems with it.
+The Web runtime now uses the final fixed-frame portrait path. Legacy V8 stage profiles, shared feature layers, stage bodies and migration-only render branches have been removed. The remaining system is a small **dress-up style portrait framework** intended to be frozen and handed to Unity.
 
 The portrait remains a secondary game system. The priority is:
 
@@ -253,19 +253,44 @@ The initial selections remain deterministic from the resident seed, then the res
 
 ---
 
-## Current compatibility bridge
+## Final runtime shape
 
-At the start of this migration the live Web renderer still contains V8.4-era stage profiles for child / youth / adult / middle / elder.
+The runtime path is now:
 
-That code is temporary.
+~~~text
+ResidentPortraitDNA
+↓
+PortraitFrame (6 fixed frames)
+↓
+FaceFamily child/adult/elder asset
+HairStyle
+fixed Neck
+full Outfit
+↓
+5-layer RenderPlan
+~~~
 
-The preparation batch:
+The RenderPlan contains only:
 
-1. makes the new three-band / six-frame contract canonical;
-2. removes stale V7/V8 entry points and dead portrait UI code;
-3. exposes the derived `frameId` in the current renderer and Visual Review.
+~~~text
+Back Hair
+Neck
+Outfit
+Face
+Front Hair
+~~~
 
-The next art batch will replace the old stage-specific geometry rather than stacking another abstraction on top of it.
+Removed from active code:
+
+- PortraitStageProfile;
+- youth / middle portrait geometry;
+- stage-specific viewBox;
+- shared FeatureLayer / face-detail slot;
+- stage Body layers;
+- Outfit `fullFrame` migration flag;
+- `usesFemaleAdultFrame / usesMaleElderFrame` and equivalent special cases.
+
+All six frames use the same square crop: `x=0, y=15, width=120, height=120`.
 
 ---
 
@@ -309,9 +334,9 @@ The first implemented proof is `female.adult`: six complete FaceFamily identitie
 
 6. crowd and 48px review
 
-7. delete compatibility stage profiles
+7. final framework cleanup — completed
 
-8. freeze IDs and hand portrait assets to Unity
+8. complete remaining frame art, freeze IDs, hand portrait assets to Unity
 ~~~
 
 The adult female proof is now the first live fixed-frame asset set. It remains the reference gate for later male / child / elder migrations.
@@ -365,8 +390,8 @@ The portrait package is ready to leave the Web prototype when:
 - every new asset is authored to one of the six fixed frames;
 - FaceFamily uses only child / adult / elder art variants;
 - Hair and Outfit can be swapped within a frame without visible drift;
-- the renderer uses one fixed crop;
-- there are no runtime anchors, masks or offset correction tables;
+- the renderer uses one fixed crop and one code path for all six frames;
+- there are no StageProfiles, shared FeatureLayers, stage Bodies, runtime anchors, masks or offset correction tables;
 - 48px portraits remain readable;
 - a 24–64 resident crowd does not look like obvious clones;
 - the five saved `ResidentPortraitDNA` IDs are sufficient for Unity handoff.

@@ -4,10 +4,10 @@ import {
   assertPortraitIdentityInvariant,
   resolveAppearance,
 } from './resident/portrait/resolver';
-import { buildRenderPlan } from './resident/portrait/render-plan';
 import { hash32 } from './resident/portrait/seed';
 import { PortraitRenderer } from './resident/portrait/PortraitRenderer';
 import type {
+  PORTRAIT_RENDER_CONTRACT_VERSION,
   PortraitFrameId,
   PortraitLod,
   ResolvedAppearanceDNA,
@@ -172,7 +172,7 @@ export function PortraitLab() {
   const temporalFaceCount=new Set(temporalResolved.map((x)=>x.dna.identity.faceFamilyId)).size;
 
   return (
-    <main className="portrait-lab" data-portrait-lab="true" data-render-contract-version="8.4" data-frame-contract="three-band">
+    <main className="portrait-lab" data-portrait-lab="true" data-render-contract-version={PORTRAIT_RENDER_CONTRACT_VERSION} data-frame-contract="three-band">
       <header className="portrait-lab-header">
         <div>
           <span>UNIFIED RESIDENT PORTRAIT · FEMALE.ADULT PROOF</span>

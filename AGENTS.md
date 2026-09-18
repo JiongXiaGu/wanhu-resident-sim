@@ -166,7 +166,7 @@ Resident Visual Review 必须继续验证这条链，以及人生时间轴的年
 - 新美术框架只使用 `child / adult / elder` 三个视觉年龄段；游戏逻辑仍可保留更细 LifeStage。
 - Gender + AgeBand 产生六个固定 PortraitFrame。
 - Face / Hair / Outfit 必须按 Frame 直接作画；运行时不增加 Anchor、Mask、Offset Solver 或通用 Compatibility Engine。
-- 当前 V8.4 stage profile 只是资产替换前的兼容桥，不能继续扩展。
+- 头像 Runtime 已完成最终清理：没有 PortraitStageProfile、共享 FeatureLayer、Stage Body 或 Frame 特判；所有 Frame 使用同一固定裁切与同一 RenderPlan。
 - `female.adult` 已进入正式 Frame Proof：6 个 FaceFamily × 3 个 HairStyle × 4 个 OutfitStyle，Visual Review 必须覆盖全部 72 个组合。
 - 美术方向采用泛中国古代居民语汇：束/挽/盘发、交领/叠领/对襟常服、低饱和克制配色；不要靠夸张面部特征表达“中国感”。
 - 头像工作台唯一入口是 `/?view=portraits`。

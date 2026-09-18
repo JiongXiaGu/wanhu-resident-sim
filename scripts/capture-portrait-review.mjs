@@ -11,7 +11,7 @@ await page.goto(baseUrl+'/?view=portraits',{waitUntil:'networkidle'});
 await page.waitForSelector('[data-portrait-lab="true"]');
 
 const contract=await page.locator('[data-portrait-lab]').getAttribute('data-render-contract-version');
-if(contract!=='8.4') throw new Error('Expected compatibility render contract 8.4, got '+contract);
+if(contract!=='9.0') throw new Error('Expected portrait render contract 9.0, got '+contract);
 
 const frameContract=await page.locator('[data-portrait-lab]').getAttribute('data-frame-contract');
 if(frameContract!=='three-band') throw new Error('Expected three-band portrait frame contract.');
@@ -21,7 +21,13 @@ if(checks.some(([,state])=>state!=='pass')) throw new Error('Portrait invariant 
 
 const renderers=page.locator('.portrait-renderer');
 const contracts=await renderers.evaluateAll((items)=>items.map((item)=>item.getAttribute('data-render-contract')));
-if(contracts.some((value)=>value!=='8.4')) throw new Error('Every renderer must still use compatibility contract 8.4.');
+if(contracts.some((value)=>value!=='9.0')) throw new Error('Every renderer must still use portrait contract 9.0.');
+
+const legacyStageProfiles=await renderers.evaluateAll((items)=>items.map((item)=>item.getAttribute('data-stage-profile')).filter(Boolean));
+if(legacyStageProfiles.length) throw new Error('Legacy stage-profile metadata is still rendered.');
+
+const faceDetailLayers=await page.locator('[data-slot="face-detail"]').count();
+if(faceDetailLayers!==0) throw new Error('Shared face-detail layers must be removed from the final frame runtime.');
 
 const allowedFrames=new Set(['female.child','female.adult','female.elder','male.child','male.adult','male.elder']);
 const renderedFrames=await renderers.evaluateAll((items)=>items.map((item)=>item.getAttribute('data-frame-id')));

@@ -1,10 +1,10 @@
-import { portraitFrameIdFor } from './frame';
+import { portraitFrameFor } from './frame';
 import {
   faceFamilyById,
   hairStyleById,
   layerById,
+  outfitLayerAssetIdsForFrame,
   outfitStyleById,
-  stageProfileForLifeStage,
 } from './catalog';
 import {
   PORTRAIT_RENDER_CONTRACT_VERSION,
@@ -16,14 +16,14 @@ import {
   type SemanticAppearanceContext,
 } from './types';
 
-const skinColors: Record<string,string> = {
+const skinColors:Record<string,string>={
   'skin.warm-light':'#d3a07d',
   'skin.warm-medium':'#c68b69',
   'skin.warm-deep':'#b5795b',
   'skin.brown-deep':'#9f684f',
 };
 
-const hairColors: Record<string,string> = {
+const hairColors:Record<string,string>={
   'hair.black':'#29231f',
   'hair.dark-brown-black':'#352b25',
   'hair.soft-black':'#40352f',
@@ -31,86 +31,49 @@ const hairColors: Record<string,string> = {
   'hair-state.gray':'#7f7871',
 };
 
-function toRenderLayer(assetId: string): RenderLayer {
-  const asset = layerById(assetId);
-  return { assetId:asset.id, slot:asset.slot, z:asset.z, shapes:asset.shapes };
+function toRenderLayer(assetId:string):RenderLayer {
+  const asset=layerById(assetId);
+  return {assetId:asset.id,slot:asset.slot,z:asset.z,shapes:asset.shapes};
 }
 
 export function buildRenderPlan(
-  dna: ResolvedAppearanceDNA,
-  context: SemanticAppearanceContext,
-  lod: PortraitLod,
-): PortraitRenderPlan {
-  const stage = stageProfileForLifeStage(context.lifeStage);
-  const frameId = portraitFrameIdFor(context.gender, context.lifeStage);
-  const family = faceFamilyById(dna.identity.faceFamilyId);
-  const hair = hairStyleById(dna.presentation.hairStyleId);
-  const outfit = outfitStyleById(dna.presentation.outfitStyleId);
-  const usesFemaleAdultFrame = frameId === 'female.adult' && outfit.fullFrame;
-  const usesCompleteFemaleAdultFace = usesFemaleAdultFrame;
-  const usesCompleteMaleAdultFace = frameId === 'male.adult' && context.lifeStage === 'adult';
-  const usesMaleElderFrame = frameId === 'male.elder';
-  const faceLayerId = family.faceLayerByAge[
-    usesFemaleAdultFrame || usesCompleteMaleAdultFace ? 'adult' : stage.ageGroup
+  dna:ResolvedAppearanceDNA,
+  context:SemanticAppearanceContext,
+  lod:PortraitLod,
+):PortraitRenderPlan {
+  const frame=portraitFrameFor(context.gender,context.lifeStage);
+  const family=faceFamilyById(dna.identity.faceFamilyId);
+  const hair=hairStyleById(dna.presentation.hairStyleId);
+  const outfit=outfitStyleById(dna.presentation.outfitStyleId);
+
+  if(!family.genders.includes(context.gender)) throw new Error(family.id+' is incompatible with '+context.gender+'.');
+  if(!hair.frameIds.includes(frame.id)) throw new Error(hair.id+' is incompatible with '+frame.id+'.');
+  if(!outfit.frameIds.includes(frame.id)) throw new Error(outfit.id+' is incompatible with '+frame.id+'.');
+
+  const faceLayerId=family.faceLayerByAge[frame.ageBand];
+  const layerIds=[
+    hair.backLayerId,
+    frame.neckLayerId,
+    ...outfitLayerAssetIdsForFrame(outfit,frame.id),
+    faceLayerId,
+    hair.frontLayerId,
   ];
+  const layers=layerIds.map(toRenderLayer).sort((a,b)=>a.z-b.z);
 
-  const layerIds = usesFemaleAdultFrame
-    ? [
-        hair.backLayerId,
-        'layer.neck.female-adult-frame',
-        ...outfit.layerAssetIds,
-        faceLayerId,
-        hair.frontLayerId,
-      ]
-    : usesMaleElderFrame
-      ? [
-          hair.backLayerId,
-          'layer.neck.male-elder-frame',
-          'layer.body.male-elder-frame',
-          ...outfit.layerAssetIds,
-          faceLayerId,
-          'layer.features.male.elder',
-          hair.frontLayerId,
-        ]
-      : usesCompleteMaleAdultFace
-        ? [
-            hair.backLayerId,
-            ...stage.layerAssetIds,
-            ...outfit.layerAssetIds,
-            faceLayerId,
-            hair.frontLayerId,
-          ]
-        : [
-            hair.backLayerId,
-            ...stage.layerAssetIds,
-            ...outfit.layerAssetIds,
-            faceLayerId,
-            stage.featureLayerByGender[context.gender],
-            hair.frontLayerId,
-          ];
-
-  const layers = layerIds.map(toRenderLayer).sort((a,b)=>a.z-b.z);
-  const adultFrameCloth: Record<string,string> = {
-    poor:'#75614f',
-    plain:'#607680',
-    comfortable:'#596d61',
-    wealthy:'#70575d',
-  };
-
-  const palette: Record<Exclude<PaletteToken,'none'>,string> = {
-    background: usesFemaleAdultFrame ? '#cbb07b' : stage.backgroundColor,
-    skin: skinColors[dna.identity.skinPaletteId] ?? '#c68b69',
-    hair: hairColors[dna.presentation.hairColorStateId] ?? hairColors[dna.identity.baseHairColorId] ?? '#29231f',
-    'hair-accent': dna.presentation.hairColorStateId === 'hair-state.gray'
-      ? '#b9b2aa'
-      : dna.presentation.hairColorStateId === 'hair-state.salt-pepper'
-        ? '#8e867d'
-        : '#5b4c43',
-    collar: usesFemaleAdultFrame ? '#b1a487' : stage.collarColor,
-    cloth: usesFemaleAdultFrame ? adultFrameCloth[context.wealthTier] : stage.clothByWealth[context.wealthTier],
-    accent: context.wealthTier === 'wealthy' ? '#d0b779' : context.wealthTier === 'comfortable' ? '#b6a47e' : '#9a8c72',
-    ink: '#271f1a',
-    age: '#60463a',
+  const palette:Record<PaletteToken,string>={
+    background:frame.backgroundColor,
+    skin:skinColors[dna.identity.skinPaletteId]??'#c68b69',
+    hair:hairColors[dna.presentation.hairColorStateId]??hairColors[dna.identity.baseHairColorId]??'#29231f',
+    'hair-accent':dna.presentation.hairColorStateId==='hair-state.gray'
+      ?'#b9b2aa'
+      :dna.presentation.hairColorStateId==='hair-state.salt-pepper'
+        ?'#8e867d'
+        :'#5b4c43',
+    collar:frame.collarColor,
+    cloth:frame.clothByWealth[context.wealthTier],
+    accent:context.wealthTier==='wealthy'?'#d0b779':context.wealthTier==='comfortable'?'#b6a47e':'#9a8c72',
+    ink:'#271f1a',
+    age:'#60463a',
   };
 
   return {
@@ -118,10 +81,9 @@ export function buildRenderPlan(
     renderContractVersion:PORTRAIT_RENDER_CONTRACT_VERSION,
     residentStableId:dna.identity.residentStableId,
     lod,
-    frameId,
-    stageProfileId:stage.id,
+    frameId:frame.id,
     faceFamilyId:family.id,
-    viewBox:usesFemaleAdultFrame || usesMaleElderFrame ? {x:0,y:15,width:120,height:120} : stage.viewBox,
+    viewBox:frame.viewBox,
     dna,
     palette,
     layers,
