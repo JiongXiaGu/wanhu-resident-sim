@@ -35,15 +35,14 @@ function weightedPick<T>(items: T[], unit: number, weightOf: (item:T)=>number): 
 }
 
 export function resolveIdentity(context: SemanticAppearanceContext): AppearanceIdentityDNA {
-  if (context.gender !== 'female') {
-    throw new Error('Portrait Generator V8.4 currently contains female art only.');
-  }
   const seeds = createIdentitySeedBank(context.residentSeed);
+  const faceCandidates = FACE_FAMILIES.filter((family)=>family.genders.includes(context.gender));
+  if (!faceCandidates.length) throw new Error('No FaceFamily art for gender '+context.gender+'.');
   return {
     identitySchemaVersion: 3,
     residentStableId: context.residentStableId,
     identitySeed: seeds.base,
-    faceFamilyId: FACE_FAMILIES[seeds.pickIndex('face-family', FACE_FAMILIES.length)].id,
+    faceFamilyId: faceCandidates[seeds.pickIndex('face-family', faceCandidates.length)].id,
     skinPaletteId: skinPaletteIds[seeds.pickIndex('skin', skinPaletteIds.length)],
     baseHairColorId: hairPaletteIds[seeds.pickIndex('hair-color', hairPaletteIds.length)],
   };
@@ -62,7 +61,7 @@ export function resolvePresentation(
 ): AppearancePresentationDNA {
   const seeds = createPresentationSeedBank(context.residentSeed);
 
-  const ageCompatibleHair = HAIR_STYLES.filter((style)=>style.lifeStages.includes(context.lifeStage));
+  const ageCompatibleHair = HAIR_STYLES.filter((style)=>style.genders.includes(context.gender)&&style.lifeStages.includes(context.lifeStage));
   const requestedHair = override.hairStyleId
     ? ageCompatibleHair.find((style)=>style.id===override.hairStyleId)
     : undefined;
