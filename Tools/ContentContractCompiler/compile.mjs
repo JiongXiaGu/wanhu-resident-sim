@@ -15,20 +15,19 @@ const occupationGroups = await readJson('Content/Occupations/occupation-groups.j
 const occupations = await readJson('Content/Occupations/occupations.json');
 const routines = await readJson('Content/Routines/routine-templates.json');
 const lifeEvents = await readJson('Content/LifeEvents/life-events.json');
-const appearance = await readJson('Content/Appearance/appearance-parts.json');
+const portrait = await readJson('Content/Portrait/portrait-catalog.json');
 
 if (surnames.schema !== 'wanhu.surnames.v2') throw new Error(`Unsupported surname schema: ${surnames.schema}`);
 if (givenNames.schema !== 'wanhu.given-names.v2') throw new Error(`Unsupported given-name schema: ${givenNames.schema}`);
 if (lifeTags.schema !== 'wanhu.life-tags.v1') throw new Error(`Unsupported life-tag schema: ${lifeTags.schema}`);
 if (occupationGroups.schema !== 'wanhu.occupation-groups.v1') throw new Error(`Unsupported occupation-group schema: ${occupationGroups.schema}`);
 if (lifeEvents.schema !== 'wanhu.life-events.v2') throw new Error(`Unsupported LifeEvent schema: ${lifeEvents.schema}`);
-if (appearance.schema !== 'wanhu.appearance-parts.v1') throw new Error(`Unsupported appearance schema: ${appearance.schema}`);
+if (portrait.schema !== 'wanhu.portrait-catalog.v1') throw new Error(`Unsupported portrait schema: ${portrait.schema}`);
 
 const stableIdPattern = /^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/;
 const validGenders = new Set(['male', 'female']);
 const validLifeStages = new Set(['child', 'teen', 'young-adult', 'adult', 'middle-age', 'elder']);
-const appearancePartSlots = new Set(['face', 'hair', 'brow', 'facial-hair', 'headwear', 'outfit']);
-const appearancePaletteSlots = new Set(['skin', 'hair', 'clothing']);
+const validWealthTiers = new Set(['poor', 'plain', 'comfortable', 'wealthy']);
 const structuralRequestTypes = new Set(['changeOccupation', 'moveHousehold', 'formMarriage', 'addChild']);
 
 function fnv1a32(value) {
@@ -136,25 +135,31 @@ for (const item of occupations.items ?? []) register(item.id, 'occupation', 'Con
 for (const item of routines.items ?? []) register(item.id, 'routine', 'Content/Routines/routine-templates.json');
 for (const item of lifeEvents.items ?? []) register(item.id, 'life-event', 'Content/LifeEvents/life-events.json');
 
-requireArray(appearance.parts, 'Appearance parts');
-requireArray(appearance.palettes, 'Appearance palettes');
-for (const item of appearance.parts) {
-  register(item.id, 'appearance-part', 'Content/Appearance/appearance-parts.json');
-  if (!item.id.startsWith('appearance.')) throw new Error(`${item.id}: appearance id must start with appearance.`);
-  if (!appearancePartSlots.has(item.slot)) throw new Error(`${item.id}: unsupported appearance slot ${item.slot}.`);
-  if (typeof item.label !== 'string' || !item.label.trim()) throw new Error(`${item.id}: appearance label is required.`);
+requireArray(portrait.faceFamilies, 'Portrait face families');
+requireArray(portrait.hairStyles, 'Portrait hair styles');
+requireArray(portrait.outfitStyles, 'Portrait outfit styles');
+requireArray(portrait.skinPalettes, 'Portrait skin palettes');
+requireArray(portrait.hairPalettes, 'Portrait hair palettes');
+
+for (const item of portrait.faceFamilies) {
+  register(item.id, 'portrait-face-family', 'Content/Portrait/portrait-catalog.json');
+  validateWeight(item.weight, item.id);
+  validateFilterList(item.genders, validGenders, `${item.id}.genders`);
+}
+for (const item of portrait.hairStyles) {
+  register(item.id, 'portrait-hair-style', 'Content/Portrait/portrait-catalog.json');
   validateWeight(item.weight, item.id);
   validateFilterList(item.genders, validGenders, `${item.id}.genders`);
   validateFilterList(item.lifeStages, validLifeStages, `${item.id}.lifeStages`);
 }
-for (const item of appearance.palettes) {
-  register(item.id, 'appearance-palette', 'Content/Appearance/appearance-parts.json');
-  if (!item.id.startsWith('appearance.palette.')) throw new Error(`${item.id}: appearance palette id must start with appearance.palette.`);
-  if (!appearancePaletteSlots.has(item.slot)) throw new Error(`${item.id}: unsupported palette slot ${item.slot}.`);
-  if (typeof item.label !== 'string' || !item.label.trim()) throw new Error(`${item.id}: palette label is required.`);
+for (const item of portrait.outfitStyles) {
+  register(item.id, 'portrait-outfit-style', 'Content/Portrait/portrait-catalog.json');
   validateWeight(item.weight, item.id);
-  validateFilterList(item.genders, validGenders, `${item.id}.genders`);
-  validateFilterList(item.lifeStages, validLifeStages, `${item.id}.lifeStages`);
+  validateFilterList(item.wealthTiers, validWealthTiers, `${item.id}.wealthTiers`);
+}
+for (const item of [...portrait.skinPalettes, ...portrait.hairPalettes]) {
+  register(item.id, 'portrait-palette', 'Content/Portrait/portrait-catalog.json');
+  validateWeight(item.weight, item.id);
 }
 
 const occupationGroupIds = new Set(occupationGroups.items.map((item) => item.id));
@@ -172,18 +177,6 @@ for (const routine of routines.items ?? []) {
   }
 }
 
-for (const item of [...appearance.parts, ...appearance.palettes]) {
-  assertUniqueStrings(item.occupationGroups, `${item.id}.occupationGroups`);
-  for (const groupId of item.occupationGroups ?? []) {
-    if (!occupationGroupIds.has(groupId)) throw new Error(`${item.id}: references unknown occupation group ${groupId}.`);
-  }
-}
-for (const slot of appearancePartSlots) {
-  if (!appearance.parts.some((item) => item.slot === slot)) throw new Error(`Appearance catalog has no part for slot ${slot}.`);
-}
-for (const slot of appearancePaletteSlots) {
-  if (!appearance.palettes.some((item) => item.slot === slot)) throw new Error(`Appearance catalog has no palette for slot ${slot}.`);
-}
 
 const structuralRequestCounts = Object.fromEntries([...structuralRequestTypes].map((type) => [type, 0]));
 for (const event of lifeEvents.items ?? []) {
@@ -243,11 +236,7 @@ const nameCatalog = {
   givenNames: givenNames.items,
 };
 
-const appearanceCatalog = {
-  schema: 'wanhu.appearance-catalog.v1',
-  parts: appearance.parts,
-  palettes: appearance.palettes,
-};
+const portraitCatalog = portrait;
 
 const LIFE_PHASES = [
   { id: 'child', minAge: 0, maxAge: 12 },
@@ -313,7 +302,6 @@ for (const event of lifeEvents.items) {
   for (const tagId of event.effects?.addTags ?? []) producedTags.add(tagId);
 }
 
-const countBySlot = (items) => Object.fromEntries([...new Set(items.map((item) => item.slot))].sort().map((slot) => [slot, items.filter((item) => item.slot === slot).length]));
 const warnings = [];
 for (const phase of phaseCoverage) if (phase.lifeChapters === 0) warnings.push(`No recordable Life Chapter for phase ${phase.phase}.`);
 for (const occupation of occupationCoverage) if (occupation.routines === 0) warnings.push(`${occupation.occupationId} has no occupation-specific Routine.`);
@@ -328,11 +316,12 @@ const coverage = {
     femaleGivenNames: givenNames.items.filter((item) => item.gender === 'female').length,
     unisexGivenNames: givenNames.items.filter((item) => item.gender === 'unisex').length,
   },
-  appearance: {
-    parts: appearance.parts.length,
-    partsBySlot: countBySlot(appearance.parts),
-    palettes: appearance.palettes.length,
-    palettesBySlot: countBySlot(appearance.palettes),
+  portrait: {
+    faceFamilies: portrait.faceFamilies.length,
+    hairStyles: portrait.hairStyles.length,
+    outfitStyles: portrait.outfitStyles.length,
+    skinPalettes: portrait.skinPalettes.length,
+    hairPalettes: portrait.hairPalettes.length,
   },
   lifeTags: {
     total: lifeTags.items.length,
@@ -355,8 +344,8 @@ await writeFile(join(generatedDir, 'stable-id-registry.json'), `${JSON.stringify
 await writeFile(join(generatedDir, 'name-catalog-v2.json'), `${JSON.stringify(nameCatalog, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'life-tags.json'), `${JSON.stringify(lifeTags, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'occupation-groups.json'), `${JSON.stringify(occupationGroups, null, 2)}\n`, 'utf8');
-await writeFile(join(generatedDir, 'appearance-catalog.json'), `${JSON.stringify(appearanceCatalog, null, 2)}\n`, 'utf8');
+await writeFile(join(generatedDir, 'portrait-catalog.json'), `${JSON.stringify(portraitCatalog, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'content-coverage.json'), `${JSON.stringify(coverage, null, 2)}\n`, 'utf8');
 
-console.log(`Validated ${registry.items.length} Stable IDs, ${appearance.parts.length + appearance.palettes.length} appearance definitions, ${occupationGroups.items.length} occupation groups, ${lifeTags.items.length} LifeTags and ${lifeEvents.items.length} LifeEvents.`);
+console.log(`Validated ${registry.items.length} Stable IDs, ${portrait.faceFamilies.length + portrait.hairStyles.length + portrait.outfitStyles.length + portrait.skinPalettes.length + portrait.hairPalettes.length} portrait definitions, ${occupationGroups.items.length} occupation groups, ${lifeTags.items.length} LifeTags and ${lifeEvents.items.length} LifeEvents.`);
 console.log(`Coverage report emitted with ${warnings.length} non-fatal warning(s).`);
