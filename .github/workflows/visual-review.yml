@@ -71,7 +71,7 @@ jobs:
         run: node scripts/capture-portrait-art-v2-review.mjs
       - name: Capture Woodblock Portrait V7 screenshots
         run: node scripts/capture-portrait-style-lab.mjs
-      - name: Capture Portrait Generator V8 review screenshots
+      - name: Capture Portrait Generator V8.1 review screenshots
         run: node scripts/capture-portrait-v8-review.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs

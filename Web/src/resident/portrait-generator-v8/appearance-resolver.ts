@@ -11,6 +11,7 @@ import {
   checkHairCompatibility,
   checkOutfitCompatibility,
 } from './compatibility';
+import { resolveIdentityMorphology } from './identity-morphology';
 import { PopulationDiversityController } from './population-diversity';
 import { createIdentitySeedBank, createPresentationSeedBank } from './seed-bank';
 import {
@@ -40,9 +41,9 @@ function weightedPick<T>(
   unit: number,
   weightOf: (item: T) => number,
 ): T {
-  if (!items.length) throw new Error('V8 weightedPick requires candidates.');
+  if (!items.length) throw new Error('V8.1 weightedPick requires candidates.');
   const total = items.reduce((sum, item) => sum + Math.max(0, weightOf(item)), 0);
-  if (total <= 0) throw new Error('V8 weightedPick has zero total weight.');
+  if (total <= 0) throw new Error('V8.1 weightedPick has zero total weight.');
   let cursor = unit * total;
   for (const item of items) {
     cursor -= Math.max(0, weightOf(item));
@@ -53,11 +54,11 @@ function weightedPick<T>(
 
 export function resolveIdentity(context: SemanticAppearanceContext): AppearanceIdentityDNA {
   if (context.gender !== 'female') {
-    throw new Error('Portrait Generator V8 migration slice currently contains female formal assets only.');
+    throw new Error('Portrait Generator V8.1 migration slice currently contains female formal assets only.');
   }
   const seeds = createIdentitySeedBank(context.residentSeed);
   return {
-    identitySchemaVersion: 1,
+    identitySchemaVersion: 2,
     residentStableId: context.residentStableId,
     identitySeed: seeds.base,
     faceFamilyId: FACE_FAMILY_ID,
@@ -66,6 +67,7 @@ export function resolveIdentity(context: SemanticAppearanceContext): AppearanceI
     baseHairColorId: hairPaletteIds[seeds.pickIndex('hair-color', hairPaletteIds.length)],
     bodyFrameId: seeds.unit('body-frame') < .42 ? 'body-frame.female.slight' : 'body-frame.female.regular',
     distinguishingTraitIds: seeds.unit('trait') < .18 ? ['trait.soft-cheek-line'] : [],
+    morphology: resolveIdentityMorphology(seeds),
   };
 }
 
@@ -79,7 +81,7 @@ export function resolveHeadProfile(
     && item.lifeStages.includes(context.lifeStage)
   );
   if (!profile) {
-    throw new Error('No V8 HeadProfile for '+identity.faceFamilyId+' / '+context.lifeStage);
+    throw new Error('No V8.1 HeadProfile for '+identity.faceFamilyId+' / '+context.lifeStage);
   }
   return profile;
 }
@@ -172,7 +174,7 @@ export function assertV8IdentityInvariant(
   const fingerprint = JSON.stringify(reference);
   for (const variant of variants) {
     if (JSON.stringify(resolveIdentity(variant)) !== fingerprint) {
-      throw new Error('V8 identity changed after presentation context changed: '+variant.residentStableId);
+      throw new Error('V8.1 identity changed after presentation context changed: '+variant.residentStableId);
     }
   }
   return true;

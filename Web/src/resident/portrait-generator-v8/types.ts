@@ -1,6 +1,7 @@
 import type { Gender, LifeStageId, PresentationStyle, WealthTier } from '../../domain/resident';
 
 export const PORTRAIT_GENERATOR_VERSION = 8 as const;
+export const PORTRAIT_RENDER_CONTRACT_VERSION = '8.1' as const;
 export type PortraitGeneratorVersion = typeof PORTRAIT_GENERATOR_VERSION;
 export type PortraitLod = 48 | 64 | 96;
 
@@ -13,8 +14,15 @@ export type SemanticAppearanceContext = {
   presentationStyle: PresentationStyle;
 };
 
+export type IdentityMorphology = {
+  faceWidthScale: number;
+  featureSpanScale: number;
+  noseLengthScale: number;
+  mouthWidthScale: number;
+};
+
 export type AppearanceIdentityDNA = {
-  identitySchemaVersion: 1;
+  identitySchemaVersion: 2;
   residentStableId: string;
   identitySeed: number;
   faceFamilyId: string;
@@ -23,6 +31,7 @@ export type AppearanceIdentityDNA = {
   baseHairColorId: string;
   bodyFrameId: string;
   distinguishingTraitIds: string[];
+  morphology: IdentityMorphology;
 };
 
 export type AppearancePresentationDNA = {
@@ -46,6 +55,25 @@ export type ResolvedAppearanceDNA = {
 
 export type Vec2 = { x: number; y: number };
 
+export type HeadAnchorId =
+  | 'skullTop'
+  | 'templeLeft'
+  | 'templeRight'
+  | 'earLeft'
+  | 'earRight'
+  | 'jawLeft'
+  | 'jawRight'
+  | 'chin'
+  | 'neckLeft'
+  | 'neckRight'
+  | 'crownBack'
+  | 'bunLow'
+  | 'occipitalLeft'
+  | 'occipitalRight'
+  | 'nape'
+  | 'shoulderBackLeft'
+  | 'shoulderBackRight';
+
 export type HeadProfileDefinition = {
   id: string;
   faceFamilyId: string;
@@ -55,25 +83,7 @@ export type HeadProfileDefinition = {
   topY: number;
   chinY: number;
   jawWidth: number;
-  anchors: {
-    skullTop: Vec2;
-    templeLeft: Vec2;
-    templeRight: Vec2;
-    earLeft: Vec2;
-    earRight: Vec2;
-    jawLeft: Vec2;
-    jawRight: Vec2;
-    chin: Vec2;
-    neckLeft: Vec2;
-    neckRight: Vec2;
-    crownBack: Vec2;
-    bunLow: Vec2;
-    occipitalLeft: Vec2;
-    occipitalRight: Vec2;
-    nape: Vec2;
-    shoulderBackLeft: Vec2;
-    shoulderBackRight: Vec2;
-  };
+  anchors: Record<HeadAnchorId, Vec2>;
   masks: {
     skull: string;
     faceKeepout: string;
@@ -110,19 +120,32 @@ export type PortraitLayerSlot =
   | 'accessory'
   | 'age-overlay';
 
-export type VectorLayerAsset = {
-  id: string;
-  slot: PortraitLayerSlot;
-  z: number;
-  lods: PortraitLod[];
-  shapes: VectorShape[];
-};
+export type LayerMaskMode =
+  | 'none'
+  | 'behind-head'
+  | 'inside-skull'
+  | 'outside-face'
+  | 'ear-front-left'
+  | 'ear-front-right';
 
 export type PlacementTransform = {
   translateX?: number;
   translateY?: number;
   scaleX?: number;
   scaleY?: number;
+  originX?: number;
+  originY?: number;
+};
+
+export type VectorLayerAsset = {
+  id: string;
+  slot: PortraitLayerSlot;
+  z: number;
+  lods: PortraitLod[];
+  shapes: VectorShape[];
+  coordinateSpace?: 'canvas' | 'anchor-local';
+  anchor?: HeadAnchorId;
+  maskMode?: LayerMaskMode;
 };
 
 export type HairStyleBundle = {
@@ -150,6 +173,11 @@ export type OutfitBundle = {
   baseWeight: number;
 };
 
+export type AccessoryPlacement = {
+  anchor: HeadAnchorId;
+  transform?: PlacementTransform;
+};
+
 export type AccessoryAsset = {
   id: string;
   label: string;
@@ -158,6 +186,7 @@ export type AccessoryAsset = {
   wealthTiers: WealthTier[];
   compatibleHairBundles: string[];
   layerAssetId?: string;
+  placementByHairBundle?: Record<string, AccessoryPlacement>;
   baseWeight: number;
 };
 
@@ -171,12 +200,14 @@ export type RenderLayer = {
   assetId: string;
   slot: PortraitLayerSlot;
   z: number;
+  maskMode: LayerMaskMode;
   transform: Required<PlacementTransform>;
   shapes: VectorShape[];
 };
 
 export type PortraitRenderPlan = {
   generatorVersion: PortraitGeneratorVersion;
+  renderContractVersion: typeof PORTRAIT_RENDER_CONTRACT_VERSION;
   residentStableId: string;
   lod: PortraitLod;
   headProfileId: string;

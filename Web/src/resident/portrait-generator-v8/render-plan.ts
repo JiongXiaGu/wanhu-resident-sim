@@ -8,12 +8,17 @@ import {
   layerById,
 } from './catalog';
 import { resolveHeadProfile } from './appearance-resolver';
-import type {
-  PaletteToken,
-  PortraitLod,
-  PortraitRenderPlan,
-  ResolvedAppearanceDNA,
-  SemanticAppearanceContext,
+import {
+  PORTRAIT_RENDER_CONTRACT_VERSION,
+  type HeadAnchorId,
+  type PaletteToken,
+  type PlacementTransform,
+  type PortraitLod,
+  type PortraitRenderPlan,
+  type RenderLayer,
+  type ResolvedAppearanceDNA,
+  type SemanticAppearanceContext,
+  type VectorLayerAsset,
 } from './types';
 
 const skinColors: Record<string,string> = {
@@ -47,12 +52,91 @@ const backgroundByStage: Record<string,string> = {
   elder:'#cbb27c',
 };
 
-function completeTransform(input: {translateX?:number;translateY?:number;scaleX?:number;scaleY?:number} = {}) {
+function completeTransform(input: PlacementTransform = {}): Required<PlacementTransform> {
   return {
     translateX: input.translateX ?? 0,
     translateY: input.translateY ?? 0,
     scaleX: input.scaleX ?? 1,
     scaleY: input.scaleY ?? 1,
+    originX: input.originX ?? 0,
+    originY: input.originY ?? 0,
+  };
+}
+
+function combineTransform(a: PlacementTransform = {}, b: PlacementTransform = {}): Required<PlacementTransform> {
+  const aa = completeTransform(a);
+  const bb = completeTransform(b);
+  return {
+    translateX: aa.translateX + bb.translateX,
+    translateY: aa.translateY + bb.translateY,
+    scaleX: aa.scaleX * bb.scaleX,
+    scaleY: aa.scaleY * bb.scaleY,
+    originX: bb.originX || aa.originX,
+    originY: bb.originY || aa.originY,
+  };
+}
+
+function anchoredTransform(
+  head: ReturnType<typeof resolveHeadProfile>,
+  anchor: HeadAnchorId,
+  transform: PlacementTransform = {},
+) {
+  const point = head.anchors[anchor];
+  return combineTransform(
+    { translateX: point.x, translateY: point.y },
+    transform,
+  );
+}
+
+function morphologyTransform(
+  assetId: string,
+  dna: ResolvedAppearanceDNA,
+): PlacementTransform | null {
+  const morphology = dna.identity.morphology;
+  if (assetId.startsWith('layer.face.')) {
+    return {
+      scaleX: morphology.faceWidthScale,
+      originX: 60,
+      originY: 60,
+    };
+  }
+  if (assetId === 'layer.feature.soft-a.eyes' || assetId === 'layer.feature.soft-a.96-detail') {
+    return {
+      scaleX: morphology.featureSpanScale,
+      originX: 60,
+      originY: 51,
+    };
+  }
+  if (assetId === 'layer.feature.soft-a.nose') {
+    return {
+      scaleY: morphology.noseLengthScale,
+      originX: 60,
+      originY: 54,
+    };
+  }
+  if (assetId === 'layer.feature.soft-a.mouth') {
+    return {
+      scaleX: morphology.mouthWidthScale,
+      originX: 60,
+      originY: 74,
+    };
+  }
+  return null;
+}
+
+function renderLayer(
+  asset: VectorLayerAsset,
+  transform: PlacementTransform,
+  lod: PortraitLod,
+): RenderLayer | null {
+  if (!asset.lods.includes(lod)) return null;
+  return {
+    assetId: asset.id,
+    slot: asset.slot,
+    z: asset.z,
+    maskMode: asset.maskMode ?? 'none',
+    transform: completeTransform(transform),
+    shapes: asset.shapes,
   };
 }
 
@@ -65,34 +149,47 @@ export function buildRenderPlan(
   const hair = HAIR_BUNDLES.find((item)=>item.id===dna.presentation.hairBundleId);
   const outfit = OUTFIT_BUNDLES.find((item)=>item.id===dna.presentation.outfitBundleId);
   const accessory = ACCESSORIES.find((item)=>item.id===dna.presentation.accessoryAssetId);
-  if (!hair || !outfit || !accessory) throw new Error('V8 RenderPlan references missing asset bundle.');
+  if (!hair || !outfit || !accessory) throw new Error('V8.1 RenderPlan references missing asset bundle.');
 
-  const layerIds = [
+  const hairPlacement = hair.placementByHeadProfile[headProfile.id] ?? {};
+  const hairAssetIds = new Set(hair.layerAssetIds);
+  const accessoryAssetId = accessory.layerAssetId;
+  const baseIds = [
     ...hair.layerAssetIds,
     ...outfit.layerAssetIds,
     FACE_LAYER_BY_HEAD_PROFILE[headProfile.id],
     ...(FEATURE_LAYER_BY_SET[dna.identity.featureSetId] ?? []),
     ...(AGE_LAYER_BY_ID[dna.presentation.ageOverlayId] ?? []),
-    ...(accessory.layerAssetId ? [accessory.layerAssetId] : []),
+    ...(accessoryAssetId ? [accessoryAssetId] : []),
   ].filter(Boolean);
 
-  const hairPlacement = completeTransform(hair.placementByHeadProfile[headProfile.id]);
-  const layers = layerIds
-    .map((assetId)=>{
-      const layer = layerById(assetId);
-      const transform = hair.layerAssetIds.includes(assetId)
-        ? hairPlacement
-        : completeTransform();
-      return {
-        assetId,
-        slot: layer.slot,
-        z: layer.z,
-        transform,
-        shapes: layer.lods.includes(lod) ? layer.shapes : [],
-      };
-    })
-    .filter((layer)=>layer.shapes.length > 0)
-    .sort((a,b)=>a.z-b.z);
+  const layers: RenderLayer[] = [];
+  for (const assetId of baseIds) {
+    const asset = layerById(assetId);
+    let transform: PlacementTransform = {};
+
+    if (hairAssetIds.has(assetId)) {
+      transform = asset.coordinateSpace === 'anchor-local' && asset.anchor
+        ? anchoredTransform(headProfile, asset.anchor, hairPlacement)
+        : hairPlacement;
+    } else if (accessoryAssetId === assetId) {
+      const slot = accessory.placementByHairBundle?.[hair.id];
+      if (slot) {
+        transform = anchoredTransform(
+          headProfile,
+          slot.anchor,
+          combineTransform(hairPlacement, slot.transform),
+        );
+      }
+    } else {
+      transform = morphologyTransform(assetId, dna) ?? {};
+    }
+
+    const layer = renderLayer(asset, transform, lod);
+    if (layer) layers.push(layer);
+  }
+
+  layers.sort((a,b)=>a.z-b.z);
 
   const palette: Record<Exclude<PaletteToken,'none'>,string> = {
     background: backgroundByStage[context.lifeStage] ?? '#c8aa70',
@@ -106,6 +203,7 @@ export function buildRenderPlan(
 
   return {
     generatorVersion: dna.generatorVersion,
+    renderContractVersion: PORTRAIT_RENDER_CONTRACT_VERSION,
     residentStableId: dna.identity.residentStableId,
     lod,
     headProfileId: headProfile.id,

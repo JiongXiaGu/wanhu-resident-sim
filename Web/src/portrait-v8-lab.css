@@ -231,3 +231,24 @@
   .v8-four-grid { grid-template-columns: repeat(2,1fr); }
   .v8-crowd { grid-template-columns: repeat(8,1fr); }
 }
+
+
+.v8-contract-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.v8-contract-card > .portrait-v8-renderer {
+  width: min(100%, 360px);
+}
+
+.v8-contract-card {
+  border: 1px solid rgba(203, 176, 109, .16);
+}
+
+@media (max-width: 900px) {
+  .v8-contract-grid {
+    grid-template-columns: 1fr;
+  }
+}
