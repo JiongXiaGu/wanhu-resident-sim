@@ -1,4 +1,4 @@
-# Portrait Generator V8 / V8.1
+# Portrait Generator V8 / V8.1 / V8.2
 
 ## 定位
 
@@ -324,3 +324,131 @@ V8.1 的以下概念可作为未来 Unity 设计输入：
 - Resolved DNA
 
 但 Unity ECS Component、BlobAsset、Save Binary、RuntimeIndex、SpriteAtlas、Addressables 等仍应进入正式游戏工程后重新设计。
+
+
+## V8.2：首批 Hair Bundle 正式资产契约
+
+V8.1 首先把成年低髻作为 Rendering Contract 基准。
+
+V8.2 将同样的要求扩展到首批全部 4 个正式 Hair Bundle：
+
+- hair.female.girl-double-bun.v1
+- hair.female.young-halfbound-backfall.v1
+- hair.female.adult-low-bun.v1
+- hair.female.elder-gray-low-bun.v1
+
+### Asset Audit
+
+新增 asset-audit.ts。
+
+每个 Hair Bundle 必须自动满足：
+
+- 所有 Hair Layer 使用 anchor-local；
+- 所有 Hair Layer 声明 anchor；
+- back-hair 使用 behind-head；
+- front-hair 使用 inside-skull；
+- side-hair 使用 outside-face；
+- 所有 compatibleHeadProfiles 都存在 placement；
+- 主要轮廓层必须包含 48px LOD；
+- accessorySlots 中声明的配饰必须存在；
+- 配饰必须声明该 Hair Bundle 的 placement。
+
+任何一项失败，该 Hair Bundle 不能进入正式资产池。
+
+### 女童双小髻
+
+V8.2 不再使用两个独立圆球。
+
+双髻本体改成不规则髻体，并增加与头顶连接的束发根部。
+
+红绳通过 skullTop accessory slot 定位。
+
+额前发与短鬓发继续使用 skull / face keepout mask。
+
+### 少女半束后披
+
+V8.1 的后发仍容易形成一整块对称黑色披风。
+
+V8.2 将后发拆成：
+
+- 顶部半束小髻；
+- 左侧后披发量；
+- 右侧后披发量；
+- 96px 才显示的轻量发丝节奏。
+
+中间颈后不再被整块黑色填满。
+
+左右轮廓允许轻微不对称。
+
+### 成年低髻
+
+继续作为主基准。
+
+当前要求：
+
+- bunLow 局部原点；
+- 后脑收发连续进入髻体；
+- 髻体不作为独立圆球；
+- 侧发只保留短鬓；
+- 盘绕线只在 64/96px 显示；
+- 木簪 / 玉簪跟随 bunLow slot；
+- adult / elder HeadProfile 使用同一个 Hair Bundle，不复制资产。
+
+### 老年花白低髻
+
+不再使用“灰色头盔 + 灰圆球”的两块结构。
+
+V8.2 使用：
+
+- 后脑收发连续进入低髻；
+- 更小的老年髻体；
+- hair-accent 专门用于花白刻线；
+- 轻量短鬓；
+- 64/96px 才显示花白细节。
+
+hair-accent 与财富颜色解耦，避免老年白发纹理被 Outfit Accent 污染。
+
+## V8.2 Contract Matrix
+
+/?view=portrait-v8 新增正式 Hair Bundle Contract 区。
+
+当前实际渲染 7 个兼容组合：
+
+- 女童双小髻：child
+- 少女半束后披：young-adult
+- 少女半束后披：adult
+- 成年低髻：adult
+- 成年低髻：elder
+- 花白低髻：middle-age
+- 花白低髻：elder
+
+同一 Hair Bundle 在不同 HeadProfile 上只允许通过 placement 调整。
+
+不允许复制一份新的绝对坐标发型。
+
+## V8.2 自动验收
+
+页面和截图脚本必须检查：
+
+1. renderContractVersion = 8.2；
+2. 4 个 Hair Bundle Audit 全部 PASS；
+3. 正式 Hair Contract 样本 = 7；
+4. 每个 Contract Sample 真正使用 Mask；
+5. 每个 Contract Sample 真正使用 Local Placement；
+6. 半束后披跨 youth/adult HeadProfile；
+7. 成年低髻跨 adult/elder HeadProfile；
+8. 花白低髻跨 adult(middle-age)/elder HeadProfile；
+9. 4 个 Bundle 继续提供 96/64/48 LOD；
+10. 64 人 Population Diversity 继续存在。
+
+## Visual QA
+
+V8.2 的人工视觉审查优先级：
+
+1. 女童双髻必须像扎起的小髻，不像两个贴上去的球；
+2. 半束后披不能形成左右对称的整块黑披风；
+3. 成年低髻不能像耳后徽章或独立圆球；
+4. 花白低髻不能像灰帽子；
+5. Accessory 不得穿脸；
+6. 48px 下只保留关键轮廓，不保留碎发噪声。
+

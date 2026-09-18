@@ -30,7 +30,7 @@ const rootView = view === 'portraits'
         <App />
         <a className="portrait-view-entry" href="/?view=portraits">头像查看器</a>
         <a className="portrait-style-entry" href="/?view=portrait-styles">木刻头像审查</a>
-        <a className="portrait-v8-entry" href="/?view=portrait-v8">头像算法 V8.1</a>
+        <a className="portrait-v8-entry" href="/?view=portrait-v8">头像算法 V8.2</a>
       </>
     );
 

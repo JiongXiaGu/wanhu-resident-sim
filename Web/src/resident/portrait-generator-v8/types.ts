@@ -1,7 +1,7 @@
 import type { Gender, LifeStageId, PresentationStyle, WealthTier } from '../../domain/resident';
 
 export const PORTRAIT_GENERATOR_VERSION = 8 as const;
-export const PORTRAIT_RENDER_CONTRACT_VERSION = '8.1' as const;
+export const PORTRAIT_RENDER_CONTRACT_VERSION = '8.2' as const;
 export type PortraitGeneratorVersion = typeof PORTRAIT_GENERATOR_VERSION;
 export type PortraitLod = 48 | 64 | 96;
 
@@ -97,6 +97,7 @@ export type PaletteToken =
   | 'background'
   | 'skin'
   | 'hair'
+  | 'hair-accent'
   | 'cloth'
   | 'accent'
   | 'ink'

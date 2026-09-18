@@ -10,25 +10,26 @@ const page = await browser.newPage({ viewport: { width: 1740, height: 1200 }, de
 await page.goto(baseUrl + '/?view=portrait-v8', { waitUntil: 'networkidle' });
 await page.waitForSelector('[data-portrait-v8-lab="true"]');
 
-if (await page.locator('[data-portrait-v8-lab="true"]').getAttribute('data-render-contract-version') !== '8.1') {
-  throw new Error('Portrait Generator must expose render contract 8.1.');
+const contractVersion = await page.locator('[data-portrait-v8-lab="true"]').getAttribute('data-render-contract-version');
+if (contractVersion !== '8.2') {
+  throw new Error('Portrait Generator must expose render contract 8.2, got '+contractVersion);
 }
 
 const checks = page.locator('[data-v8-check]');
 const states = await checks.evaluateAll((items)=>items.map((item)=>[item.getAttribute('data-v8-check'),item.getAttribute('data-state')]));
 if (states.some(([,state])=>state !== 'pass')) {
-  throw new Error('Portrait Generator V8.1 invariant failed: '+JSON.stringify(states));
+  throw new Error('Portrait Generator V8.2 invariant failed: '+JSON.stringify(states));
 }
 
 const renderers = page.locator('.portrait-v8-renderer');
 const versions = await renderers.evaluateAll((items)=>items.map((item)=>item.getAttribute('data-generator-version')));
-if (versions.some((value)=>value !== '8')) throw new Error('Every V8.1 renderer must use generatorVersion 8.');
+if (versions.some((value)=>value !== '8')) throw new Error('Every V8.2 renderer must use generatorVersion 8.');
 
 const contracts = await renderers.evaluateAll((items)=>items.map((item)=>item.getAttribute('data-render-contract')));
-if (contracts.some((value)=>value !== '8.1')) throw new Error('Every renderer must use render contract 8.1.');
+if (contracts.some((value)=>value !== '8.2')) throw new Error('Every renderer must use render contract 8.2.');
 
 const maskStates = await renderers.evaluateAll((items)=>items.map((item)=>item.getAttribute('data-mask-contract')));
-if (maskStates.some((value)=>value !== 'active')) throw new Error('Every V8.1 renderer must activate mask contract.');
+if (maskStates.some((value)=>value !== 'active')) throw new Error('Every V8.2 renderer must activate mask contract.');
 
 const wealthCards = page.locator('[data-v8-section="wealth-invariant"] .v8-card');
 const wealthFingerprints = await wealthCards.evaluateAll((items)=>items.map((item)=>item.getAttribute('data-identity-fingerprint')));
@@ -41,32 +42,59 @@ if (new Set(temporalFingerprints).size !== 1 || new Set(morphologyFingerprints).
   throw new Error('Temporal aging must preserve IdentityDNA and IdentityMorphology.');
 }
 
-const contractCards = page.locator('[data-v8-section="render-contract"] .v8-card');
-if ((await contractCards.count()) !== 2) throw new Error('V8.1 low-bun contract review must show adult and elder.');
-const contractHair = await contractCards.locator('.portrait-v8-renderer').evaluateAll((items)=>items.map((item)=>item.getAttribute('data-hair-bundle')));
-if (new Set(contractHair).size !== 1 || contractHair[0] !== 'hair.female.adult-low-bun.v1') {
-  throw new Error('V8.1 contract review must force the same adult-low-bun bundle across HeadProfiles.');
+const auditCards = page.locator('[data-bundle-audit]');
+if ((await auditCards.count()) !== 4) throw new Error('V8.2 must audit exactly 4 formal Hair Bundles.');
+const auditStates = await auditCards.evaluateAll((items)=>items.map((item)=>[item.getAttribute('data-bundle-audit'),item.getAttribute('data-state')]));
+if (auditStates.some(([,state])=>state !== 'pass')) {
+  throw new Error('V8.2 Hair Bundle audit failed: '+JSON.stringify(auditStates));
 }
-const contractHeads = await contractCards.locator('.portrait-v8-renderer').evaluateAll((items)=>items.map((item)=>item.getAttribute('data-head-profile')));
-if (new Set(contractHeads).size !== 2) throw new Error('V8.1 low-bun must resolve on two distinct HeadProfiles.');
 
-const maskedCounts = await contractCards.locator('.portrait-v8-renderer').evaluateAll((items)=>items.map((item)=>Number(item.getAttribute('data-masked-layer-count'))));
-const localCounts = await contractCards.locator('.portrait-v8-renderer').evaluateAll((items)=>items.map((item)=>Number(item.getAttribute('data-local-placement-count'))));
-if (maskedCounts.some((value)=>value < 3) || localCounts.some((value)=>value < 3)) {
-  throw new Error('V8.1 low-bun must actually use masked and local-placed layers.');
+const contractCards = page.locator('[data-bundle-contract]');
+if ((await contractCards.count()) !== 7) throw new Error('V8.2 bundle contract review must render 7 compatibility samples.');
+
+const expectedBundleCounts = new Map([
+  ['hair.female.girl-double-bun.v1',1],
+  ['hair.female.young-halfbound-backfall.v1',2],
+  ['hair.female.adult-low-bun.v1',2],
+  ['hair.female.elder-gray-low-bun.v1',2],
+]);
+
+for (const [bundleId,expected] of expectedBundleCounts) {
+  const cards = page.locator('[data-bundle-contract="'+bundleId+'"]');
+  if ((await cards.count()) !== expected) {
+    throw new Error('Unexpected V8.2 contract sample count for '+bundleId);
+  }
+  const renderersForBundle = cards.locator('.portrait-v8-renderer');
+  const maskedCounts = await renderersForBundle.evaluateAll((items)=>items.map((item)=>Number(item.getAttribute('data-masked-layer-count'))));
+  const localCounts = await renderersForBundle.evaluateAll((items)=>items.map((item)=>Number(item.getAttribute('data-local-placement-count'))));
+  if (maskedCounts.some((value)=>value < 2) || localCounts.some((value)=>value < 2)) {
+    throw new Error('V8.2 bundle does not actually use masked/local layers: '+bundleId);
+  }
 }
+
+const youthHeads = await page.locator('[data-bundle-contract="hair.female.young-halfbound-backfall.v1"] .portrait-v8-renderer')
+  .evaluateAll((items)=>items.map((item)=>item.getAttribute('data-head-profile')));
+if (new Set(youthHeads).size !== 2) throw new Error('Halfbound bundle must resolve on youth and adult HeadProfiles.');
+
+const lowBunHeads = await page.locator('[data-bundle-contract="hair.female.adult-low-bun.v1"] .portrait-v8-renderer')
+  .evaluateAll((items)=>items.map((item)=>item.getAttribute('data-head-profile')));
+if (new Set(lowBunHeads).size !== 2) throw new Error('Adult low bun must resolve on adult and elder HeadProfiles.');
+
+const grayBunHeads = await page.locator('[data-bundle-contract="hair.female.elder-gray-low-bun.v1"] .portrait-v8-renderer')
+  .evaluateAll((items)=>items.map((item)=>item.getAttribute('data-head-profile')));
+if (new Set(grayBunHeads).size !== 2) throw new Error('Gray bun must resolve on adult/middle and elder HeadProfiles.');
 
 const bundles = page.locator('[data-bundle-showcase]');
-if ((await bundles.count()) !== 4) throw new Error('V8.1 must showcase four formal Hair Bundles.');
+if ((await bundles.count()) !== 4) throw new Error('V8.2 must showcase four formal Hair Bundles.');
 
 const crowd = page.locator('[data-pop-resident]');
-if ((await crowd.count()) !== 64) throw new Error('V8.1 population review must render exactly 64 residents.');
+if ((await crowd.count()) !== 64) throw new Error('V8.2 population review must render exactly 64 residents.');
 
-await page.screenshot({ path: outDir + '/21-portrait-generator-v8-1-overview.png', fullPage: true });
-await page.locator('[data-v8-section="wealth-invariant"]').screenshot({ path: outDir + '/22-v8-1-identity-presentation.png' });
-await page.locator('[data-v8-section="temporal"]').screenshot({ path: outDir + '/23-v8-1-temporal-identity.png' });
-await page.locator('[data-v8-section="render-contract"]').screenshot({ path: outDir + '/24-v8-1-low-bun-render-contract.png' });
-await page.locator('[data-v8-section="bundles"]').screenshot({ path: outDir + '/25-v8-1-asset-bundles-lod.png' });
-await page.locator('[data-v8-section="population"]').screenshot({ path: outDir + '/26-v8-1-population-diversity.png' });
+await page.screenshot({ path: outDir + '/27-portrait-generator-v8-2-overview.png', fullPage: true });
+await page.locator('[data-v8-section="bundle-contract"]').screenshot({ path: outDir + '/28-v8-2-formal-hair-contract.png' });
+await page.locator('[data-v8-section="asset-audit"]').screenshot({ path: outDir + '/29-v8-2-asset-audit.png' });
+await page.locator('[data-v8-section="bundles"]').screenshot({ path: outDir + '/30-v8-2-asset-bundles-lod.png' });
+await page.locator('[data-v8-section="temporal"]').screenshot({ path: outDir + '/31-v8-2-temporal-identity.png' });
+await page.locator('[data-v8-section="population"]').screenshot({ path: outDir + '/32-v8-2-population-diversity.png' });
 
 await browser.close();

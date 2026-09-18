@@ -93,7 +93,7 @@ export function PortraitV8Renderer({
   const uid = useId().replace(/:/g,'');
   const plan = buildRenderPlan(dna, context, lod);
   const head = HEAD_PROFILES.find((item)=>item.id===plan.headProfileId);
-  if (!head) throw new Error('V8.1 renderer missing HeadProfile '+plan.headProfileId);
+  if (!head) throw new Error('V8.2 renderer missing HeadProfile '+plan.headProfileId);
 
   const neckTop = Math.max(head.anchors.chin.y - 4, head.anchors.neckLeft.y);
   const neckBottom = context.lifeStage === 'child' ? 99 : 102;

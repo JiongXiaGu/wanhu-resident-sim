@@ -333,7 +333,7 @@ http://localhost:5173/?view=portrait-styles
 http://localhost:5173/?view=portrait-v8
 ```
 
-V8.1 当前验证 IdentityDNA / PresentationDNA 分离、keyed seed、Identity Morphology、HeadProfile、局部坐标 Asset Bundle、真实 Mask/Occlusion、Accessory Slot、Population Diversity、Resolved Stable IDs 与 96/64/48 LOD。首批仍只迁移 4 个中国古代女性正式发型，V7 不被替换。
+V8.2 当前把首批 4 个中国古代女性 Hair Bundle 全部纳入正式 Asset Contract：局部坐标、HeadProfile Placement、Mask/Occlusion、Accessory Slot、LOD 与自动审计必须同时通过；Identity Morphology、Population Diversity 和 Resolved Stable IDs 继续保留。V7 不被替换。
 
 ## GitHub Actions / Visual Review / Vercel
 

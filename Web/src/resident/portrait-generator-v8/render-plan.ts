@@ -149,7 +149,7 @@ export function buildRenderPlan(
   const hair = HAIR_BUNDLES.find((item)=>item.id===dna.presentation.hairBundleId);
   const outfit = OUTFIT_BUNDLES.find((item)=>item.id===dna.presentation.outfitBundleId);
   const accessory = ACCESSORIES.find((item)=>item.id===dna.presentation.accessoryAssetId);
-  if (!hair || !outfit || !accessory) throw new Error('V8.1 RenderPlan references missing asset bundle.');
+  if (!hair || !outfit || !accessory) throw new Error('V8.2 RenderPlan references missing asset bundle.');
 
   const hairPlacement = hair.placementByHeadProfile[headProfile.id] ?? {};
   const hairAssetIds = new Set(hair.layerAssetIds);
@@ -195,6 +195,7 @@ export function buildRenderPlan(
     background: backgroundByStage[context.lifeStage] ?? '#c8aa70',
     skin: skinColors[dna.identity.skinPaletteId] ?? '#c68b69',
     hair: hairColors[dna.presentation.hairColorStateId] ?? hairColors[dna.identity.baseHairColorId] ?? '#29231f',
+    'hair-accent': dna.presentation.hairColorStateId === 'hair-state.gray' ? '#c9c2b9' : dna.presentation.hairColorStateId === 'hair-state.salt-pepper' ? '#8e867d' : '#5b4c43',
     cloth: clothByWealth[context.wealthTier],
     accent: context.wealthTier === 'wealthy' ? '#d4bd7d' : context.wealthTier === 'comfortable' ? '#b9aa83' : '#9e9176',
     ink: '#271f1a',

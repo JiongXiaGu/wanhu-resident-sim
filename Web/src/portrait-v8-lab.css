@@ -252,3 +252,63 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.v8-bundle-contract-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.v8-audit-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.v8-audit-card {
+  min-width: 0;
+  padding: 12px;
+  display: grid;
+  gap: 5px;
+  border: 1px solid rgba(213,190,132,.1);
+  border-radius: 12px;
+  background: rgba(0,0,0,.17);
+}
+
+.v8-audit-card[data-state="pass"] > b {
+  color: #b9c9a7;
+}
+
+.v8-audit-card[data-state="fail"] > b {
+  color: #d58f82;
+}
+
+.v8-audit-card code {
+  overflow: hidden;
+  color: rgba(166,190,177,.62);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v8-audit-card span,
+.v8-audit-card small {
+  color: rgba(226,216,190,.45);
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+@media (max-width: 1100px) {
+  .v8-bundle-contract-grid,
+  .v8-audit-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .v8-bundle-contract-grid,
+  .v8-audit-grid {
+    grid-template-columns: 1fr;
+  }
+}
