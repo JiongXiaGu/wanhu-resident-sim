@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "validate-content-contract": "node Tools/ContentContractCompiler/compile.mjs",
-    "build-content": "node Tools/ContentContractCompiler/compile.mjs && node Tools/StoryCompiler/compile.mjs && node Tools/ResidentGenerator/generate.mjs && node Tools/LifeEventCompiler/compile.mjs && node Tools/StoryBucketCompiler/compile.mjs && node Tools/ResidentSnapshotCompiler/compile.mjs && node Tools/ResidentAppearanceCompiler/compile.mjs && node Tools/WebContentCompiler/compile.mjs",
+    "build-content": "node Tools/ContentContractCompiler/compile.mjs && node Tools/StoryCompiler/compile.mjs && node Tools/ResidentGenerator/generate.mjs && node Tools/LifeEventCompiler/compile.mjs && node Tools/StoryBucketCompiler/compile.mjs && node Tools/ResidentSnapshotCompiler/compile.mjs && node Tools/ResidentPortraitCompiler/compile.mjs && node Tools/WebContentCompiler/compile.mjs",
     "dev": "npm run build-content && npm run dev -w Web",
     "build": "npm run build-content && npm run build -w Web",
     "preview": "npm run preview -w Web"
