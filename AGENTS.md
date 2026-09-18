@@ -172,7 +172,8 @@ Resident Visual Review 必须继续验证这条链，以及人生时间轴的年
 - `female.adult` 已进入正式 Frame Proof：6 个 FaceFamily × 3 个 HairStyle × 4 个 OutfitStyle，Visual Review 必须覆盖全部 72 个组合。
 - 美术方向采用泛中国古代居民语汇：束/挽/盘发、交领/叠领/对襟常服、低饱和克制配色；不要靠夸张面部特征表达“中国感”。
 - 正式头像工作台入口是 `/?view=portraits`。
-- SVG 画风探索入口是 `/?view=portrait-style-study`；它必须与生产 PortraitRenderer/Frame 资产隔离，允许每种画风拥有不同的角色比例、眼睛、发型、服装和构图。
+- 当前画风评审入口是 `/?view=portrait-style-bakeoff`；必须与生产 PortraitRenderer/Frame 资产隔离，并同时评审平民、老人、贵族/公主和最高阶男性。上一轮 `/?view=portrait-style-study` 仅保留为历史实验。
+- 画风未定稿前，不把 Style Bakeoff 的 SVG Path 迁进正式 `portrait/assets/`。先选 2–3 个方向，再做换发型/换衣服/年龄/48px 等模块化 proof。
 - 头像美术验收完成后冻结 Stable ID 与 Frame 规范，再迁到 Unity；本仓库不因此设计 Unity ECS / Save。
 
 ## 内容生产原则

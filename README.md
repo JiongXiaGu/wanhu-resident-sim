@@ -333,13 +333,13 @@ npm run build-content
 http://localhost:5173/?view=portraits
 ```
 
-独立 SVG 画风探索：
+当前头像画风竞标：
 
 ```text
-http://localhost:5173/?view=portrait-style-study
+http://localhost:5173/?view=portrait-style-bakeoff
 ```
 
-画风探索页不复用正式 PortraitRenderer，用于先选视觉语言，再把入选方向工程化回固定 Frame。
+每套候选画风同时展示平民女、平民男、老人、公主/贵族女性、皇帝/高阶男性，并与正式 PortraitRenderer 完全隔离。上一轮自由 SVG 实验仍保留在 `/?view=portrait-style-study` 作为历史比较。
 
 ## GitHub Actions / Visual Review / Vercel
 

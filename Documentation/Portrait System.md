@@ -408,6 +408,39 @@ F  Cel-shaded character
 
 Each style renders three independent character studies: adult woman, adult man and elder. The purpose is to choose a visual language first. Only the selected direction will later be translated back into the fixed-frame production system.
 
+## Current style bakeoff
+
+The first free-form style-study pass was useful for exposing weak directions but was not strong enough to select production art. The current art-decision route is:
+
+~~~text
+/?view=portrait-style-bakeoff
+~~~
+
+It stays isolated from the production renderer and compares six candidate visual systems across five social-role samples:
+
+~~~text
+common woman
+common man
+elder
+princess / noble woman
+emperor / high-rank man
+~~~
+
+Current candidate directions:
+
+~~~text
+A elegant fine-line flat
+B modern Neo-folk
+C Cel-shaded character
+D simplified printmaker
+E geometric decorative
+F ink-wash flat hybrid
+~~~
+
+The objective is not historical costume reconstruction. It is to choose a scalable visual language that can later be rebuilt as modular Face / Hair / Outfit assets and migrated to Unity.
+
+Only after 2–3 directions visually survive this bakeoff should the project spend time on combinability proofs and 48/64/96px production tests.
+
 ## Unity handoff boundary
 
 The Web project should freeze and hand over:
