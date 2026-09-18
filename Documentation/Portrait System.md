@@ -385,6 +385,29 @@ Historical `portrait-v8` and `portrait-styles` route aliases are removed.
 
 ---
 
+## SVG Style Exploration
+
+Before replacing the remaining production portrait assets, the Web prototype has an isolated style-study route:
+
+~~~text
+/?view=portrait-style-study
+~~~
+
+It deliberately does **not** reuse `PortraitRenderer`, PortraitFrame geometry, production Face/Hair/Outfit paths, or the production art manifest.
+
+Each study owns its own proportions, eye construction, face shape, hair construction, clothing silhouette, stroke language and composition. Current studies:
+
+~~~text
+A  no-outline Editorial Flat
+B  fine-line Flat
+C  geometric construction
+D  simplified printmaker
+E  Neo-folk
+F  Cel-shaded character
+~~~
+
+Each style renders three independent character studies: adult woman, adult man and elder. The purpose is to choose a visual language first. Only the selected direction will later be translated back into the fixed-frame production system.
+
 ## Unity handoff boundary
 
 The Web project should freeze and hand over:

@@ -171,7 +171,8 @@ Resident Visual Review 必须继续验证这条链，以及人生时间轴的年
 - Face / Hair / Outfit / Neck 几何分别维护在 `portrait/assets/` 下，不再把全部 SVG Path 堆进 `catalog.ts`。
 - `female.adult` 已进入正式 Frame Proof：6 个 FaceFamily × 3 个 HairStyle × 4 个 OutfitStyle，Visual Review 必须覆盖全部 72 个组合。
 - 美术方向采用泛中国古代居民语汇：束/挽/盘发、交领/叠领/对襟常服、低饱和克制配色；不要靠夸张面部特征表达“中国感”。
-- 头像工作台唯一入口是 `/?view=portraits`。
+- 正式头像工作台入口是 `/?view=portraits`。
+- SVG 画风探索入口是 `/?view=portrait-style-study`；它必须与生产 PortraitRenderer/Frame 资产隔离，允许每种画风拥有不同的角色比例、眼睛、发型、服装和构图。
 - 头像美术验收完成后冻结 Stable ID 与 Frame 规范，再迁到 Unity；本仓库不因此设计 Unity ECS / Save。
 
 ## 内容生产原则

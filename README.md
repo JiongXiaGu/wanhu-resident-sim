@@ -333,6 +333,14 @@ npm run build-content
 http://localhost:5173/?view=portraits
 ```
 
+独立 SVG 画风探索：
+
+```text
+http://localhost:5173/?view=portrait-style-study
+```
+
+画风探索页不复用正式 PortraitRenderer，用于先选视觉语言，再把入选方向工程化回固定 Frame。
+
 ## GitHub Actions / Visual Review / Vercel
 
 一次逻辑开发批次先聚合修改，再只向远端 `tmp-*` 推送一个 commit。Build 与 Resident Visual Review 通过后，再一次推进 `main`。

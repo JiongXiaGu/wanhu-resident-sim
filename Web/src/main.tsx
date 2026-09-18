@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { PortraitLab } from './PortraitLab';
+import { PortraitStyleStudy } from './portrait-style-study/PortraitStyleStudy';
 import './styles.css';
 import './game-validation.css';
 import './life-log.css';
@@ -13,11 +14,11 @@ import './portrait-entry.css';
 
 const params = new URLSearchParams(window.location.search);
 const view = params.get('view');
-const portraitViews = new Set(['portraits']);
-
-const rootView = view && portraitViews.has(view)
+const rootView = view === 'portraits'
   ? <PortraitLab />
-  : (
+  : view === 'portrait-style-study'
+    ? <PortraitStyleStudy />
+    : (
     <>
       <App />
       <a className="portrait-view-entry" href="/?view=portraits">头像工作台</a>

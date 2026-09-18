@@ -73,4 +73,19 @@ await page.locator('[data-portrait-section="female-adult-outfits"]').screenshot(
 await page.locator('[data-portrait-section="hair-art"]').screenshot({path:outDir+'/47-portrait-hair-art.png'});
 await page.locator('[data-portrait-section="crowd"]').screenshot({path:outDir+'/48-portrait-crowd.png'});
 
+
+await page.goto(baseUrl+'/?view=portrait-style-study',{waitUntil:'networkidle'});
+await page.waitForSelector('[data-style-study="true"]');
+const styleIds=await page.locator('[data-style-study-id]').evaluateAll((items)=>items.map((item)=>item.getAttribute('data-style-study-id')));
+const expectedStyles=['editorial','fine-line','geometric','print','neo-folk','cel'];
+if(JSON.stringify(styleIds)!==JSON.stringify(expectedStyles)) throw new Error('Style exploration must expose six ordered independent studies: '+JSON.stringify(styleIds));
+for(const styleId of expectedStyles) {
+  const section=page.locator('[data-style-study-id="'+styleId+'"]');
+  if(await section.locator('svg').count()!==3) throw new Error(styleId+' study must render three independent SVG portraits.');
+}
+await page.screenshot({path:outDir+'/60-style-exploration-overview.png',fullPage:true});
+for(const [index,styleId] of expectedStyles.entries()) {
+  await page.locator('[data-style-study-id="'+styleId+'"]').screenshot({path:outDir+'/'+String(61+index).padStart(2,'0')+'-style-'+styleId+'.png'});
+}
+
 await browser.close();
