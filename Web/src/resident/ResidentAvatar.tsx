@@ -1,6 +1,6 @@
-import type { Gender, LifeStageId, PresentationStyle, WealthTier } from '../domain/resident';
+import type { Gender, LifeStageId, PresentationStyle, ResidentPortraitDNA, WealthTier } from '../domain/resident';
 import { PortraitRenderer } from './portrait/PortraitRenderer';
-import { resolveAppearance } from './portrait/resolver';
+import { resolveAppearance, resolveSavedPortrait } from './portrait/resolver';
 import { hash32 } from './portrait/seed';
 
 type Props = {
@@ -10,6 +10,7 @@ type Props = {
   lifeStage: LifeStageId;
   wealthTier?: WealthTier;
   presentationStyle?: PresentationStyle;
+  portrait?: ResidentPortraitDNA;
   hairStyleId?: string;
   outfitStyleId?: string;
   label?: string;
@@ -26,6 +27,7 @@ export function ResidentAvatar({
   lifeStage,
   wealthTier='plain',
   presentationStyle='tidy',
+  portrait,
   hairStyleId,
   outfitStyleId,
   label,
@@ -38,6 +40,12 @@ export function ResidentAvatar({
     wealthTier,
     presentationStyle,
   } as const;
-  const dna=resolveAppearance(context,{hairStyleId,outfitStyleId});
+  const dna=portrait
+    ? resolveSavedPortrait(context,{
+        ...portrait,
+        hairStyleId:hairStyleId ?? portrait.hairStyleId,
+        outfitStyleId:outfitStyleId ?? portrait.outfitStyleId,
+      })
+    : resolveAppearance(context,{hairStyleId,outfitStyleId});
   return <PortraitRenderer dna={dna} context={context} lod={96} label={label}/>;
 }
