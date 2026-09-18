@@ -35,13 +35,13 @@ Snapshot/compiler migration progress:
 - The live ResidentAvatar consumes these saved stable IDs.
 - The old `ResidentAppearanceCompiler` has been removed.
 
-Still intentionally retained for the next cleanup phase:
+Final legacy authoring cleanup is also complete:
 
-- `Content/Appearance/`
-- `Schemas/appearance.schema.json`
-- appearance-catalog generation inside ContentContractCompiler / WebContentCompiler
-
-These are now build-time legacy only; neither the live portrait renderer nor the final resident snapshot depends on them.
+- `Content/Appearance/` has been removed.
+- `Schemas/appearance.schema.json` has been removed.
+- ContentContractCompiler validates `Content/Portrait/portrait-catalog.json` directly.
+- WebContentCompiler publishes `portraitCatalog` in resident definitions v5.
+- No legacy appearance catalog is required by the build pipeline.
 
 The portrait is a secondary game system. The priority order is:
 
@@ -379,7 +379,7 @@ Optional future fields should only be added when a real gameplay feature require
 
 Update the snapshot schema in one migration.
 
-## Phase 4 — replace the appearance compiler — compiler replaced; old content contract cleanup remains
+## Phase 4 — replace the appearance compiler — completed on runtime-migration branch
 
 Current compiler complexity includes:
 
@@ -408,7 +408,7 @@ It should contain only metadata needed by the compiler:
 
 The Web renderer keeps vector geometry in the portrait art catalog.
 
-## Phase 5 — delete legacy runtime portrait stacks
+## Phase 5 — delete legacy runtime portrait stacks — completed on runtime-migration branch
 
 After the actual game uses the unified renderer, remove:
 
@@ -470,7 +470,7 @@ Delete the old V2 / V7 / V8 screenshot and quality scripts after the unified rev
 
 The visual-review workflow should become much shorter and faster.
 
-## Phase 8 — archive or delete historical documents
+## Phase 8 — archive or delete historical documents — completed on runtime-migration branch
 
 The canonical design is this document.
 
