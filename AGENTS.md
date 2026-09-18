@@ -48,7 +48,7 @@ RuntimeIndex / StableIdHash 存档方案
 - Occupation Group
 - Story Bucket
 - Coverage Report
-- Appearance Catalog
+- Portrait Catalog
 
 这些机制服务“内容不写乱、原型可重复、能统计缺口”，不是提前定义 Unity 存档。
 
