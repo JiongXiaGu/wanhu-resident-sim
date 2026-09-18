@@ -269,13 +269,29 @@ The next art batch will replace the old stage-specific geometry rather than stac
 
 ---
 
+## Art direction: 泛中国古代居民
+
+The target is not a dynasty costume catalogue and not a modern fantasy costume set.
+
+For the first production assets:
+
+- hair favors tied, coiled, low-bun and half-bound silhouettes;
+- avoid modern loose curls, salon volume and decorative accessories used only to make the portrait look expensive;
+- clothing favors restrained cross-collar, layered collar and front-opening everyday silhouettes;
+- wealth is read through fabric completeness, layering and finish rather than saturation;
+- face drawing stays natural and restrained; cultural recognition should come primarily from hair, dress and the overall illustration language rather than exaggerated facial stereotypes;
+- colors stay muted enough to work in the resident panel at 48 / 64 / 96 px.
+
+The first implemented proof is `female.adult`: six existing FaceFamily identities, three new hair styles and four new full-frame outfits all share one fixed canvas.
+
 ## Asset replacement order
 
 ~~~text
-1. female.adult proof
-   4–6 FaceFamily variants
-   2–3 HairStyles
-   3–4 OutfitStyles
+1. female.adult proof — implemented
+   6 FaceFamily variants
+   3 HairStyles
+   4 OutfitStyles
+   72 automated combination samples
 
 2. male.adult proof
 
@@ -290,7 +306,7 @@ The next art batch will replace the old stage-specific geometry rather than stac
 7. freeze IDs and hand portrait assets to Unity
 ~~~
 
-The adult female proof is the first gate because it is enough to prove that independent Face / Hair / Outfit assets really share one frame without drift.
+The adult female proof is now the first live fixed-frame asset set. It remains the reference gate for later male / child / elder migrations.
 
 ---
 

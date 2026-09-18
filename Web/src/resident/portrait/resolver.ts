@@ -1,3 +1,4 @@
+import { portraitFrameIdFor } from './frame';
 import type { LifeStageId, ResidentPortraitDNA } from '../../domain/resident';
 import { FACE_FAMILIES, HAIR_STYLES, OUTFIT_STYLES } from './catalog';
 import { createIdentitySeedBank, createPresentationSeedBank } from './seed';
@@ -61,23 +62,25 @@ export function resolvePresentation(
 ): AppearancePresentationDNA {
   const seeds = createPresentationSeedBank(context.residentSeed);
 
-  const ageCompatibleHair = HAIR_STYLES.filter((style)=>style.genders.includes(context.gender)&&style.lifeStages.includes(context.lifeStage));
+  const frameId = portraitFrameIdFor(context.gender, context.lifeStage);
+  const frameHair = HAIR_STYLES.filter((style)=>style.genders.includes(context.gender)&&style.frameIds.includes(frameId));
   const requestedHair = override.hairStyleId
-    ? ageCompatibleHair.find((style)=>style.id===override.hairStyleId)
+    ? frameHair.find((style)=>style.id===override.hairStyleId)
     : undefined;
   const hair = requestedHair ?? weightedPick(
-    ageCompatibleHair,
-    seeds.unit('hair', context.lifeStage),
+    frameHair,
+    seeds.unit('hair', frameId),
     (style)=>style.baseWeight,
   );
 
+  const frameOutfits = OUTFIT_STYLES.filter((style)=>style.frameIds.includes(frameId));
   const requestedOutfit = override.outfitStyleId
-    ? OUTFIT_STYLES.find((style)=>style.id===override.outfitStyleId)
+    ? frameOutfits.find((style)=>style.id===override.outfitStyleId)
     : undefined;
-  const defaultOutfits = OUTFIT_STYLES.filter((style)=>style.wealthTiers.includes(context.wealthTier));
+  const defaultOutfits = frameOutfits.filter((style)=>style.initialWealthTiers.includes(context.wealthTier));
   const outfit = requestedOutfit ?? weightedPick(
-    defaultOutfits,
-    seeds.unit('outfit', context.wealthTier),
+    defaultOutfits.length ? defaultOutfits : frameOutfits,
+    seeds.unit('outfit', frameId+':'+context.wealthTier),
     (style)=>style.baseWeight,
   );
 

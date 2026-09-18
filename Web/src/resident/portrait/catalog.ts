@@ -76,7 +76,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M60 24 C47 24 41 34 41 50 C41 66 46 80 54 87 Q60 91 66 87 C74 80 79 66 79 50 C79 34 73 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
   ]},
   { id:'layer.face.soft-oval.adult', slot:'face', z:40, shapes:[
-    { kind:'path', d:'M60 24 C46 24 40 35 40 51 C40 68 46 82 53 90 Q60 95 67 90 C74 82 80 68 80 51 C80 35 74 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
+    { kind:'path', d:'M60 24 C46 24 40 34 40 50 C40 66 46 81 53 89 Q60 94 67 89 C74 81 80 66 80 50 C80 34 74 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
   ]},
   { id:'layer.face.soft-oval.elder', slot:'face', z:40, shapes:[
     { kind:'path', d:'M60 27 C46 27 40 37 40 53 C40 69 46 83 52 91 Q60 97 68 91 C74 83 80 69 80 53 C80 37 74 27 60 27Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
@@ -89,7 +89,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M60 25 C45 25 39 36 39 51 C39 66 46 79 53 86 Q60 90 67 86 C74 79 81 66 81 51 C81 36 75 25 60 25Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
   ]},
   { id:'layer.face.round-soft.adult', slot:'face', z:40, shapes:[
-    { kind:'path', d:'M60 25 C44 25 38 36 38 52 C38 68 45 80 52 87 Q60 92 68 87 C75 80 82 68 82 52 C82 36 76 25 60 25Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
+    { kind:'path', d:'M60 25 C44 25 37.5 36 37.5 51 C37.5 66 44 78 52 85 Q60 90 68 85 C76 78 82.5 66 82.5 51 C82.5 36 76 25 60 25Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
   ]},
   { id:'layer.face.round-soft.elder', slot:'face', z:40, shapes:[
     { kind:'path', d:'M60 28 C44 28 38 39 38 54 C38 68 45 81 52 88 Q60 94 68 88 C75 81 82 68 82 54 C82 39 76 28 60 28Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
@@ -102,7 +102,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M60 23 C48 23 42 34 42 51 C42 68 47 82 54 89 Q60 94 66 89 C73 82 78 68 78 51 C78 34 72 23 60 23Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
   ]},
   { id:'layer.face.long-narrow.adult', slot:'face', z:40, shapes:[
-    { kind:'path', d:'M60 23 C47 23 41 34 41 52 C41 70 46 85 53 93 Q60 98 67 93 C74 85 79 70 79 52 C79 34 73 23 60 23Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
+    { kind:'path', d:'M60 22.5 C48 22.5 42 33 42 51 C42 68 47 83 54 91 Q60 96 66 91 C73 83 78 68 78 51 C78 33 72 22.5 60 22.5Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
   ]},
   { id:'layer.face.long-narrow.elder', slot:'face', z:40, shapes:[
     { kind:'path', d:'M60 26 C47 26 41 37 41 54 C41 71 46 86 53 94 Q60 99 67 94 C74 86 79 71 79 54 C79 37 73 26 60 26Z', fill:'skin', stroke:'ink', strokeWidth:2.1 },
@@ -115,7 +115,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M60 24 C46 24 38 35 38 51 C38 64 44 75 51 84 Q60 91 69 84 C76 75 82 64 82 51 C82 35 74 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
   ]},
   { id:'layer.face.broad-cheek.adult', slot:'face', z:40, shapes:[
-    { kind:'path', d:'M60 24 C45 24 37 36 37 52 C37 65 43 77 51 87 Q60 95 69 87 C77 77 83 65 83 52 C83 36 75 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
+    { kind:'path', d:'M60 24 C45 24 37 35 37 50 C37 63 43 75 51 84 Q60 92 69 84 C77 75 83 63 83 50 C83 35 75 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
   ]},
   { id:'layer.face.broad-cheek.elder', slot:'face', z:40, shapes:[
     { kind:'path', d:'M60 27 C45 27 37 39 37 54 C37 67 43 79 51 88 Q60 96 69 88 C77 79 83 67 83 54 C83 39 75 27 60 27Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
@@ -128,7 +128,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M60 24 C46 24 40 34 40 50 C40 65 44 78 51 86 Q60 92 69 86 C76 78 80 65 80 50 C80 34 74 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
   ]},
   { id:'layer.face.square-soft.adult', slot:'face', z:40, shapes:[
-    { kind:'path', d:'M60 24 C45 24 39 35 39 51 C39 67 43 80 50 89 Q60 95 70 89 C77 80 81 67 81 51 C81 35 75 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
+    { kind:'path', d:'M60 24 C45 24 39 34 39 50 C39 65 43 78 50 86 Q60 92 70 86 C77 78 81 65 81 50 C81 34 75 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
   ]},
   { id:'layer.face.square-soft.elder', slot:'face', z:40, shapes:[
     { kind:'path', d:'M60 27 C45 27 39 37 39 53 C39 69 43 82 50 90 Q60 96 70 90 C77 82 81 69 81 53 C81 37 75 27 60 27Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
@@ -141,7 +141,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M60 24 C46 24 40 35 40 51 C40 66 46 79 53 87 Q60 93 67 87 C74 79 80 66 80 51 C80 35 74 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
   ]},
   { id:'layer.face.narrow-chin.adult', slot:'face', z:40, shapes:[
-    { kind:'path', d:'M60 24 C45 24 39 36 39 52 C39 67 45 81 53 90 Q60 97 67 90 C75 81 81 67 81 52 C81 36 75 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.2 },
+    { kind:'path', d:'M60 24 C45 24 39 35 39 51 C39 65 45 79 53 89 Q60 96 67 89 C75 79 81 65 81 51 C81 35 75 24 60 24Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
   ]},
   { id:'layer.face.narrow-chin.elder', slot:'face', z:40, shapes:[
     { kind:'path', d:'M60 27 C45 27 39 38 39 54 C39 69 45 83 53 92 Q60 98 67 92 C75 83 81 69 81 54 C81 38 75 27 60 27Z', fill:'skin', stroke:'ink', strokeWidth:2.15 },
@@ -415,24 +415,99 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M41 53 Q43 39 51 31 Q56 27 59 29 Q61 27 65 29 Q75 35 79 53 Q72 47 65 44 Q62 40 60 34 Q58 40 55 44 Q48 46 41 53Z', fill:'hair' },
     { kind:'path', d:'M60 29 L60 35', stroke:'skin', strokeWidth:1, opacity:.88 },
   ]},
+
+  // Fixed female.adult frame proof. These assets share one 120×150 canvas and never receive runtime offsets.
+  { id:'layer.neck.female-adult-frame', slot:'neck', z:17, shapes:[
+    { kind:'path', d:'M54.5 86 C54.5 91 53.5 96 52 100 Q60 104 68 100 C66.5 96 65.5 91 65.5 86Z', fill:'skin' },
+    { kind:'path', d:'M55 88 Q54 95 52.6 99 M65 88 Q66 95 67.4 99', stroke:'ink', strokeWidth:.5, opacity:.45 },
+  ]},
+  { id:'layer.features.female-adult-frame', slot:'face-detail', z:50, shapes:[
+    { kind:'path', d:'M45.5 45.5 Q50 43.8 54.8 45 M65.2 45 Q70 43.8 74.5 45.5', stroke:'ink', strokeWidth:1.55 },
+    { kind:'path', d:'M45 52 Q50 49.5 55 51.8 M65 51.8 Q70 49.5 75 52', stroke:'ink', strokeWidth:1.28 },
+    { kind:'circle', cx:50.2, cy:51.7, r:.52, fill:'ink' }, { kind:'circle', cx:69.8, cy:51.7, r:.52, fill:'ink' },
+    { kind:'path', d:'M59.2 54 Q58.5 62 60.2 65.5 Q62 66.5 64.2 64.5', stroke:'ink', strokeWidth:1.02 },
+    { kind:'path', d:'M54.2 75 Q60 77 65.8 74.8', stroke:'ink', strokeWidth:1.18 },
+  ]},
+
+  // 泛中国古代成年女性常服：交领、叠领、对襟都直接占有完整肩领轮廓。
+  { id:'layer.outfit.female-adult.work-cross-collar', slot:'outfit', z:18, shapes:[
+    { kind:'path', d:'M17 150 C19 130 26 111 42 98 L51 94 Q60 100 69 94 L78 98 C94 111 101 130 103 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.05 },
+    { kind:'path', d:'M50 93 L61 101 L56.5 106 L44 97Z', fill:'collar', stroke:'ink', strokeWidth:.48 },
+    { kind:'path', d:'M69.5 93 L58.5 101.5 L63.5 106 L77 97.5Z', fill:'collar', stroke:'ink', strokeWidth:.48 },
+    { kind:'path', d:'M61 101 L72 109', stroke:'accent', strokeWidth:.7, opacity:.55 },
+    { kind:'path', d:'M28 124 Q37 121 45 123', stroke:'accent', strokeWidth:.55, opacity:.35 },
+  ]},
+  { id:'layer.outfit.female-adult.plain-cross-collar', slot:'outfit', z:18, shapes:[
+    { kind:'path', d:'M18 150 C20 129 27 109 43 97 L51 93 Q60 99 69 93 L77 97 C93 109 100 129 102 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.05 },
+    { kind:'path', d:'M49.5 92.5 L61 100.5 L57 105.5 L43.5 96Z', fill:'collar', stroke:'ink', strokeWidth:.48 },
+    { kind:'path', d:'M70 92.5 L58.7 100.7 L63 105.5 L77.5 96.5Z', fill:'collar', stroke:'ink', strokeWidth:.48 },
+    { kind:'path', d:'M60.5 101 L70.5 108 M39 119 Q60 125 82 118.5', stroke:'accent', strokeWidth:.72, opacity:.5 },
+  ]},
+  { id:'layer.outfit.female-adult.layered-cross-collar', slot:'outfit', z:18, shapes:[
+    { kind:'path', d:'M16 150 C18 128 25 108 42 96 L50 91.5 Q60 98 70 91.5 L78 96 C95 108 102 128 104 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.1 },
+    { kind:'path', d:'M50 91 L61 99 L57.5 103.5 L46 95Z', fill:'collar', stroke:'ink', strokeWidth:.48 },
+    { kind:'path', d:'M70 91 L59 99.3 L63 103.8 L76 95Z', fill:'collar', stroke:'ink', strokeWidth:.48 },
+    { kind:'path', d:'M47 96 L60 105 L73 96', stroke:'accent', strokeWidth:1.35, opacity:.72 },
+    { kind:'path', d:'M36 116 Q60 124 84 116 M40 123 Q60 128 80 122', stroke:'accent', strokeWidth:.72, opacity:.48 },
+  ]},
+  { id:'layer.outfit.female-adult.front-opening-jacket', slot:'outfit', z:18, shapes:[
+    { kind:'path', d:'M15 150 C18 128 24 109 41 97 L49 93 Q60 98 71 93 L79 97 C96 109 102 128 105 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.05 },
+    { kind:'path', d:'M49 92 Q60 98 71 92 L68.5 98 Q60 102 51.5 98Z', fill:'collar', stroke:'ink', strokeWidth:.5 },
+    { kind:'path', d:'M50 98 Q55 104 58 109 L58 150 M70 98 Q65 104 62 109 L62 150', stroke:'accent', strokeWidth:1.05, opacity:.68 },
+    { kind:'path', d:'M58 112 L62 112 M58 124 L62 124', stroke:'accent', strokeWidth:.75, opacity:.55 },
+  ]},
+
+  // 成年女性发式以束、挽、盘为主，轮廓克制，不使用现代卷发或夸张饰件。
+  { id:'layer.hair.female-adult-low-coil.back', slot:'back-hair', z:10, shapes:[
+    { kind:'path', d:'M74 42 C79 51 80 64 78 75 C77 82 74 88 70 91 C75 88 81 87 86 89 C92 91 94 95 91 99 C87 103 79 102 73 98 C68 94 67 90 70 85 C73 74 75 57 74 42Z', fill:'hair', stroke:'ink', strokeWidth:.65 },
+  ]},
+  { id:'layer.hair.female-adult-low-coil.front', slot:'front-hair', z:70, shapes:[
+    { kind:'path', d:'M59.5 22.5 C51 23 44 29 40.5 38 C39.5 41 39.5 44 40.5 47 C45 41 51 38 57 37 C59 33 60 27 59.5 22.5Z', fill:'hair' },
+    { kind:'path', d:'M60.5 22.5 C69 23 76 29 79.5 38 C80.5 41 80.5 44 79.5 47 C75 41 69 38 63 37 C61 33 60 27 60.5 22.5Z', fill:'hair' },
+    { kind:'path', d:'M60 23 L60 32 M43 42 Q42 47 43.5 51 M77 42 Q78 47 76.5 51', stroke:'hair-accent', strokeWidth:.38, opacity:.18 },
+  ]},
+  { id:'layer.hair.female-adult-round-coil.back', slot:'back-hair', z:10, shapes:[
+    { kind:'ellipse', cx:61, cy:23.5, rx:9.5, ry:6.8, fill:'hair', stroke:'ink', strokeWidth:.62 },
+    { kind:'path', d:'M45 43 Q42 58 45 75 Q47 84 51 90 M75 43 Q78 58 75 75 Q73 84 69 90', stroke:'hair', strokeWidth:5.2, opacity:.92 },
+  ]},
+  { id:'layer.hair.female-adult-round-coil.front', slot:'front-hair', z:70, shapes:[
+    { kind:'path', d:'M59.5 22 C50 23 43 30 39.5 40 Q39 44 40.5 48 C45 42 51 38 57 37 Q59 31 59.5 22Z', fill:'hair' },
+    { kind:'path', d:'M60.5 22 C70 23 77 30 80.5 40 Q81 44 79.5 48 C75 42 69 38 63 37 Q61 31 60.5 22Z', fill:'hair' },
+    { kind:'path', d:'M60 22 L60 31', stroke:'hair-accent', strokeWidth:.42, opacity:.2 },
+  ]},
+  { id:'layer.hair.female-adult-half-bound.back', slot:'back-hair', z:10, shapes:[
+    { kind:'ellipse', cx:60, cy:27, rx:6.5, ry:4.5, fill:'hair', stroke:'ink', strokeWidth:.55 },
+    { kind:'path', d:'M47 48 C45 60 45 76 43 89 C42 98 39 107 36 114 C40 116 44 113 47 106 C50 97 52 84 52 71 C52 60 50 52 47 48Z', fill:'hair', stroke:'ink', strokeWidth:.62 },
+    { kind:'path', d:'M73 48 C75 60 75 76 77 89 C78 98 81 107 84 114 C80 116 76 113 73 106 C70 97 68 84 68 71 C68 60 70 52 73 48Z', fill:'hair', stroke:'ink', strokeWidth:.62 },
+  ]},
+  { id:'layer.hair.female-adult-half-bound.front', slot:'front-hair', z:70, shapes:[
+    { kind:'path', d:'M59.5 22.5 C51 23 44 29.5 40.5 39 C40 42 40 45 41 48 C46 42 51 39 57 37.5 Q59 32 59.5 22.5Z', fill:'hair' },
+    { kind:'path', d:'M60.5 22.5 C69 23 76 29.5 79.5 39 C80 42 80 45 79 48 C74 42 69 39 63 37.5 Q61 32 60.5 22.5Z', fill:'hair' },
+    { kind:'path', d:'M44 45 Q43 50 44.5 55 M76 45 Q77 50 75.5 55', stroke:'hair-accent', strokeWidth:.42, opacity:.22 },
+  ]},
+
 ];
 
 export const HAIR_STYLES: HairStyleDefinition[] = [
-  { id:'hair.child.double-bun', label:'女童双小髻', genders:['female'], lifeStages:['child','teen'], backLayerId:'layer.hair.child-double-bun.back', frontLayerId:'layer.hair.child-double-bun.front', baseWeight:1 },
-  { id:'hair.youth.halfbound', label:'少女半束后披', genders:['female'], lifeStages:['young-adult'], backLayerId:'layer.hair.youth-halfbound.back', frontLayerId:'layer.hair.youth-halfbound.front', baseWeight:1 },
-  { id:'hair.adult.low-bun', label:'成年低髻', genders:['female'], lifeStages:['adult','middle-age'], backLayerId:'layer.hair.adult-low-bun.back', frontLayerId:'layer.hair.adult-low-bun.front', baseWeight:1 },
-  { id:'hair.elder.low-bun', label:'老年花白低髻', genders:['female'], lifeStages:['elder'], backLayerId:'layer.hair.elder-low-bun.back', frontLayerId:'layer.hair.elder-low-bun.front', baseWeight:1 },
-  { id:'hair.male.child-tied', label:'男童小束发', genders:['male'], lifeStages:['child','teen'], backLayerId:'layer.hair.male-child-tied.back', frontLayerId:'layer.hair.male-child-tied.front', baseWeight:1 },
-  { id:'hair.male.youth-tied', label:'青年男子束发', genders:['male'], lifeStages:['young-adult'], backLayerId:'layer.hair.male-youth-tied.back', frontLayerId:'layer.hair.male-youth-tied.front', baseWeight:1 },
-  { id:'hair.male.adult-tied', label:'成年男子束发', genders:['male'], lifeStages:['adult','middle-age'], backLayerId:'layer.hair.male-adult-tied.back', frontLayerId:'layer.hair.male-adult-tied.front', baseWeight:1 },
-  { id:'hair.male.elder-tied', label:'老年男子收束发', genders:['male'], lifeStages:['elder'], backLayerId:'layer.hair.male-elder-tied.back', frontLayerId:'layer.hair.male-elder-tied.front', baseWeight:1 },
+  { id:'hair.child.double-bun', label:'女童双小髻', genders:['female'], frameIds:['female.child'], backLayerId:'layer.hair.child-double-bun.back', frontLayerId:'layer.hair.child-double-bun.front', baseWeight:1 },
+  { id:'hair.female.adult.low-coil', label:'成年女子低挽圆髻', genders:['female'], frameIds:['female.adult'], backLayerId:'layer.hair.female-adult-low-coil.back', frontLayerId:'layer.hair.female-adult-low-coil.front', baseWeight:1.2 },
+  { id:'hair.female.adult.round-coil', label:'成年女子圆髻', genders:['female'], frameIds:['female.adult'], backLayerId:'layer.hair.female-adult-round-coil.back', frontLayerId:'layer.hair.female-adult-round-coil.front', baseWeight:1 },
+  { id:'hair.female.adult.half-bound', label:'成年女子半束垂发', genders:['female'], frameIds:['female.adult'], backLayerId:'layer.hair.female-adult-half-bound.back', frontLayerId:'layer.hair.female-adult-half-bound.front', baseWeight:1 },
+  { id:'hair.elder.low-bun', label:'老年花白低髻', genders:['female'], frameIds:['female.elder'], backLayerId:'layer.hair.elder-low-bun.back', frontLayerId:'layer.hair.elder-low-bun.front', baseWeight:1 },
+  { id:'hair.male.child-tied', label:'男童小束发', genders:['male'], frameIds:['male.child'], backLayerId:'layer.hair.male-child-tied.back', frontLayerId:'layer.hair.male-child-tied.front', baseWeight:1 },
+  { id:'hair.male.adult-tied', label:'成年男子束发', genders:['male'], frameIds:['male.adult'], backLayerId:'layer.hair.male-adult-tied.back', frontLayerId:'layer.hair.male-adult-tied.front', baseWeight:1 },
+  { id:'hair.male.elder-tied', label:'老年男子收束发', genders:['male'], frameIds:['male.elder'], backLayerId:'layer.hair.male-elder-tied.back', frontLayerId:'layer.hair.male-elder-tied.front', baseWeight:1 },
 ];
 
 export const OUTFIT_STYLES: OutfitStyleDefinition[] = [
-  { id:'outfit.poor.v2', label:'贫寒单层衣', wealthTiers:['poor'], layerAssetIds:['layer.outfit.poor'], baseWeight:1 },
-  { id:'outfit.plain.v2', label:'普通衣', wealthTiers:['plain'], layerAssetIds:['layer.outfit.plain'], baseWeight:1 },
-  { id:'outfit.comfortable.v2', label:'殷实叠领衣', wealthTiers:['comfortable'], layerAssetIds:['layer.outfit.comfortable'], baseWeight:1 },
-  { id:'outfit.wealthy.v2', label:'富裕层领衣', wealthTiers:['wealthy'], layerAssetIds:['layer.outfit.wealthy'], baseWeight:1 },
+  { id:'outfit.poor.v2', label:'兼容·贫寒单层衣', frameIds:['female.child','female.elder','male.child','male.adult','male.elder'], initialWealthTiers:['poor'], layerAssetIds:['layer.outfit.poor'], baseWeight:1 },
+  { id:'outfit.plain.v2', label:'兼容·普通衣', frameIds:['female.child','female.elder','male.child','male.adult','male.elder'], initialWealthTiers:['plain'], layerAssetIds:['layer.outfit.plain'], baseWeight:1 },
+  { id:'outfit.comfortable.v2', label:'兼容·殷实叠领衣', frameIds:['female.child','female.elder','male.child','male.adult','male.elder'], initialWealthTiers:['comfortable'], layerAssetIds:['layer.outfit.comfortable'], baseWeight:1 },
+  { id:'outfit.wealthy.v2', label:'兼容·富裕层领衣', frameIds:['female.child','female.elder','male.child','male.adult','male.elder'], initialWealthTiers:['wealthy'], layerAssetIds:['layer.outfit.wealthy'], baseWeight:1 },
+  { id:'outfit.female.adult.work-cross-collar', label:'成年女子粗布交领短衣', frameIds:['female.adult'], initialWealthTiers:['poor','plain'], layerAssetIds:['layer.outfit.female-adult.work-cross-collar'], fullFrame:true, baseWeight:1 },
+  { id:'outfit.female.adult.plain-cross-collar', label:'成年女子素色交领衫', frameIds:['female.adult'], initialWealthTiers:['plain','comfortable'], layerAssetIds:['layer.outfit.female-adult.plain-cross-collar'], fullFrame:true, baseWeight:1.2 },
+  { id:'outfit.female.adult.layered-cross-collar', label:'成年女子叠领襦衣', frameIds:['female.adult'], initialWealthTiers:['comfortable','wealthy'], layerAssetIds:['layer.outfit.female-adult.layered-cross-collar'], fullFrame:true, baseWeight:1 },
+  { id:'outfit.female.adult.front-opening-jacket', label:'成年女子对襟罩衫', frameIds:['female.adult'], initialWealthTiers:['comfortable','wealthy'], layerAssetIds:['layer.outfit.female-adult.front-opening-jacket'], fullFrame:true, baseWeight:.9 },
 ];
 
 export function layerById(id: string) {

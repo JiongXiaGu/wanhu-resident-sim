@@ -110,7 +110,7 @@ Web/public/generated/
 当前关键版本：
 
 ```text
-definitions.json       wanhu.resident-definitions.v5
+definitions.json       wanhu.resident-definitions.v6
 resident-snapshot.json wanhu.resident-snapshot.v4
 ```
 
@@ -257,6 +257,8 @@ female / male
 ```
 
 Face、Hair、Outfit 都必须按同一个 Frame 规格制作。一张脸可以配多套发型和衣服，但运行时不负责自动校准偏移。
+
+当前第一批正式资产已经落在 `female.adult`：6 套女性 FaceFamily、3 套束/挽/盘发式、4 套交领/叠领/对襟常服，并由工作台生成 72 个组合做固定 Frame 审查。
 
 唯一头像工作台：
 

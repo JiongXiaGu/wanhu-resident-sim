@@ -22,12 +22,13 @@ if (givenNames.schema !== 'wanhu.given-names.v2') throw new Error(`Unsupported g
 if (lifeTags.schema !== 'wanhu.life-tags.v1') throw new Error(`Unsupported life-tag schema: ${lifeTags.schema}`);
 if (occupationGroups.schema !== 'wanhu.occupation-groups.v1') throw new Error(`Unsupported occupation-group schema: ${occupationGroups.schema}`);
 if (lifeEvents.schema !== 'wanhu.life-events.v2') throw new Error(`Unsupported LifeEvent schema: ${lifeEvents.schema}`);
-if (portrait.schema !== 'wanhu.portrait-catalog.v1') throw new Error(`Unsupported portrait schema: ${portrait.schema}`);
+if (portrait.schema !== 'wanhu.portrait-catalog.v2') throw new Error(`Unsupported portrait schema: ${portrait.schema}`);
 
 const stableIdPattern = /^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/;
 const validGenders = new Set(['male', 'female']);
 const validLifeStages = new Set(['child', 'teen', 'young-adult', 'adult', 'middle-age', 'elder']);
 const validWealthTiers = new Set(['poor', 'plain', 'comfortable', 'wealthy']);
+const validPortraitFrames = new Set(['female.child','female.adult','female.elder','male.child','male.adult','male.elder']);
 const structuralRequestTypes = new Set(['changeOccupation', 'moveHousehold', 'formMarriage', 'addChild']);
 
 function fnv1a32(value) {
@@ -150,12 +151,17 @@ for (const item of portrait.hairStyles) {
   register(item.id, 'portrait-hair-style', 'Content/Portrait/portrait-catalog.json');
   validateWeight(item.weight, item.id);
   validateFilterList(item.genders, validGenders, `${item.id}.genders`);
-  validateFilterList(item.lifeStages, validLifeStages, `${item.id}.lifeStages`);
+  validateFilterList(item.frameIds, validPortraitFrames, `${item.id}.frameIds`);
+  for (const frameId of item.frameIds ?? []) {
+    const frameGender=frameId.split('.')[0];
+    if (!item.genders.includes(frameGender)) throw new Error(`${item.id}: frame ${frameId} conflicts with genders.`);
+  }
 }
 for (const item of portrait.outfitStyles) {
   register(item.id, 'portrait-outfit-style', 'Content/Portrait/portrait-catalog.json');
   validateWeight(item.weight, item.id);
-  validateFilterList(item.wealthTiers, validWealthTiers, `${item.id}.wealthTiers`);
+  validateFilterList(item.frameIds, validPortraitFrames, `${item.id}.frameIds`);
+  validateFilterList(item.initialWealthTiers, validWealthTiers, `${item.id}.initialWealthTiers`);
 }
 for (const item of [...portrait.skinPalettes, ...portrait.hairPalettes]) {
   register(item.id, 'portrait-palette', 'Content/Portrait/portrait-catalog.json');

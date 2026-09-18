@@ -89,7 +89,7 @@ export type HairStyleDefinition = {
   id: string;
   label: string;
   genders: Gender[];
-  lifeStages: LifeStageId[];
+  frameIds: PortraitFrameId[];
   backLayerId: string;
   frontLayerId: string;
   baseWeight: number;
@@ -117,8 +117,10 @@ export type PortraitStageProfile = {
 export type OutfitStyleDefinition = {
   id: string;
   label: string;
-  wealthTiers: WealthTier[];
+  frameIds: PortraitFrameId[];
+  initialWealthTiers: WealthTier[];
   layerAssetIds: string[];
+  fullFrame?: boolean;
   baseWeight: number;
 };
 

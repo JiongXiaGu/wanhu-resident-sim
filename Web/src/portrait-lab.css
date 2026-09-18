@@ -60,3 +60,34 @@
   .portrait-review-grid-3,.portrait-review-grid-4,.portrait-review-grid-5,.portrait-review-grid-6 { grid-template-columns:1fr; }
   .portrait-review-crowd { grid-template-columns:repeat(4,1fr); }
 }
+
+
+.portrait-proof-grid {
+  display:grid;
+  grid-template-columns:repeat(12,minmax(76px,1fr));
+  gap:7px;
+}
+.portrait-proof-card {
+  min-width:0;
+  padding:7px;
+  display:grid;
+  justify-items:center;
+  gap:5px;
+  border-radius:10px;
+  background:rgba(0,0,0,.18);
+}
+.portrait-proof-card .portrait-renderer { width:64px; border-radius:9px; }
+.portrait-proof-card small {
+  width:100%;
+  overflow:hidden;
+  color:rgba(198,210,196,.52);
+  font-size:7px;
+  line-height:1.35;
+  text-align:center;
+}
+@media (max-width:1180px) {
+  .portrait-proof-grid { grid-template-columns:repeat(8,minmax(72px,1fr)); }
+}
+@media (max-width:760px) {
+  .portrait-proof-grid { grid-template-columns:repeat(4,minmax(64px,1fr)); }
+}

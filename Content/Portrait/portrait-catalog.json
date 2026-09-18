@@ -1,5 +1,5 @@
 {
-  "schema": "wanhu.portrait-catalog.v1",
+  "schema": "wanhu.portrait-catalog.v2",
   "faceFamilies": [
     {
       "id": "face.soft-oval",
@@ -78,30 +78,38 @@
       "genders": [
         "female"
       ],
-      "lifeStages": [
-        "child",
-        "teen"
+      "frameIds": [
+        "female.child"
       ],
       "weight": 1
     },
     {
-      "id": "hair.youth.halfbound",
+      "id": "hair.female.adult.low-coil",
       "genders": [
         "female"
       ],
-      "lifeStages": [
-        "young-adult"
+      "frameIds": [
+        "female.adult"
+      ],
+      "weight": 1.2
+    },
+    {
+      "id": "hair.female.adult.round-coil",
+      "genders": [
+        "female"
+      ],
+      "frameIds": [
+        "female.adult"
       ],
       "weight": 1
     },
     {
-      "id": "hair.adult.low-bun",
+      "id": "hair.female.adult.half-bound",
       "genders": [
         "female"
       ],
-      "lifeStages": [
-        "adult",
-        "middle-age"
+      "frameIds": [
+        "female.adult"
       ],
       "weight": 1
     },
@@ -110,8 +118,8 @@
       "genders": [
         "female"
       ],
-      "lifeStages": [
-        "elder"
+      "frameIds": [
+        "female.elder"
       ],
       "weight": 1
     },
@@ -120,19 +128,8 @@
       "genders": [
         "male"
       ],
-      "lifeStages": [
-        "child",
-        "teen"
-      ],
-      "weight": 1
-    },
-    {
-      "id": "hair.male.youth-tied",
-      "genders": [
-        "male"
-      ],
-      "lifeStages": [
-        "young-adult"
+      "frameIds": [
+        "male.child"
       ],
       "weight": 1
     },
@@ -141,9 +138,8 @@
       "genders": [
         "male"
       ],
-      "lifeStages": [
-        "adult",
-        "middle-age"
+      "frameIds": [
+        "male.adult"
       ],
       "weight": 1
     },
@@ -152,8 +148,8 @@
       "genders": [
         "male"
       ],
-      "lifeStages": [
-        "elder"
+      "frameIds": [
+        "male.elder"
       ],
       "weight": 1
     }
@@ -161,31 +157,103 @@
   "outfitStyles": [
     {
       "id": "outfit.poor.v2",
-      "wealthTiers": [
+      "frameIds": [
+        "female.child",
+        "female.elder",
+        "male.child",
+        "male.adult",
+        "male.elder"
+      ],
+      "initialWealthTiers": [
         "poor"
       ],
       "weight": 1
     },
     {
       "id": "outfit.plain.v2",
-      "wealthTiers": [
+      "frameIds": [
+        "female.child",
+        "female.elder",
+        "male.child",
+        "male.adult",
+        "male.elder"
+      ],
+      "initialWealthTiers": [
         "plain"
       ],
       "weight": 1
     },
     {
       "id": "outfit.comfortable.v2",
-      "wealthTiers": [
+      "frameIds": [
+        "female.child",
+        "female.elder",
+        "male.child",
+        "male.adult",
+        "male.elder"
+      ],
+      "initialWealthTiers": [
         "comfortable"
       ],
       "weight": 1
     },
     {
       "id": "outfit.wealthy.v2",
-      "wealthTiers": [
+      "frameIds": [
+        "female.child",
+        "female.elder",
+        "male.child",
+        "male.adult",
+        "male.elder"
+      ],
+      "initialWealthTiers": [
         "wealthy"
       ],
       "weight": 1
+    },
+    {
+      "id": "outfit.female.adult.work-cross-collar",
+      "frameIds": [
+        "female.adult"
+      ],
+      "initialWealthTiers": [
+        "poor",
+        "plain"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "outfit.female.adult.plain-cross-collar",
+      "frameIds": [
+        "female.adult"
+      ],
+      "initialWealthTiers": [
+        "plain",
+        "comfortable"
+      ],
+      "weight": 1.2
+    },
+    {
+      "id": "outfit.female.adult.layered-cross-collar",
+      "frameIds": [
+        "female.adult"
+      ],
+      "initialWealthTiers": [
+        "comfortable",
+        "wealthy"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "outfit.female.adult.front-opening-jacket",
+      "frameIds": [
+        "female.adult"
+      ],
+      "initialWealthTiers": [
+        "comfortable",
+        "wealthy"
+      ],
+      "weight": 0.9
     }
   ],
   "skinPalettes": [

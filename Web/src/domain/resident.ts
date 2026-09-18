@@ -3,6 +3,13 @@ export type Gender = 'male' | 'female';
 export type LifeStageId = 'child' | 'teen' | 'young-adult' | 'adult' | 'middle-age' | 'elder';
 export type WealthTier = 'poor' | 'plain' | 'comfortable' | 'wealthy';
 export type PresentationStyle = 'practical' | 'tidy' | 'refined';
+export type PortraitFrameId =
+  | 'female.child'
+  | 'female.adult'
+  | 'female.elder'
+  | 'male.child'
+  | 'male.adult'
+  | 'male.elder';
 
 export type ResidentLifeLogRecord = {
   id: string;
@@ -132,13 +139,14 @@ export type PortraitCatalogFaceFamily = {
 export type PortraitCatalogHairStyle = {
   id: string;
   genders: Gender[];
-  lifeStages: LifeStageId[];
+  frameIds: PortraitFrameId[];
   weight: number;
 };
 
 export type PortraitCatalogOutfitStyle = {
   id: string;
-  wealthTiers: WealthTier[];
+  frameIds: PortraitFrameId[];
+  initialWealthTiers: WealthTier[];
   weight: number;
 };
 
@@ -148,7 +156,7 @@ export type PortraitCatalogPalette = {
 };
 
 export type PortraitCatalogDefinition = {
-  schema: 'wanhu.portrait-catalog.v1';
+  schema: 'wanhu.portrait-catalog.v2';
   faceFamilies: PortraitCatalogFaceFamily[];
   hairStyles: PortraitCatalogHairStyle[];
   outfitStyles: PortraitCatalogOutfitStyle[];
@@ -235,7 +243,7 @@ export type ResidentGenerationDefinition = {
 };
 
 export type ResidentDefinitions = {
-  schema: 'wanhu.resident-definitions.v5';
+  schema: 'wanhu.resident-definitions.v6';
   names: {
     surnames: string[];
     maleGivenNames: string[];

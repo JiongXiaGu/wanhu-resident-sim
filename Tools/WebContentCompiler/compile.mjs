@@ -23,7 +23,7 @@ if (storyBuckets.schema !== 'wanhu.story-buckets.v1') {
 if (occupationGroups.schema !== 'wanhu.occupation-groups.v1') {
   throw new Error(`Unsupported occupation-group schema: ${occupationGroups.schema}`);
 }
-if (portraitCatalog.schema !== 'wanhu.portrait-catalog.v1') {
+if (portraitCatalog.schema !== 'wanhu.portrait-catalog.v2') {
   throw new Error(`Unsupported portrait catalog schema: ${portraitCatalog.schema}`);
 }
 if (stableIdRegistry.schema !== 'wanhu.stable-id-registry.v1') {
@@ -39,7 +39,7 @@ for (const bucket of storyBuckets.buckets) {
 
 const output = {
   ...definitions,
-  schema: 'wanhu.resident-definitions.v5',
+  schema: 'wanhu.resident-definitions.v6',
   occupationGroups: occupationGroups.items,
   portraitCatalog,
   storyBuckets,
@@ -53,4 +53,4 @@ const output = {
 };
 
 await writeFile(join(generatedDir, 'definitions.json'), `${JSON.stringify(output, null, 2)}\n`, 'utf8');
-console.log(`Assembled Web resident definitions v5 with ${storyBuckets.buckets.length} Story Buckets, ${portraitCatalog.faceFamilies.length} FaceFamilies and ${portraitCatalog.hairStyles.length} HairStyles.`);
+console.log(`Assembled Web resident definitions v6 with ${storyBuckets.buckets.length} Story Buckets, ${portraitCatalog.faceFamilies.length} FaceFamilies and ${portraitCatalog.hairStyles.length} HairStyles.`);

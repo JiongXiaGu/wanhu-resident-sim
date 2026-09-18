@@ -18,7 +18,7 @@ if(snapshot.schema!=='wanhu.resident-snapshot.v2') {
 if(definitions.schema!=='wanhu.resident-definitions.v3') {
   throw new Error(`ResidentPortraitCompiler expected wanhu.resident-definitions.v3, got ${definitions.schema}`);
 }
-if(portraitCatalog.schema!=='wanhu.portrait-catalog.v1') {
+if(portraitCatalog.schema!=='wanhu.portrait-catalog.v2') {
   throw new Error(`Unsupported portrait catalog schema: ${portraitCatalog.schema}`);
 }
 
@@ -30,6 +30,11 @@ function hash32(value) {
     hash=Math.imul(hash,16777619);
   }
   return hash>>>0;
+}
+
+function portraitFrameId(gender,lifeStage) {
+  const ageBand=(lifeStage==='child'||lifeStage==='teen')?'child':lifeStage==='elder'?'elder':'adult';
+  return `${gender}.${ageBand}`;
 }
 
 function weightedPick(seed,salt,items) {
@@ -63,17 +68,20 @@ for(const resident of snapshot.residents) {
   const household=householdById.get(resident.householdId);
   if(!household) throw new Error(`${resident.id}: missing household ${resident.householdId}.`);
 
+  const frameId=portraitFrameId(resident.gender,resident.lifeStage);
   const face=weightedPick(
     resident.seed,'face-family',
     portraitCatalog.faceFamilies.filter((item)=>item.genders.includes(resident.gender)),
   );
   const hair=weightedPick(
-    resident.seed,`hair:${resident.lifeStage}`,
-    portraitCatalog.hairStyles.filter((item)=>item.genders.includes(resident.gender)&&item.lifeStages.includes(resident.lifeStage)),
+    resident.seed,`hair:${frameId}`,
+    portraitCatalog.hairStyles.filter((item)=>item.genders.includes(resident.gender)&&item.frameIds.includes(frameId)),
   );
+  const frameOutfits=portraitCatalog.outfitStyles.filter((item)=>item.frameIds.includes(frameId));
+  const initialOutfits=frameOutfits.filter((item)=>item.initialWealthTiers.includes(household.wealthTier));
   const outfit=weightedPick(
-    resident.seed,`outfit:${household.wealthTier}`,
-    portraitCatalog.outfitStyles.filter((item)=>item.wealthTiers.includes(household.wealthTier)),
+    resident.seed,`outfit:${frameId}:${household.wealthTier}`,
+    initialOutfits.length?initialOutfits:frameOutfits,
   );
 
   resident.portrait={

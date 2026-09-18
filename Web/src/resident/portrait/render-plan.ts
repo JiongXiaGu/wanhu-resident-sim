@@ -46,21 +46,37 @@ export function buildRenderPlan(
   const family = faceFamilyById(dna.identity.faceFamilyId);
   const hair = hairStyleById(dna.presentation.hairStyleId);
   const outfit = outfitStyleById(dna.presentation.outfitStyleId);
-  const faceLayerId = family.faceLayerByAge[stage.ageGroup];
+  const usesFemaleAdultFrame = frameId === 'female.adult' && outfit.fullFrame;
+  const faceLayerId = family.faceLayerByAge[usesFemaleAdultFrame ? 'adult' : stage.ageGroup];
 
-  const layerIds = [
-    hair.backLayerId,
-    ...stage.layerAssetIds,
-    ...outfit.layerAssetIds,
-    faceLayerId,
-    stage.featureLayerByGender[context.gender],
-    hair.frontLayerId,
-  ];
+  const layerIds = usesFemaleAdultFrame
+    ? [
+        hair.backLayerId,
+        'layer.neck.female-adult-frame',
+        ...outfit.layerAssetIds,
+        faceLayerId,
+        'layer.features.female-adult-frame',
+        hair.frontLayerId,
+      ]
+    : [
+        hair.backLayerId,
+        ...stage.layerAssetIds,
+        ...outfit.layerAssetIds,
+        faceLayerId,
+        stage.featureLayerByGender[context.gender],
+        hair.frontLayerId,
+      ];
 
   const layers = layerIds.map(toRenderLayer).sort((a,b)=>a.z-b.z);
+  const adultFrameCloth: Record<string,string> = {
+    poor:'#75614f',
+    plain:'#607680',
+    comfortable:'#596d61',
+    wealthy:'#70575d',
+  };
 
   const palette: Record<Exclude<PaletteToken,'none'>,string> = {
-    background: stage.backgroundColor,
+    background: usesFemaleAdultFrame ? '#cbb07b' : stage.backgroundColor,
     skin: skinColors[dna.identity.skinPaletteId] ?? '#c68b69',
     hair: hairColors[dna.presentation.hairColorStateId] ?? hairColors[dna.identity.baseHairColorId] ?? '#29231f',
     'hair-accent': dna.presentation.hairColorStateId === 'hair-state.gray'
@@ -68,9 +84,9 @@ export function buildRenderPlan(
       : dna.presentation.hairColorStateId === 'hair-state.salt-pepper'
         ? '#8e867d'
         : '#5b4c43',
-    collar: stage.collarColor,
-    cloth: stage.clothByWealth[context.wealthTier],
-    accent: context.wealthTier === 'wealthy' ? '#d4bd7d' : context.wealthTier === 'comfortable' ? '#b9aa83' : '#9e9176',
+    collar: usesFemaleAdultFrame ? '#b1a487' : stage.collarColor,
+    cloth: usesFemaleAdultFrame ? adultFrameCloth[context.wealthTier] : stage.clothByWealth[context.wealthTier],
+    accent: context.wealthTier === 'wealthy' ? '#d0b779' : context.wealthTier === 'comfortable' ? '#b6a47e' : '#9a8c72',
     ink: '#271f1a',
     age: '#60463a',
   };
@@ -83,7 +99,7 @@ export function buildRenderPlan(
     frameId,
     stageProfileId:stage.id,
     faceFamilyId:family.id,
-    viewBox:stage.viewBox,
+    viewBox:usesFemaleAdultFrame ? {x:0,y:15,width:120,height:120} : stage.viewBox,
     dna,
     palette,
     layers,
