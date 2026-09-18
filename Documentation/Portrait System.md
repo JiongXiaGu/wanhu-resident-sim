@@ -18,15 +18,22 @@ Completed on the cleanup branch:
 - Resident UI screenshots and portrait screenshots are now separate responsibilities.
 - Build and the simplified visual-review workflow both pass.
 
-Still intentionally retained for now:
+Runtime migration progress:
 
-- `ResidentAvatarArtV2.tsx`
-- `portrait-rig.ts`
-- `portrait-art-v2.ts`
-- `portrait-woodblock-v7.tsx`
-- the old appearance compiler / content schema
+- The live `ResidentAvatar` now renders through `Web/src/resident/portrait/PortraitRenderer.tsx`.
+- Minimal male FaceFamily / HairStyle coverage has been added so generated male residents no longer require the legacy renderer.
+- Live ResidentAvatar review now explicitly asserts render contract 8.4.
+- `ResidentAvatarArtV1.tsx`, `ResidentAvatarArtV2.tsx`, `portrait-rig.ts`, `portrait-art-v2.ts`, and `portrait-woodblock-v7.tsx` have been removed from the migration branch.
+- Build passes after removing the legacy Web renderer stack.
 
-These remain only because the real game `ResidentAvatar` and generated resident snapshot still depend on them. They are the next migration target and should not receive new feature work.
+Still intentionally retained for the next phase:
+
+- `Tools/ResidentAppearanceCompiler/`
+- `Content/Appearance/`
+- `Schemas/appearance.schema.json`
+- the old snapshot `ResidentAppearanceDNA` fields
+
+These remain because the content pipeline still produces the old appearance payload even though the live Web portrait renderer no longer consumes it.
 
 The portrait is a secondary game system. The priority order is:
 
@@ -319,7 +326,7 @@ Names should no longer contain `v7`, `v8`, `art-v2`, or `generator-v8`.
 
 The system becomes the normal resident portrait implementation rather than an experiment.
 
-## Phase 2 — migrate the real ResidentAvatar
+## Phase 2 — migrate the real ResidentAvatar — completed on runtime-migration branch
 
 Replace:
 
@@ -348,7 +355,7 @@ Recommended minimal male coverage:
 
 Do not rebuild the old beard / headwear / rig complexity during this step.
 
-## Phase 3 — simplify snapshot appearance data
+## Phase 3 — simplify snapshot appearance data — next
 
 Replace the old `ResidentAppearanceDNA` with a compact `ResidentPortraitDNA`:
 
