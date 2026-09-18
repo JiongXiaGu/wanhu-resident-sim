@@ -1,9 +1,10 @@
 import type { Gender, LifeStageId, PresentationStyle, WealthTier } from '../../domain/resident';
 
 export const PORTRAIT_GENERATOR_VERSION = 8 as const;
-export const PORTRAIT_RENDER_CONTRACT_VERSION = '8.2' as const;
+export const PORTRAIT_RENDER_CONTRACT_VERSION = '8.4' as const;
 export type PortraitGeneratorVersion = typeof PORTRAIT_GENERATOR_VERSION;
 export type PortraitLod = 48 | 64 | 96;
+export type PortraitAgeGroup = 'child' | 'youth' | 'adult' | 'elder';
 
 export type SemanticAppearanceContext = {
   residentStableId: string;
@@ -14,36 +15,21 @@ export type SemanticAppearanceContext = {
   presentationStyle: PresentationStyle;
 };
 
-export type IdentityMorphology = {
-  faceWidthScale: number;
-  featureSpanScale: number;
-  noseLengthScale: number;
-  mouthWidthScale: number;
-};
-
 export type AppearanceIdentityDNA = {
-  identitySchemaVersion: 2;
+  identitySchemaVersion: 3;
   residentStableId: string;
   identitySeed: number;
   faceFamilyId: string;
-  featureSetId: string;
   skinPaletteId: string;
   baseHairColorId: string;
-  bodyFrameId: string;
-  distinguishingTraitIds: string[];
-  morphology: IdentityMorphology;
 };
 
 export type AppearancePresentationDNA = {
-  presentationSchemaVersion: 1;
+  presentationSchemaVersion: 2;
   presentationSeed: number;
   lifeStage: LifeStageId;
-  wealthTier: WealthTier;
-  presentationStyle: PresentationStyle;
-  hairBundleId: string;
-  outfitBundleId: string;
-  accessoryAssetId: string;
-  ageOverlayId: string;
+  hairStyleId: string;
+  outfitStyleId: string;
   hairColorStateId: string;
 };
 
@@ -53,44 +39,9 @@ export type ResolvedAppearanceDNA = {
   presentation: AppearancePresentationDNA;
 };
 
-export type Vec2 = { x: number; y: number };
-
-export type HeadAnchorId =
-  | 'skullTop'
-  | 'templeLeft'
-  | 'templeRight'
-  | 'earLeft'
-  | 'earRight'
-  | 'jawLeft'
-  | 'jawRight'
-  | 'chin'
-  | 'neckLeft'
-  | 'neckRight'
-  | 'crownBack'
-  | 'bunLow'
-  | 'occipitalLeft'
-  | 'occipitalRight'
-  | 'nape'
-  | 'shoulderBackLeft'
-  | 'shoulderBackRight';
-
-export type HeadProfileDefinition = {
-  id: string;
-  faceFamilyId: string;
-  gender: Gender;
-  lifeStages: LifeStageId[];
-  width: number;
-  topY: number;
-  chinY: number;
-  jawWidth: number;
-  anchors: Record<HeadAnchorId, Vec2>;
-  masks: {
-    skull: string;
-    faceKeepout: string;
-    behindHead: string;
-    earFrontLeft: string;
-    earFrontRight: string;
-  };
+export type PortraitAppearanceOverride = {
+  hairStyleId?: string;
+  outfitStyleId?: string;
 };
 
 export type PaletteToken =
@@ -98,10 +49,6 @@ export type PaletteToken =
   | 'skin'
   | 'hair'
   | 'hair-accent'
-  | 'cord-red'
-  | 'accessory-wood'
-  | 'accessory-jade'
-  | 'accessory-cloth'
   | 'collar'
   | 'cloth'
   | 'accent'
@@ -121,53 +68,28 @@ export type PortraitLayerSlot =
   | 'neck'
   | 'face'
   | 'face-detail'
-  | 'side-hair'
-  | 'front-hair'
-  | 'accessory'
-  | 'age-overlay';
-
-export type LayerMaskMode =
-  | 'none'
-  | 'behind-head'
-  | 'inside-skull'
-  | 'outside-face'
-  | 'ear-front-left'
-  | 'ear-front-right';
-
-export type PlacementTransform = {
-  translateX?: number;
-  translateY?: number;
-  scaleX?: number;
-  scaleY?: number;
-  originX?: number;
-  originY?: number;
-};
+  | 'front-hair';
 
 export type VectorLayerAsset = {
   id: string;
   slot: PortraitLayerSlot;
   z: number;
-  lods: PortraitLod[];
   shapes: VectorShape[];
-  coordinateSpace?: 'canvas' | 'anchor-local';
-  anchor?: HeadAnchorId;
-  maskMode?: LayerMaskMode;
 };
 
-export type HairStyleBundle = {
+export type FaceFamilyDefinition = {
   id: string;
   label: string;
-  cultureTag: 'chinese-ancient';
-  genders: Gender[];
+  faceLayerByAge: Record<PortraitAgeGroup, string>;
+};
+
+export type HairStyleDefinition = {
+  id: string;
+  label: string;
   lifeStages: LifeStageId[];
-  compatibleFaceFamilies: string[];
-  compatibleHeadProfiles: string[];
-  silhouetteType: string;
+  backLayerId: string;
+  frontLayerId: string;
   baseWeight: number;
-  targetShare: number;
-  layerAssetIds: string[];
-  placementByHeadProfile: Record<string, PlacementTransform>;
-  accessorySlots: string[];
 };
 
 export type PortraitViewBox = {
@@ -180,53 +102,27 @@ export type PortraitViewBox = {
 export type PortraitStageProfile = {
   id: string;
   lifeStages: LifeStageId[];
+  ageGroup: PortraitAgeGroup;
   viewBox: PortraitViewBox;
   layerAssetIds: string[];
-  featureTransforms?: Record<string, PlacementTransform>;
-  featureAssetOverrides?: Record<string, string>;
-  backgroundColor?: string;
-  collarColor?: string;
-  clothByWealth?: Record<WealthTier, string>;
+  featureLayerId: string;
+  backgroundColor: string;
+  collarColor: string;
+  clothByWealth: Record<WealthTier, string>;
 };
 
-export type OutfitBundle = {
+export type OutfitStyleDefinition = {
   id: string;
   label: string;
   wealthTiers: WealthTier[];
-  presentationStyles: PresentationStyle[];
   layerAssetIds: string[];
   baseWeight: number;
-};
-
-export type AccessoryPlacement = {
-  anchor: HeadAnchorId;
-  transform?: PlacementTransform;
-};
-
-export type AccessoryAsset = {
-  id: string;
-  label: string;
-  genders: Gender[];
-  lifeStages: LifeStageId[];
-  wealthTiers: WealthTier[];
-  compatibleHairBundles: string[];
-  layerAssetId?: string;
-  placementByHairBundle?: Record<string, AccessoryPlacement>;
-  baseWeight: number;
-};
-
-export type CompatibilityResult = {
-  allowed: boolean;
-  reasons: string[];
-  weightMultiplier: number;
 };
 
 export type RenderLayer = {
   assetId: string;
   slot: PortraitLayerSlot;
   z: number;
-  maskMode: LayerMaskMode;
-  transform: Required<PlacementTransform>;
   shapes: VectorShape[];
 };
 
@@ -235,17 +131,10 @@ export type PortraitRenderPlan = {
   renderContractVersion: typeof PORTRAIT_RENDER_CONTRACT_VERSION;
   residentStableId: string;
   lod: PortraitLod;
-  headProfileId: string;
   stageProfileId: string;
+  faceFamilyId: string;
   viewBox: PortraitViewBox;
   dna: ResolvedAppearanceDNA;
   palette: Record<Exclude<PaletteToken, 'none'>, string>;
-  masks: HeadProfileDefinition['masks'];
   layers: RenderLayer[];
-};
-
-export type PopulationDiversitySnapshot = {
-  totalResolved: number;
-  countsByHairBundle: Record<string, number>;
-  recentHairBundles: string[];
 };
