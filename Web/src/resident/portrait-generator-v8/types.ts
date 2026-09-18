@@ -99,6 +99,8 @@ export type PaletteToken =
   | 'hair'
   | 'hair-accent'
   | 'cord-red'
+  | 'accessory-wood'
+  | 'accessory-jade'
   | 'cloth'
   | 'accent'
   | 'ink'

@@ -212,12 +212,12 @@ export function PortraitV8Lab() {
   const allContractLocal = contractSamples.every((sample)=>sample.plan.layers.filter((layer)=>Math.abs(layer.transform.translateX)>0||Math.abs(layer.transform.translateY)>0).length>=2);
 
   return (
-    <main className="portrait-v8-lab" data-portrait-v8-lab="true" data-render-contract-version="8.2">
+    <main className="portrait-v8-lab" data-portrait-v8-lab="true" data-render-contract-version="8.2" data-art-review-version="8.3">
       <header className="portrait-v8-header">
         <div>
-          <span>PORTRAIT GENERATOR V8.2 · ASSET CONTRACT</span>
-          <h1>居民头像生成算法 V8.2</h1>
-          <p>V8.2 把 V8.1 的局部定位规则扩展到全部首批 Hair Bundle，并新增正式资产契约审计。Renderer 仍只消费 RenderPlan。</p>
+          <span>PORTRAIT GENERATOR V8.3 · HAIR ART PASS</span>
+          <h1>居民头像生成算法 V8.3 美术迭代</h1>
+          <p>V8.3 保留 V8.2 技术合同，把 Hair Asset 拆成真正可审美的发量、束发根、髻体与后披结构。TECH PASS 只代表架构正确；ART REVIEW 必须人工看轮廓、文化读感和 48px 识别度。</p>
         </div>
         <nav><a href="/?view=portrait-styles">V7 木刻审查</a><a href="/">居民 Demo</a></nav>
       </header>
@@ -265,8 +265,35 @@ export function PortraitV8Lab() {
         </div>
       </section>
 
+
+      <section className="v8-section v8-art-review" data-v8-section="art-review">
+        <header><div><span>04 · MANUAL ART REVIEW</span><h2>先看人物，再看合同</h2></div><p>本区不显示自动 PASS。逐张检查：发量是否自然、发际是否完整、发型是否符合中国古代居民语义、配饰是否像真实插入、96/64/48 是否保持同一轮廓。</p></header>
+        <div className="v8-art-rubric">
+          <span>Silhouette</span><span>Hairline</span><span>Cultural Read</span><span>Occlusion</span><span>Accessory</span><span>48px Read</span>
+        </div>
+        <div className="v8-art-grid">
+          {contractSamples.map((sample)=>(
+            <article
+              className="v8-card v8-art-card"
+              data-art-review={sample.bundleId}
+              data-head-profile={sample.plan.headProfileId}
+              key={'art-'+sample.label}
+            >
+              <PortraitV8Renderer dna={sample.dna} context={sample.context} lod={96}/>
+              <div className="v8-art-card__meta">
+                <b>{sample.label}</b>
+                <code>{sample.plan.headProfileId}</code>
+              </div>
+              <div className="v8-art-lods">
+                {[64,48].map((lod)=><div key={lod}><PortraitV8Renderer dna={sample.dna} context={sample.context} lod={lod as PortraitLod}/><span>{lod}px</span></div>)}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="v8-section" data-v8-section="asset-audit">
-        <header><div><span>04 · ASSET AUDIT</span><h2>正式资产契约审计</h2></div><p>禁止 Hair Layer 回退到 canvas absolute coordinates；兼容 HeadProfile 必须有 placement；Accessory Slot 必须有对应 placement。</p></header>
+        <header><div><span>05 · ASSET AUDIT</span><h2>正式资产契约审计</h2></div><p>禁止 Hair Layer 回退到 canvas absolute coordinates；兼容 HeadProfile 必须有 placement；Accessory Slot 必须有对应 placement。</p></header>
         <div className="v8-audit-grid">
           {bundleAudits.map((audit)=>(
             <div className="v8-audit-card" data-bundle-audit={audit.bundleId} data-state={audit.passed?'pass':'fail'} key={audit.bundleId}>
@@ -280,7 +307,7 @@ export function PortraitV8Lab() {
       </section>
 
       <section className="v8-section" data-v8-section="bundles">
-        <header><div><span>05 · ASSET BUNDLE / LOD</span><h2>96 / 64 / 48px</h2></div><p>次级鬓发、发髻盘绕线和发丝纹理可以在 48px 被移除，保留主要轮廓。</p></header>
+        <header><div><span>06 · ASSET BUNDLE / LOD</span><h2>96 / 64 / 48px</h2></div><p>次级鬓发、发髻盘绕线和发丝纹理可以在 48px 被移除，保留主要轮廓。</p></header>
         <div className="v8-four-grid">
           {bundleSamples.map(({bundle,context,dna})=>(
             <article className="v8-card" data-bundle-showcase={bundle.id} key={bundle.id}>
@@ -297,7 +324,7 @@ export function PortraitV8Lab() {
       </section>
 
       <section className="v8-section" data-v8-section="population">
-        <header><div><span>06 · POPULATION DIVERSITY</span><h2>64 人城市级软分布</h2></div><p>FinalWeight = baseWeight × compatibility × localNovelty × populationDeficit。</p></header>
+        <header><div><span>07 · POPULATION DIVERSITY</span><h2>64 人城市级软分布</h2></div><p>FinalWeight = baseWeight × compatibility × localNovelty × populationDeficit。</p></header>
         <div className="v8-distribution">
           {HAIR_BUNDLES.map((bundle)=><div key={bundle.id}><b>{populationSnapshot.countsByHairBundle[bundle.id]??0}</b><span>{bundle.label}</span></div>)}
         </div>
@@ -311,7 +338,7 @@ export function PortraitV8Lab() {
       </section>
 
       <section className="v8-section" data-v8-section="save-contract">
-        <header><div><span>07 · SAVE CONTRACT</span><h2>Resolved Stable IDs + Morphology</h2></div></header>
+        <header><div><span>08 · SAVE CONTRACT</span><h2>Resolved Stable IDs + Morphology</h2></div></header>
         <pre>{JSON.stringify(wealthResolved[1].dna,null,2)}</pre>
       </section>
     </main>

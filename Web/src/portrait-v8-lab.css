@@ -312,3 +312,62 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* V8.3: manual art review is visually separate from the technical contract. */
+.v8-art-review {
+  border-color: rgba(203,176,109,.24);
+  background: rgba(176,138,72,.035);
+}
+.v8-art-rubric {
+  margin: -3px 0 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.v8-art-rubric span {
+  padding: 5px 8px;
+  border: 1px solid rgba(213,190,132,.16);
+  border-radius: 999px;
+  color: rgba(234,223,190,.6);
+  font-size: 8px;
+  letter-spacing: .05em;
+}
+.v8-art-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(300px,1fr));
+  gap: 14px;
+}
+.v8-art-card {
+  grid-template-columns: minmax(0,1fr) auto;
+  align-items: end;
+  border: 1px solid rgba(213,190,132,.14);
+}
+.v8-art-card > .portrait-v8-renderer {
+  width: min(100%, 390px);
+  grid-column: 1 / -1;
+}
+.v8-art-card__meta {
+  display: grid;
+  gap: 3px;
+  align-self: center;
+}
+.v8-art-card__meta code {
+  max-width: 300px;
+}
+.v8-art-lods {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+}
+.v8-art-lods > div {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+}
+.v8-art-lods .portrait-v8-renderer { width: 64px; }
+.v8-art-lods > div:last-child .portrait-v8-renderer { width: 48px; }
+.v8-art-lods span { color: rgba(226,216,190,.38); font-size: 8px; }
+@media (max-width: 900px) {
+  .v8-art-grid { grid-template-columns: 1fr; }
+}

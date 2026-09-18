@@ -92,8 +92,14 @@ if ((await crowd.count()) !== 64) throw new Error('V8.2 population review must r
 
 await page.screenshot({ path: outDir + '/27-portrait-generator-v8-2-overview.png', fullPage: true });
 await page.locator('[data-v8-section="bundle-contract"]').screenshot({ path: outDir + '/28-v8-2-formal-hair-contract.png' });
+await page.locator('[data-v8-section="art-review"]').screenshot({ path: outDir + '/37-v8-3-manual-art-review.png' });
 await page.locator('[data-v8-section="asset-audit"]').screenshot({ path: outDir + '/29-v8-2-asset-audit.png' });
 await page.locator('[data-v8-section="bundles"]').screenshot({ path: outDir + '/30-v8-2-asset-bundles-lod.png' });
+const artCards = page.locator('[data-art-review]');
+if ((await artCards.count()) !== 7) throw new Error('V8.3 manual art review must render all 7 compatibility samples.');
+for (let index=0; index<await artCards.count(); index+=1) {
+  await artCards.nth(index).screenshot({ path: outDir + '/38-v8-3-art-'+String(index+1).padStart(2,'0')+'.png' });
+}
 await page.locator('[data-bundle-contract] svg > g[fill="none"][stroke-width=".6"]').evaluateAll((items)=>items.forEach((item)=>{ item.style.display='none'; }));
 await page.locator('[data-bundle-contract="hair.female.adult-low-bun.v1"]').nth(0).screenshot({ path: outDir + '/33-v8-2-adult-low-bun-adult.png' });
 await page.locator('[data-bundle-contract="hair.female.adult-low-bun.v1"]').nth(1).screenshot({ path: outDir + '/34-v8-2-adult-low-bun-elder.png' });
