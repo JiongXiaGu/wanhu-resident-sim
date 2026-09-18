@@ -6,8 +6,8 @@ import {
 } from './resident/portrait/resolver';
 import { hash32 } from './resident/portrait/seed';
 import { PortraitRenderer } from './resident/portrait/PortraitRenderer';
+import { PORTRAIT_RENDER_CONTRACT_VERSION } from './resident/portrait/types';
 import type {
-  PORTRAIT_RENDER_CONTRACT_VERSION,
   PortraitFrameId,
   PortraitLod,
   ResolvedAppearanceDNA,

@@ -8,7 +8,7 @@ import type {
 } from './types';
 
 function paint(token: PaletteToken | undefined, palette: Record<string,string>) {
-  if (!token || token === 'none') return 'none';
+  if (!token) return 'none';
   return palette[token] ?? 'none';
 }
 
