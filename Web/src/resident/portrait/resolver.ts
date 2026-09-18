@@ -1,4 +1,4 @@
-import type { LifeStageId } from '../../domain/resident';
+import type { LifeStageId, ResidentPortraitDNA } from '../../domain/resident';
 import { FACE_FAMILIES, HAIR_STYLES, OUTFIT_STYLES } from './catalog';
 import { createIdentitySeedBank, createPresentationSeedBank } from './seed';
 import {
@@ -88,6 +88,41 @@ export function resolvePresentation(
     hairStyleId: hair.id,
     outfitStyleId: outfit.id,
     hairColorStateId: hairColorStateFor(context.lifeStage, identity),
+  };
+}
+
+
+export function resolveSavedPortrait(
+  context: SemanticAppearanceContext,
+  portrait: ResidentPortraitDNA,
+): ResolvedAppearanceDNA {
+  const identitySeeds=createIdentitySeedBank(context.residentSeed);
+  const presentationSeeds=createPresentationSeedBank(context.residentSeed);
+  return {
+    generatorVersion:PORTRAIT_GENERATOR_VERSION,
+    identity:{
+      identitySchemaVersion:3,
+      residentStableId:context.residentStableId,
+      identitySeed:identitySeeds.base,
+      faceFamilyId:portrait.faceFamilyId,
+      skinPaletteId:portrait.skinPaletteId,
+      baseHairColorId:portrait.baseHairColorId,
+    },
+    presentation:{
+      presentationSchemaVersion:2,
+      presentationSeed:presentationSeeds.base,
+      lifeStage:context.lifeStage,
+      hairStyleId:portrait.hairStyleId,
+      outfitStyleId:portrait.outfitStyleId,
+      hairColorStateId:hairColorStateFor(context.lifeStage,{
+        identitySchemaVersion:3,
+        residentStableId:context.residentStableId,
+        identitySeed:identitySeeds.base,
+        faceFamilyId:portrait.faceFamilyId,
+        skinPaletteId:portrait.skinPaletteId,
+        baseHairColorId:portrait.baseHairColorId,
+      }),
+    },
   };
 }
 
