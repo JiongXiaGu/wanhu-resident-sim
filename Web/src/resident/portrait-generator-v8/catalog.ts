@@ -101,13 +101,26 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
     id:'stage.female.child.v1',
     lifeStages:['child','teen'],
     viewBox:{x:5,y:11,width:110,height:110},
-    layerAssetIds:['layer.body.child','layer.neck.child'],
+    layerAssetIds:['layer.body.child','layer.neck.child','layer.stage-face.child'],
+    featureTransforms:{
+      'layer.face.child':{scaleX:1.04,scaleY:.97,originX:60,originY:56},
+      'layer.feature.soft-a.eyes':{translateY:-1,scaleX:1.06,scaleY:1.08,originX:60,originY:49},
+      'layer.feature.soft-a.96-detail':{translateY:-1,scaleX:1.06,scaleY:1.08,originX:60,originY:49},
+      'layer.feature.soft-a.nose':{translateY:-1,scaleY:.78,originX:60,originY:54},
+      'layer.feature.soft-a.mouth':{translateY:-1,scaleX:.86,originX:60,originY:74},
+    },
   },
   {
     id:'stage.female.youth.v1',
     lifeStages:['young-adult'],
     viewBox:{x:0,y:12,width:118,height:118},
     layerAssetIds:['layer.body.youth','layer.neck.youth'],
+    featureTransforms:{
+      'layer.feature.soft-a.eyes':{translateY:-.5,scaleX:1.03,scaleY:1.02,originX:60,originY:49},
+      'layer.feature.soft-a.96-detail':{translateY:-.5,scaleX:1.03,scaleY:1.02,originX:60,originY:49},
+      'layer.feature.soft-a.nose':{scaleY:.92,originX:60,originY:54},
+      'layer.feature.soft-a.mouth':{scaleX:.94,originX:60,originY:74},
+    },
   },
   {
     id:'stage.female.adult.v1',
@@ -119,13 +132,27 @@ export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
     id:'stage.female.middle.v1',
     lifeStages:['middle-age'],
     viewBox:{x:2,y:16,width:118,height:119},
-    layerAssetIds:['layer.body.middle','layer.neck.middle'],
+    layerAssetIds:['layer.body.middle','layer.neck.middle','layer.stage-face.middle'],
+    featureTransforms:{
+      'layer.face.adult':{scaleX:.99,scaleY:1.015,originX:60,originY:60},
+      'layer.feature.soft-a.eyes':{translateY:.8,scaleY:.94,originX:60,originY:49},
+      'layer.feature.soft-a.96-detail':{translateY:.8,scaleY:.94,originX:60,originY:49},
+      'layer.feature.soft-a.nose':{scaleY:1.04,originX:60,originY:54},
+      'layer.feature.soft-a.mouth':{translateY:.8,scaleX:.94,scaleY:.95,originX:60,originY:74},
+    },
   },
   {
     id:'stage.female.elder.v1',
     lifeStages:['elder'],
     viewBox:{x:4,y:18,width:112,height:116},
-    layerAssetIds:['layer.body.elder','layer.neck.elder'],
+    layerAssetIds:['layer.body.elder','layer.neck.elder','layer.stage-face.elder'],
+    featureTransforms:{
+      'layer.face.elder':{scaleX:.98,scaleY:1.015,originX:60,originY:62},
+      'layer.feature.soft-a.eyes':{translateY:1.5,scaleX:.96,scaleY:.84,originX:60,originY:49},
+      'layer.feature.soft-a.96-detail':{translateY:1.5,scaleX:.96,scaleY:.84,originX:60,originY:49},
+      'layer.feature.soft-a.nose':{translateY:.5,scaleY:1.12,originX:60,originY:54},
+      'layer.feature.soft-a.mouth':{translateY:1.5,scaleX:.88,scaleY:.86,originX:60,originY:74},
+    },
   },
 ];
 
@@ -160,6 +187,24 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
   { id:'layer.feature.soft-a.96-detail', slot:'face-detail', z:53, lods:[96], shapes:[
     { kind:'circle', cx:50, cy:51, r:.6, fill:'ink' },
     { kind:'circle', cx:70, cy:51, r:.6, fill:'ink' },
+  ]},
+
+  // Stage-face overlays add age read without replacing Identity Morphology.
+  { id:'layer.stage-face.child', slot:'face-detail', z:54, lods:[64,96], shapes:[
+    { kind:'path', d:'M44 62 Q48 64 52 62', stroke:'age', strokeWidth:.42, opacity:.14 },
+    { kind:'path', d:'M68 62 Q72 64 76 62', stroke:'age', strokeWidth:.42, opacity:.14 },
+  ]},
+  { id:'layer.stage-face.middle', slot:'face-detail', z:54, lods:[64,96], shapes:[
+    { kind:'path', d:'M77 52 Q79 54 78 57', stroke:'age', strokeWidth:.42, opacity:.2 },
+    { kind:'path', d:'M43 53 Q41 55 42 58', stroke:'age', strokeWidth:.42, opacity:.2 },
+    { kind:'path', d:'M69 68 Q72 70 73 74', stroke:'age', strokeWidth:.4, opacity:.18 },
+  ]},
+  { id:'layer.stage-face.elder', slot:'face-detail', z:56, lods:[64,96], shapes:[
+    { kind:'path', d:'M44 54 Q49 57 54 55', stroke:'age', strokeWidth:.62, opacity:.42 },
+    { kind:'path', d:'M66 55 Q71 57 76 54', stroke:'age', strokeWidth:.62, opacity:.42 },
+    { kind:'path', d:'M50 69 Q47 75 49 81', stroke:'age', strokeWidth:.52, opacity:.34 },
+    { kind:'path', d:'M70 69 Q73 75 71 81', stroke:'age', strokeWidth:.52, opacity:.34 },
+    { kind:'path', d:'M51 88 Q60 92 69 88', stroke:'age', strokeWidth:.45, opacity:.28 },
   ]},
 
   { id:'layer.age.middle', slot:'age-overlay', z:55, lods:[64,96], shapes:[

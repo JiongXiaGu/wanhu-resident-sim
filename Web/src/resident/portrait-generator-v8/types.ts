@@ -180,6 +180,7 @@ export type PortraitStageProfile = {
   lifeStages: LifeStageId[];
   viewBox: PortraitViewBox;
   layerAssetIds: string[];
+  featureTransforms?: Record<string, PlacementTransform>;
 };
 
 export type OutfitBundle = {

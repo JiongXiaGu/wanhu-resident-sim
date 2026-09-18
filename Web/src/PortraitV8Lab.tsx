@@ -204,6 +204,7 @@ function PortraitCard({
 export function PortraitV8Lab() {
   assertV8IdentityInvariant(wealthVariants[0], wealthVariants.slice(1));
   assertV8IdentityInvariant(temporalVariants[0], temporalVariants.slice(1));
+  assertV8IdentityInvariant(ageDirectionVariants[0], ageDirectionVariants.slice(1));
 
   const wealthResolved = wealthVariants.map((context)=>({context,dna:resolveAppearance(context)}));
   const temporalResolved = temporalVariants.map((context)=>({context,dna:resolveAppearance(context)}));
@@ -228,9 +229,9 @@ export function PortraitV8Lab() {
     <main className="portrait-v8-lab" data-portrait-v8-lab="true" data-render-contract-version="8.2" data-art-review-version="8.3">
       <header className="portrait-v8-header">
         <div>
-          <span>PORTRAIT GENERATOR V8.3 · HAIR ART PASS</span>
+          <span>PORTRAIT GENERATOR V8.3 · PORTRAIT ART PASS</span>
           <h1>居民头像生成算法 V8.3 美术迭代</h1>
-          <p>V8.3 保留 V8.2 技术合同，把 Hair Asset 拆成真正可审美的发量、束发根、髻体与后披结构。TECH PASS 只代表架构正确；ART REVIEW 必须人工看轮廓、文化读感和 48px 识别度。</p>
+          <p>V8.3 保留 V8.2 技术合同，联合审查发型、年龄脸部导演、衣装、肩线和取景。TECH PASS 只代表架构正确；ART REVIEW 必须人工确认人物是否真的像不同年龄段的人。</p>
         </div>
         <nav><a href="/?view=portrait-styles">V7 木刻审查</a><a href="/">居民 Demo</a></nav>
       </header>
@@ -272,6 +273,25 @@ export function PortraitV8Lab() {
         </div>
       </section>
 
+      <section className="v8-section v8-face-direction" data-v8-section="face-age-direction">
+        <header><div><span>02C · FACE AGE DIRECTION</span><h2>同一个人，但眼、鼻、嘴和面部张力随年龄变化</h2></div><p>Identity Morphology 不变；Stage Profile 只提供年龄导演。Child 眼更开、鼻更短、嘴更小；Youth 舒展；Adult 中性；Middle-age 眼睑和嘴角开始收；Elder 眼裂收窄、鼻长增加、嘴更薄并增加松弛刻线。</p></header>
+        <div className="v8-face-grid">
+          {ageDirectionResolved.map(({context,dna,plan})=>(
+            <article
+              className="v8-face-card"
+              data-face-age-direction={context.lifeStage}
+              data-stage-profile={plan.stageProfileId}
+              data-identity-fingerprint={fingerprint(dna.identity)}
+              key={'face-'+context.lifeStage}
+            >
+              <div className="v8-face-crop"><PortraitV8Renderer dna={dna} context={context} lod={96}/></div>
+              <b>{context.lifeStage}</b>
+              <small>{plan.stageProfileId}</small>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="v8-section" data-v8-section="bundle-contract">
         <header><div><span>03 · FORMAL HAIR BUNDLE CONTRACT</span><h2>4 个正式 Hair Bundle 全部走局部坐标和 Mask</h2></div><p>红线=skull，蓝线=face keepout，黄点=bunLow。相同 Bundle 在兼容 HeadProfile 上必须使用 placement，而不是复制一份绝对坐标资产。</p></header>
         <div className="v8-bundle-contract-grid">
@@ -296,7 +316,7 @@ export function PortraitV8Lab() {
       <section className="v8-section v8-art-review" data-v8-section="art-review">
         <header><div><span>04 · MANUAL ART REVIEW</span><h2>先看人物，再看合同</h2></div><p>本区不显示自动 PASS。逐张检查：发量是否自然、发际是否完整、发型是否符合中国古代居民语义、配饰是否像真实插入、96/64/48 是否保持同一轮廓。</p></header>
         <div className="v8-art-rubric">
-          <span>Silhouette</span><span>Hairline</span><span>Cultural Read</span><span>Occlusion</span><span>Accessory</span><span>48px Read</span>
+          <span>Silhouette</span><span>Hairline</span><span>Age Read</span><span>Expression</span><span>Cultural Read</span><span>Occlusion</span><span>Accessory</span><span>48px Read</span>
         </div>
         <div className="v8-art-grid">
           {contractSamples.map((sample)=>(

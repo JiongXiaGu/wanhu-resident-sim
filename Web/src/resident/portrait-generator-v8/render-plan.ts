@@ -192,7 +192,10 @@ export function buildRenderPlan(
         );
       }
     } else {
-      transform = morphologyTransform(assetId, dna) ?? {};
+      transform = combineTransform(
+        morphologyTransform(assetId, dna) ?? {},
+        stageProfile.featureTransforms?.[assetId] ?? {},
+      );
     }
 
     const layer = renderLayer(asset, transform, lod);

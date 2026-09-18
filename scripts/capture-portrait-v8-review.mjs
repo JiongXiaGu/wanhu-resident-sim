@@ -97,6 +97,11 @@ if ((await ageDirection.count()) !== 5) throw new Error('V8.3 age-direction revi
 const stageProfiles = await ageDirection.evaluateAll((items)=>items.map((item)=>item.getAttribute('data-stage-profile')));
 if (new Set(stageProfiles).size !== 5) throw new Error('V8.3 age-direction review must resolve five distinct stage profiles.');
 await page.locator('[data-v8-section="age-direction"]').screenshot({ path: outDir + '/39-v8-3-age-direction.png' });
+const faceAgeCards = page.locator('[data-face-age-direction]');
+if ((await faceAgeCards.count()) !== 5) throw new Error('V8.3 face-age review must render five life stages.');
+const faceIdentities = await faceAgeCards.evaluateAll((items)=>items.map((item)=>item.getAttribute('data-identity-fingerprint')));
+if (new Set(faceIdentities).size !== 1) throw new Error('V8.3 face-age review must keep one IdentityDNA across all stages.');
+await page.locator('[data-v8-section="face-age-direction"]').screenshot({ path: outDir + '/40-v8-3-face-age-direction.png' });
 await page.locator('[data-v8-section="art-review"]').screenshot({ path: outDir + '/37-v8-3-manual-art-review.png' });
 await page.locator('[data-v8-section="asset-audit"]').screenshot({ path: outDir + '/29-v8-2-asset-audit.png' });
 await page.locator('[data-v8-section="bundles"]').screenshot({ path: outDir + '/30-v8-2-asset-bundles-lod.png' });

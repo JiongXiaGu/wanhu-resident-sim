@@ -394,3 +394,45 @@
 @media (max-width: 700px) {
   .v8-age-grid { grid-template-columns: 1fr; }
 }
+
+
+/* V8.3 face-age review: CSS crop only; production RenderPlan/Renderer stays generic. */
+.v8-face-direction {
+  border-color: rgba(173,145,113,.2);
+}
+.v8-face-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(180px,1fr));
+  gap: 10px;
+}
+.v8-face-card {
+  min-width: 0;
+  padding: 10px;
+  display: grid;
+  gap: 6px;
+  border-radius: 13px;
+  background: rgba(0,0,0,.18);
+}
+.v8-face-card b { font-size: 11px; }
+.v8-face-card small { color: rgba(226,216,190,.42); font-size: 8px; }
+.v8-face-crop {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #c8aa70;
+}
+.v8-face-crop .portrait-v8-renderer {
+  width: 100%;
+  border-radius: 0;
+  box-shadow: none;
+}
+.v8-face-crop .portrait-v8-renderer svg {
+  transform: scale(1.48) translateY(8%);
+  transform-origin: 50% 43%;
+}
+@media (max-width: 1180px) {
+  .v8-face-grid { grid-template-columns: repeat(3,1fr); }
+}
+@media (max-width: 700px) {
+  .v8-face-grid { grid-template-columns: 1fr; }
+}
