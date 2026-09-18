@@ -385,7 +385,6 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M60 27 Q60 31 60 35', stroke:'skin', strokeWidth:1.25, opacity:.92 },
     { kind:'path', d:'M49 38 Q53 34 57 32 M63 32 Q68 34 72 39', stroke:'hair-accent', strokeWidth:.26, opacity:.07 },
   ]},
-];
 
   // Minimal male hair set for live runtime coverage. Final-canvas art only.
   { id:'layer.hair.male-child-tied.back', slot:'back-hair', z:10, shapes:[
@@ -416,6 +415,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M41 53 Q43 39 51 31 Q56 27 59 29 Q61 27 65 29 Q75 35 79 53 Q72 47 65 44 Q62 40 60 34 Q58 40 55 44 Q48 46 41 53Z', fill:'hair' },
     { kind:'path', d:'M60 29 L60 35', stroke:'skin', strokeWidth:1, opacity:.88 },
   ]},
+];
 
 export const HAIR_STYLES: HairStyleDefinition[] = [
   { id:'hair.child.double-bun', label:'女童双小髻', genders:['female'], lifeStages:['child','teen'], backLayerId:'layer.hair.child-double-bun.back', frontLayerId:'layer.hair.child-double-bun.front', baseWeight:1 },
