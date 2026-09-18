@@ -292,6 +292,24 @@ export function PortraitV8Lab() {
         </div>
       </section>
 
+      <section className="v8-section v8-neck-direction" data-v8-section="neck-collar-direction">
+        <header><div><span>02D · NECK / SHOULDER / COLLAR</span><h2>头不是插在衣服上：颈根必须被肩线和领口真正接住</h2></div><p>Neck Layer 现在位于 Garment 后方；衣服的真实开口覆盖颈根。Child 短颈窄肩；Youth 颈长且领口更开；Adult 稳定交领；Middle-age 颈根更稳、层领更厚；Elder 短颈、高包裹领和下沉肩线。</p></header>
+        <div className="v8-neck-grid">
+          {ageDirectionResolved.map(({context,dna,plan})=>(
+            <article
+              className="v8-neck-card"
+              data-neck-collar={context.lifeStage}
+              data-stage-profile={plan.stageProfileId}
+              key={'neck-'+context.lifeStage}
+            >
+              <div className="v8-neck-crop"><PortraitV8Renderer dna={dna} context={context} lod={96}/></div>
+              <b>{context.lifeStage}</b>
+              <small>{plan.stageProfileId}</small>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="v8-section" data-v8-section="bundle-contract">
         <header><div><span>03 · FORMAL HAIR BUNDLE CONTRACT</span><h2>4 个正式 Hair Bundle 全部走局部坐标和 Mask</h2></div><p>红线=skull，蓝线=face keepout，黄点=bunLow。相同 Bundle 在兼容 HeadProfile 上必须使用 placement，而不是复制一份绝对坐标资产。</p></header>
         <div className="v8-bundle-contract-grid">

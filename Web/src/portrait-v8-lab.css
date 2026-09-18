@@ -436,3 +436,45 @@
 @media (max-width: 700px) {
   .v8-face-grid { grid-template-columns: 1fr; }
 }
+
+
+/* V8.3 neck/collar review: target the structural transition from jaw to garment. */
+.v8-neck-direction {
+  border-color: rgba(150,171,154,.2);
+}
+.v8-neck-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(180px,1fr));
+  gap: 10px;
+}
+.v8-neck-card {
+  min-width: 0;
+  padding: 10px;
+  display: grid;
+  gap: 6px;
+  border-radius: 13px;
+  background: rgba(0,0,0,.18);
+}
+.v8-neck-card b { font-size: 11px; }
+.v8-neck-card small { color: rgba(226,216,190,.42); font-size: 8px; }
+.v8-neck-crop {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #c8aa70;
+}
+.v8-neck-crop .portrait-v8-renderer {
+  width: 100%;
+  border-radius: 0;
+  box-shadow: none;
+}
+.v8-neck-crop .portrait-v8-renderer svg {
+  transform: scale(1.28) translateY(-6%);
+  transform-origin: 50% 62%;
+}
+@media (max-width: 1180px) {
+  .v8-neck-grid { grid-template-columns: repeat(3,1fr); }
+}
+@media (max-width: 700px) {
+  .v8-neck-grid { grid-template-columns: 1fr; }
+}
