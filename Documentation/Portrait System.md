@@ -26,14 +26,22 @@ Runtime migration progress:
 - `ResidentAvatarArtV1.tsx`, `ResidentAvatarArtV2.tsx`, `portrait-rig.ts`, `portrait-art-v2.ts`, and `portrait-woodblock-v7.tsx` have been removed from the migration branch.
 - Build passes after removing the legacy Web renderer stack.
 
-Still intentionally retained for the next phase:
+Snapshot/compiler migration progress:
 
-- `Tools/ResidentAppearanceCompiler/`
+- Final resident snapshots now use `wanhu.resident-snapshot.v4`.
+- Residents store compact `ResidentPortraitDNA`: FaceFamily / HairStyle / OutfitStyle / skin palette / base hair color.
+- The old `appearance` payload and `portraitSeed` are removed from final resident records.
+- `Tools/ResidentPortraitCompiler/` now performs deterministic seeded portrait selection.
+- The live ResidentAvatar consumes these saved stable IDs.
+- The old `ResidentAppearanceCompiler` has been removed.
+
+Still intentionally retained for the next cleanup phase:
+
 - `Content/Appearance/`
 - `Schemas/appearance.schema.json`
-- the old snapshot `ResidentAppearanceDNA` fields
+- appearance-catalog generation inside ContentContractCompiler / WebContentCompiler
 
-These remain because the content pipeline still produces the old appearance payload even though the live Web portrait renderer no longer consumes it.
+These are now build-time legacy only; neither the live portrait renderer nor the final resident snapshot depends on them.
 
 The portrait is a secondary game system. The priority order is:
 
@@ -355,7 +363,7 @@ Recommended minimal male coverage:
 
 Do not rebuild the old beard / headwear / rig complexity during this step.
 
-## Phase 3 — simplify snapshot appearance data — next
+## Phase 3 — simplify snapshot appearance data — completed on runtime-migration branch
 
 Replace the old `ResidentAppearanceDNA` with a compact `ResidentPortraitDNA`:
 
@@ -371,7 +379,7 @@ Optional future fields should only be added when a real gameplay feature require
 
 Update the snapshot schema in one migration.
 
-## Phase 4 — replace the appearance compiler
+## Phase 4 — replace the appearance compiler — compiler replaced; old content contract cleanup remains
 
 Current compiler complexity includes:
 
