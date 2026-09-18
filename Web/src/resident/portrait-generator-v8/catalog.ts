@@ -87,7 +87,7 @@ export const HEAD_PROFILES: HeadProfileDefinition[] = [
       nape: { x: 60, y: 102 }, shoulderBackLeft: { x: 31, y: 110 }, shoulderBackRight: { x: 89, y: 110 },
     },
     masks: {
-      skull: 'M40 52 Q40 26 60 22 Q80 26 80 52 Q75 36 60 34 Q45 36 40 52Z',
+      skull: 'M40 52 Q40 26 60 22 Q80 26 80 52 C80 70 75 86 68 94 Q60 100 52 94 C45 86 40 70 40 52Z',
       faceKeepout: 'M42 43 Q60 31 78 43 L76 87 Q60 100 44 87Z',
       behindHead: 'M26 20 H99 V136 H26Z',
       earFrontLeft: 'M34 49 H47 V74 H34Z',
