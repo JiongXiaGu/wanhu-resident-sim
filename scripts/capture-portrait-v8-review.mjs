@@ -94,6 +94,10 @@ await page.screenshot({ path: outDir + '/27-portrait-generator-v8-2-overview.png
 await page.locator('[data-v8-section="bundle-contract"]').screenshot({ path: outDir + '/28-v8-2-formal-hair-contract.png' });
 await page.locator('[data-v8-section="asset-audit"]').screenshot({ path: outDir + '/29-v8-2-asset-audit.png' });
 await page.locator('[data-v8-section="bundles"]').screenshot({ path: outDir + '/30-v8-2-asset-bundles-lod.png' });
+await page.locator('[data-bundle-contract="hair.female.adult-low-bun.v1"]').nth(0).screenshot({ path: outDir + '/33-v8-2-adult-low-bun-adult.png' });
+await page.locator('[data-bundle-contract="hair.female.adult-low-bun.v1"]').nth(1).screenshot({ path: outDir + '/34-v8-2-adult-low-bun-elder.png' });
+await page.locator('[data-bundle-contract="hair.female.elder-gray-low-bun.v1"]').nth(0).screenshot({ path: outDir + '/35-v8-2-elder-gray-low-bun-middle.png' });
+await page.locator('[data-bundle-contract="hair.female.elder-gray-low-bun.v1"]').nth(1).screenshot({ path: outDir + '/36-v8-2-elder-gray-low-bun-elder.png' });
 await page.locator('[data-v8-section="temporal"]').screenshot({ path: outDir + '/31-v8-2-temporal-identity.png' });
 await page.locator('[data-v8-section="population"]').screenshot({ path: outDir + '/32-v8-2-population-diversity.png' });
 
