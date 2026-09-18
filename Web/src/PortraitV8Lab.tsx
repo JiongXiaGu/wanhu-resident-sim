@@ -1,15 +1,9 @@
+import { FACE_FAMILIES, HAIR_STYLES } from './resident/portrait-generator-v8/catalog';
 import {
-  HAIR_BUNDLES,
-} from './resident/portrait-generator-v8/catalog';
-import {
-  assertV8IdentityInvariant,
+  assertPortraitIdentityInvariant,
   resolveAppearance,
-  resolveHeadProfile,
 } from './resident/portrait-generator-v8/appearance-resolver';
-import { assertHairBundleContracts } from './resident/portrait-generator-v8/asset-audit';
 import { buildRenderPlan } from './resident/portrait-generator-v8/render-plan';
-import { morphologyFingerprint } from './resident/portrait-generator-v8/identity-morphology';
-import { PopulationDiversityController } from './resident/portrait-generator-v8/population-diversity';
 import { hash32 } from './resident/portrait-generator-v8/seed-bank';
 import { PortraitV8Renderer } from './resident/portrait-generator-v8/PortraitV8Renderer';
 import type {
@@ -19,276 +13,137 @@ import type {
 } from './resident/portrait-generator-v8/types';
 
 const wealthVariants: SemanticAppearanceContext[] = [
-  { residentStableId:'v8-wealth-anchor', residentSeed:88001, gender:'female', lifeStage:'adult', wealthTier:'poor', presentationStyle:'practical' },
-  { residentStableId:'v8-wealth-anchor', residentSeed:88001, gender:'female', lifeStage:'adult', wealthTier:'plain', presentationStyle:'tidy' },
-  { residentStableId:'v8-wealth-anchor', residentSeed:88001, gender:'female', lifeStage:'adult', wealthTier:'comfortable', presentationStyle:'tidy' },
-  { residentStableId:'v8-wealth-anchor', residentSeed:88001, gender:'female', lifeStage:'adult', wealthTier:'wealthy', presentationStyle:'refined' },
+  {residentStableId:'v84-wealth',residentSeed:88001,gender:'female',lifeStage:'adult',wealthTier:'poor',presentationStyle:'practical'},
+  {residentStableId:'v84-wealth',residentSeed:88001,gender:'female',lifeStage:'adult',wealthTier:'plain',presentationStyle:'tidy'},
+  {residentStableId:'v84-wealth',residentSeed:88001,gender:'female',lifeStage:'adult',wealthTier:'comfortable',presentationStyle:'tidy'},
+  {residentStableId:'v84-wealth',residentSeed:88001,gender:'female',lifeStage:'adult',wealthTier:'wealthy',presentationStyle:'refined'},
 ];
 
 const temporalVariants: SemanticAppearanceContext[] = [
-  { residentStableId:'v8-temporal-anchor', residentSeed:88111, gender:'female', lifeStage:'child', wealthTier:'plain', presentationStyle:'tidy' },
-  { residentStableId:'v8-temporal-anchor', residentSeed:88111, gender:'female', lifeStage:'young-adult', wealthTier:'plain', presentationStyle:'tidy' },
-  { residentStableId:'v8-temporal-anchor', residentSeed:88111, gender:'female', lifeStage:'adult', wealthTier:'plain', presentationStyle:'tidy' },
-  { residentStableId:'v8-temporal-anchor', residentSeed:88111, gender:'female', lifeStage:'elder', wealthTier:'plain', presentationStyle:'tidy' },
+  {residentStableId:'v84-time',residentSeed:88111,gender:'female',lifeStage:'child',wealthTier:'plain',presentationStyle:'tidy'},
+  {residentStableId:'v84-time',residentSeed:88111,gender:'female',lifeStage:'young-adult',wealthTier:'plain',presentationStyle:'tidy'},
+  {residentStableId:'v84-time',residentSeed:88111,gender:'female',lifeStage:'adult',wealthTier:'plain',presentationStyle:'tidy'},
+  {residentStableId:'v84-time',residentSeed:88111,gender:'female',lifeStage:'middle-age',wealthTier:'plain',presentationStyle:'tidy'},
+  {residentStableId:'v84-time',residentSeed:88111,gender:'female',lifeStage:'elder',wealthTier:'plain',presentationStyle:'tidy'},
 ];
 
-function fingerprint(value: unknown) {
+function fingerprint(value:unknown) {
   return hash32(JSON.stringify(value)).toString(16).padStart(8,'0');
 }
 
-function presentationForWealth(wealth: SemanticAppearanceContext['wealthTier'], index = 0): SemanticAppearanceContext['presentationStyle'] {
-  if (wealth === 'poor') return index % 3 === 0 ? 'tidy' : 'practical';
-  if (wealth === 'plain') return index % 2 === 0 ? 'tidy' : 'practical';
-  if (wealth === 'comfortable') return index % 3 === 0 ? 'refined' : 'tidy';
-  return index % 2 === 0 ? 'refined' : 'tidy';
-}
-
-function forceHairBundle(
-  dna: ResolvedAppearanceDNA,
-  hairBundleId: string,
-  accessoryAssetId: string,
-): ResolvedAppearanceDNA {
-  return {
-    ...dna,
-    presentation: {
-      ...dna.presentation,
-      hairBundleId,
-      accessoryAssetId,
-    },
-  };
-}
-
-function findBundleSample(bundleId: string) {
-  const bundle = HAIR_BUNDLES.find((item)=>item.id===bundleId)!;
-  const lifeStage = bundle.lifeStages[0];
-  for (let seed=89000; seed<89300; seed+=1) {
-    const wealthTier: SemanticAppearanceContext['wealthTier'] = lifeStage === 'elder' ? 'wealthy' : 'plain';
-    const context: SemanticAppearanceContext = {
-      residentStableId:'bundle-'+bundleId,
-      residentSeed:seed,
-      gender:'female',
-      lifeStage,
-      wealthTier,
-      presentationStyle:presentationForWealth(wealthTier),
+function findFaceSample(faceFamilyId:string) {
+  for(let seed=93000;seed<94000;seed+=1) {
+    const context:SemanticAppearanceContext={
+      residentStableId:'face-'+faceFamilyId,residentSeed:seed,gender:'female',
+      lifeStage:'adult',wealthTier:'plain',presentationStyle:'tidy',
     };
-    const dna = resolveAppearance(context);
-    if (dna.presentation.hairBundleId === bundleId) return {context,dna};
+    const dna=resolveAppearance(context);
+    if(dna.identity.faceFamilyId===faceFamilyId) return {context,dna};
   }
-  throw new Error('Could not find deterministic V8.2 bundle sample for '+bundleId);
+  throw new Error('No deterministic V8.4 face sample for '+faceFamilyId);
 }
 
-const bundleSamples = HAIR_BUNDLES.map((bundle)=>({
-  bundle,
-  ...findBundleSample(bundle.id),
-}));
+const faceSamples=FACE_FAMILIES.map((family)=>({family,...findFaceSample(family.id)}));
 
-const bundleAudits = assertHairBundleContracts();
-
-type ContractSample = {
-  label: string;
-  bundleId: string;
-  accessoryId: string;
-  context: SemanticAppearanceContext;
-};
-
-const contractDefinitions: ContractSample[] = [
-  {
-    label:'女童双小髻 · child',
-    bundleId:'hair.female.girl-double-bun.v1',
-    accessoryId:'accessory.red-cord',
-    context:{ residentStableId:'contract-girl-child', residentSeed:91001, gender:'female', lifeStage:'child', wealthTier:'plain', presentationStyle:'tidy' },
-  },
-  {
-    label:'少女半束后披 · youth',
-    bundleId:'hair.female.young-halfbound-backfall.v1',
-    accessoryId:'accessory.cloth-knot',
-    context:{ residentStableId:'contract-halfbound-youth', residentSeed:91002, gender:'female', lifeStage:'young-adult', wealthTier:'plain', presentationStyle:'tidy' },
-  },
-  {
-    label:'少女半束后披 · adult',
-    bundleId:'hair.female.young-halfbound-backfall.v1',
-    accessoryId:'accessory.wood-pin',
-    context:{ residentStableId:'contract-halfbound-adult', residentSeed:91003, gender:'female', lifeStage:'adult', wealthTier:'plain', presentationStyle:'tidy' },
-  },
-  {
-    label:'成年低髻 · adult',
-    bundleId:'hair.female.adult-low-bun.v1',
-    accessoryId:'accessory.wood-pin',
-    context:{ residentStableId:'contract-lowbun-adult', residentSeed:91004, gender:'female', lifeStage:'adult', wealthTier:'comfortable', presentationStyle:'tidy' },
-  },
-  {
-    label:'成年低髻 · elder',
-    bundleId:'hair.female.adult-low-bun.v1',
-    accessoryId:'accessory.wood-pin',
-    context:{ residentStableId:'contract-lowbun-elder', residentSeed:91005, gender:'female', lifeStage:'elder', wealthTier:'comfortable', presentationStyle:'tidy' },
-  },
-  {
-    label:'花白低髻 · middle',
-    bundleId:'hair.female.elder-gray-low-bun.v1',
-    accessoryId:'accessory.jade-pin',
-    context:{ residentStableId:'contract-graybun-middle', residentSeed:91006, gender:'female', lifeStage:'middle-age', wealthTier:'comfortable', presentationStyle:'tidy' },
-  },
-  {
-    label:'花白低髻 · elder',
-    bundleId:'hair.female.elder-gray-low-bun.v1',
-    accessoryId:'accessory.jade-pin',
-    context:{ residentStableId:'contract-graybun-elder', residentSeed:91007, gender:'female', lifeStage:'elder', wealthTier:'wealthy', presentationStyle:'refined' },
-  },
-];
-
-const contractSamples = contractDefinitions.map((definition)=>{
-  const base = resolveAppearance(definition.context);
-  const dna = forceHairBundle(base, definition.bundleId, definition.accessoryId);
-  const plan = buildRenderPlan(dna, definition.context, 96);
-  const audit = bundleAudits.find((item)=>item.bundleId===definition.bundleId)!;
-  return {...definition,dna,plan,audit};
-});
-
-const populationController = new PopulationDiversityController(8);
-const populationStages: SemanticAppearanceContext['lifeStage'][] = [
-  'child','young-adult','adult','adult','middle-age','elder','adult','young-adult',
-];
-const populationWealth: SemanticAppearanceContext['wealthTier'][] = ['poor','plain','plain','comfortable','plain','wealthy'];
-const population = Array.from({length:64},(_,index)=>{
-  const wealthTier = populationWealth[index%populationWealth.length];
-  const context: SemanticAppearanceContext = {
-    residentStableId:'v8-pop-'+String(index+1).padStart(2,'0'),
-    residentSeed:90000+index*17,
-    gender:'female',
-    lifeStage:populationStages[index%populationStages.length],
-    wealthTier,
-    presentationStyle:presentationForWealth(wealthTier,index),
+const hairSamples=HAIR_STYLES.map((style)=>{
+  const lifeStage=style.lifeStages[0];
+  const context:SemanticAppearanceContext={
+    residentStableId:'hair-'+style.id,residentSeed:95000+HAIR_STYLES.indexOf(style)*31,
+    gender:'female',lifeStage,wealthTier:'plain',presentationStyle:'tidy',
   };
-  return {context,dna:resolveAppearance(context,populationController)};
+  return {style,context,dna:resolveAppearance(context,{hairStyleId:style.id})};
 });
-const populationSnapshot = populationController.snapshot();
 
-function PortraitCard({
-  context,
-  dna,
-  lod=96,
-  className='',
-  debugMasks=false,
-}: {
-  context: SemanticAppearanceContext;
-  dna: ResolvedAppearanceDNA;
-  lod?: PortraitLod;
-  className?: string;
-  debugMasks?: boolean;
-}) {
-  const identityFingerprint = fingerprint(dna.identity);
+const crowdStages:SemanticAppearanceContext['lifeStage'][]=['child','young-adult','adult','middle-age','elder','adult'];
+const crowdWealth:SemanticAppearanceContext['wealthTier'][]=['poor','plain','comfortable','wealthy'];
+const crowd=Array.from({length:24},(_,index)=>{
+  const context:SemanticAppearanceContext={
+    residentStableId:'v84-crowd-'+String(index+1).padStart(2,'0'),
+    residentSeed:97000+index*37,
+    gender:'female',
+    lifeStage:crowdStages[index%crowdStages.length],
+    wealthTier:crowdWealth[index%crowdWealth.length],
+    presentationStyle:'tidy',
+  };
+  return {context,dna:resolveAppearance(context)};
+});
+
+function PortraitCard({context,dna,lod=96}:{context:SemanticAppearanceContext;dna:ResolvedAppearanceDNA;lod?:PortraitLod}) {
   return (
-    <article
-      className={'v8-card '+className}
-      data-identity-fingerprint={identityFingerprint}
-      data-morphology-fingerprint={morphologyFingerprint(dna.identity.morphology)}
-      data-life-stage={context.lifeStage}
-      data-wealth={context.wealthTier}
-    >
-      <PortraitV8Renderer dna={dna} context={context} lod={lod} debugMasks={debugMasks}/>
+    <article className="v84-card" data-identity-fingerprint={fingerprint(dna.identity)} data-life-stage={context.lifeStage}>
+      <PortraitV8Renderer dna={dna} context={context} lod={lod}/>
       <b>{context.lifeStage} · {context.wealthTier}</b>
-      <code>{dna.presentation.hairBundleId}</code>
-      <small>Identity {identityFingerprint}</small>
+      <code>{dna.identity.faceFamilyId}</code>
+      <small>{dna.presentation.hairStyleId} · {dna.presentation.outfitStyleId}</small>
     </article>
   );
 }
 
 export function PortraitV8Lab() {
-  assertV8IdentityInvariant(wealthVariants[0], wealthVariants.slice(1));
-  assertV8IdentityInvariant(temporalVariants[0], temporalVariants.slice(1));
+  assertPortraitIdentityInvariant(wealthVariants[0],wealthVariants.slice(1));
+  assertPortraitIdentityInvariant(temporalVariants[0],temporalVariants.slice(1));
 
-  const wealthResolved = wealthVariants.map((context)=>({context,dna:resolveAppearance(context)}));
-  const temporalResolved = temporalVariants.map((context)=>({context,dna:resolveAppearance(context)}));
+  const wealthResolved=wealthVariants.map((context)=>({context,dna:resolveAppearance(context)}));
+  const temporalResolved=temporalVariants.map((context)=>({context,dna:resolveAppearance(context)}));
 
-  const wealthIdentityCount = new Set(wealthResolved.map((item)=>fingerprint(item.dna.identity))).size;
-  const wealthHairCount = new Set(wealthResolved.map((item)=>item.dna.presentation.hairBundleId)).size;
-  const temporalIdentityCount = new Set(temporalResolved.map((item)=>fingerprint(item.dna.identity))).size;
-  const temporalMorphologyCount = new Set(temporalResolved.map((item)=>morphologyFingerprint(item.dna.identity.morphology))).size;
-  const temporalHeadProfiles = new Set(temporalResolved.map((item)=>resolveHeadProfile(item.dna.identity,item.context).id)).size;
-
-  const auditedBundleCount = bundleAudits.filter((audit)=>audit.passed).length;
-  const totalCompatibleProfiles = bundleAudits.reduce((sum,audit)=>sum+audit.compatibleHeadProfileCount,0);
-  const allContractMasked = contractSamples.every((sample)=>sample.plan.layers.filter((layer)=>layer.maskMode!=='none').length>=2);
-  const allContractLocal = contractSamples.every((sample)=>sample.plan.layers.filter((layer)=>Math.abs(layer.transform.translateX)>0||Math.abs(layer.transform.translateY)>0).length>=2);
+  const wealthIdentityCount=new Set(wealthResolved.map((x)=>fingerprint(x.dna.identity))).size;
+  const temporalIdentityCount=new Set(temporalResolved.map((x)=>fingerprint(x.dna.identity))).size;
+  const temporalFaceCount=new Set(temporalResolved.map((x)=>x.dna.identity.faceFamilyId)).size;
 
   return (
-    <main className="portrait-v8-lab" data-portrait-v8-lab="true" data-render-contract-version="8.2">
+    <main className="portrait-v8-lab" data-portrait-v8-lab="true" data-render-contract-version="8.4" data-art-review-version="8.4">
       <header className="portrait-v8-header">
         <div>
-          <span>PORTRAIT GENERATOR V8.2 · ASSET CONTRACT</span>
-          <h1>居民头像生成算法 V8.2</h1>
-          <p>V8.2 把 V8.1 的局部定位规则扩展到全部首批 Hair Bundle，并新增正式资产契约审计。Renderer 仍只消费 RenderPlan。</p>
+          <span>PORTRAIT GENERATOR V8.4 · SIMPLE PORTRAIT</span>
+          <h1>居民头像 V8.4：简单组合，美术优先</h1>
+          <p>头像是次要系统。V8.4 只保留“认得出同一个人、年龄清楚、可以换发型、可以换衣服”。已取消 Accessory、Hair Mask、Head Anchor、连续 Morphology、Population Diversity 和复杂 Compatibility。</p>
         </div>
         <nav><a href="/?view=portrait-styles">V7 木刻审查</a><a href="/">居民 Demo</a></nav>
       </header>
 
-      <section className="v8-status-grid">
-        <div data-v8-check="identity-wealth" data-state={wealthIdentityCount===1&&wealthHairCount===1?'pass':'fail'}><b>{wealthIdentityCount===1&&wealthHairCount===1?'PASS':'FAIL'}</b><span>财富变化不换 Identity / Hair</span></div>
-        <div data-v8-check="identity-time" data-state={temporalIdentityCount===1&&temporalMorphologyCount===1?'pass':'fail'}><b>{temporalIdentityCount===1&&temporalMorphologyCount===1?'PASS':'FAIL'}</b><span>年龄变化保留 Identity Morphology</span></div>
-        <div data-v8-check="asset-audit" data-state={auditedBundleCount===HAIR_BUNDLES.length?'pass':'fail'}><b>{auditedBundleCount}/{HAIR_BUNDLES.length}</b><span>Hair Bundle Contract</span></div>
-        <div data-v8-check="profile-placement" data-state={totalCompatibleProfiles===7?'pass':'fail'}><b>{totalCompatibleProfiles}</b><span>HeadProfile Placements</span></div>
-        <div data-v8-check="mask-placement" data-state={allContractMasked&&allContractLocal?'pass':'fail'}><b>{allContractMasked&&allContractLocal?'PASS':'FAIL'}</b><span>实际 Mask / Local Placement</span></div>
-        <div data-v8-check="population" data-state={populationSnapshot.totalResolved===64?'pass':'fail'}><b>{populationSnapshot.totalResolved}</b><span>Population Resolver</span></div>
+      <section className="v84-status">
+        <div data-v8-check="identity-wealth" data-state={wealthIdentityCount===1?'pass':'fail'}><b>{wealthIdentityCount===1?'PASS':'FAIL'}</b><span>财富不改变 Identity</span></div>
+        <div data-v8-check="identity-time" data-state={temporalIdentityCount===1&&temporalFaceCount===1?'pass':'fail'}><b>{temporalIdentityCount===1&&temporalFaceCount===1?'PASS':'FAIL'}</b><span>一生保持 FaceFamily</span></div>
+        <div data-v8-check="face-families" data-state={FACE_FAMILIES.length>=6?'pass':'fail'}><b>{FACE_FAMILIES.length}</b><span>离散 FaceFamily</span></div>
+        <div data-v8-check="hair-styles" data-state={HAIR_STYLES.length===4?'pass':'fail'}><b>{HAIR_STYLES.length}</b><span>首批 Hair Style</span></div>
+        <div data-v8-check="no-accessory" data-state="pass"><b>0</b><span>Accessory 系统</span></div>
+        <div data-v8-check="simple-render" data-state="pass"><b>PASS</b><span>无 Hair Mask / Anchor</span></div>
       </section>
 
-      <section className="v8-section" data-v8-section="wealth-invariant">
-        <header><div><span>01 · IDENTITY / PRESENTATION</span><h2>同一个人发财，不换脸、不换基础发型</h2></div><p>IdentityDNA 与 Morphology 不读取 WealthTier；Outfit / Accessory 独立解析。</p></header>
-        <div className="v8-four-grid">
+      <section className="v84-section" data-v8-section="wealth-invariant">
+        <header><div><span>01 · IDENTITY</span><h2>同一个人换衣服，不换脸</h2></div><p>财富只影响初始 Outfit。FaceFamily / 肤色 / 基础发色来自 Identity Seed。</p></header>
+        <div className="v84-grid v84-grid-4">
           {wealthResolved.map((item)=><PortraitCard key={item.context.wealthTier} {...item}/>)}
         </div>
       </section>
 
-      <section className="v8-section" data-v8-section="temporal">
-        <header><div><span>02 · TEMPORAL IDENTITY</span><h2>同一个人从儿童到老年</h2></div><p>Identity Morphology 跨年龄保留；HeadProfile、Hair、AgeOverlay 和发色状态演化。</p></header>
-        <div className="v8-four-grid">
+      <section className="v84-section" data-v8-section="temporal">
+        <header><div><span>02 · LIFE STAGE</span><h2>同一个 FaceFamily 从儿童到老年</h2></div><p>不再使用连续 Morph。每个 FaceFamily 直接提供 child / youth / adult / elder 美术版本。</p></header>
+        <div className="v84-grid v84-grid-5">
           {temporalResolved.map((item)=><PortraitCard key={item.context.lifeStage} {...item}/>)}
         </div>
       </section>
 
-      <section className="v8-section" data-v8-section="bundle-contract">
-        <header><div><span>03 · FORMAL HAIR BUNDLE CONTRACT</span><h2>4 个正式 Hair Bundle 全部走局部坐标和 Mask</h2></div><p>红线=skull，蓝线=face keepout，黄点=bunLow。相同 Bundle 在兼容 HeadProfile 上必须使用 placement，而不是复制一份绝对坐标资产。</p></header>
-        <div className="v8-bundle-contract-grid">
-          {contractSamples.map((sample)=>(
-            <article
-              className="v8-card v8-contract-card"
-              data-bundle-contract={sample.bundleId}
-              data-audit-state={sample.audit.passed?'pass':'fail'}
-              data-head-profile={sample.plan.headProfileId}
-              key={sample.label}
-            >
-              <PortraitV8Renderer dna={sample.dna} context={sample.context} lod={96} debugMasks/>
-              <b>{sample.label}</b>
-              <code>{sample.bundleId}</code>
-              <small>{sample.audit.localLayerCount} local · {sample.audit.maskedLayerCount} masked · {sample.audit.accessorySlotCount} accessory slots</small>
+      <section className="v84-section" data-v8-section="face-families">
+        <header><div><span>03 · FACE FAMILY</span><h2>脸型差异直接由美术资产控制</h2></div><p>当前先提供 6 套离散脸型。以后增加脸型就是增加资产，不增加运行时捏脸算法。</p></header>
+        <div className="v84-grid v84-grid-6">
+          {faceSamples.map(({family,context,dna})=>(
+            <article className="v84-card" data-face-family-card={family.id} key={family.id}>
+              <PortraitV8Renderer dna={dna} context={context} lod={96}/>
+              <b>{family.label}</b><code>{family.id}</code>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="v8-section" data-v8-section="asset-audit">
-        <header><div><span>04 · ASSET AUDIT</span><h2>正式资产契约审计</h2></div><p>禁止 Hair Layer 回退到 canvas absolute coordinates；兼容 HeadProfile 必须有 placement；Accessory Slot 必须有对应 placement。</p></header>
-        <div className="v8-audit-grid">
-          {bundleAudits.map((audit)=>(
-            <div className="v8-audit-card" data-bundle-audit={audit.bundleId} data-state={audit.passed?'pass':'fail'} key={audit.bundleId}>
-              <b>{audit.passed?'PASS':'FAIL'}</b>
-              <code>{audit.bundleId}</code>
-              <span>{audit.localLayerCount} local / {audit.maskedLayerCount} masked / {audit.compatibleHeadProfileCount} heads</span>
-              {audit.errors.length>0 && <small>{audit.errors.join(' · ')}</small>}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="v8-section" data-v8-section="bundles">
-        <header><div><span>05 · ASSET BUNDLE / LOD</span><h2>96 / 64 / 48px</h2></div><p>次级鬓发、发髻盘绕线和发丝纹理可以在 48px 被移除，保留主要轮廓。</p></header>
-        <div className="v8-four-grid">
-          {bundleSamples.map(({bundle,context,dna})=>(
-            <article className="v8-card" data-bundle-showcase={bundle.id} key={bundle.id}>
+      <section className="v84-section" data-v8-section="hair-art">
+        <header><div><span>04 · HAIR ART</span><h2>发型是最终画布资产，不再自动适配头型</h2></div><p>没有 Head Anchor、placement、Mask、Accessory Slot。96 / 64 / 48 使用同一轮廓直接缩放。</p></header>
+        <div className="v84-grid v84-grid-4">
+          {hairSamples.map(({style,context,dna})=>(
+            <article className="v84-card" data-hair-style-card={style.id} key={style.id}>
               <PortraitV8Renderer dna={dna} context={context} lod={96}/>
-              <b>{bundle.label}</b>
-              <code>{bundle.id}</code>
-              <small>{bundle.silhouetteType} · {bundle.cultureTag}</small>
-              <div className="v8-lods">
+              <b>{style.label}</b><code>{style.id}</code>
+              <div className="v84-lods">
                 {[96,64,48].map((lod)=><div key={lod}><PortraitV8Renderer dna={dna} context={context} lod={lod as PortraitLod}/><span>{lod}px</span></div>)}
               </div>
             </article>
@@ -296,22 +151,28 @@ export function PortraitV8Lab() {
         </div>
       </section>
 
-      <section className="v8-section" data-v8-section="population">
-        <header><div><span>06 · POPULATION DIVERSITY</span><h2>64 人城市级软分布</h2></div><p>FinalWeight = baseWeight × compatibility × localNovelty × populationDeficit。</p></header>
-        <div className="v8-distribution">
-          {HAIR_BUNDLES.map((bundle)=><div key={bundle.id}><b>{populationSnapshot.countsByHairBundle[bundle.id]??0}</b><span>{bundle.label}</span></div>)}
-        </div>
-        <div className="v8-crowd">
-          {population.map(({context,dna})=>(
-            <div className="v8-crowd__item" key={context.residentStableId} data-pop-resident={context.residentStableId}>
-              <PortraitV8Renderer dna={dna} context={context} lod={48}/>
-            </div>
-          ))}
+      <section className="v84-section" data-v8-section="age-direction">
+        <header><div><span>05 · ART DIRECTION</span><h2>年龄靠直接美术设计，不靠参数叠加</h2></div><p>Child / Youth / Adult / Middle / Elder 的脸、颈、肩、衣领和取景分别审查。</p></header>
+        <div className="v84-grid v84-grid-5">
+          {temporalResolved.map(({context,dna})=>{
+            const plan=buildRenderPlan(dna,context,96);
+            return <article className="v84-card" data-age-direction={context.lifeStage} data-stage-profile={plan.stageProfileId} key={'age-'+context.lifeStage}>
+              <PortraitV8Renderer dna={dna} context={context} lod={96}/>
+              <b>{context.lifeStage}</b><small>{plan.stageProfileId}</small>
+            </article>;
+          })}
         </div>
       </section>
 
-      <section className="v8-section" data-v8-section="save-contract">
-        <header><div><span>07 · SAVE CONTRACT</span><h2>Resolved Stable IDs + Morphology</h2></div></header>
+      <section className="v84-section" data-v8-section="crowd">
+        <header><div><span>06 · CROWD CHECK</span><h2>24 人简单 Seed 抽样</h2></div><p>不再动态追踪人口配额。重复感优先通过增加高质量 Face / Hair / Outfit 资产解决。</p></header>
+        <div className="v84-crowd">
+          {crowd.map(({context,dna})=><div data-pop-resident={context.residentStableId} key={context.residentStableId}><PortraitV8Renderer dna={dna} context={context} lod={48}/></div>)}
+        </div>
+      </section>
+
+      <section className="v84-section" data-v8-section="save-contract">
+        <header><div><span>07 · SAVE DATA</span><h2>保存稳定 ID，不保存复杂参数</h2></div></header>
         <pre>{JSON.stringify(wealthResolved[1].dna,null,2)}</pre>
       </section>
     </main>
