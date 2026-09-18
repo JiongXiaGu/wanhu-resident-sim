@@ -312,13 +312,13 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
   ]},
 
   { id:'layer.hair.elder-low-bun.back', slot:'back-hair', z:10, shapes:[
-    { kind:'path', d:'M73 47 C78 56 80 68 78 79 C77 84 74 88 71 90 C74 89 77 88 81 88 C86 88 91 90 93 93 C95 97 92 100 88 101 C82 103 76 101 72 98 C68 95 68 91 70 87 C73 78 75 62 73 47Z', fill:'hair', stroke:'ink', strokeWidth:.58 },
-    { kind:'path', d:'M80 92 Q86 91 90 94', stroke:'hair-accent', strokeWidth:.32, opacity:.1 },
+    { kind:'path', d:'M73 47 C78 56 80 68 78 79 C77 84 74 88 71 90 C75 88 80 87 85 88 C90 88 93 90 93 93 C93 96 89 98 84 98 C79 98 75 96 72 94 C69 92 69 89 71 86 C73 77 75 62 73 47Z', fill:'hair', stroke:'ink', strokeWidth:.58 },
+    { kind:'path', d:'M79 91 Q85 90 89 93', stroke:'hair-accent', strokeWidth:.3, opacity:.09 },
   ]},
   { id:'layer.hair.elder-low-bun.front', slot:'front-hair', z:70, shapes:[
-    { kind:'path', d:'M42 52 C42 41 47 32 55 28 C57 27 59 27 60 29 C59 33 58 38 56 42 C50 43 46 46 42 52Z', fill:'hair' },
-    { kind:'path', d:'M61 29 C63 27 65 27 67 28 C74 32 78 41 78 52 C74 46 70 43 65 42 C63 38 62 33 61 29Z', fill:'hair' },
-    { kind:'path', d:'M49 38 Q53 34 56 33 M65 33 Q69 35 72 39', stroke:'hair-accent', strokeWidth:.28, opacity:.08 },
+    { kind:'path', d:'M41 52 C41 40 47 31 56 27 Q59 26 60 29 Q61 26 64 27 C73 30 79 40 79 52 C74 46 69 43 63 42 Q61 37 60 30 Q59 37 57 42 C51 43 46 46 41 52Z', fill:'hair' },
+    { kind:'path', d:'M60 27 Q60 31 60 35', stroke:'skin', strokeWidth:1.25, opacity:.92 },
+    { kind:'path', d:'M49 38 Q53 34 57 32 M63 32 Q68 34 72 39', stroke:'hair-accent', strokeWidth:.26, opacity:.07 },
   ]},
 ];
 
