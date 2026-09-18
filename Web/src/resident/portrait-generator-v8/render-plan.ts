@@ -196,6 +196,7 @@ export function buildRenderPlan(
     skin: skinColors[dna.identity.skinPaletteId] ?? '#c68b69',
     hair: hairColors[dna.presentation.hairColorStateId] ?? hairColors[dna.identity.baseHairColorId] ?? '#29231f',
     'hair-accent': dna.presentation.hairColorStateId === 'hair-state.gray' ? '#c9c2b9' : dna.presentation.hairColorStateId === 'hair-state.salt-pepper' ? '#8e867d' : '#5b4c43',
+    'cord-red': '#9b493d',
     cloth: clothByWealth[context.wealthTier],
     accent: context.wealthTier === 'wealthy' ? '#d4bd7d' : context.wealthTier === 'comfortable' ? '#b9aa83' : '#9e9176',
     ink: '#271f1a',
