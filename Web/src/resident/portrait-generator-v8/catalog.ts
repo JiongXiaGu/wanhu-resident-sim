@@ -400,11 +400,11 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M-7 -20 Q-3 -9 -3 6 Q-3 16 -1 21', stroke:'hair-accent', strokeWidth:.4, opacity:.11 },
   ]},
   { id:'layer.hair.adult-low-bun.nape-root', slot:'back-hair', z:11, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'nape', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M6 -20 C12 -23 19 -22 24 -18 C27 -15 26 -12 22 -9 C18 -6 13 -5 9 -7 C7 -10 5 -15 6 -20Z', fill:'hair' },
+    { kind:'path', d:'M7 -19 C11 -21 15 -20 18 -17 C19 -15 18 -13 16 -11 C13 -9 10 -9 8 -10 C7 -13 6 -16 7 -19Z', fill:'hair' },
   ]},
   { id:'layer.hair.adult-low-bun.bun', slot:'back-hair', z:12, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M-12 -5 C-7 -10 1 -12 9 -9 C15 -7 19 -3 19 2 C18 7 13 11 6 12 C0 12 -6 9 -10 5 C-12 2 -13 -2 -12 -5Z', fill:'hair' },
-    { kind:'path', d:'M4 -10 C12 -9 18 -5 19 1 C20 6 15 10 8 12', stroke:'ink', strokeWidth:.68 },
+    { kind:'path', d:'M-11 -4 C-6 -8 1 -10 8 -8 C14 -6 18 -3 18 1 C18 6 13 9 7 10 C1 11 -5 9 -9 5 C-11 3 -12 -1 -11 -4Z', fill:'hair' },
+    { kind:'path', d:'M4 -8 C11 -8 17 -5 18 0 C19 5 14 9 8 10', stroke:'ink', strokeWidth:.66 },
   ]},
   { id:'layer.hair.adult-low-bun.coil', slot:'back-hair', z:13, lods:[64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
     { kind:'path', d:'M7 -7 Q14 -5 15 -1', stroke:'hair-accent', strokeWidth:.36, opacity:.1 },
@@ -424,11 +424,11 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M-4 -27 C-11 -25 -14 -16 -14 -5 C-14 7 -11 17 -6 22 C-2 25 1 23 1 18 C0 10 1 3 3 -3 C6 -10 5 -19 2 -23 C0 -26 -2 -27 -4 -27Z', fill:'hair', stroke:'ink', strokeWidth:.62 },
   ]},
   { id:'layer.hair.elder-gray-bun.nape-root', slot:'back-hair', z:11, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'nape', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M6 -18 C11 -21 17 -20 21 -17 C24 -14 23 -11 20 -9 C16 -6 12 -5 9 -7 C7 -10 5 -14 6 -18Z', fill:'hair' },
+    { kind:'path', d:'M7 -17 C10 -19 14 -19 16 -16 C18 -14 17 -12 15 -10 C12 -8 10 -8 8 -10 C7 -12 6 -15 7 -17Z', fill:'hair' },
   ]},
   { id:'layer.hair.elder-gray-bun.bun', slot:'back-hair', z:12, lods:[48,64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
-    { kind:'path', d:'M-10 -5 C-6 -9 1 -10 7 -8 C13 -6 16 -2 16 2 C15 6 11 9 5 10 C0 10 -5 8 -8 5 C-10 2 -11 -2 -10 -5Z', fill:'hair' },
-    { kind:'path', d:'M4 -8 C10 -7 15 -4 16 1 C17 5 13 8 7 10', stroke:'hair-accent', strokeWidth:.58, opacity:.55 },
+    { kind:'path', d:'M-9 -4 C-5 -8 1 -9 6 -7 C11 -6 15 -3 15 1 C15 5 11 8 6 9 C1 10 -4 8 -7 5 C-9 3 -10 -1 -9 -4Z', fill:'hair' },
+    { kind:'path', d:'M4 -7 C9 -7 14 -4 15 0 C16 4 12 8 7 9', stroke:'hair-accent', strokeWidth:.52, opacity:.5 },
   ]},
   { id:'layer.hair.elder-gray-bun.coil', slot:'back-hair', z:13, lods:[64,96], coordinateSpace:'anchor-local', anchor:'bunLow', maskMode:'behind-head', shapes:[
     { kind:'path', d:'M6 -6 Q12 -4 13 -1', stroke:'hair-accent', strokeWidth:.3, opacity:.08 },
