@@ -51,6 +51,7 @@ export function PortraitRenderer({
       data-generator-version={plan.generatorVersion}
       data-render-contract={plan.renderContractVersion}
       data-resident-id={plan.residentStableId}
+      data-frame-id={plan.frameId}
       data-stage-profile={plan.stageProfileId}
       data-face-family={plan.faceFamilyId}
       data-hair-style={dna.presentation.hairStyleId}

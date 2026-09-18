@@ -1,3 +1,4 @@
+import { portraitFrameIdFor } from './frame';
 import {
   faceFamilyById,
   hairStyleById,
@@ -41,6 +42,7 @@ export function buildRenderPlan(
   lod: PortraitLod,
 ): PortraitRenderPlan {
   const stage = stageProfileForLifeStage(context.lifeStage);
+  const frameId = portraitFrameIdFor(context.gender, context.lifeStage);
   const family = faceFamilyById(dna.identity.faceFamilyId);
   const hair = hairStyleById(dna.presentation.hairStyleId);
   const outfit = outfitStyleById(dna.presentation.outfitStyleId);
@@ -78,6 +80,7 @@ export function buildRenderPlan(
     renderContractVersion:PORTRAIT_RENDER_CONTRACT_VERSION,
     residentStableId:dna.identity.residentStableId,
     lod,
+    frameId,
     stageProfileId:stage.id,
     faceFamilyId:family.id,
     viewBox:stage.viewBox,

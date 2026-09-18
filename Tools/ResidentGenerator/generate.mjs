@@ -265,7 +265,6 @@ function createResident({ age, gender, householdId, districtId, forcedSurnameId 
     givenNameId,
     birthDay,
     gender,
-    portraitSeed: hash32(`${seed}:portrait`),
     districtId,
     occupationId: occupation.id,
     occupationGroupId: occupation.groupId,

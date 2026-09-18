@@ -1,521 +1,352 @@
-# Unified Resident Portrait System
+# Resident Portrait Frame System
 
 ## Status
 
-This document is the canonical portrait-system design after Portrait Generator V8.4.
+This is the canonical portrait design after the 2026-09-19 simplification decision.
 
-The current `main` branch already contains the V8.4 simplified prototype. The next task is to make that design the **only runtime portrait system** used by the resident simulator, then remove the older experimental portrait stacks.
+The current V8.4 renderer is only a compatibility bridge while the art assets are replaced. The target is a small **dress-up style portrait framework** that can be frozen and handed to Unity without carrying the old experimental rig systems with it.
 
-## Cleanup progress — 2026-09-18
+The portrait remains a secondary game system. The priority is:
 
-Completed on the cleanup branch:
+1. one resident is visually recognizable;
+2. child / adult / elder read immediately;
+3. one face can use several hairstyles and outfits;
+4. assets never drift because every part obeys a fixed frame;
+5. the Unity handoff remains small.
 
-- V8.4 is already merged into `main`.
-- The new canonical Web module is now `Web/src/resident/portrait/`.
-- Experimental `portrait-generator-v8` naming has been removed from the cleanup branch.
-- The multiple portrait lab routes now point to one `PortraitLab` workbench.
-- Historical V2 / V7 / V8 portrait screenshot jobs have been replaced by one unified portrait review script.
-- Resident UI screenshots and portrait screenshots are now separate responsibilities.
-- Build and the simplified visual-review workflow both pass.
-
-Runtime migration progress:
-
-- The live `ResidentAvatar` now renders through `Web/src/resident/portrait/PortraitRenderer.tsx`.
-- Minimal male FaceFamily / HairStyle coverage has been added so generated male residents no longer require the legacy renderer.
-- Live ResidentAvatar review now explicitly asserts render contract 8.4.
-- `ResidentAvatarArtV1.tsx`, `ResidentAvatarArtV2.tsx`, `portrait-rig.ts`, `portrait-art-v2.ts`, and `portrait-woodblock-v7.tsx` have been removed from the migration branch.
-- Build passes after removing the legacy Web renderer stack.
-
-Snapshot/compiler migration progress:
-
-- Final resident snapshots now use `wanhu.resident-snapshot.v4`.
-- Residents store compact `ResidentPortraitDNA`: FaceFamily / HairStyle / OutfitStyle / skin palette / base hair color.
-- The old `appearance` payload and `portraitSeed` are removed from final resident records.
-- `Tools/ResidentPortraitCompiler/` now performs deterministic seeded portrait selection.
-- The live ResidentAvatar consumes these saved stable IDs.
-- The old `ResidentAppearanceCompiler` has been removed.
-
-Final legacy authoring cleanup is also complete:
-
-- `Content/Appearance/` has been removed.
-- `Schemas/appearance.schema.json` has been removed.
-- ContentContractCompiler validates `Content/Portrait/portrait-catalog.json` directly.
-- WebContentCompiler publishes `portraitCatalog` in resident definitions v5.
-- No legacy appearance catalog is required by the build pipeline.
-
-The portrait is a secondary game system. The priority order is:
-
-1. The player can recognize the resident.
-2. Age reads clearly.
-3. Hair can be changed.
-4. Clothing can be changed.
-5. Art quality is easy to iterate.
-6. Architecture stays small.
-
-The portrait system is **not** a character creator and should not become one.
+The system is not a general character creator.
 
 ---
 
-## Target architecture
+## Core decision
+
+The portrait is modular, but not free-form.
 
 ~~~text
-ResidentRecord
-  ↓
 ResidentPortraitDNA
-  ↓
-FaceFamily + LifeStage
-HairStyle
-OutfitStyle
-Skin / Hair Palette
-  ↓
-Simple RenderPlan
-  ↓
+├─ faceFamilyId
+├─ hairStyleId
+├─ outfitStyleId
+├─ skinPaletteId
+└─ baseHairColorId
+        ↓
+Gender + AgeBand
+        ↓
+PortraitFrame
+        ↓
+FaceFamily art
+HairStyle art
+OutfitStyle art
+        ↓
 PortraitRenderer
 ~~~
 
-No runtime facial morph stack.
+A face can pair with many hairstyles and many outfits **inside the same frame contract**.
 
-No hair anchor system.
-
-No hair mask system.
-
-No accessory system.
-
-No population-diversity controller.
-
-No general compatibility engine.
+There is no runtime auto-fitting system.
 
 ---
 
-## Runtime identity
+## Three age bands
 
-The stable portrait identity should eventually contain only:
-
-~~~text
-faceFamilyId
-skinPaletteId
-baseHairColorId
-~~~
-
-Presentation contains only:
+Portrait art only recognizes three visual age bands:
 
 ~~~text
-hairStyleId
-outfitStyleId
+child
+adult
+elder
 ~~~
 
-Hair gray / salt-pepper state is derived from life stage unless the game later introduces explicit hair dye.
+Gameplay life stages map to them:
 
-The player may change `hairStyleId` and `outfitStyleId` without changing identity.
+~~~text
+child / teen                     → child
+young-adult / adult / middle-age → adult
+elder                            → elder
+~~~
+
+Gameplay may continue to distinguish teen, young-adult and middle-age for stories and simulation. Portrait art does not need separate geometry for them.
+
+---
+
+## Six fixed frames
+
+Gender and age band produce exactly six authoring frames:
+
+~~~text
+female.child
+female.adult
+female.elder
+male.child
+male.adult
+male.elder
+~~~
+
+Every swappable portrait asset declares which frame or frames it was authored for.
+
+A frame is an **authoring specification**, not a runtime anchor solver.
+
+It fixes:
+
+- canvas and crop;
+- head center and usable face bounds;
+- neck root;
+- shoulder / collar region;
+- allowed hair silhouette area;
+- draw order.
+
+Assets that do not fit the frame are rejected or redrawn. The runtime never moves them into place.
+
+---
+
+## Fixed canvas and crop
+
+New assets use one shared coordinate system:
+
+~~~text
+master canvas: 120 × 150
+square UI crop: x=0, y=15, width=120, height=120
+center line: x=60
+~~~
+
+The viewBox must not change per resident, FaceFamily, hairstyle or outfit.
+
+The current V8.4 stage-specific viewBoxes are temporary compatibility code and will be removed during asset replacement.
+
+Recommended authoring guide ranges:
+
+| Age band | Head top | Chin | Neck root | Main shoulder region |
+| --- | ---: | ---: | ---: | ---: |
+| child | 28–32 | 82–86 | 80–92 | 92–104 |
+| adult | 22–26 | 90–96 | 86–100 | 96–112 |
+| elder | 26–30 | 92–98 | 90–102 | 100–114 |
+
+These are art guides. They are not runtime parameters and are not stored per resident.
 
 ---
 
 ## FaceFamily
 
-Face variety is preserved as discrete art.
+FaceFamily is the stable identity.
 
-Initial target:
-
-- soft oval
-- round soft
-- long narrow
-- broad cheek
-- soft square
-- narrow chin
-
-Each FaceFamily owns direct age variants:
+A FaceFamily owns three direct art variants:
 
 ~~~text
 child
-youth
 adult
 elder
 ~~~
 
-Middle age may reuse the adult base with a small amount of direct age-detail art.
+The resident keeps the same `faceFamilyId` for life.
 
-A resident keeps the same `faceFamilyId` for life.
+Each variant must already fit its frame. The renderer must not apply face offsets, per-face scale, feature-span morphs, or per-hair/per-outfit corrections.
 
-Do not reintroduce continuous faceWidth / noseLength / featureSpan runtime morphs unless there is a demonstrated gameplay requirement.
+Variation comes from authored silhouettes and features, not runtime deformation.
 
 ---
 
 ## HairStyle
 
-Hair is final-canvas art.
+Hair is swappable presentation art.
 
-Each HairStyle contains only:
+A hairstyle contains:
 
 ~~~text
 id
-allowedLifeStages
+allowedFrameIds
 backLayer
 frontLayer
 weight
 ~~~
 
-The art is drawn directly in portrait canvas coordinates.
+Hair is drawn directly in final portrait coordinates.
 
-Do not add:
+A hairstyle can support several frames only when art has been explicitly authored for those frames. It is never stretched or translated automatically.
 
-- HeadProfile anchors
-- bunLow / skullTop placement
-- placementByHeadProfile
-- inside-skull clipping
-- outside-face masks
-- accessory slots
-- hair-specific LOD topology
+No HeadProfile, hair anchors, placement offsets, skull masks, accessory slots, or compatibility weighting graph.
 
-If the same conceptual hairstyle needs a different silhouette for another age group, create another art asset.
-
-Asset duplication is acceptable when it improves visual control.
+If a hairstyle does not fit a frame, make a separate asset or do not allow the combination.
 
 ---
 
 ## OutfitStyle
 
-Outfit is a stable presentation ID.
+Outfit is also swappable presentation art.
 
-Wealth affects the **initial default selection only**.
+The target outfit asset owns the visible clothing geometry:
 
-After generation, the player can change clothing directly.
+- collar;
+- shoulder silhouette;
+- upper chest;
+- decorative seam / trim where useful.
 
-No general compatibility graph is required.
+The fixed frame owns only the neutral body / neck guide needed for assembly.
 
-A small set of high-quality silhouettes is preferred over dozens of parameterized variations.
+This removes the current problem where a stage body and an unrelated outfit overlay can look shifted relative to each other.
 
-Initial target:
+An outfit contains:
 
-- rough work clothes
-- plain cross-collar
-- layered cross-collar
-- comfortable / merchant clothing
-- refined clothing
-- elder high-collar variant where visually useful
+~~~text
+id
+allowedFrameIds
+initialWealthTiers
+layerAssetIds
+weight
+~~~
+
+Wealth only influences the **initial default choice**. After generation, clothing is just a saved style ID.
+
+Occupation does not choose clothing.
 
 ---
 
-## Accessory policy
+## Compatibility rule
 
-Portrait accessories are disabled for the first unified version.
+There is one hard compatibility rule:
 
-This includes:
+> **Face, Hair and Outfit must resolve to the same PortraitFrame.**
 
-- hairpins
-- jade pins
-- cords
-- ribbons
-- hats
-- headwear
-- generic accessory slots
+That is enough for the first Unity-ready version.
 
-They can return later only if gameplay or art direction clearly justifies the maintenance cost.
+Do not add a general compatibility engine. In particular, do not reintroduce preferred face families, arbitrary offset tables, automatic head fitting, or population-neighbor diversity state.
+
+Art problems are fixed in art.
 
 ---
 
-## LOD policy
+## Draw order
 
-96 / 64 / 48 use the same primary SVG/vector silhouette.
+The intended simple layer stack is:
 
-Small sizes are ordinary renderer scaling.
+~~~text
+Background
+Back Hair
+Neutral Neck / Body Base
+Outfit
+Face
+Face Detail
+Front Hair
+~~~
 
-Optional fine detail may be hidden later, but primary geometry must not have separate placement logic.
+Accessories, hats, beard systems and generic overlay slots are out of scope for the first frozen version.
 
 ---
 
-## Seed policy
+## Stable data
 
-Deterministic seed remains useful and cheap.
+The Web snapshot already stores the correct compact payload:
 
-A resident seed determines the initial:
+~~~text
+ResidentPortraitDNA
+├─ faceFamilyId
+├─ hairStyleId
+├─ outfitStyleId
+├─ skinPaletteId
+└─ baseHairColorId
+~~~
 
-- FaceFamily
-- skin palette
-- base hair color
-- default HairStyle
-- default OutfitStyle
+Keep it.
 
-The resolved stable IDs should be saved.
+`ageBand` and `frameId` are derived from gender and current life stage. They are not additional saved DNA.
 
-Do not use recent-neighbor state or population order to change results.
+The initial selections remain deterministic from the resident seed, then the resolved stable IDs are saved.
 
 ---
 
-# Repository consolidation plan
+## Current compatibility bridge
 
-## Current problem
+At the start of this migration the live Web renderer still contains V8.4-era stage profiles for child / youth / adult / middle / elder.
 
-The repository currently contains several historical portrait systems at the same time.
+That code is temporary.
 
-Examples:
+The preparation batch:
 
-~~~text
-Web/src/PortraitArtLab.tsx
-Web/src/PortraitIdentityLab.tsx
-Web/src/PortraitLab.tsx
-Web/src/PortraitStyleLab.tsx
-Web/src/PortraitV8Lab.tsx
+1. makes the new three-band / six-frame contract canonical;
+2. removes stale V7/V8 entry points and dead portrait UI code;
+3. exposes the derived `frameId` in the current renderer and Visual Review.
 
-Web/src/resident/portrait-art-v2.ts
-Web/src/resident/portrait-rig.ts
-Web/src/resident/portrait-woodblock-v7.tsx
-Web/src/resident/portrait-generator-v8/
-~~~
-
-There are also multiple historical documents and screenshot scripts.
-
-The old code cannot all be deleted immediately because the current game runtime still uses it.
-
-## Current runtime dependency discovered during cleanup
-
-The actual game path is currently:
-
-~~~text
-App.tsx
-  ↓
-ResidentAvatar.tsx
-  ↓
-ResidentAvatarArtV2.tsx
-  ↓
-portrait-rig.ts
-portrait-art-v2.ts
-~~~
-
-The content build also still runs:
-
-~~~text
-Tools/ResidentAppearanceCompiler/compile.mjs
-~~~
-
-and the snapshot still stores the old `ResidentAppearanceDNA` fields:
-
-~~~text
-faceId
-hairId
-browId
-facialHairId
-headwearId
-outfitId
-skinPaletteId
-hairPaletteId
-clothingPaletteId
-~~~
-
-Therefore legacy deletion must happen **after runtime migration**, not before.
+The next art batch will replace the old stage-specific geometry rather than stacking another abstraction on top of it.
 
 ---
 
-# Migration phases
-
-## Phase 0 — completed
-
-- Merge V8.4 simplified portrait prototype into `main`.
-- Preserve the local launcher commit already on `main`.
-- Confirm Build and Visual Review pass.
-
-## Phase 1 — create one canonical code module
-
-Create:
+## Asset replacement order
 
 ~~~text
-Web/src/resident/portrait/
-  types.ts
-  catalog.ts
-  resolver.ts
-  render-plan.ts
-  PortraitRenderer.tsx
-  seed.ts
-  index.ts
+1. female.adult proof
+   4–6 FaceFamily variants
+   2–3 HairStyles
+   3–4 OutfitStyles
+
+2. male.adult proof
+
+3. female.child / male.child
+
+4. female.elder / male.elder
+
+5. crowd and 48px review
+
+6. delete compatibility stage profiles
+
+7. freeze IDs and hand portrait assets to Unity
 ~~~
 
-Move the V8.4 implementation into this directory.
+The adult female proof is the first gate because it is enough to prove that independent Face / Hair / Outfit assets really share one frame without drift.
 
-Names should no longer contain `v7`, `v8`, `art-v2`, or `generator-v8`.
+---
 
-The system becomes the normal resident portrait implementation rather than an experiment.
+## Portrait Lab
 
-## Phase 2 — migrate the real ResidentAvatar — completed on runtime-migration branch
-
-Replace:
-
-~~~text
-ResidentAvatar
-  → ResidentAvatarArtV2
-~~~
-
-with:
-
-~~~text
-ResidentAvatar
-  → portrait/PortraitRenderer
-~~~
-
-Before this switch, the unified system must support every gender used by generated residents.
-
-The first V8.4 art pass currently focuses on female assets, so a **minimal male art set** must be added before the old renderer is removed.
-
-Recommended minimal male coverage:
-
-- 4–6 FaceFamily art families
-- child / youth / adult / elder age variants
-- 2–3 simple male hair styles per broad age range
-- the same shared OutfitStyle system
-
-Do not rebuild the old beard / headwear / rig complexity during this step.
-
-## Phase 3 — simplify snapshot appearance data — completed on runtime-migration branch
-
-Replace the old `ResidentAppearanceDNA` with a compact `ResidentPortraitDNA`:
-
-~~~text
-faceFamilyId
-hairStyleId
-outfitStyleId
-skinPaletteId
-baseHairColorId
-~~~
-
-Optional future fields should only be added when a real gameplay feature requires them.
-
-Update the snapshot schema in one migration.
-
-## Phase 4 — replace the appearance compiler — completed on runtime-migration branch
-
-Current compiler complexity includes:
-
-- face-family compatibility weighting
-- recent silhouette tracking
-- headwear visibility
-- brow selection
-- facial-hair selection
-- presentation-style filtering
-- rig validation
-
-Replace it with a small portrait compiler that performs deterministic seeded selection and outputs stable IDs.
-
-Recommended canonical authoring data:
-
-~~~text
-Content/Portrait/portrait-catalog.json
-~~~
-
-It should contain only metadata needed by the compiler:
-
-- FaceFamily IDs
-- HairStyle IDs + allowed stages + weights
-- OutfitStyle IDs + initial wealth weights
-- palette IDs
-
-The Web renderer keeps vector geometry in the portrait art catalog.
-
-## Phase 5 — delete legacy runtime portrait stacks — completed on runtime-migration branch
-
-After the actual game uses the unified renderer, remove:
-
-~~~text
-Web/src/resident/ResidentAvatarArtV2.tsx
-Web/src/resident/portrait-art-v2.ts
-Web/src/resident/portrait-rig.ts
-Web/src/resident/portrait-woodblock-v7.tsx
-
-Tools/ResidentAppearanceCompiler/
-Content/Appearance/
-Schemas/appearance.schema.json
-~~~
-
-Only delete these after the new snapshot compiler and runtime path are working.
-
-## Phase 6 — delete historical labs
-
-Replace multiple portrait routes with a single editor/review view:
+The only portrait review route is:
 
 ~~~text
 /?view=portraits
 ~~~
 
-Recommended unified tool:
+The workbench reviews FaceFamily identity, three target age bands, frame ID, HairStyle at 96 / 64 / 48, crowd repetition, and saved stable IDs.
 
-~~~text
-PortraitLab
-  - FaceFamily selector
-  - life-stage selector
-  - HairStyle selector
-  - OutfitStyle selector
-  - skin palette selector
-  - 96 / 64 / 48 preview
-  - life-stage strip
-  - crowd preview
-~~~
-
-Then remove historical labs and their CSS:
-
-~~~text
-PortraitArtLab
-PortraitIdentityLab
-PortraitStyleLab
-old PortraitLab
-PortraitV8Lab
-~~~
-
-The new lab should be an art-production tool, not an algorithm diagnostics dashboard.
-
-## Phase 7 — remove historical screenshot pipelines
-
-Keep only:
-
-- resident UI review
-- unified portrait review
-
-Delete the old V2 / V7 / V8 screenshot and quality scripts after the unified review covers their necessary cases.
-
-The visual-review workflow should become much shorter and faster.
-
-## Phase 8 — archive or delete historical documents — completed on runtime-migration branch
-
-The canonical design is this document.
-
-Historical V1 / V2 / V7 / V8 documents may be moved to:
-
-~~~text
-Documentation/Archive/Portrait/
-~~~
-
-or deleted if Git history is considered sufficient.
-
-They must not look like active design requirements.
+Historical `portrait-v8` and `portrait-styles` route aliases are removed.
 
 ---
 
-# Art production priorities after cleanup
+## Unity handoff boundary
 
-1. Make the six FaceFamily silhouettes clearly different.
-2. Produce good age variants for each family.
-3. Build 2–3 good HairStyles per major age band.
-4. Build 5–6 good OutfitStyles.
-5. Add minimal male coverage.
-6. Review 48px readability.
-7. Review a 24–64 resident crowd.
+The Web project should freeze and hand over:
 
-Do not add new architecture to solve an art-quality problem.
+~~~text
+ResidentPortraitDNA field semantics
+Stable IDs
+three age bands
+six frame IDs
+fixed canvas / fixed crop
+FaceFamily child/adult/elder assets
+HairStyle frame compatibility
+OutfitStyle frame compatibility
+layer order
+palette semantics
+approved 48px results
+~~~
+
+Unity is free to use Sprite, VectorImage, atlas textures or another renderer.
+
+Do not carry Web-only React code, old stage profiles, SVG implementation details or experimental resolver machinery into the Unity runtime contract.
 
 ---
 
-# Definition of done
+## Definition of done before Unity migration
 
-The portrait cleanup is complete when:
+The portrait package is ready to leave the Web prototype when:
 
-- the game runtime uses only `Web/src/resident/portrait/`;
-- `ResidentAvatarArtV2` is gone;
-- old rig / woodblock / V8 experimental runtime files are gone;
-- the old appearance compiler and schema are gone;
-- the snapshot stores only compact stable portrait IDs;
-- only one portrait lab exists;
-- only one portrait screenshot pipeline exists;
-- changing hair or clothing is a simple ID update;
-- face identity survives age changes;
+- all live residents use the unified portrait module;
+- only `/?view=portraits` remains as the art workbench;
+- every new asset is authored to one of the six fixed frames;
+- FaceFamily uses only child / adult / elder art variants;
+- Hair and Outfit can be swapped within a frame without visible drift;
+- the renderer uses one fixed crop;
+- there are no runtime anchors, masks or offset correction tables;
 - 48px portraits remain readable;
-- art iteration does not require debugging anchors or masks.
+- a 24–64 resident crowd does not look like obvious clones;
+- the five saved `ResidentPortraitDNA` IDs are sufficient for Unity handoff.
 
 Final principle:
 
-> **The portrait system should be boring code around good art.**
+> **Strict frame, simple code, swappable art.**

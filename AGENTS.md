@@ -62,7 +62,7 @@ Content/Tags/
 Content/Occupations/
 Content/LifeEvents/
 Content/Routines/
-Content/Appearance/
+Content/Portrait/
 ```
 
 当前 `build-content` 顺序：
@@ -80,13 +80,13 @@ StoryBucketCompiler
 ↓
 ResidentSnapshotCompiler
 ↓
-ResidentAppearanceCompiler
+ResidentPortraitCompiler
 ↓
 WebContentCompiler
 ```
 
-最终 Web Definition Bundle：`wanhu.resident-definitions.v4`。
-最终 Web Snapshot：`wanhu.resident-snapshot.v3`。
+最终 Web Definition Bundle：`wanhu.resident-definitions.v5`。
+最终 Web Snapshot：`wanhu.resident-snapshot.v4`。
 
 这些都只是 Web / Compiler 验证格式。
 
@@ -158,14 +158,17 @@ Resident Visual Review 必须继续验证这条链，以及人生时间轴的年
 - Household 先于成员生成；子女通常继承父系姓氏，配偶保留原姓。
 - `displayName` 是 Web 便利字段。
 
-## Appearance 规则
+## Portrait 规则
 
-- AppearanceDNA 在本仓库只用于“同一个居民的视觉身份稳定、可辨认”。
-- `Content/Appearance/appearance-parts.json` 是当前 Authoring 起点。
-- Part Slot：`face / hair / brow / facial-hair / headwear / outfit`。
-- Palette Slot：`skin / hair / clothing`。
-- 不把 AppearanceDNA 当未来 Unity 存档格式。
-- 当前 Web 简化头像可以继续迭代，只要能帮助验证居民辨识度。
+- 头像是次要系统，目标是稳定识别、年龄清楚、允许换发型与衣服、方便迁移 Unity。
+- 当前唯一正式设计文档是 `Documentation/Portrait System.md`。
+- 正式身份数据只保留 `ResidentPortraitDNA`：`faceFamilyId / hairStyleId / outfitStyleId / skinPaletteId / baseHairColorId`。
+- 新美术框架只使用 `child / adult / elder` 三个视觉年龄段；游戏逻辑仍可保留更细 LifeStage。
+- Gender + AgeBand 产生六个固定 PortraitFrame。
+- Face / Hair / Outfit 必须按 Frame 直接作画；运行时不增加 Anchor、Mask、Offset Solver 或通用 Compatibility Engine。
+- 当前 V8.4 stage profile 只是资产替换前的兼容桥，不能继续扩展。
+- 头像工作台唯一入口是 `/?view=portraits`。
+- 头像美术验收完成后冻结 Stable ID 与 Frame 规范，再迁到 Unity；本仓库不因此设计 Unity ECS / Save。
 
 ## 内容生产原则
 

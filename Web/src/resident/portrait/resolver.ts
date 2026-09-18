@@ -24,7 +24,7 @@ const hairPaletteIds = [
 ] as const;
 
 function weightedPick<T>(items: T[], unit: number, weightOf: (item:T)=>number): T {
-  if (!items.length) throw new Error('V8.4 weightedPick requires candidates.');
+  if (!items.length) throw new Error('Portrait weightedPick requires candidates.');
   const total = items.reduce((sum,item)=>sum+Math.max(0,weightOf(item)),0);
   let cursor = unit * total;
   for (const item of items) {
@@ -145,7 +145,7 @@ export function assertPortraitIdentityInvariant(
   const reference = JSON.stringify(resolveIdentity(base));
   for (const variant of variants) {
     if (JSON.stringify(resolveIdentity(variant)) !== reference) {
-      throw new Error('V8.4 identity changed after context changed: '+variant.residentStableId);
+      throw new Error('Portrait identity changed after context changed: '+variant.residentStableId);
     }
   }
   return true;

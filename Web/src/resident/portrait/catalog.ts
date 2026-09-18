@@ -437,30 +437,30 @@ export const OUTFIT_STYLES: OutfitStyleDefinition[] = [
 
 export function layerById(id: string) {
   const layer = VECTOR_LAYERS.find((item)=>item.id===id);
-  if (!layer) throw new Error('Unknown V8.4 vector layer: '+id);
+  if (!layer) throw new Error('Unknown portrait vector layer: '+id);
   return layer;
 }
 
 export function faceFamilyById(id: string) {
   const family = FACE_FAMILIES.find((item)=>item.id===id);
-  if (!family) throw new Error('Unknown V8.4 FaceFamily: '+id);
+  if (!family) throw new Error('Unknown portrait FaceFamily: '+id);
   return family;
 }
 
 export function hairStyleById(id: string) {
   const style = HAIR_STYLES.find((item)=>item.id===id);
-  if (!style) throw new Error('Unknown V8.4 HairStyle: '+id);
+  if (!style) throw new Error('Unknown portrait HairStyle: '+id);
   return style;
 }
 
 export function outfitStyleById(id: string) {
   const style = OUTFIT_STYLES.find((item)=>item.id===id);
-  if (!style) throw new Error('Unknown V8.4 OutfitStyle: '+id);
+  if (!style) throw new Error('Unknown portrait OutfitStyle: '+id);
   return style;
 }
 
 export function stageProfileForLifeStage(lifeStage: PortraitStageProfile['lifeStages'][number]) {
   const profile = PORTRAIT_STAGE_PROFILES.find((item)=>item.lifeStages.includes(lifeStage));
-  if (!profile) throw new Error('Unknown V8.4 stage profile for '+lifeStage);
+  if (!profile) throw new Error('Unknown portrait stage profile for '+lifeStage);
   return profile;
 }

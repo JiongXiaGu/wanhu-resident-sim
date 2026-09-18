@@ -203,7 +203,7 @@ StoryBucketCompiler
 ↓
 ResidentSnapshotCompiler
 ↓
-ResidentAppearanceCompiler
+ResidentPortraitCompiler
 ↓
 WebContentCompiler
 ↓
@@ -219,7 +219,7 @@ stable-id-registry.json
 name-catalog-v2.json
 life-tags.json
 occupation-groups.json
-appearance-catalog.json
+portrait-catalog.json
 content-coverage.json
 story-buckets.json
 stories.json
@@ -230,6 +230,30 @@ resident-snapshot.json
 这些都只是 Demo 数据。
 
 ---
+
+## 当前头像收口任务
+
+头像工程迁移已经完成，当前进入 Unity 迁移前的最后美术框架收口。
+
+唯一正式头像规范：
+
+```text
+Documentation/Portrait System.md
+```
+
+目标是固定换装框架：
+
+```text
+child / adult / elder
+×
+female / male
+=
+6 个 PortraitFrame
+```
+
+同一 Frame 内允许 Face / Hair / Outfit 独立替换；所有资产必须直接符合 Frame，不允许运行时 Anchor / Mask / Offset 自动适配。
+
+当前 V8.4 的 youth / middle 等 stage profile 仅作为资产替换前兼容桥，不再增加新功能。
 
 ## 当前玩法验证路线
 

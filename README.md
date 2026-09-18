@@ -21,10 +21,8 @@ Documentation/居民逻辑网页Demo接续说明.md
 Documentation/居民面板与生活事件V2.md
 Documentation/居民生活记录与故事连续性.md
 Documentation/StoryBucket与内容覆盖V1.md
-Documentation/头像系统与美术资源规范V1.md
-Documentation/Portrait Art Kit V1.md
-Documentation/Woodblock Portrait V7.md
-Documentation/Portrait Generator V8.md
+Documentation/Portrait System.md
+Documentation/开发与部署工作流.md
 ```
 
 然后检查 GitHub `main`、Actions 与必要代码。
@@ -40,7 +38,7 @@ wanhu-resident-sim/
 │  ├─ Names/                         # Name V2
 │  ├─ Occupations/                   # 职业 + Occupation Group
 │  ├─ Tags/                          # LifeTag Registry
-│  ├─ Appearance/                    # Prototype Appearance Authoring
+│  ├─ Portrait/                      # 统一居民头像 Authoring 元数据
 │  ├─ Routines/                      # 普通生活表现模板
 │  └─ Simulation/                    # Demo 生成与模拟参数
 ├─ Documentation/                    # 玩法与内容规则
@@ -88,7 +86,7 @@ StoryBucketCompiler
 ↓
 ResidentSnapshotCompiler
 ↓
-ResidentAppearanceCompiler
+ResidentPortraitCompiler
 ↓
 WebContentCompiler
 ```
@@ -101,7 +99,7 @@ Web/public/generated/
 ├─ name-catalog-v2.json
 ├─ life-tags.json
 ├─ occupation-groups.json
-├─ appearance-catalog.json
+├─ portrait-catalog.json
 ├─ content-coverage.json
 ├─ story-buckets.json
 ├─ stories.json
@@ -112,8 +110,8 @@ Web/public/generated/
 当前关键版本：
 
 ```text
-definitions.json       wanhu.resident-definitions.v4
-resident-snapshot.json wanhu.resident-snapshot.v3
+definitions.json       wanhu.resident-definitions.v5
+resident-snapshot.json wanhu.resident-snapshot.v4
 ```
 
 这些文件只服务 Web 原型、内容检查和自动测试，不代表未来 Unity 存档或 Runtime 格式。
@@ -226,33 +224,47 @@ lifetag.newly-married
 
 这条链由 Resident Visual Review 自动验证。
 
-### AppearanceDNA / 头像实验室
+### 统一头像 / 头像工作台
 
-当前已经有独立的随机头像验证页：
+正式居民界面和头像工作台现在都使用同一套：
+
+```text
+ResidentPortraitDNA
+↓
+Web/src/resident/portrait/
+↓
+PortraitRenderer
+```
+
+最终居民快照保存：
+
+```text
+faceFamilyId
+hairStyleId
+outfitStyleId
+skinPaletteId
+baseHairColorId
+```
+
+当前工程层面的统一迁移已经完成。下一步把美术切换到固定换装框架：
+
+```text
+child / adult / elder
+×
+female / male
+=
+6 个 PortraitFrame
+```
+
+Face、Hair、Outfit 都必须按同一个 Frame 规格制作。一张脸可以配多套发型和衣服，但运行时不负责自动校准偏移。
+
+唯一头像工作台：
 
 ```text
 /?view=portraits
 ```
 
-它一次生成 64 个随机样本，并用 `AppearanceDNA` 驱动分层 SVG 头像。当前 Portrait Art Kit V1 使用 4:5 美术母版 + 1:1 Safe Area，同时验证女性长发轮廓、财富服装层次和同屏 silhouette 去重。
-
-页面可以查看：
-
-```text
-Face / Back Hair / Front Hair / Brow / FacialHair
-Headwear / Outfit / Age Overlay
-Skin / Hair / Clothing Palette
-4:5 Master / 1:1 Crop
-```
-
-职业只作为居民信息显示，不参与服饰 Resolver。这套 SVG 只是 Web 表现层；未来 Unity 只需要复用 AppearanceDNA、PortraitRig、Safe Area、silhouetteType 与 Stable ID 语义，再重新映射到 Sprite、Mesh、Material 或其它资源。
-
-详细规则见：
-
-```text
-Documentation/头像系统与美术资源规范V1.md
-Documentation/Portrait Art Kit V1.md
-```
+正式规则见 `Documentation/Portrait System.md`。
 
 ## 内容生产原则
 
@@ -266,7 +278,7 @@ LifeTag Registry
 Occupation Group
 Story Bucket
 Coverage Report
-Appearance Catalog
+Portrait Catalog
 ```
 
 它们的目的不是提前设计正式存档，而是保证：
@@ -318,22 +330,6 @@ npm run build-content
 ```text
 http://localhost:5173/?view=portraits
 ```
-
-套色木刻头像审查页：
-
-```text
-http://localhost:5173/?view=portrait-styles
-```
-
-当前美术方向已经收敛为套色木刻。Woodblock Portrait V7 继续作为美术基线。
-
-头像生成算法 V8 架构实验页：
-
-```text
-http://localhost:5173/?view=portrait-v8
-```
-
-V8.2 当前把首批 4 个中国古代女性 Hair Bundle 全部纳入正式 Asset Contract：局部坐标、HeadProfile Placement、Mask/Occlusion、Accessory Slot、LOD 与自动审计必须同时通过；Identity Morphology、Population Diversity 和 Resolved Stable IDs 继续保留。V7 不被替换。
 
 ## GitHub Actions / Visual Review / Vercel
 

@@ -13,7 +13,7 @@ import './portrait-entry.css';
 
 const params = new URLSearchParams(window.location.search);
 const view = params.get('view');
-const portraitViews = new Set(['portraits','portrait-v8','portrait-styles']);
+const portraitViews = new Set(['portraits']);
 
 const rootView = view && portraitViews.has(view)
   ? <PortraitLab />

@@ -314,7 +314,6 @@ export default function App() {
                 gender={selectedResident.gender}
                 lifeStage={selectedResident.lifeStage}
                 wealthTier={selectedHousehold?.wealthTier ?? 'plain'}
-                presentationStyle={selectedHousehold?.presentationStyle ?? 'tidy'}
                 portrait={selectedResident.portrait}
                 label={`${selectedResident.displayName}的头像`}
               />

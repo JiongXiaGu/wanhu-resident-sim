@@ -1,7 +1,6 @@
-.portrait-view-entry,
-.portrait-style-entry,
-.portrait-v8-entry {
+.portrait-view-entry {
   position: fixed;
+  top: 78px;
   left: 24px;
   z-index: 90;
   display: inline-flex;
@@ -23,23 +22,15 @@
   transition: background .15s ease, border-color .15s ease, transform .15s ease;
 }
 
-.portrait-view-entry { top: 78px; }
-.portrait-style-entry { top: 120px; }
-.portrait-v8-entry { top: 162px; }
-
-.portrait-view-entry:hover,
-.portrait-style-entry:hover,
-.portrait-v8-entry:hover {
+.portrait-view-entry:hover {
   border-color: rgba(225, 199, 128, .48);
   background: rgba(35, 48, 41, .94);
   transform: translateY(-1px);
 }
 
 @media (max-width: 900px) {
-  .portrait-view-entry,
-  .portrait-style-entry,
-  .portrait-v8-entry { left: 14px; }
-  .portrait-view-entry { top: 70px; }
-  .portrait-style-entry { top: 112px; }
-  .portrait-v8-entry { top: 154px; }
+  .portrait-view-entry {
+    top: 70px;
+    left: 14px;
+  }
 }

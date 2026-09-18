@@ -3,34 +3,6 @@
   padding: 0;
 }
 
-.generated-portrait {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  border-radius: inherit;
-  background: #33413b;
-}
-
-.generated-portrait--svg svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.generated-portrait--svg {
-  box-shadow: inset 0 0 0 1px rgba(231, 221, 191, .055);
-}
-
-.generated-portrait--crop {
-  aspect-ratio: 1;
-}
-
-.generated-portrait--master {
-  aspect-ratio: 4 / 5;
-}
-
-
 .resident-avatar .portrait-renderer {
   width: 100%;
   height: 100%;

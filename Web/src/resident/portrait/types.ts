@@ -1,10 +1,12 @@
-import type { Gender, LifeStageId, PresentationStyle, WealthTier } from '../../domain/resident';
+import type { Gender, LifeStageId, WealthTier } from '../../domain/resident';
 
 export const PORTRAIT_GENERATOR_VERSION = 8 as const;
 export const PORTRAIT_RENDER_CONTRACT_VERSION = '8.4' as const;
 export type PortraitGeneratorVersion = typeof PORTRAIT_GENERATOR_VERSION;
 export type PortraitLod = 48 | 64 | 96;
 export type PortraitAgeGroup = 'child' | 'youth' | 'adult' | 'elder';
+export type PortraitAgeBand = 'child' | 'adult' | 'elder';
+export type PortraitFrameId = `${Gender}.${PortraitAgeBand}`;
 
 export type SemanticAppearanceContext = {
   residentStableId: string;
@@ -12,7 +14,6 @@ export type SemanticAppearanceContext = {
   gender: Gender;
   lifeStage: LifeStageId;
   wealthTier: WealthTier;
-  presentationStyle: PresentationStyle;
 };
 
 export type AppearanceIdentityDNA = {
@@ -133,6 +134,7 @@ export type PortraitRenderPlan = {
   renderContractVersion: typeof PORTRAIT_RENDER_CONTRACT_VERSION;
   residentStableId: string;
   lod: PortraitLod;
+  frameId: PortraitFrameId;
   stageProfileId: string;
   faceFamilyId: string;
   viewBox: PortraitViewBox;
