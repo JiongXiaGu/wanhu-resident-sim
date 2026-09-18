@@ -305,7 +305,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M55 80 Q54.5 85 53 89.5 M65 80 Q65.5 85 67 89.5', stroke:'ink', strokeWidth:.48, opacity:.52 },
   ]},
   { id:'layer.body.child', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M34 150 Q35 116 47 93 L53 91 Q60 97 67 91 L73 93 Q85 116 86 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.8 },
+    { kind:'path', d:'M34 150 C35 129 39 108 47 93 L53 91 Q60 97 67 91 L73 93 C81 108 85 129 86 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.8 },
     { kind:'path', d:'M53 91 Q60 96.5 67 91', stroke:'collar', strokeWidth:1.9 },
     { kind:'path', d:'M56 93 Q60 95.5 65 93', stroke:'collar', strokeWidth:.6, opacity:.42 },
   ]},
@@ -314,7 +314,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M54.5 84 Q53.5 91 52 97 M65.5 84 Q66.5 91 68 97', stroke:'ink', strokeWidth:.5, opacity:.56 },
   ]},
   { id:'layer.body.youth', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M23 150 Q27 112 43 96 L50 91 L60 101 L73 90 L79 96 Q96 112 100 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.95 },
+    { kind:'path', d:'M23 150 C25 131 29 113 43 96 L50 91 L60 101 L73 90 L79 96 C92 111 98 131 100 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.95 },
     { kind:'path', d:'M50 91 L60 101 L73 90', stroke:'collar', strokeWidth:2.7 },
     { kind:'path', d:'M60 101 L71 108', stroke:'collar', strokeWidth:.92, opacity:.58 },
     { kind:'path', d:'M36 108 Q45 102 50 99', stroke:'accent', strokeWidth:.62, opacity:.4 },
@@ -324,7 +324,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M54.5 89 Q53.5 95 52 99 M65.5 89 Q66.5 95 68 99', stroke:'ink', strokeWidth:.52, opacity:.58 },
   ]},
   { id:'layer.body.adult', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M16 150 Q20 108 43 95 L50 92 L60 101 L71 93 L77 95 Q100 108 104 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.2 },
+    { kind:'path', d:'M16 150 C18 132 23 113 43 95 L50 92 L60 101 L71 93 L77 95 C97 113 102 132 104 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.2 },
     { kind:'path', d:'M50 92 L60 101 L71 93', stroke:'collar', strokeWidth:3.2 },
     { kind:'path', d:'M60 101 L72 109', stroke:'collar', strokeWidth:.98, opacity:.6 },
     { kind:'path', d:'M53 96 L60 101 L68 96', stroke:'collar', strokeWidth:.74, opacity:.48 },
@@ -335,7 +335,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M56 93 Q57 97 56.5 99.5 M64 93 Q63 97 63.5 99.5', stroke:'age', strokeWidth:.3, opacity:.1 },
   ]},
   { id:'layer.body.middle', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M18 150 Q22 110 42 97 L49 94 L60 102 L73 95 L79 99 Q99 112 103 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.12 },
+    { kind:'path', d:'M18 150 C20 132 25 114 42 97 L49 94 L60 102 L73 95 L79 99 C96 115 101 132 103 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.12 },
     { kind:'path', d:'M49 94 L60 102 L73 95', stroke:'collar', strokeWidth:2.85 },
     { kind:'path', d:'M60 102 L71 109', stroke:'collar', strokeWidth:.92, opacity:.56 },
     { kind:'path', d:'M52 98 L60 102 L69 98', stroke:'collar', strokeWidth:.98, opacity:.7 },
@@ -347,7 +347,7 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M57 94 Q58 97 57.5 99.5 M63 94 Q62 97 62.5 99.5', stroke:'age', strokeWidth:.34, opacity:.14 },
   ]},
   { id:'layer.body.elder', slot:'outfit', z:18, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M27 150 Q30 121 45 106 L50 102 Q60 106 70 102 L75 105 Q90 120 94 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.95 },
+    { kind:'path', d:'M27 150 C29 136 34 117 45 106 L50 102 Q60 106 70 102 L75 105 C87 118 92 136 94 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.95 },
     { kind:'path', d:'M50 102 Q60 106 70 102', stroke:'collar', strokeWidth:2.3 },
     { kind:'path', d:'M52 104 Q60 108 68 103.5', stroke:'collar', strokeWidth:1.02, opacity:.72 },
     { kind:'path', d:'M60 107 L67 110', stroke:'collar', strokeWidth:.72, opacity:.44 },
