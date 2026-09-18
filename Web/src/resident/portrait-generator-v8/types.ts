@@ -168,6 +168,20 @@ export type HairStyleBundle = {
   accessorySlots: string[];
 };
 
+export type PortraitViewBox = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+export type PortraitStageProfile = {
+  id: string;
+  lifeStages: LifeStageId[];
+  viewBox: PortraitViewBox;
+  layerAssetIds: string[];
+};
+
 export type OutfitBundle = {
   id: string;
   label: string;
@@ -215,6 +229,8 @@ export type PortraitRenderPlan = {
   residentStableId: string;
   lod: PortraitLod;
   headProfileId: string;
+  stageProfileId: string;
+  viewBox: PortraitViewBox;
   dna: ResolvedAppearanceDNA;
   palette: Record<Exclude<PaletteToken, 'none'>, string>;
   masks: HeadProfileDefinition['masks'];

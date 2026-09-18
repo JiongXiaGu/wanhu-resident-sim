@@ -371,3 +371,26 @@
 @media (max-width: 900px) {
   .v8-art-grid { grid-template-columns: 1fr; }
 }
+
+
+/* V8.3 age-direction staging: composition, shoulders and garment cut are part of the portrait art. */
+.v8-age-direction {
+  border-color: rgba(144,170,151,.18);
+}
+.v8-age-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(180px,1fr));
+  gap: 10px;
+}
+.v8-age-card > .portrait-v8-renderer {
+  width: min(100%, 280px);
+}
+.v8-age-card code {
+  color: rgba(184,202,188,.6);
+}
+@media (max-width: 1180px) {
+  .v8-age-grid { grid-template-columns: repeat(3,1fr); }
+}
+@media (max-width: 700px) {
+  .v8-age-grid { grid-template-columns: 1fr; }
+}

@@ -3,6 +3,7 @@ import type {
   HairStyleBundle,
   HeadProfileDefinition,
   OutfitBundle,
+  PortraitStageProfile,
   VectorLayerAsset,
 } from './types';
 
@@ -95,6 +96,39 @@ export const HEAD_PROFILES: HeadProfileDefinition[] = [
   },
 ];
 
+export const PORTRAIT_STAGE_PROFILES: PortraitStageProfile[] = [
+  {
+    id:'stage.female.child.v1',
+    lifeStages:['child','teen'],
+    viewBox:{x:4,y:13,width:112,height:112},
+    layerAssetIds:['layer.body.child','layer.neck.child'],
+  },
+  {
+    id:'stage.female.youth.v1',
+    lifeStages:['young-adult'],
+    viewBox:{x:2,y:13,width:116,height:118},
+    layerAssetIds:['layer.body.youth','layer.neck.youth'],
+  },
+  {
+    id:'stage.female.adult.v1',
+    lifeStages:['adult'],
+    viewBox:{x:0,y:15,width:120,height:120},
+    layerAssetIds:['layer.body.adult','layer.neck.adult'],
+  },
+  {
+    id:'stage.female.middle.v1',
+    lifeStages:['middle-age'],
+    viewBox:{x:1,y:16,width:118,height:119},
+    layerAssetIds:['layer.body.middle','layer.neck.middle'],
+  },
+  {
+    id:'stage.female.elder.v1',
+    lifeStages:['elder'],
+    viewBox:{x:2,y:17,width:116,height:118},
+    layerAssetIds:['layer.body.elder','layer.neck.elder'],
+  },
+];
+
 export const VECTOR_LAYERS: VectorLayerAsset[] = [
   // Face geometry remains canvas-space. Identity morphology is applied by RenderPlan.
   { id:'layer.face.child', slot:'face', z:40, lods:[48,64,96], shapes:[
@@ -135,24 +169,63 @@ export const VECTOR_LAYERS: VectorLayerAsset[] = [
     { kind:'path', d:'M73 76 Q70 82 67 85', stroke:'age', strokeWidth:.75, opacity:.45 },
   ]},
 
-  { id:'layer.outfit.poor', slot:'outfit', z:20, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M18 150 Q21 110 46 94 H74 Q99 110 102 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.2 },
-    { kind:'path', d:'M48 94 L60 108 L72 94', stroke:'accent', strokeWidth:3.2 },
+  // V8.3 portrait staging. Age changes the body silhouette, collar, posture and crop;
+  // wealth layers below only add social-detail overlays.
+  { id:'layer.body.child', slot:'outfit', z:18, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M27 150 Q29 116 48 92 Q60 88 72 92 Q91 116 93 150Z', fill:'cloth', stroke:'ink', strokeWidth:1.9 },
+    { kind:'path', d:'M49 92 L60 101 L71 92', stroke:'accent', strokeWidth:2.7 },
   ]},
-  { id:'layer.outfit.plain', slot:'outfit', z:20, lods:[48,64,96], shapes:[
+  { id:'layer.neck.child', slot:'neck', z:30, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M54 78 L66 78 L67 93 Q60 96 53 93Z', fill:'skin' },
+  ]},
+  { id:'layer.body.youth', slot:'outfit', z:18, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M21 150 Q24 112 46 92 Q59 96 73 91 Q96 111 101 150Z', fill:'cloth', stroke:'ink', strokeWidth:2 },
+    { kind:'path', d:'M47 92 L60 106 L73 91', stroke:'accent', strokeWidth:3.2 },
+    { kind:'path', d:'M31 106 Q43 100 49 99', stroke:'accent', strokeWidth:.7, opacity:.5 },
+  ]},
+  { id:'layer.neck.youth', slot:'neck', z:30, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M54 83 L66 83 L67 99 Q60 102 53 99Z', fill:'skin' },
+  ]},
+  { id:'layer.body.adult', slot:'outfit', z:18, lods:[48,64,96], shapes:[
     { kind:'path', d:'M16 150 Q20 108 45 93 H75 Q100 108 104 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.2 },
-    { kind:'path', d:'M47 93 L60 110 L73 93', stroke:'accent', strokeWidth:4.1 },
+    { kind:'path', d:'M47 93 L60 110 L73 93', stroke:'accent', strokeWidth:3.8 },
   ]},
-  { id:'layer.outfit.comfortable', slot:'outfit', z:20, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M15 150 Q19 107 45 92 H75 Q101 107 105 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.2 },
-    { kind:'path', d:'M46 92 L60 111 L74 92', stroke:'accent', strokeWidth:5 },
-    { kind:'path', d:'M39 107 Q60 120 81 107', stroke:'accent', strokeWidth:1.8, opacity:.8 },
+  { id:'layer.neck.adult', slot:'neck', z:30, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M54 88 L66 88 L67 102 Q60 105 53 102Z', fill:'skin' },
   ]},
-  { id:'layer.outfit.wealthy', slot:'outfit', z:20, lods:[48,64,96], shapes:[
-    { kind:'path', d:'M14 150 Q18 106 45 91 H75 Q102 106 106 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.2 },
-    { kind:'path', d:'M45 91 L60 112 L75 91', stroke:'accent', strokeWidth:5.8 },
-    { kind:'path', d:'M38 105 Q60 121 82 105', stroke:'accent', strokeWidth:2.3 },
-    { kind:'path', d:'M33 118 Q60 131 87 118', stroke:'accent', strokeWidth:1.25, opacity:.75 },
+  { id:'layer.body.middle', slot:'outfit', z:18, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M18 150 Q22 110 44 95 Q60 99 76 95 Q98 110 102 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.15 },
+    { kind:'path', d:'M46 95 L60 109 L74 95', stroke:'accent', strokeWidth:3.4 },
+    { kind:'path', d:'M50 99 L60 106 L70 99', stroke:'accent', strokeWidth:1.05, opacity:.72 },
+  ]},
+  { id:'layer.neck.middle', slot:'neck', z:30, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M54 89 L66 89 L67 102 Q60 105 53 102Z', fill:'skin' },
+  ]},
+  { id:'layer.body.elder', slot:'outfit', z:18, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M23 150 Q27 116 47 101 Q60 105 73 100 Q94 116 98 150Z', fill:'cloth', stroke:'ink', strokeWidth:2.05 },
+    { kind:'path', d:'M48 100 L60 109 L72 100', stroke:'accent', strokeWidth:3.1 },
+    { kind:'path', d:'M51 103 L60 108 L69 103', stroke:'accent', strokeWidth:1.15, opacity:.72 },
+  ]},
+  { id:'layer.neck.elder', slot:'neck', z:30, lods:[48,64,96], shapes:[
+    { kind:'path', d:'M55 91 L65 91 L66 102 Q60 104 54 102Z', fill:'skin' },
+  ]},
+
+  // Wealth/detail overlays no longer define the whole body silhouette.
+  { id:'layer.outfit.poor', slot:'outfit', z:21, lods:[64,96], shapes:[
+    { kind:'path', d:'M31 119 Q37 116 44 119', stroke:'accent', strokeWidth:.75, opacity:.48 },
+    { kind:'path', d:'M84 124 L91 122', stroke:'accent', strokeWidth:.65, opacity:.4 },
+  ]},
+  { id:'layer.outfit.plain', slot:'outfit', z:21, lods:[64,96], shapes:[
+    { kind:'path', d:'M36 119 Q60 126 84 119', stroke:'accent', strokeWidth:.9, opacity:.52 },
+  ]},
+  { id:'layer.outfit.comfortable', slot:'outfit', z:21, lods:[64,96], shapes:[
+    { kind:'path', d:'M35 116 Q60 124 85 116', stroke:'accent', strokeWidth:1.2, opacity:.68 },
+    { kind:'path', d:'M39 122 Q60 128 81 122', stroke:'accent', strokeWidth:.65, opacity:.46 },
+  ]},
+  { id:'layer.outfit.wealthy', slot:'outfit', z:21, lods:[64,96], shapes:[
+    { kind:'path', d:'M33 114 Q60 124 87 114', stroke:'accent', strokeWidth:1.4, opacity:.76 },
+    { kind:'path', d:'M37 121 Q60 129 83 121', stroke:'accent', strokeWidth:.8, opacity:.58 },
+    { kind:'path', d:'M42 128 Q60 133 78 128', stroke:'accent', strokeWidth:.55, opacity:.45 },
   ]},
 
   // Local-space hair assets. (0,0) is the declared anchor from HeadProfile.

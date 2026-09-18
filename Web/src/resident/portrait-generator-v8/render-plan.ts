@@ -5,6 +5,7 @@ import {
   FEATURE_LAYER_BY_SET,
   HAIR_BUNDLES,
   OUTFIT_BUNDLES,
+  PORTRAIT_STAGE_PROFILES,
   layerById,
 } from './catalog';
 import { resolveHeadProfile } from './appearance-resolver';
@@ -121,6 +122,13 @@ function morphologyTransform(
       originY: 74,
     };
   }
+  if (assetId.startsWith('layer.body.') || assetId.startsWith('layer.neck.') || assetId.startsWith('layer.outfit.')) {
+    return {
+      scaleX: dna.identity.bodyFrameId === 'body-frame.female.slight' ? .94 : 1,
+      originX: 60,
+      originY: 104,
+    };
+  }
   return null;
 }
 
@@ -149,13 +157,15 @@ export function buildRenderPlan(
   const hair = HAIR_BUNDLES.find((item)=>item.id===dna.presentation.hairBundleId);
   const outfit = OUTFIT_BUNDLES.find((item)=>item.id===dna.presentation.outfitBundleId);
   const accessory = ACCESSORIES.find((item)=>item.id===dna.presentation.accessoryAssetId);
-  if (!hair || !outfit || !accessory) throw new Error('V8.2 RenderPlan references missing asset bundle.');
+  const stageProfile = PORTRAIT_STAGE_PROFILES.find((item)=>item.lifeStages.includes(context.lifeStage));
+  if (!hair || !outfit || !accessory || !stageProfile) throw new Error('V8.3 RenderPlan references missing asset bundle or stage profile.');
 
   const hairPlacement = hair.placementByHeadProfile[headProfile.id] ?? {};
   const hairAssetIds = new Set(hair.layerAssetIds);
   const accessoryAssetId = accessory.layerAssetId;
   const baseIds = [
     ...hair.layerAssetIds,
+    ...stageProfile.layerAssetIds,
     ...outfit.layerAssetIds,
     FACE_LAYER_BY_HEAD_PROFILE[headProfile.id],
     ...(FEATURE_LAYER_BY_SET[dna.identity.featureSetId] ?? []),
@@ -211,6 +221,8 @@ export function buildRenderPlan(
     residentStableId: dna.identity.residentStableId,
     lod,
     headProfileId: headProfile.id,
+    stageProfileId: stageProfile.id,
+    viewBox: stageProfile.viewBox,
     dna,
     palette,
     masks: headProfile.masks,

@@ -95,8 +95,6 @@ export function PortraitV8Renderer({
   const head = HEAD_PROFILES.find((item)=>item.id===plan.headProfileId);
   if (!head) throw new Error('V8.2 renderer missing HeadProfile '+plan.headProfileId);
 
-  const neckTop = Math.max(head.anchors.chin.y - 4, head.anchors.neckLeft.y);
-  const neckBottom = context.lifeStage === 'child' ? 99 : 102;
   const maskedLayerCount = plan.layers.filter((layer)=>layer.maskMode !== 'none').length;
   const localLayerCount = plan.layers.filter((layer)=>
     Math.abs(layer.transform.translateX) > 0 || Math.abs(layer.transform.translateY) > 0
@@ -110,6 +108,7 @@ export function PortraitV8Renderer({
       data-render-contract={plan.renderContractVersion}
       data-resident-id={plan.residentStableId}
       data-head-profile={plan.headProfileId}
+      data-stage-profile={plan.stageProfileId}
       data-hair-bundle={dna.presentation.hairBundleId}
       data-outfit-bundle={dna.presentation.outfitBundleId}
       data-accessory={dna.presentation.accessoryAssetId}
@@ -122,7 +121,7 @@ export function PortraitV8Renderer({
       aria-label={label}
       aria-hidden={label ? undefined : true}
     >
-      <svg viewBox="0 15 120 120" focusable="false">
+      <svg viewBox={plan.viewBox.x+' '+plan.viewBox.y+' '+plan.viewBox.width+' '+plan.viewBox.height} focusable="false">
         <defs>
           <clipPath id={uid+'-skull'} clipPathUnits="userSpaceOnUse">
             <path d={plan.masks.skull}/>
@@ -143,14 +142,6 @@ export function PortraitV8Renderer({
         </defs>
 
         <rect width="120" height="150" fill={plan.palette.background}/>
-        <path
-          d={'M'+head.anchors.neckLeft.x+' '+neckTop+
-            ' H'+head.anchors.neckRight.x+
-            ' L'+(head.anchors.neckRight.x+1)+' '+neckBottom+
-            ' Q60 '+(neckBottom+3)+' '+(head.anchors.neckLeft.x-1)+' '+neckBottom+'Z'}
-          fill={plan.palette.skin}
-        />
-
         {plan.layers.map((layer)=>(
           <g
             key={layer.assetId}

@@ -32,6 +32,14 @@ const temporalVariants: SemanticAppearanceContext[] = [
   { residentStableId:'v8-temporal-anchor', residentSeed:88111, gender:'female', lifeStage:'elder', wealthTier:'plain', presentationStyle:'tidy' },
 ];
 
+const ageDirectionVariants: SemanticAppearanceContext[] = [
+  { residentStableId:'v8-age-direction', residentSeed:88444, gender:'female', lifeStage:'child', wealthTier:'plain', presentationStyle:'tidy' },
+  { residentStableId:'v8-age-direction', residentSeed:88444, gender:'female', lifeStage:'young-adult', wealthTier:'plain', presentationStyle:'tidy' },
+  { residentStableId:'v8-age-direction', residentSeed:88444, gender:'female', lifeStage:'adult', wealthTier:'plain', presentationStyle:'tidy' },
+  { residentStableId:'v8-age-direction', residentSeed:88444, gender:'female', lifeStage:'middle-age', wealthTier:'plain', presentationStyle:'tidy' },
+  { residentStableId:'v8-age-direction', residentSeed:88444, gender:'female', lifeStage:'elder', wealthTier:'plain', presentationStyle:'tidy' },
+];
+
 function fingerprint(value: unknown) {
   return hash32(JSON.stringify(value)).toString(16).padStart(8,'0');
 }
@@ -199,6 +207,11 @@ export function PortraitV8Lab() {
 
   const wealthResolved = wealthVariants.map((context)=>({context,dna:resolveAppearance(context)}));
   const temporalResolved = temporalVariants.map((context)=>({context,dna:resolveAppearance(context)}));
+  const ageDirectionResolved = ageDirectionVariants.map((context)=>{
+    const dna = resolveAppearance(context);
+    const plan = buildRenderPlan(dna, context, 96);
+    return {context,dna,plan};
+  });
 
   const wealthIdentityCount = new Set(wealthResolved.map((item)=>fingerprint(item.dna.identity))).size;
   const wealthHairCount = new Set(wealthResolved.map((item)=>item.dna.presentation.hairBundleId)).size;
@@ -242,6 +255,20 @@ export function PortraitV8Lab() {
         <header><div><span>02 · TEMPORAL IDENTITY</span><h2>同一个人从儿童到老年</h2></div><p>Identity Morphology 跨年龄保留；HeadProfile、Hair、AgeOverlay 和发色状态演化。</p></header>
         <div className="v8-four-grid">
           {temporalResolved.map((item)=><PortraitCard key={item.context.lifeStage} {...item}/>)}
+        </div>
+      </section>
+
+      <section className="v8-section v8-age-direction" data-v8-section="age-direction">
+        <header><div><span>02B · AGE DIRECTION / STAGING</span><h2>年龄不只改脸：衣装、肩线、颈长和取景一起变化</h2></div><p>同一居民、同一财富层级。Child 更窄肩且近景；Youth 颈部更修长、肩线轻微不对称；Adult 稳定正身；Middle-age 层领更厚；Elder 肩线下沉、领口提高并略收取景。</p></header>
+        <div className="v8-age-grid">
+          {ageDirectionResolved.map(({context,dna,plan})=>(
+            <article className="v8-card v8-age-card" data-age-direction={context.lifeStage} data-stage-profile={plan.stageProfileId} key={context.lifeStage}>
+              <PortraitV8Renderer dna={dna} context={context} lod={96}/>
+              <b>{context.lifeStage}</b>
+              <code>{plan.stageProfileId}</code>
+              <small>{dna.identity.bodyFrameId} · {dna.presentation.outfitBundleId}</small>
+            </article>
+          ))}
         </div>
       </section>
 

@@ -92,6 +92,11 @@ if ((await crowd.count()) !== 64) throw new Error('V8.2 population review must r
 
 await page.screenshot({ path: outDir + '/27-portrait-generator-v8-2-overview.png', fullPage: true });
 await page.locator('[data-v8-section="bundle-contract"]').screenshot({ path: outDir + '/28-v8-2-formal-hair-contract.png' });
+const ageDirection = page.locator('[data-age-direction]');
+if ((await ageDirection.count()) !== 5) throw new Error('V8.3 age-direction review must render five life-stage staging profiles.');
+const stageProfiles = await ageDirection.evaluateAll((items)=>items.map((item)=>item.getAttribute('data-stage-profile')));
+if (new Set(stageProfiles).size !== 5) throw new Error('V8.3 age-direction review must resolve five distinct stage profiles.');
+await page.locator('[data-v8-section="age-direction"]').screenshot({ path: outDir + '/39-v8-3-age-direction.png' });
 await page.locator('[data-v8-section="art-review"]').screenshot({ path: outDir + '/37-v8-3-manual-art-review.png' });
 await page.locator('[data-v8-section="asset-audit"]').screenshot({ path: outDir + '/29-v8-2-asset-audit.png' });
 await page.locator('[data-v8-section="bundles"]').screenshot({ path: outDir + '/30-v8-2-asset-bundles-lod.png' });
