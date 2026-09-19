@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { directions, imageUrls, roles, type ArtDirection, type DirectionId } from './catalog';
 import type { StudyRole } from './art/svg';
 import './directions.css';
@@ -21,14 +21,19 @@ export default function PortraitArtDirections() {
   const [selection, setSelection] = useState<Selection | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null);
-  useEffect(() => {
+  // selection 是开关的唯一来源；原生 close 事件可能延迟到下一个角色已打开之后。
+  // 不在 onClose 回写 selection，避免快速连续点击时把新对话框清空。
+  useLayoutEffect(() => {
     const element = dialog.current;
-    if (selection && element && !element.open) element.showModal();
+    if (!element) return;
+    if (selection && !element.open) element.showModal();
+    else if (!selection && element.open) {
+      element.close();
+      opener.current?.focus();
+    }
   }, [selection]);
   function close() {
-    dialog.current?.close();
     setSelection(null);
-    opener.current?.focus();
   }
   function downloadSvg() {
     if (!selection) return;
@@ -95,7 +100,8 @@ export default function PortraitArtDirections() {
       </aside>
     </div>
     <dialog ref={dialog} className="pad-dialog" aria-labelledby="pad-dialog-title"
-      onClose={() => { setSelection(null); opener.current?.focus(); }}
+      data-selected-study={selection ? `${selection.direction.id}:${selection.role}` : undefined}
+      onCancel={event => { event.preventDefault(); close(); }}
       onClick={event => { if (event.target === event.currentTarget) close(); }}>
       {selection && <div className="pad-dialog-content"><header><div><p className="pad-eyebrow">{selection.direction.english}</p>
         <h2 id="pad-dialog-title">{selection.direction.title} · {roles.find(role => role.id === selection.role)!.label}</h2></div>
