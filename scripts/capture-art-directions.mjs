@@ -24,7 +24,7 @@ async function inspectIsolation(directory) {
 await inspectIsolation('Web/src/portrait-art-directions');
 checks.push('No production or historical art imports');
 const browser = await chromium.launch({ headless: true });
-const context = await browser.newContext({ viewport: { width: 1600, height: 1100 }, deviceScaleFactor: 1 });
+const context = await browser.newContext({ viewport: { width: 1600, height: 1100 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
 const page = await context.newPage();
 const errors = [];
 page.on('pageerror', error => errors.push(error.message));
@@ -38,8 +38,8 @@ async function ready() {
 }
 async function screenshot(name, locator = page) {
   await ready();
-  if (locator === page) await page.screenshot({ path: join(outDir, name + '.png'), fullPage: true });
-  else await locator.screenshot({ path: join(outDir, name + '.png') });
+  if (locator === page) await page.screenshot({ path: join(outDir, name + '.png'), fullPage: true, animations: 'disabled', caret: 'hide' });
+  else await locator.screenshot({ path: join(outDir, name + '.png'), animations: 'disabled', caret: 'hide' });
 }
 async function pixelSizes() {
   const actual = await page.locator('[data-pixel-size]').evaluateAll(images => images.map(image => {
@@ -145,7 +145,7 @@ try {
   assert.deepEqual(errors, [], 'Browser errors');
   checks.push('No browser JS/console/HTTP errors');
   await writeFile(join(outDir, 'review.json'), JSON.stringify({
-    commit: process.env.GITHUB_SHA ?? 'local', viewport: { width: 1600, height: 1100 }, deviceScaleFactor: 1,
+    commit: process.env.GITHUB_SHA ?? 'local', viewport: { width: 1600, height: 1100 }, deviceScaleFactor: 1, reducedMotion: 'reduce',
     checks, status: 'automated-pass', artisticApproval: 'Requires actual image inspection; not certified by CI',
     productionStatus: 'Independent concept studies; modular and Unity proofs not yet performed',
   }, null, 2));
