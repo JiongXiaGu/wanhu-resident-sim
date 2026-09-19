@@ -119,7 +119,8 @@ try{
  await page.setViewportSize({width:320,height:800});await sizes();
  await page.setViewportSize({width:1600,height:1100});
  const audit=await auditAvatarArt(page,out);
- checks.push('Six age/gender contexts, shared parts, face-specific expressions, original-size previews, transparent parts and diagnostic art boards');
+ const softAudit=await auditSoftPaint(page);
+ checks.push('Two editable style packs; six age/gender contexts; shared parts; face-specific expressions; native previews; transparent parts and diagnostic boards');
  assert.deepEqual(errors,[],'Browser errors');
  await writeFile(join(out,'review.json'),JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',...audit,softPaint:softAudit,residentCount:snapshot.residents.length,checks,artisticApproval:'Requires actual inspection of both style packs and the real editor; CI is not a quality rating'},null,2));
  console.log(checks.join('\n'));
