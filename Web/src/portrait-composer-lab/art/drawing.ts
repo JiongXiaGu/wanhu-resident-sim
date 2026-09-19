@@ -2,11 +2,12 @@ import type { Look } from '../model';
 export const p = (d: string, fill: string, stroke = 'none', width = 1) => `<path d="${d}" fill="${fill}" stroke="${stroke}" stroke-width="${width}" stroke-linejoin="round"/>`;
 export const l = (d: string, stroke: string, width = 1) => `<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round"/>`;
 export const e = (x: number, y: number, rx: number, ry: number, fill: string) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${fill}"/>`;
+// 阴影、面颊采用接近基肤色的色阶，避免在小头像上变成刻痕或两块胭脂印。
 export const skins = {
-  ivory: { base: '#f1d8b9', light: '#fae6ca', shade: '#d3a78a', line: '#a77b65', blush: '#e2ad96', lip: '#b77770' },
-  peach: { base: '#eac3a0', light: '#f4d6b4', shade: '#c58f70', line: '#976b55', blush: '#dea48a', lip: '#a86860' },
-  wheat: { base: '#cca076', light: '#ddb78b', shade: '#ab7756', line: '#84573f', blush: '#c99174', lip: '#955e50' },
-  umber: { base: '#a97c5b', light: '#bc936e', shade: '#83583f', line: '#704932', blush: '#ac755e', lip: '#754a40' },
+  ivory: { base: '#f1d8b9', light: '#fae6ca', shade: '#deb698', line: '#a77b65', blush: '#eecab0', lip: '#b77770' },
+  peach: { base: '#eac3a0', light: '#f4d6b4', shade: '#d2a181', line: '#976b55', blush: '#e7b89a', lip: '#a86860' },
+  wheat: { base: '#cca076', light: '#ddb78b', shade: '#b88a65', line: '#84573f', blush: '#c79b76', lip: '#955e50' },
+  umber: { base: '#a97c5b', light: '#bc936e', shade: '#92654a', line: '#704932', blush: '#a7795d', lip: '#754a40' },
 };
 export const hairs = {
   ink: { base: '#2e393b', light: '#465754', line: '#718177' },
