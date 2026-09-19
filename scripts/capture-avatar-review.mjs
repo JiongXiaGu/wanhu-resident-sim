@@ -3,7 +3,8 @@ import {mkdir,readFile,readdir,writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {chromium} from 'playwright';
 import sharp from 'sharp';
-import {auditAvatarArt} from './audit-avatar-art.mjs';\nimport {auditSoftPaint} from './audit-avatar-softpaint.mjs';
+import {auditAvatarArt} from './audit-avatar-art.mjs';
+import {auditSoftPaint} from './audit-avatar-softpaint.mjs';
 const out='review-screenshots/avatar';await mkdir(out,{recursive:true});
 const retired=['portrait-anime-lab','portrait-art-directions','portrait-composer-lab','portrait-modern-anime-lab','portrait-open-styles','portrait-style-bakeoff','portrait-style-study'];
 const entries=await readdir('Web/src');assert(retired.every(name=>!entries.includes(name)),'Retired experiments remain in src');
@@ -20,7 +21,8 @@ const key=()=>editor.getAttribute('data-target');
 const image=()=>page.locator('.av-main-art img').getAttribute('src');
 const stored=async target=>page.evaluate(k=>localStorage.getItem('wanhu.avatar.v1:'+k),target);
 async function ready(){await page.evaluate(async()=>{await document.fonts.ready;await Promise.all([...document.querySelectorAll('img')].map(i=>i.decode()));});}
-async function choose(part,value){await page.locator(`[data-part-tab="${part}"]`).click();await page.locator(`[data-option-part="${part}"][data-option="${value}"]`).click();await page.waitForFunction(({part,value})=>JSON.parse(document.querySelector('[data-avatar-editor]').dataset.recipe)[part]===value,{part,value});await ready();}\nasync function choosePack(value){await page.locator(`[data-pack="${value}"]`).click();await page.waitForFunction(value=>JSON.parse(document.querySelector('[data-avatar-editor]').dataset.recipe).pack===value,value);await ready();}
+async function choose(part,value){await page.locator(`[data-part-tab="${part}"]`).click();await page.locator(`[data-option-part="${part}"][data-option="${value}"]`).click();await page.waitForFunction(({part,value})=>JSON.parse(document.querySelector('[data-avatar-editor]').dataset.recipe)[part]===value,{part,value});await ready();}
+async function choosePack(value){await page.locator(`[data-pack="${value}"]`).click();await page.waitForFunction(value=>JSON.parse(document.querySelector('[data-avatar-editor]').dataset.recipe).pack===value,value);await ready();}
 async function select(target){await page.locator(`[data-target-key="${target}"]`).click();await page.waitForFunction(k=>document.querySelector('[data-avatar-editor]').dataset.target===k,target);await ready();}
 async function apply(){const expected=JSON.stringify(await recipe()),target=await key();await page.locator('[data-apply-avatar]').click();await page.waitForFunction(({target,expected})=>localStorage.getItem('wanhu.avatar.v1:'+target)===expected,{target,expected});await page.waitForFunction(()=>document.querySelector('[data-avatar-editor]').dataset.dirty==='false');}
 async function screenshot(name,locator=page.locator('.av-dialog')){await ready();await locator.screenshot({path:join(out,name+'.png'),animations:'disabled',caret:'hide'});}
@@ -38,7 +40,8 @@ try{
  await page.locator('[data-edit-resident-avatar]').click();await editor.waitFor();await ready();
  const allTargets=await page.locator('[data-target-key]').evaluateAll(nodes=>nodes.map(n=>({key:n.dataset.targetKey,kind:n.dataset.targetKind,frame:n.dataset.targetFrame,id:n.dataset.targetResident})));
  assert.equal(allTargets.filter(t=>t.kind==='resident').length,snapshot.residents.length);
- assert.deepEqual(await page.locator('[data-part-tab]').evaluateAll(nodes=>nodes.map(n=>n.dataset.partTab)),['face','hair','outfit','expression']);\n assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.pack)),['linework-v1','soft-paint-v1']);
+ assert.deepEqual(await page.locator('[data-part-tab]').evaluateAll(nodes=>nodes.map(n=>n.dataset.partTab)),['face','hair','outfit','expression']);
+ assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.pack)),['linework-v1','soft-paint-v1']);
  const a=allTargets.find(t=>t.id===residentA),b=allTargets.find(t=>t.kind==='resident'&&t.key!==a.key),players=allTargets.filter(t=>t.kind==='player');
  assert.equal(await key(),a.key);assert.equal(await stored(a.key),null);
  await select(players[0].key);await choose('face','round');await choose('hair','bob');await choose('outfit','knit');await choose('expression','smile');

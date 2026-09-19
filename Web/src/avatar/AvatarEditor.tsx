@@ -40,7 +40,8 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
   node.addEventListener('keydown',trap,true);
   return()=>{blocks.forEach(block=>block.removeAttribute('inert'));node.removeEventListener('keydown',trap,true);if(previous?.isConnected)previous.focus();};
  },[pending]);
- function choose<K extends Part>(selected:K,value:Recipe[K]){setDraft(old=>({...old,[selected]:value}));setMessage('');}\n function choosePack(pack:PackId){setDraft(old=>withPack(old,pack));setMessage(`已切换到「${packLabel(pack)}」，脸型、头发、衣服和表情保持不变。`);}
+ function choose<K extends Part>(selected:K,value:Recipe[K]){setDraft(old=>({...old,[selected]:value}));setMessage('');}
+ function choosePack(pack:PackId){setDraft(old=>withPack(old,pack));setMessage(`已切换到「${packLabel(pack)}」，脸型、头发、衣服和表情保持不变。`);}
  function reload(){epoch.current++;setDraft(saved.recipe??defaultFor(target));setBaseline(saved.recipe??defaultFor(target));setBaselineRaw(saved.raw);setMessage(saved.error||'已重新载入这个对象的头像。');}
  function save():boolean {
   try{applyRecipe(target.key,draft,baselineRaw);setBaseline({...draft});setBaselineRaw(getRaw(target.key));setMessage(`已应用到「${target.name}」。其他对象未改变。`);return true;}
