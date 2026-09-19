@@ -1,334 +1,45 @@
 # 居民逻辑网页 Demo 接续说明
 
-## 固定称呼
+固定简称：居民逻辑网页demo。仓库：`JiongXiaGu/wanhu-resident-sim`。
 
-本项目的对话简称是：
+## 接手顺序
 
-> **居民逻辑网页demo**
+先读取最新 main、README、AGENTS，再读本文件、人生经历与生活界面玩法规则V1、居民面板与生活事件V2、居民生活记录与故事连续性、Portrait System、Avatar Workshop、开发与部署工作流。随后检查实际源码、最新 Build 和 Resident Visual Review，不用聊天记忆替代仓库证据。
 
-默认仓库：
+## 当前定位
 
-```text
-GitHub: JiongXiaGu/wanhu-resident-sim
-```
+验证居民玩法、故事连续性、人生经历、UI 阅读与可编辑头像。Content、Schemas、Compiler、Coverage 服务 Web 原型内容生产，不是 Unity ECS、BlobAsset、正式存档或资源加载设计。正式 Unity 迁移时另行设计。
 
-当前定位只有一个：
+## 当前头像任务
 
-> **用 Web Demo 验证居民玩法、故事连续性、人生经历、UI 阅读体验和内容规模化是否成立。**
+唯一玩家编辑流程是头像工坊 `/?view=avatar-editor`，也可从居民身份栏进入。只有脸型、头发、衣服、表情四类；不同脸共享配件，并保存到玩家示例档案或当前城市的指定居民。
 
-`Content/`、Schema、Compiler、Coverage 等工具继续存在，是为了让原型内容可批量生产、可复现、可自动验收；它们不代表未来 Unity Runtime / Save 设计。
+`Web/src/avatar/` 包含统一编辑器、按对象保存的 Web 覆盖记录和第一套原创 SVG 素材包。编辑只影响外观；必须保留居民姓名、年龄、家庭、职业与故事。工坊是当前 App 内的模态窗口，不通过跳转重建模拟。
 
-Unity ECS、BlobAsset、正式存档、RuntimeIndex、序列化和资源加载方式不在本仓库继续设计，正式进入 Unity 时重新根据游戏工程约束确定。
+旧风格墙、完整位图图库以及多个分叉编辑实验已从工作树删除，Git 历史足以保留。不得重新创建历史实验目录或把固定整图当作可编辑素材。
 
----
+`Web/src/resident/portrait/` 及 `Content/Portrait/` 的正式五字段 DNA、六个 Frame 保持冻结。未定制居民继续使用原 Renderer；只有已应用对象展示新覆盖图。`/?view=portraits` 保留为该契约的开发验收页，不是面向玩家的第二套编辑系统。
 
-## 新对话恢复上下文
+## 居民玩法不变量
 
-新对话不要只依赖聊天记忆。固定读取：
+生活模式只回答当前事实：身份、世界关联、Activity、正在经历/最近 LifeEvent、少量 Routine。没有综合近况 Summary。
 
-1. GitHub `main` 最新 commit。
-2. `README.md`。
-3. `AGENTS.md`。
-4. 本文件。
-5. `Documentation/人生经历与生活界面玩法规则V1.md`。
-6. `Documentation/居民面板与生活事件V2.md`。
-7. `Documentation/居民生活记录与故事连续性.md`。
-8. `Documentation/开发与部署工作流.md`。
-9. 检查最新 GitHub Actions Build / Resident Visual Review。
-10. UI / 头像 / 美术任务优先读取最新 Resident Visual Review Artifact；不再检查 Vercel Preview / Production。
+人生模式只看已沉淀的过去：单一年龄升序时间轴，不按少年青年等分组；一个 Chapter 对应一件事。事实节点只显示年龄和标题；故事展开一段第一人称 memoryText，不重放三个 Stage。隐藏 Activity、当前故事和 Routine，末尾保留“如今”。
 
-不要再把 `Documentation/居民内容生产与运行时数据管线V1.md` 或 `Documentation/居民模拟V1架构.md` 当成当前 Web Demo 下一阶段路线；其中与 Unity Runtime / Save 有关的内容只是早期设计记录。
+LifeEvent 三个 stages 服务过程；memoryText 服务往事。重要故事或结构型 effect 必须有 memoryText。普通 Routine 不进入永久人生历史。
 
----
+LifeTag 影响后续 Eligibility，不扫描历史全文。Prototype Effect 可以在 Web 中直接改变职业、家庭、婚姻等状态，但不代表 Unity Runtime 架构。
 
-## 当前 Resident Panel
+必须保留连续性验收：未婚居民 → 这门亲事定下来了 → spouse/Household 真正改变 → newly-married → 两个人一起过日子以后进入候选池 → 临时 Tag 消失。
 
-### 生活模式
+## 数据链与后续方向
 
-回答：
+Content Authoring → Contract / Catalog Audit → Story / Resident / LifeEvent / StoryBucket / Snapshot / Portrait / Web Compiler → Web/public/generated。definitions v6、resident-snapshot v5 仍是 Web 原型契约，generated 不手工修改。
 
-> **这个人现在过得怎么样？**
+后续围绕人物可读性、外观编辑、故事密度、过去影响后来、城市反馈、有限并行生活线与 Coverage 推进。不重启本仓库的 Unity 存档/Blob/ECS 设计。
 
-展示：
+## 执行与验收
 
-```text
-Identity
-World Links
-此刻 Activity
-正在经历 / 最近发生
-少量 Routine
-人生经历入口
-```
+最新 main → tmp-* → 集中修改并一次聚合提交 → Build + Resident Visual Review → 下载 Artifact 并打开关键截图 → 必要时聚合修复 → 重读 main → 合入 main → main 再次检查。
 
-当前 LifeEvent 仍按三个 Stage 随时间推进。Stage 文本服务“事情正在发生”的体验。
-
-### 人生经历模式
-
-回答：
-
-> **这个人过去经历过什么，他是怎么走到今天的？**
-
-进入后：
-
-- 不显示当前 Activity；
-- 不显示当前 / 最近 LifeEvent；
-- 不显示 Routine 琐事；
-- 只看已经沉淀的 Life Chapter；
-- 只有一条纵向时间轴；
-- 节点按年龄从小到大排列；
-- 不显示童年 / 少年 / 青年 / 壮年等阶段分组；
-- 一个节点只代表一件人生事件；
-- Fact Chapter 只显示 `年龄 + 标题`；
-- Story Chapter 点击后展开一段完整的第一人称 `memoryText`；
-- 不在历史页显示 `起初 / 后来 / 最后` 或原始 Stage 结构；
-- 时间轴末尾保留“如今”。
-
----
-
-## LifeEvent 的两种文本职责
-
-### `stages`
-
-只服务生活模式。
-
-玩家在事情发生时逐步看到：
-
-```text
-Stage 1
-↓
-Stage 2
-↓
-Stage 3
-```
-
-### `memoryText`
-
-只服务人生经历。
-
-重要故事完成以后，人生页把它当成一件已经发生过的往事：
-
-```text
-25岁 · 孩子到了该认字的年纪
-
-我开始问附近哪家私塾合适……后来有一天回家路上，他忽然把一家铺子的招牌念了出来……
-```
-
-`memoryText` 不是把三个 Stage 原文机械拼接，而是重新压缩成角色自己的回忆。
-
-只要事件会形成长期 Life Chapter，就必须有 `memoryText`，包括：
-
-- `recordToHistory: true`；
-- 或成婚等会形成长期人生变化的 Prototype Effect。
-
----
-
-## 三层生活信息
-
-```text
-Routine
-普通生活感，短期存在，不进入人生经历
-
-LifeEvent / Story Thread
-当前正在发生的一件连续事情
-
-Life Chapter
-值得长期回看的过去，一个节点就是一件事
-```
-
-不维护独立“近况 Summary”。
-
----
-
-## 当前已经可以玩的连续性
-
-### LifeTag
-
-过去的重要故事可以留下轻量标签，未来故事通过 Eligibility 读取：
-
-```text
-服役
-↓
-lifetag.served-military
-↓
-多年后旧同伍进城
-```
-
-### Prototype Effect
-
-Web Demo 可以直接改变原型状态，用来判断这种玩法是否有价值。
-
-当前已支持验证：
-
-```text
-LifeTag 增减
-换职业
-搬迁
-成婚
-```
-
-已存在自动验收链：
-
-```text
-未婚居民
-↓
-这门亲事定下来了
-↓
-真实 spouse / Household 变化
-↓
-lifetag.newly-married
-↓
-两个人一起过日子以后
-↓
-临时 Tag 消失
-```
-
-这些实现都只是 Web 原型，不代表未来 Unity 的结构变更方式。
-
----
-
-## 当前 Web 内容数据流
-
-```text
-Content Authoring
-↓
-ContentContractCompiler
-↓
-StoryCompiler
-↓
-ResidentGenerator
-↓
-LifeEventCompiler
-↓
-StoryBucketCompiler
-↓
-ResidentSnapshotCompiler
-↓
-ResidentPortraitCompiler
-↓
-WebContentCompiler
-↓
-Web/public/generated/
-↓
-Web Prototype
-```
-
-主要 generated：
-
-```text
-stable-id-registry.json
-name-catalog-v2.json
-life-tags.json
-occupation-groups.json
-portrait-catalog.json
-content-coverage.json
-story-buckets.json
-stories.json
-definitions.json
-resident-snapshot.json
-```
-
-这些都只是 Demo 数据。
-
----
-
-## 当前头像收口任务
-
-头像工程迁移已经完成，当前进入 Unity 迁移前的最后美术框架收口。
-
-唯一正式头像规范：
-
-```text
-Documentation/Portrait System.md
-```
-
-目标是固定换装框架：
-
-```text
-child / adult / elder
-×
-female / male
-=
-6 个 PortraitFrame
-```
-
-同一 Frame 内允许 Face / Hair / Outfit 独立替换；所有资产必须直接符合 Frame，不允许运行时 Anchor / Mask / Offset 自动适配。
-
-头像 Runtime 最终清理已完成：youth / middle StageProfile、共享 FeatureLayer、Stage Body 和 Frame 特判已经删除。游戏 LifeStage 仍保留，但头像只映射到 child / adult / elder 三个 AgeBand。
-
-头像代码整理也已收口：`portrait-catalog.json` 是逻辑元数据权威；Web 的 `art-manifest.json` 只记录美术 Layer 映射；Catalog Audit 会在 build-content 中检查两边一致性。Face / Hair / Outfit / Neck 几何已经拆分到独立 assets 文件。
-
-## 当前玩法验证路线
-
-接下来按玩法问题推进：
-
-```text
-1. 人生经历阅读体验 / memoryText
-2. Story Effect 真正改变人物
-3. 过去经历 → 后续故事连续性
-4. 城市 / 世界变化 → 具体居民反馈
-5. 同一居民有限并行生活线与重大故事互斥
-6. 故事密度、重复率、人生节奏
-7. Coverage 驱动的内容扩充
-8. 玩家试玩反馈
-```
-
-不要重新把 Unity Runtime / Save 设计拉回本仓库的下一阶段。
-
----
-
-## Git / GitHub Actions 视觉审查工作流
-
-当前不再使用 Vercel Preview / Production，也不要求任何线上部署。
-
-正确流程：
-
-```text
-最新 main
-↓
-建立 tmp-*
-↓
-集中完成本轮所有修改
-↓
-一个聚合 commit / 一次 push
-↓
-GitHub Build + Resident Visual Review
-↓
-下载 resident-visual-review Artifact
-↓
-实际查看关键截图
-↓
-需要修正时，再聚合成一个修正 commit
-↓
-Build / Visual Review / 截图审查通过
-↓
-重新读取 main SHA
-↓
-一次推进 main
-↓
-main 再跑 GitHub Build + Resident Visual Review
-```
-
-Resident Visual Review 会在 GitHub Runner 内启动本地 Vite，用 Playwright 执行真实页面交互、DOM / 状态检查和截图，不需要线上 Preview。
-
-禁止同一批次按文件连续 push。自动化助手优先使用 `create_blob → create_tree → create_commit → update_ref` 或等价的一次性提交方式。
-
-对于 UI / 头像 / 美术任务，自动脚本 PASS 后仍必须实际查看 Artifact 截图；肉眼不满意就继续修改，不得把“截图成功”当成“美术通过”。
-
----
-
-## 当前验收问题
-
-继续开发时优先问：
-
-```text
-点一个陌生居民，我有没有兴趣继续看？
-现在的生活是否可信？
-从小到大读人生时间轴是否像一个人的一生？
-展开后的回忆是否像角色自己的记忆？
-过去是否真的影响后来？
-家庭 / 职业变化后人物是否真的变化？
-城市建设能否反馈到个人？
-连续看十几个居民后会不会明显重复？
-```
-
-回答“现在做到哪了”时，以最新 `main`、Actions、代码和以上当前玩法规则为准。
+不依赖 Vercel / Preview / Production。CI 成功不证明美术成功。头像任务必须实际操作换部件、保存到甲、检查乙不变，并查看小尺寸、各年龄、不同脸和配件组合。不再用“画风页存在”“SVG 数量很多”冒充 DIY 已完成。

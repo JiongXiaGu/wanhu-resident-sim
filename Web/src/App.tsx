@@ -10,6 +10,7 @@ import {
   type ResidentWorldSnapshot,
 } from './domain/resident';
 import { ResidentAvatar } from './resident/ResidentAvatar';
+import { AvatarIntegration, openAvatarEditor } from './avatar/Integration';
 import {
   assignmentForEvent,
   buildResidentLifeView,
@@ -266,7 +267,8 @@ export default function App() {
   const chronologicalHistory = [...lifeView.history].sort((left, right) => left.day - right.day);
 
   return (
-    <main className="sim-game" data-dev={showDev ? 'true' : 'false'}>
+    <main className="sim-game" data-dev={showDev ? 'true' : 'false'} data-city-seed={residentSnapshot.citySeed} data-game-day={gameDay}>
+      <AvatarIntegration snapshot={residentSnapshot} currentDay={gameDay} daysPerYear={definitions.generation.daysPerYear} onSelectResident={selectResident} />
       <div className="sim-world" aria-hidden="true">
         <div className="sim-world__mist" />
         <div className="sim-world__river" />
@@ -310,6 +312,7 @@ export default function App() {
             <div className="resident-avatar">
               <ResidentAvatar
                 seed={selectedResident.seed}
+                citySeed={residentSnapshot.citySeed}
                 residentStableId={selectedResident.id}
                 gender={selectedResident.gender}
                 lifeStage={selectedResident.lifeStage}
@@ -321,6 +324,7 @@ export default function App() {
             <div className="resident-identity">
               <div><b>{selectedResident.displayName}</b><span>{selectedAge}岁 · {occupation?.name ?? '居民'}</span></div>
               <small>{selectedDistrict} · {selectedFamily}</small>
+              <button className="avatar-inline-edit" type="button" data-edit-resident-avatar={selectedResident.id} onClick={() => openAvatarEditor(selectedResident.id)}>编辑头像</button>
             </div>
             <button className="resident-panel__close" type="button" onClick={() => setPanelOpen(false)} aria-label="关闭居民面板">×</button>
           </header>
@@ -393,7 +397,7 @@ export default function App() {
 
                     <div className="resident-life-now">
                       <i aria-hidden="true" />
-                      <div><time>{selectedAge}岁</time><b>如今</b><span>故事仍在继续</span></div>
+                      <div><time>{selectedAge}岁</time><b>如今</b><span>故事仍在继续。</span></div>
                     </div>
                   </div>
                 ) : (
