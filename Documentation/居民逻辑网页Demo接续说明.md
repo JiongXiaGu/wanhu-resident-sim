@@ -35,7 +35,7 @@ Unity ECS、BlobAsset、正式存档、RuntimeIndex、序列化和资源加载�
 7. `Documentation/居民生活记录与故事连续性.md`。
 8. `Documentation/开发与部署工作流.md`。
 9. 检查最新 GitHub Actions Build / Resident Visual Review。
-10. 用户问线上版本时，再比较 GitHub 分支 SHA 与 Vercel 状态：`main` 对 Production，`tmp-*` 对 Preview。
+10. UI / 头像 / 美术任务优先读取最新 Resident Visual Review Artifact；不再检查 Vercel Preview / Production。
 
 不要再把 `Documentation/居民内容生产与运行时数据管线V1.md` 或 `Documentation/居民模拟V1架构.md` 当成当前 Web Demo 下一阶段路线；其中与 Unity Runtime / Save 有关的内容只是早期设计记录。
 
@@ -276,9 +276,9 @@ female / male
 
 ---
 
-## Git / Vercel 工作流
+## Git / GitHub Actions 视觉审查工作流
 
-`tmp-*` 已允许 Vercel Preview，因此远端 push 本身就是部署触发器。
+当前不再使用 Vercel Preview / Production，也不要求任何线上部署。
 
 正确流程：
 
@@ -291,22 +291,28 @@ female / male
 ↓
 一个聚合 commit / 一次 push
 ↓
-Build + Visual Review + Vercel Preview
+GitHub Build + Resident Visual Review
+↓
+下载 resident-visual-review Artifact
+↓
+实际查看关键截图
 ↓
 需要修正时，再聚合成一个修正 commit
 ↓
-验收通过
+Build / Visual Review / 截图审查通过
 ↓
 重新读取 main SHA
 ↓
 一次推进 main
 ↓
-Vercel Production
+main 再跑 GitHub Build + Resident Visual Review
 ```
+
+Resident Visual Review 会在 GitHub Runner 内启动本地 Vite，用 Playwright 执行真实页面交互、DOM / 状态检查和截图，不需要线上 Preview。
 
 禁止同一批次按文件连续 push。自动化助手优先使用 `create_blob → create_tree → create_commit → update_ref` 或等价的一次性提交方式。
 
-遇到 Vercel rate limit 时不要通过空 commit 连续重试。
+对于 UI / 头像 / 美术任务，自动脚本 PASS 后仍必须实际查看 Artifact 截图；肉眼不满意就继续修改，不得把“截图成功”当成“美术通过”。
 
 ---
 

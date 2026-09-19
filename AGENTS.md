@@ -208,19 +208,20 @@ Unity Runtime / Save 不再是本仓库的下一阶段。
 - 修改稳定 Authoring 字段时同步更新 Schema 和必要文档。
 - 玩法改动优先增加可自动验证的交互，而不是只写文档。
 
-## Git 与部署工作流
+## Git 与 GitHub Actions 视觉审查工作流
 
 - 高频迭代优先 `tmp-*`；玩法 / UI 分支优先 `tmp-prototype-*`。
-- `tmp-*` 允许 Vercel Preview；`main` 对应 Vercel Production。
-- **一次逻辑开发批次只向远端 `tmp-*` 推送一个聚合 commit。** 不允许按文件、按小步骤连续 push，因为每次 push 都可能触发 GitHub Actions 和 Vercel Preview。
-- 如果 Preview / Visual Review 发现问题，先把这一轮修正全部准备好，再作为一个新的修正 commit 推送；仍然禁止“一文件一 commit”。
+- 当前远端开发流程**不使用 Vercel Preview / Production，也不依赖任何线上部署做验收**。
+- **一次逻辑开发批次只向远端 `tmp-*` 推送一个聚合 commit。** 不允许按文件、按小步骤连续 push；每一轮应该对应一次清晰的 GitHub Actions 验收。
+- 如果 Build / Resident Visual Review 或截图人工审查发现问题，先把这一轮修正聚合完成，再推一个修正 commit；仍然禁止“一文件一 commit”。
 - 推荐使用 `create_blob → create_tree → create_commit → update_ref` 或等价的本地原子提交方式，一次更新完整批次。
 - Build 与 Resident Visual Review 必须通过后再推进 `main`。
+- UI / 头像 / 美术任务必须下载 `resident-visual-review` Artifact 并实际查看截图；**CI PASS 不等于美术验收 PASS**。
 - 更新 `main` 前重新读取最新 SHA，不基于过期 SHA 覆盖。
-- 进入 `main` 时同样只推进一个逻辑完整 commit，避免重复申请 Production Deployment。
+- 进入 `main` 时同样只推进一个逻辑完整 commit；主分支再次以 GitHub Actions Build + Visual Review 验收。
 - Build 先执行 `build-content`，上传 `resident-generated-data` Artifact，再构建 Web。
-- Visual Review 不只看截图，也应验证状态变化、人生历史、连续故事等玩法逻辑。
-- 不为了触发 Vercel 连续推空 commit。
+- Resident Visual Review 在 GitHub Runner 内启动本地 Vite，由 Playwright 执行交互、检查 DOM / 状态并截图；截图 Artifact 是当前唯一远端视觉验收依据。
+- 不为了“刷新网页”、触发截图或重复运行而制造空 commit。
 
 ## 文档原则
 

@@ -47,8 +47,7 @@ wanhu-resident-sim/
 ├─ Web/                              # 玩法 / UI / 内容原型
 ├─ scripts/                          # Visual Review 等辅助脚本
 ├─ AGENTS.md
-├─ package.json
-└─ vercel.json
+└─ package.json
 ```
 
 ## Web Demo 的验收问题
@@ -341,12 +340,14 @@ http://localhost:5173/?view=portrait-style-bakeoff
 
 每套候选画风同时展示平民女、平民男、老人、公主/贵族女性、皇帝/高阶男性，并与正式 PortraitRenderer 完全隔离。上一轮自由 SVG 实验仍保留在 `/?view=portrait-style-study` 作为历史比较。
 
-## GitHub Actions / Visual Review / Vercel
+## GitHub Actions / Visual Review
 
-一次逻辑开发批次先聚合修改，再只向远端 `tmp-*` 推送一个 commit。Build 与 Resident Visual Review 通过后，再一次推进 `main`。
+当前远端验收**不再依赖 Vercel、Preview 或 Production 部署**。
 
-Build 会上传 `resident-generated-data` Artifact；Resident Visual Review 会同时检查居民玩法链和头像实验室。
+一次逻辑开发批次先聚合修改，再只向远端 `tmp-*` 推送一个 commit。GitHub Actions 自动完成 Build 与 Resident Visual Review。Visual Review 会在 Runner 内启动本地 Vite，通过 Playwright 执行真实页面交互、DOM/状态检查并截图，最终上传 `resident-visual-review` Artifact。
 
-不要为了刷新 Vercel 连续制造空提交或逐文件远端提交。Vercel 当前只作为部署结果，不作为 Web 原型逻辑正确性的唯一依据。
+对于 UI / 头像 / 美术改动，CI 显示 PASS 只代表脚本执行成功；合入 `main` 前还必须下载 Artifact，实际查看关键截图。确认视觉结果可接受后，再一次推进 `main`，并再次以 GitHub Actions 结果作为最终验收。
+
+当前流程不要求部署线上预览，也不等待或检查 Vercel 状态。不要为了“刷新网页”制造空 commit。
 
 详细流程见 `Documentation/开发与部署工作流.md`。
