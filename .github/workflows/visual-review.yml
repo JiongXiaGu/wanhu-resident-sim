@@ -67,6 +67,8 @@ jobs:
         run: node scripts/capture-resident-review.mjs
       - name: Capture unified portrait review screenshots
         run: node scripts/capture-portrait-review.mjs
+      - name: Capture independent art directions and pixel proofs
+        run: node scripts/capture-art-directions.mjs
       - name: Capture new portrait art directions
         run: node scripts/capture-portrait-art-reboot.mjs
       - name: Compress review previews

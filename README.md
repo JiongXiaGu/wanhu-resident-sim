@@ -22,21 +22,26 @@ Documentation/居民面板与生活事件V2.md
 Documentation/居民生活记录与故事连续性.md
 Documentation/StoryBucket与内容覆盖V1.md
 Documentation/Portrait System.md
+Documentation/Portrait Art Directions.md
 Documentation/Portrait Art Reboot.md
+Documentation/Portrait Art Review.md
 Documentation/开发与部署工作流.md
 ```
 
 然后检查 GitHub `main`、Actions 与必要代码。
 
-## 当前头像新美术入口
+## 并行头像美术研究入口
 
-`/?view=portrait-art-reboot`
+两个研究页都与正式 Runtime 隔离，保留各自的角色稿、交互和自动审查，不能互相覆盖或混同为生产资产：
 
-本轮不沿用旧正式头像或 A–F 模板，重新比较三组人物设计：**绢色人物 / 市井绘本 / 陶彩小像**。每组包含平民女性、平民男性、老人、贵族女性、高阶男性，并提供同类角色对照、48 / 64 / 96 CSS px、深浅底色与临时候选清单。
+| 入口 | 候选方向 | 样本 |
+| --- | --- | --- |
+| `/?view=portrait-art-directions` | 绢彩小像 / 暖陶绘本 / 朱墨刻绘 | 三组各六人，独立 SVG |
+| `/?view=portrait-art-reboot` | 绢色人物 / 市井绘本 / 陶彩小像 | 三组各五人，栅格插画 + 两组独立矢量 |
 
-这是美术方向 Proof，不是已完成的模块化资产。栅格组包含纸底；陶彩组是 2.5D 矢量体积表现，不是已经存在的 3D 模型。正式五 ID、六 Frame 和五层 RenderPlan 均不修改。旧 `portrait-style-study` / `portrait-style-bakeoff` 保留为历史，不作为新方案的视觉模板。
+Art Reboot 提供同类角色对照、48 / 64 / 96 CSS px、深浅底色和临时候选清单。栅格组包含纸底、单幅有效分辨率为 192 px；陶彩组是 2.5D 矢量体积表现，不是已经存在的 3D 模型。见 `Documentation/Portrait Art Reboot.md`。
 
-边界与选型后验证路径见 `Documentation/Portrait Art Reboot.md`。新页由 Resident Visual Review 生成 80–90 号截图，必须下载并实际查看，不能用 CI PASS 代替美术判断。
+正式入口 `/?view=portraits`、五 ID、六 Frame 和五层 RenderPlan 不变。旧 `portrait-style-study` / `portrait-style-bakeoff` 只保留历史对照。两个新研究页都必须下载实际截图评审，不能用 CI PASS 或可导出资源冒充美术选型与量产已经完成。
 
 ## 当前结构
 
@@ -256,7 +261,7 @@ skinPaletteId
 baseHairColorId
 ```
 
-当前工程层面的统一迁移与固定 Frame 落点已经完成，Runtime 保持冻结。美术方向另在 Art Reboot 选型：
+当前工程层面的统一迁移已经完成，正式 Runtime 冻结在固定换装框架：
 
 ```text
 child / adult / elder
@@ -268,7 +273,7 @@ female / male
 
 Face、Hair、Outfit 都必须按同一个 Frame 规格制作。一张脸可以配多套发型和衣服，但运行时不负责自动校准偏移。
 
-当前技术验证资产已经落在 `female.adult`：6 套女性 FaceFamily、3 套束/挽/盘发式、4 套交领/叠领/对襟常服，并由工作台生成 72 个组合做固定 Frame 审查。这不意味着当前美术已被选为最终风格。
+当前第一批正式资产已经落在 `female.adult`：6 套女性 FaceFamily、3 套束/挽/盘发式、4 套交领/叠领/对襟常服，并由工作台生成 72 个组合做固定 Frame 审查。
 
 唯一正式头像工作台：
 
@@ -277,6 +282,10 @@ Face、Hair、Outfit 都必须按同一个 Frame 规格制作。一张脸可以�
 ```
 
 正式规则见 `Documentation/Portrait System.md`。头像逻辑元数据以 `Content/Portrait/portrait-catalog.json` 为权威，Web 美术映射由 `assets/art-manifest.json` 管理，并由 Catalog Audit 自动检查一致性。
+
+新美术选型另行隔离在 `/?view=portrait-art-directions`：绢彩小像、暖陶绘本、朱墨刻绘三组各六人。它们没有替换正式头像，也没有证明模块化量产。先选方向，再做同脸换装及六 Frame 验证；不沿用旧 Bakeoff 的人物几何。详见 `Documentation/Portrait Art Directions.md`。
+
+Art Reboot 是另一套独立候选，入口 `/?view=portrait-art-reboot`，不覆盖上述研究页、原生弹窗状态同步修复或其反复切换回归。
 
 ## 内容生产原则
 
@@ -308,7 +317,7 @@ Portrait Catalog
 1. 人生经历阅读体验与回忆文本
 2. Story Effect 真正改变人物
 3. 过去经历 → 后续故事连续性
-4. 头像随机组合、年龄感和家庭相似度
+4. 头像美术选型 → 同脸换装、年龄感与组合验证
 5. 城市 / 世界变化 → 具体居民故事
 6. 同一居民有限的并行生活线与互斥规则
 7. 故事密度、重复率和人生节奏
@@ -337,19 +346,27 @@ npm run build
 npm run build-content
 ```
 
-正式头像实验室：
+正式头像工作台：
 
 ```text
 http://localhost:5173/?view=portraits
 ```
 
-当前新美术方向对比：
+当前新头像方向研究：
+
+```text
+http://localhost:5173/?view=portrait-art-directions
+```
+
+三组各六个独立角色稿，支持纸白/暮色背景、近景、96/64/48px 原尺寸与单张 SVG 导出。旧 `/?view=portrait-style-bakeoff` 和 `/?view=portrait-style-study` 仅保留作为历史比较，不再作为新画风模板。
+
+Art Reboot 三方向对比：
 
 ```text
 http://localhost:5173/?view=portrait-art-reboot
 ```
 
-每套候选同时展示平民女、平民男、老人、贵族女性、高阶男性，与正式 PortraitRenderer 完全隔离。旧 `/?view=portrait-style-bakeoff` 和 `/?view=portrait-style-study` 仅保留为历史比较。
+三组各五位居民，支持同类角色横向比较、真实像素矩阵、深浅底色及临时候选 JSON 导出，不写入居民 DNA。
 
 ## GitHub Actions / Visual Review
 
@@ -359,7 +376,9 @@ http://localhost:5173/?view=portrait-art-reboot
 
 对于 UI / 头像 / 美术改动，CI 显示 PASS 只代表脚本执行成功；合入 `main` 前还必须下载 Artifact，实际查看关键截图。确认视觉结果可接受后，再一次推进 `main`，并再次以 GitHub Actions 结果作为最终验收。
 
-既有玩法链与正式头像 72 组合检查继续运行。新美术页由 `scripts/capture-portrait-art-reboot.mjs` 额外验证，Artifact 同时包含对应提交的 `reviewed-source.zip`。
+新头像方向的原始 PNG 与 SVG/PNG 研究稿导出在 Artifact 的 `art-directions/` 子目录内，保留实际像素，不经过旧预览压缩脚本。自动断言与 commit 记录在其中的 `review.json`，不代替人工视觉判断。
+
+Art Reboot 由 `scripts/capture-portrait-art-reboot.mjs` 追加检查，不能替代既有脚本；截图为顶层 80–90 号 `art-reboot` 文件，检查记录为 `portrait-art-reboot-checks.json`。Artifact 同时包含该次提交的完整 `reviewed-source.zip`。桌面原始截图为 1560 px 宽，不触发 1600 px 预览上限的缩放。
 
 当前流程不要求部署线上预览，也不等待或检查 Vercel 状态。不要为了“刷新网页”制造空 commit。
 
