@@ -79,6 +79,20 @@ try {
 
   await page.getByRole('button', { name: '切换深浅底色', exact: true }).click();
   assert.equal(await page.locator('[data-art-reboot]').getAttribute('data-tone'), 'dark');
+  // 项目自定的深色剪影门槛，不宣称这是所有插画通用的无障碍标准。
+  const portraitBackdrops = await page.locator('[data-art-direction="graphic"] .par-card-art, [data-art-direction="clay"] .par-card-art')
+    .evaluateAll((cards) => cards.map((card) => getComputedStyle(card).backgroundColor));
+  const luminance = (channels) => channels.map((channel) => channel / 255)
+    .map((channel) => channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4)
+    .reduce((sum, channel, index) => sum + channel * [0.2126, 0.7152, 0.0722][index], 0);
+  const representativeHair = luminance([36, 61, 66]);
+  for (const backdrop of portraitBackdrops) {
+    const channels = backdrop.match(/[\d.]+/g)?.slice(0, 3).map(Number);
+    assert.ok(channels?.length === 3, `Unsupported backdrop colour: ${backdrop}`);
+    const contrast = (luminance(channels) + 0.05) / (representativeHair + 0.05);
+    assert.ok(contrast >= 2.5, `Dark portrait backdrop hides the hair silhouette: ${backdrop}, contrast ${contrast}`);
+  }
+  checks.push('Dark portrait backdrops preserve silhouette contrast without recolouring or outlining the artwork');
   await screenshot('86-art-reboot-dark');
   await page.getByRole('button', { name: '48 / 64 / 96 px', exact: true }).click();
   assert.equal(await page.locator('[data-art-pixels] [data-art-portrait]').count(), 45);
