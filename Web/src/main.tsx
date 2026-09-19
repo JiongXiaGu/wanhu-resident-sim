@@ -13,19 +13,23 @@ import './resident-life-memory.css';
 import './portrait-lab.css';
 import './portrait-entry.css';
 
-// 研究稿独立加载；正式居民页面不加载新的美术实验资产。
+// 美术实验独立加载，正式居民页面不加载新资产或新配方。
 const PortraitArtDirections = lazy(() => import('./portrait-art-directions/PortraitArtDirections'));
+const PortraitComposerLab = lazy(() => import('./portrait-composer-lab/PortraitComposerLab'));
 const params = new URLSearchParams(window.location.search);
 const view = params.get('view');
-const rootView = view === 'portrait-art-directions'
-  ? <Suspense fallback={<p role="status">正在打开头像方向研究…</p>}><PortraitArtDirections /></Suspense>
-  : view === 'portraits'
-    ? <><PortraitLab /><a className="portrait-view-entry" href="/?view=portrait-art-directions">新头像方向研究</a></>
-    : view === 'portrait-style-study'
-      ? <PortraitStyleStudy />
-      : view === 'portrait-style-bakeoff'
-        ? <PortraitStyleBakeoff />
-        : <><App /><a className="portrait-view-entry" href="/?view=portraits">头像工作台</a></>;
+const composerEntry = <a className="portrait-view-entry" href="/?view=portrait-composer-lab">头像 DIY · 同脸换装</a>;
+const rootView = view === 'portrait-composer-lab'
+  ? <Suspense fallback={<p role="status">正在打开头像 DIY…</p>}><PortraitComposerLab /></Suspense>
+  : view === 'portrait-art-directions'
+    ? <><Suspense fallback={<p role="status">正在打开头像方向研究…</p>}><PortraitArtDirections /></Suspense>{composerEntry}</>
+    : view === 'portraits'
+      ? <><PortraitLab />{composerEntry}</>
+      : view === 'portrait-style-study'
+        ? <PortraitStyleStudy />
+        : view === 'portrait-style-bakeoff'
+          ? <PortraitStyleBakeoff />
+          : <><App />{composerEntry}</>;
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>{rootView}</StrictMode>,
