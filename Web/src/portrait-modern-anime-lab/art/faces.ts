@@ -62,14 +62,18 @@ function eyeArt(look:Look):string{
 }
 export function expressionArt(look:Look):string{
  const female=look.frame==='female';
+ // 深肤色使用更深的唇线和暖肤高光，避免闭口表情消失或出现白色下唇条。
+ const skin=skinColors[look.skin];
+ const lip=look.skin==='deep'?'#743c4b':look.skin==='warm'?'#915260':'#a26471';
+ const cavity=look.skin==='deep'?'#693448':'#975165';
  const y=female?298:307,w=look.face==='refined'?15:19;
  let mouth='';
  switch(look.expression){
-  case 'neutral':mouth=l(`M${256-w} ${y}Q256 ${y-1.5} ${256+w} ${y}`,'#a26471',1.55)+l(`M250 ${y+8}Q256 ${y+10} 262 ${y+8}`,'#fff2e3',1.8);break;
-  case 'smile':mouth=l(`M${256-w} ${y-1}Q256 ${y+9} ${256+w} ${y-1}`,'#a26471',1.8)+l(`M248 ${y+10}Q256 ${y+12} 264 ${y+10}`,'#fff2e3',1.9);break;
-  case 'happy':case 'laugh':mouth=p(`M${256-w} ${y-2}Q256 ${y+4} ${256+w} ${y-2}Q${256+w-2} ${y+20} 256 ${y+22}Q${256-w+2} ${y+20} ${256-w} ${y-2}Z`,'#975165','#a96574',.8)+p(`M${258-w} ${y}Q256 ${y+4} ${254+w} ${y}L${251+w} ${y+6}Q256 ${y+10} ${261-w} ${y+6}Z`,'#fff7e9')+p(`M${263-w} ${y+16}Q256 ${y+10} ${249+w} ${y+16}Q256 ${y+23} ${263-w} ${y+16}Z`,'#e69a9f');break;
-  case 'focused':mouth=l(`M${256-w} ${y+1}Q256 ${y-2} ${256+w} ${y+1}`,'#985c69',1.7);break;
-  case 'sad':mouth=l(`M${256-w+2} ${y+4}Q256 ${y-5} ${254+w} ${y+4}`,'#a26471',1.65);break;
+  case 'neutral':mouth=l(`M${256-w} ${y}Q256 ${y-1.5} ${256+w} ${y}`,lip,1.55)+l(`M250 ${y+8}Q256 ${y+10} 262 ${y+8}`,skin.light,1.8);break;
+  case 'smile':mouth=l(`M${256-w} ${y-1}Q256 ${y+9} ${256+w} ${y-1}`,lip,1.8)+l(`M248 ${y+10}Q256 ${y+12} 264 ${y+10}`,skin.light,1.9);break;
+  case 'happy':case 'laugh':mouth=p(`M${256-w} ${y-2}Q256 ${y+4} ${256+w} ${y-2}Q${256+w-2} ${y+20} 256 ${y+22}Q${256-w+2} ${y+20} ${256-w} ${y-2}Z`,cavity,lip,.8)+p(`M${258-w} ${y}Q256 ${y+4} ${254+w} ${y}L${251+w} ${y+6}Q256 ${y+10} ${261-w} ${y+6}Z`,'#fff7e9')+p(`M${263-w} ${y+16}Q256 ${y+10} ${249+w} ${y+16}Q256 ${y+23} ${263-w} ${y+16}Z`,'#e69a9f');break;
+  case 'focused':mouth=l(`M${256-w} ${y+1}Q256 ${y-2} ${256+w} ${y+1}`,lip,1.7);break;
+  case 'sad':mouth=l(`M${256-w+2} ${y+4}Q256 ${y-5} ${254+w} ${y+4}`,lip,1.65);break;
  }
  return eyeArt(look)+(look.expression==='happy'||look.expression==='laugh'?both(e(189,269,29,14,'url(#cheek)')):'')+
  group('mouth',mouth);

@@ -78,7 +78,9 @@ jobs:
           node scripts/capture-anime-review.mjs
           node scripts/audit-anime-eyes.mjs
       - name: Capture modern guofeng art and shared wardrobe proofs
-        run: node scripts/capture-modern-anime.mjs
+        run: |
+          node scripts/capture-modern-anime.mjs
+          node scripts/audit-modern-mouths.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots
