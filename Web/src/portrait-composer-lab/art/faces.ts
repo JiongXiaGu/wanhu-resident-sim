@@ -1,9 +1,11 @@
 import type { Look } from '../model';
 import { p, l, e, iris, skins, hairs, type Skin } from './drawing';
+import { expandedFemaleFaces, expandedMaleFaces } from './expanded-faces';
 
 // 每个 Family 完整拥有脸型和五官。只共享绘图基元，不拼装独立眼鼻嘴，不做运行时脸部变形。
 function femaleFaces(s: Skin, brow: string): Record<Look['faceFamilyId'], string> {
   return {
+    ...expandedFemaleFaces(s, brow),
     gentle: p('M87 87Q88 58 125 57Q166 55 171 88L170 123Q166 151 139 170Q128 178 117 171Q91 155 86 128Z',s.base,s.line,.85)+
       p('M156 68Q174 84 170 123Q165 151 139 170L127 175Q154 156 159 129Z',s.shade)+
       p('M95 87Q99 67 126 64Q144 63 153 71Q137 73 130 92L115 100L94 106Z',s.light)+
@@ -44,6 +46,7 @@ function femaleFaces(s: Skin, brow: string): Record<Look['faceFamilyId'], string
 }
 function maleFaces(s: Skin, brow: string): Record<Look['faceFamilyId'], string> {
   return {
+    ...expandedMaleFaces(s, brow),
     gentle: p('M84 90Q85 57 126 56Q168 56 174 90L171 125L161 148Q144 172 128 177Q109 174 95 153L85 131Z',s.base,s.line,.9)+
       p('M161 74L173 94L168 131Q158 159 128 177L144 154L154 125Z',s.shade)+p('M92 84Q104 63 132 64L155 77L138 80L124 101L92 103Z',s.light)+
       p('M93 99L107 94L121 98L119 103L106 100L94 103Z',brow)+p('M137 98L153 92L164 97L163 102L152 98L138 103Z',brow)+

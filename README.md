@@ -16,11 +16,14 @@ Web Demo 是玩法原型，不是 Unity Runtime 设计稿。Unity ECS、BlobAsse
 
 这次是实际 Face / Hair / Headwear / Outfit 分层组合，不是切换完整角色稿：
 
-- 成年男女各四张脸、六个发型；四种帽饰加无帽；六套衣服。
-- 同一张脸可独立换发型、帽子、服装。摘帽恢复同一发型，不改发型 ID。
+- **成年女性 8 张脸、成年男性 8 张脸，共 16 张完整面容**；每类六个发型，四种帽饰加无帽，六套衣服。
+- 新增宽圆、修长、方颌、心形面容，男女分别作画；原有四种面容和 v1 配方保持兼容。
+- 每张脸都共享全部发型、帽子和衣服：换脸不换装，换装不换脸；摘帽恢复同一发型 ID。
+- 默认打开“面容”和“全部脸型”。可以在同一发型/衣装下比较八张脸，再直接选中一张。
+- 新增脸型×服饰矩阵，以及每张脸的 96/64/48px 原尺寸对照。
 - 肤色、发色、衣服配色；锁定面容与肤色后随机搭配。
-- 自动保存当前组合，支持 JSON 配方导入/导出、组合链接与透明 SVG/PNG 导出。
-- 96/64/48px 同步预览、白天/暮色、同脸对照和发型×帽饰矩阵。
+- 自动保存，支持 JSON 配方导入/导出、组合链接与透明 SVG/PNG 导出。
+- 白天/暮色、同脸对照、发型×帽饰矩阵和覆盖全部面容的 24 人搭配样本。
 
 它是独立的**成年人组合实验**，不替换正式居民头像，不更改正式五字段 DNA 和六个 Frame。儿童、老人、Unity 导入和全部组合美术仍需后续验证。规则见 [Portrait Composer Lab](Documentation/Portrait%20Composer%20Lab.md)。
 
@@ -103,7 +106,7 @@ Gender × child/adult/elder 产生六个固定 PortraitFrame。Face、Hair、Out
 
 | 页面 | 用途 |
 | --- | --- |
-| `/?view=portrait-composer-lab` | 当前可交互的成年头像 DIY 与同脸换装验证 |
+| `/?view=portrait-composer-lab` | 当前可交互的成年头像 DIY、全部脸型与共享衣装验证 |
 | `/?view=portraits` | 冻结的正式头像工作台 |
 | `/?view=portrait-art-directions` | 绢彩、暖陶、朱墨三组完整角色稿，不是模块化资产 |
 | `/?view=portrait-style-bakeoff` | 历史风格比较 |
@@ -168,12 +171,15 @@ http://localhost:5173/?view=portrait-composer-lab
 → main 再次 Build + Visual Review + 截图审查
 ```
 
-Build 先执行 build-content 并上传 generated Artifact，再构建 Web。Resident Visual Review 在 Runner 内启动 Vite，Playwright 执行真实交互与截图。原有居民连续性、正式头像和研究稿验收保留；新增 `scripts/capture-composer.mjs` 检查 DIY 配方、同脸换装、帽饰恢复、下载/导入、保存/分享和小尺寸。
+Build 先执行 build-content 并上传 generated Artifact，再构建 Web。Resident Visual Review 在 Runner 内启动 Vite，Playwright 执行真实交互与截图。原有居民连续性、正式头像和研究稿验收保留；`scripts/capture-composer.mjs` 检查 DIY 配方、双向图层独立性、帽饰恢复、下载/导入、保存/分享和小尺寸，并调用 `capture-composer-faces.mjs` 覆盖新增面容。
 
 `resident-visual-review` Artifact：
 
 - 根目录：原有居民与正式头像预览。
 - `art-directions/`：完整角色研究的原始 PNG 与 SVG/PNG。
-- `composer/`：DIY 原始截图、导出样本和 `review.json`。八张发型帽饰矩阵覆盖 240 个渲染样本；1,440 基础配方的自动检查不等于每张都已人工审美通过。
+- `composer/`：DIY 原始截图、导出样本和机器检查报告。16 张发型帽饰矩阵覆盖 480 个渲染样本；全部脸型总览覆盖 48 个原尺寸样本；脸型×服饰矩阵覆盖 96 个样本。
+- `composer/face-exports/`：当前分层渲染器输出的 16 份组合 SVG/PNG/JSON，便于离线比较，不作为 Runtime 固定整图资产。
+
+2,880 个基础配方检查只证明组合和图层不变量；不是 2,880 张肉眼独特的人像，更不表示全部美术已人工通过。24 人墙是分层覆盖演示，真实随机另用 512 个种子验收。
 
 两个实验子目录保留原始 PNG，不使用旧缩图脚本。**CI PASS 不等于美术 PASS**；美术任务必须下载并实际查看截图再合入 main，不制造空 commit 刷新结果。详细规范见 `Documentation/开发与部署工作流.md`。

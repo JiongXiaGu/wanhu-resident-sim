@@ -1,0 +1,20 @@
+/* 只扩展 DIY 的面容对照，不覆盖正式 portrait 样式。 */
+.pc-face-note{color:var(--pc-muted);font-size:10px;margin-top:10px!important}
+.pc-proof[data-proof-mode=faceFamilyId] .pc-proof-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.pc-proof[data-proof-mode=faceFamilyId] .pc-proof-heading{align-items:flex-start;flex-direction:column}
+.pc-proof[data-proof-mode=faceFamilyId] .pc-proof-tabs{justify-content:flex-start}
+.pc-proof[data-proof-mode=faceFamilyId] .pc-proof-grid>figure{padding:18px 12px 14px}
+.pc-proof[data-proof-mode=faceFamilyId] .pc-proof-grid>figure>figcaption{font-size:14px;font-weight:600;color:var(--pc-ink);margin-top:12px}
+.pc-face-description{display:block;font-size:10px;font-weight:400;color:var(--pc-muted);margin:3px 0 0}
+.pc-face-sizes{display:flex;justify-content:center;align-items:flex-end;gap:10px;width:100%;margin:14px 0}
+.pc-face-sizes>div{display:flex;align-items:center;flex-direction:column;gap:5px}
+.pc-root .pc-face-sizes img{width:auto;height:auto;max-width:none;max-height:none;flex:none;border-radius:5px}
+.pc-root .pc-face-sizes img[data-face-pixel="96"]{width:96px;height:96px}
+.pc-root .pc-face-sizes img[data-face-pixel="64"]{width:64px;height:64px}
+.pc-root .pc-face-sizes img[data-face-pixel="48"]{width:48px;height:48px}
+.pc-face-sizes span{font-size:10px;color:var(--pc-muted)}
+.pc-root [data-use-face]{font-size:11px;min-height:32px;padding:6px 14px}
+.pc-proof[data-proof-mode=faces-outfits] .pc-proof-heading{align-items:flex-start;flex-direction:column}
+.pc-proof[data-proof-mode=faces-outfits] .pc-proof-tabs{justify-content:flex-start}
+@media(max-width:1160px){.pc-proof[data-proof-mode=faceFamilyId] .pc-proof-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.pc-proof[data-proof-mode=faceFamilyId] .pc-proof-grid{grid-template-columns:1fr}.pc-proof[data-proof-mode=faceFamilyId] .pc-proof-grid>figure{padding:16px 10px}.pc-proof[data-proof-mode=faceFamilyId] .pc-proof-grid>figure>img{width:176px;height:176px}.pc-proof[data-proof-mode=faces-outfits] .pc-proof-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
