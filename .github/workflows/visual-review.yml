@@ -67,9 +67,12 @@ jobs:
         run: node scripts/capture-resident-review.mjs
       - name: Capture unified portrait review screenshots
         run: node scripts/capture-portrait-review.mjs
+      - name: Capture independent art directions and pixel proofs
+        run: node scripts/capture-art-directions.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: resident-visual-review

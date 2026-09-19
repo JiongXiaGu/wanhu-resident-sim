@@ -22,6 +22,7 @@ Documentation/居民面板与生活事件V2.md
 Documentation/居民生活记录与故事连续性.md
 Documentation/StoryBucket与内容覆盖V1.md
 Documentation/Portrait System.md
+Documentation/Portrait Art Directions.md
 Documentation/开发与部署工作流.md
 ```
 
@@ -245,7 +246,7 @@ skinPaletteId
 baseHairColorId
 ```
 
-当前工程层面的统一迁移已经完成。下一步把美术切换到固定换装框架：
+当前工程层面的统一迁移已经完成，正式 Runtime 冻结在固定换装框架：
 
 ```text
 child / adult / elder
@@ -259,13 +260,15 @@ Face、Hair、Outfit 都必须按同一个 Frame 规格制作。一张脸可以�
 
 当前第一批正式资产已经落在 `female.adult`：6 套女性 FaceFamily、3 套束/挽/盘发式、4 套交领/叠领/对襟常服，并由工作台生成 72 个组合做固定 Frame 审查。
 
-唯一头像工作台：
+唯一正式头像工作台：
 
 ```text
 /?view=portraits
 ```
 
 正式规则见 `Documentation/Portrait System.md`。头像逻辑元数据以 `Content/Portrait/portrait-catalog.json` 为权威，Web 美术映射由 `assets/art-manifest.json` 管理，并由 Catalog Audit 自动检查一致性。
+
+新美术选型另行隔离在 `/?view=portrait-art-directions`：绢彩小像、暖陶绘本、朱墨刻绘三组各六人。它们没有替换正式头像，也没有证明模块化量产。先选方向，再做同脸换装及六 Frame 验证；不沿用旧 Bakeoff 的人物几何。详见 `Documentation/Portrait Art Directions.md`。
 
 ## 内容生产原则
 
@@ -297,7 +300,7 @@ Portrait Catalog
 1. 人生经历阅读体验与回忆文本
 2. Story Effect 真正改变人物
 3. 过去经历 → 后续故事连续性
-4. 头像随机组合、年龄感和家庭相似度
+4. 头像美术选型 → 同脸换装、年龄感与组合验证
 5. 城市 / 世界变化 → 具体居民故事
 6. 同一居民有限的并行生活线与互斥规则
 7. 故事密度、重复率和人生节奏
@@ -326,19 +329,19 @@ npm run build
 npm run build-content
 ```
 
-头像实验室：
+正式头像工作台：
 
 ```text
 http://localhost:5173/?view=portraits
 ```
 
-当前头像画风竞标：
+当前新头像方向研究：
 
 ```text
-http://localhost:5173/?view=portrait-style-bakeoff
+http://localhost:5173/?view=portrait-art-directions
 ```
 
-每套候选画风同时展示平民女、平民男、老人、公主/贵族女性、皇帝/高阶男性，并与正式 PortraitRenderer 完全隔离。上一轮自由 SVG 实验仍保留在 `/?view=portrait-style-study` 作为历史比较。
+三组各六个独立角色稿，支持纸白/暮色背景、近景、96/64/48px 原尺寸与单张 SVG 导出。旧 `/?view=portrait-style-bakeoff` 和 `/?view=portrait-style-study` 仅保留作为历史比较，不再作为新画风模板。
 
 ## GitHub Actions / Visual Review
 
@@ -347,6 +350,8 @@ http://localhost:5173/?view=portrait-style-bakeoff
 一次逻辑开发批次先聚合修改，再只向远端 `tmp-*` 推送一个 commit。GitHub Actions 自动完成 Build 与 Resident Visual Review。Visual Review 会在 Runner 内启动本地 Vite，通过 Playwright 执行真实页面交互、DOM/状态检查并截图，最终上传 `resident-visual-review` Artifact。
 
 对于 UI / 头像 / 美术改动，CI 显示 PASS 只代表脚本执行成功；合入 `main` 前还必须下载 Artifact，实际查看关键截图。确认视觉结果可接受后，再一次推进 `main`，并再次以 GitHub Actions 结果作为最终验收。
+
+新头像方向的原始 PNG 与 SVG/PNG 研究稿导出在 Artifact 的 `art-directions/` 子目录内，保留实际像素，不经过旧预览压缩脚本。自动断言与 commit 记录在其中的 `review.json`，不代替人工视觉判断。
 
 当前流程不要求部署线上预览，也不等待或检查 Vercel 状态。不要为了“刷新网页”制造空 commit。
 
