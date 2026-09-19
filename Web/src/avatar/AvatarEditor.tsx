@@ -1,7 +1,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
 import {options,parts,labels,defaultFor,equalRecipe,parseRecipe,randomRecipe,optionLabel,type Part,type Recipe,type Target} from './model';
-import {applyRecipe,getRaw,removeRecipe,useSaved} from './store';
+import {applyRecipe,getRaw,parseEntry,removeRecipe,useSaved} from './store';
 import {AvatarImage,SavedAvatar} from './AvatarImage';
 import {downloadFile,downloadPng,renderAvatar} from './render';
 import './editor.css';
@@ -22,8 +22,6 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
   node?.showModal();
   return ()=>{epoch.current++;node?.close();if(opener?.isConnected)opener.focus();};
  },[]);
- // 切目标时不复用上一人的草稿。换对象前的未保存处理在 request() 内完成。
- useEffect(()=>{epoch.current++;setDraft(saved.recipe??defaultFor(target));setBaseline(saved.recipe??defaultFor(target));setBaselineRaw(saved.raw);setMessage(saved.error);},[target.key]);
  useEffect(()=>{function warn(event:BeforeUnloadEvent){if(dirty){event.preventDefault();event.returnValue='';}}window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[dirty]);
  // 二次确认期间让下面的编辑器 inert，并将键盘焦点留在确认区。
  useEffect(()=>{
@@ -50,7 +48,16 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
  }
  function finish(action:Pending){
   setPending(null);epoch.current++;
-  if(action.kind==='switch'){setKey(action.key);return;}
+  if(action.kind==='switch'){
+   const next=targets.find(item=>item.key===action.key);
+   if(!next){setMessage('这个对象已不在当前城市中。');return;}
+   let raw:string|null=null,warning='';
+   try{raw=getRaw(next.key);}catch{warning='无法读取本地保存；当前只可预览或导出。';}
+   const entry=parseEntry(raw),nextRecipe=entry.recipe??defaultFor(next);
+   // 同一事件中批量提交目标、草稿与基线。不能等 useEffect 再把上一人的脸换掉。
+   setKey(next.key);setDraft(nextRecipe);setBaseline(nextRecipe);setBaselineRaw(raw);setMessage(warning||entry.error);
+   return;
+  }
   if(action.kind==='close'){onClose(target.residentId);return;}
   try{removeRecipe(target.key,baselineRaw);setBaselineRaw(null);const initial=defaultFor(target);setDraft(initial);setBaseline(initial);setMessage(target.kind==='resident'?'已移除此居民的定制记录，游戏恢复原头像。下方是尚未应用的新素材预览。':'此玩家档案已恢复默认头像。');}
   catch(error){setMessage(error instanceof Error?error.message:'恢复失败。');}

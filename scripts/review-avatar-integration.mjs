@@ -37,6 +37,13 @@ try {
  const expected=await editor.getAttribute('data-recipe');
  await page.locator(`[data-target-key="${b}"]`).click();await page.locator('[data-pending-apply]').click();await page.waitForFunction(k=>document.querySelector('[data-avatar-editor]').dataset.target===k,b);
  assert.equal(await page.evaluate(k=>localStorage.getItem('wanhu.avatar.v1:'+k),a),expected);assert.equal(await page.evaluate(k=>localStorage.getItem('wanhu.avatar.v1:'+k),b),null);
- await writeFile(`${out}/integration-review.json`,JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',measurements,lateImportTargetIsolation:true,applyThenSwitchTargetIsolation:true},null,2));
- console.log('Gameplay launcher placement, compact inline edit button, late import and apply-then-switch isolation passed.');
+ // 目标 ID 一旦变更，同一个已提交 DOM 中的草稿也必须正确，不追加等待掩盖跨对象残影。
+ for(let cycle=0;cycle<12;cycle++)for(const item of [{key:a,recipe:expected},{key:b,recipe:beforeB}]){
+  await page.locator(`[data-target-key="${item.key}"]`).click();
+  await page.waitForFunction(k=>document.querySelector('[data-avatar-editor]').dataset.target===k,item.key);
+  const visible=await editor.evaluate(node=>({key:node.dataset.target,recipe:node.dataset.recipe,dirty:node.dataset.dirty}));
+  assert.equal(visible.key,item.key);assert.equal(visible.recipe,item.recipe,'Target switched before its draft');assert.equal(visible.dirty,'false');
+ }
+ await writeFile(`${out}/integration-review.json`,JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',measurements,lateImportTargetIsolation:true,applyThenSwitchTargetIsolation:true,rapidTargetSwitches:24},null,2));
+ console.log('Gameplay launcher placement, compact edit button, delayed import and 24 atomic target switches passed.');
 }catch(error){await page.screenshot({path:`${out}/integration-failure.png`,fullPage:true}).catch(()=>{});throw error;}finally{await browser.close();}
