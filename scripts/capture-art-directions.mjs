@@ -56,6 +56,20 @@ async function pixelSizes() {
 async function noOverflow() {
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Horizontal page overflow');
 }
+async function detailReady(id, role) {
+  // 等待真实 React 内容提交，不用固定延迟掩盖关闭/重开时序问题。
+  const detail = page.locator(`dialog[open] [data-detail-direction="${id}"][data-detail-role="${role}"]`);
+  await detail.locator('[data-pixel-size="48"]').waitFor({ state: 'visible' });
+  await ready();
+  assert.equal(await pixelSizes(), 3);
+  assert.equal(await detail.locator('.pad-detail-art img').getAttribute('src'),
+    await page.locator(`[data-open-study="${role}"] img`).getAttribute('src'));
+}
+async function detailClosed(button) {
+  await page.locator('dialog .pad-dialog-content').waitFor({ state: 'detached' });
+  assert(!(await page.locator('dialog').evaluate(dialog => dialog.open)));
+  assert(await button.evaluate(element => element === document.activeElement), 'Dialog did not restore focus');
+}
 try {
   await page.goto(baseUrl + '/?view=portrait-art-directions', { waitUntil: 'networkidle' });
   await page.waitForSelector('[data-art-directions="true"]');
@@ -98,9 +112,14 @@ try {
       const button = page.locator(`[data-open-study="${role}"]`);
       await button.focus();
       await page.keyboard.press('Enter');
-      assert(await page.locator('dialog').evaluate(dialog => dialog.open));
-      await ready();
-      assert.equal(await pixelSizes(), 3);
+      await detailReady(id, role);
+      // 模拟前一轮排队的 close 通知：不能清空已重开的角色，也不能抢走焦点。
+      await page.locator('dialog').evaluate(async dialog => {
+        dialog.dispatchEvent(new Event('close'));
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      });
+      await detailReady(id, role);
+      assert(await page.locator('dialog').evaluate(dialog => dialog.contains(document.activeElement)), 'Stale close stole focus');
       await screenshot(`83-${id}-${role}-detail`, page.locator('dialog'));
       if (id === 'silk' && role === 'woman') {
         const downloadEvent = page.waitForEvent('download');
@@ -113,13 +132,18 @@ try {
         assert.equal(Buffer.concat(chunks).toString('utf8'), exports[0]);
       }
       await page.keyboard.press('Escape');
-      assert(!(await page.locator('dialog').evaluate(dialog => dialog.open)));
-      assert(await button.evaluate(element => element === document.activeElement), 'Dialog did not restore focus');
+      await detailClosed(button);
+      // 紧接着重开，再用按钮关闭；两种关闭路径均不得留下空窗口或旧角色。
+      await button.click();
+      await detailReady(id, role);
+      await page.locator('[data-close-study]').click();
+      await detailClosed(button);
     }
   }
-  checks.push('Style filters; keyboard-opened dialogs; Escape and focus restoration; SVG download');
+  checks.push('Style filters; 12 dialog openings; Escape/button cleanup; focus restoration; stale-close regression; SVG download');
   await page.locator('[data-filter="all"]').click();
   await page.locator('[data-pixel-toggle]').click();
+  await page.locator('[data-pixel-size]').nth(53).waitFor({ state: 'visible' });
   await ready();
   assert.equal(await pixelSizes(), 54);
   for (const id of ids) await screenshot(`84-${id}-actual-pixels`, page.locator(`[data-direction="${id}"]`));
@@ -138,9 +162,12 @@ try {
   await page.locator('[data-pixel-toggle]').click();
   await noOverflow();
   await screenshot('86-mobile-studies');
-  await page.locator('[data-open-study="noble"]').click();
+  const mobileButton = page.locator('[data-open-study="noble"]');
+  await mobileButton.click();
+  await detailReady('clay', 'noble');
   await screenshot('87-mobile-dialog', page.locator('dialog'));
   await page.getByRole('button', { name: '关闭角色近景' }).click();
+  await detailClosed(mobileButton);
   checks.push('390px responsive layout, unscaled small portraits and close-button interaction');
   assert.deepEqual(errors, [], 'Browser errors');
   checks.push('No browser JS/console/HTTP errors');

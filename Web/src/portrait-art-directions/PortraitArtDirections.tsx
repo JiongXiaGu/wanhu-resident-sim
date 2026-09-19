@@ -25,6 +25,8 @@ export default function PortraitArtDirections() {
     const element = dialog.current;
     if (selection && element && !element.open) element.showModal();
   }, [selection]);
+  // Escape、关闭按钮和背景点击统一在当前交互中清理选择。
+  // 原生 close 事件会排队派发，不能让上一轮的迟到事件清空下一位角色。
   function close() {
     dialog.current?.close();
     setSelection(null);
@@ -95,9 +97,10 @@ export default function PortraitArtDirections() {
       </aside>
     </div>
     <dialog ref={dialog} className="pad-dialog" aria-labelledby="pad-dialog-title"
-      onClose={() => { setSelection(null); opener.current?.focus(); }}
+      onCancel={event => { event.preventDefault(); close(); }}
+      onClose={event => { if (!event.currentTarget.open) opener.current?.focus(); }}
       onClick={event => { if (event.target === event.currentTarget) close(); }}>
-      {selection && <div className="pad-dialog-content"><header><div><p className="pad-eyebrow">{selection.direction.english}</p>
+      {selection && <div className="pad-dialog-content" data-detail-direction={selection.direction.id} data-detail-role={selection.role}><header><div><p className="pad-eyebrow">{selection.direction.english}</p>
         <h2 id="pad-dialog-title">{selection.direction.title} · {roles.find(role => role.id === selection.role)!.label}</h2></div>
         <button type="button" data-close-study onClick={close} aria-label="关闭角色近景" autoFocus>×</button></header>
         <div className="pad-detail-body"><div className="pad-detail-art"><img src={imageUrls[selection.direction.id][selection.role]} width="320" height="320" alt="角色近景" /></div>
