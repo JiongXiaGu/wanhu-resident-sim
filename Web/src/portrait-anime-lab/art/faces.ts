@@ -18,8 +18,8 @@ export function faceBase(look: Look): string {
   const s = skins[look.skin];
   const outline = (look.frame === 'female.adult' ? female : male)[look.face];
   const ears = bilateral(p('M78 119Q62 109 67 129Q69 143 80 141Z',s.base,s.line,1.2)+l('M71 120Q78 120 73 132',s.shade,1.5));
-  // 只用窄侧影和下颌投影，不把大块硬阴影压在鼻口之间。
-  const shade = bilateral(p('M78 98L83 125Q85 143 99 154L111 168Q87 153 80 133Z',s.shade));
+  // 阴影只留在鬓侧，不再用斜切色块贯穿面颊与下颌。
+  const shade = bilateral(p('M78 109L83 125Q84 136 93 147L94 151Q83 141 80 130Z',s.shade));
   const nose = p('M128 133L125 141Q128 144 131 141Z',s.shade)+e(128,137,1,2,s.light);
   return ears + p(outline,s.base,s.line,1.4) + shade + nose;
 }
@@ -28,18 +28,19 @@ export function neckArt(look: Look): string {
   return p('M107 173L106 195L93 205L128 230L163 205L150 195L149 173Z',s.base,s.line,1)+p('M107 174Q128 191 149 174L150 192Q128 208 106 192Z',s.shade);
 }
 
-// 这些是每个 FaceFamily 自己的眼型设计，不是按脸轮廓实时求解锚点。
-export type EyeDesign = { outer: number; inner: number; center: number; top: number; bottom: number; tilt: number; brow: number; iris: number; mouth: number; weight: number };
+// 固定的眼型美术参数，不是按脸轮廓或头发实时求解锚点。
+// 虹膜坐标按实际眼白绘制；贝塞尔控制点并不是眼白的上下边界。
+export type EyeDesign = { outer: number; inner: number; center: number; top: number; bottom: number; tilt: number; brow: number; iris: number; irisY: number; irisHeight: number; mouth: number; weight: number };
 const eyeFemale: Record<FaceId, EyeDesign> = {
-  soft: { outer: 83, inner: 115, center: 100, top: 105, bottom: 131, tilt: 2, brow: 98, iris: 7.8, mouth: 11, weight: 2.6 },
-  round: { outer: 81, inner: 115, center: 99, top: 102, bottom: 134, tilt: 0, brow: 95, iris: 9, mouth: 12, weight: 2.6 },
-  long: { outer: 84, inner: 115, center: 101, top: 111, bottom: 131, tilt: 3, brow: 102, iris: 6.6, mouth: 9, weight: 2.3 },
-  angular: { outer: 81, inner: 115, center: 99, top: 109, bottom: 130, tilt: 6, brow: 98, iris: 7, mouth: 12, weight: 2.8 },
+  soft: { outer: 83, inner: 115, center: 100, top: 105, bottom: 131, tilt: 2, brow: 98, iris: 7.8, irisY: 117.2, irisHeight: 8, mouth: 11, weight: 2.6 },
+  round: { outer: 81, inner: 115, center: 99, top: 102, bottom: 134, tilt: 0, brow: 95, iris: 9, irisY: 117.3, irisHeight: 9.5, mouth: 12, weight: 2.6 },
+  long: { outer: 84, inner: 115, center: 101, top: 111, bottom: 131, tilt: 3, brow: 102, iris: 6.6, irisY: 120, irisHeight: 6.2, mouth: 9, weight: 2.3 },
+  angular: { outer: 81, inner: 115, center: 99, top: 109, bottom: 130, tilt: 6, brow: 98, iris: 7, irisY: 119, irisHeight: 5.7, mouth: 12, weight: 2.8 },
 };
 const eyeMale: Record<FaceId, EyeDesign> = {
-  soft: { outer: 81, inner: 115, center: 99, top: 110, bottom: 131, tilt: 2, brow: 99, iris: 7, mouth: 12, weight: 2 },
-  round: { outer: 80, inner: 115, center: 98, top: 107, bottom: 134, tilt: 0, brow: 97, iris: 8, mouth: 13, weight: 2.1 },
-  long: { outer: 85, inner: 115, center: 101, top: 114, bottom: 131, tilt: 3, brow: 103, iris: 6, mouth: 10, weight: 1.9 },
-  angular: { outer: 80, inner: 115, center: 98, top: 112, bottom: 132, tilt: 6, brow: 99, iris: 6.8, mouth: 13, weight: 2.3 },
+  soft: { outer: 81, inner: 115, center: 99, top: 110, bottom: 131, tilt: 2, brow: 99, iris: 7, irisY: 119.6, irisHeight: 6.5, mouth: 12, weight: 2 },
+  round: { outer: 80, inner: 115, center: 98, top: 107, bottom: 134, tilt: 0, brow: 97, iris: 8, irisY: 119, irisHeight: 8.1, mouth: 13, weight: 2.1 },
+  long: { outer: 85, inner: 115, center: 101, top: 114, bottom: 131, tilt: 3, brow: 103, iris: 6, irisY: 120.5, irisHeight: 4.7, mouth: 10, weight: 1.9 },
+  angular: { outer: 80, inner: 115, center: 98, top: 112, bottom: 132, tilt: 6, brow: 99, iris: 6.8, irisY: 120, irisHeight: 5.2, mouth: 13, weight: 2.3 },
 };
 export const eyeDesign = (look: Look): EyeDesign => (look.frame === 'female.adult' ? eyeFemale : eyeMale)[look.face];

@@ -26,7 +26,7 @@ function eyes(look: Look): string {
   const { outer: o, inner: i, center: cx, top: t, bottom: b } = d;
   const female = look.frame === 'female.adult';
   const ink = contour;
-  let upper: string, shape: string, cy = (t+b)/2+1, ry = (b-t)*.30, rx = d.iris;
+  let upper: string, shape: string, cy = d.irisY, ry = d.irisHeight, rx = d.iris;
   let lid = '';
   if (emotion === 'laugh') {
     return bilateral(l(`M${o} 123Q${cx} 108 ${i} 122`,ink,d.weight)+
@@ -35,11 +35,12 @@ function eyes(look: Look): string {
   if (emotion === 'angry') {
     upper = `M${o} 113L${i} 124`;
     shape = `${upper}Q${cx} 135 ${o+1} 122Z`;
-    cy = 123; ry = 5; rx *= .9;
+    cy = 123; ry = 3; rx *= .82;
   } else if (emotion === 'sad') {
     upper = `M${o} 121Q${cx} ${t+2} ${i} 117`;
     shape = `${upper}Q${cx} ${b+6} ${o} 121Z`;
-    cy = 123; ry = Math.min(6.5,ry); rx *= .95;
+    // 与这组二次曲线同源作画，不拿控制点误当眼白边界，也不靠遮罩隐藏越界。
+    cy = 61.5 + (t+b)*.25; ry = Math.min(6.5,(b-t)*.25); rx *= .95;
     lid = l(`M${o+2} 130Q${cx} 138 ${i-3} 131`,'#bc8794',.9);
   } else if (emotion === 'surprised') {
     upper = `M${o} 118C${o+2} ${t-6} ${i-3} ${t-6} ${i} 118`;
@@ -48,16 +49,16 @@ function eyes(look: Look): string {
   } else if (emotion === 'shy') {
     upper = `M${o} 119Q${cx} 117 ${i} 119`;
     shape = `${upper}Q${cx} ${b+7} ${o} 119Z`;
-    cy = 123; ry = 4.5; rx *= .92;
+    cy = 123; ry = 4.3; rx *= .92;
     lid = l(`M${o+5} 115Q${cx} 112 ${i-3} 114`,'#cfaaa3',.9);
   } else {
     const lift = emotion === 'happy' ? 2 : 0;
     upper = `M${o} ${119-d.tilt}C${o+6} ${t-lift} ${i-7} ${t-lift} ${i} 119`;
     shape = `${upper}Q${cx} ${b+4} ${o} ${119-d.tilt}Z`;
   }
-  const whites = bilateral(p(shape,'#fffbf6','#bf9d9f',.7));
-  const iris = (x: number) => e(x,cy,rx,ry,'url(#iris)')+e(x,cy-1,rx*.4,ry*.72,'#383246')+
-    e(x-2.2,cy-3,2,2.5,'#fffdf8')+e(x+2.5,cy+3.5,1.1,1.2,'#fff6d6');
+  const whites = `<g data-eye-whites="true">${bilateral(p(shape,'#fffbf6','#bf9d9f',.7))}</g>`;
+  // 虹膜、瞳孔及高光都服从本眼型；小眼型不再沿用固定尺寸高光。
+  const iris = (x: number) => `<g data-iris="true">${e(x,cy,rx,ry,'url(#iris)')}${e(x,cy-ry*.1,rx*.38,ry*.72,'#383246')}${e(x-rx*.32,cy-ry*.3,rx*.24,ry*.31,'#fffdf8')}${e(x+rx*.35,cy+ry*.43,rx*.13,ry*.15,'#fff6d6')}</g>`;
   const lashes = bilateral(l(upper,ink,d.weight)+lid+(female ? l(`M${o} ${emotion === 'angry' ? 113 : 119-d.tilt}L${o-3} ${emotion === 'angry' ? 109 : 114-d.tilt}`,ink,1.5) : ''));
   return whites + iris(cx) + iris(256-cx) + lashes;
 }
@@ -74,7 +75,7 @@ export function expressionArt(look: Look): string {
     surprised: `M${o+2} 94Q${cx} 85 ${i-2} 93`,
     shy: `M${o+2} 106Q${cx} 103 ${i-2} 99`,
   };
-  const blush = look.expression === 'shy' ? .46 : ['happy','laugh'].includes(look.expression) ? .27 : .14;
+  const blush = look.expression === 'shy' ? .40 : ['happy','laugh'].includes(look.expression) ? .22 : .09;
   let mood = `<g opacity="${blush}">${bilateral(e(94,143,13,5,'#e8899a'))}</g>`;
   if (look.expression === 'shy') mood += bilateral(l('M86 141L84 145M92 141L90 145M98 141L96 145','#d78596',1));
   if (look.expression === 'sad') mood += bilateral(p(`M${o+5} 131Q${o} 137 ${o+4} 141Q${o+9} 141 ${o+5} 131Z`,'#c4e4f0')+e(o+4,136,1,2,'#f3feff'));
