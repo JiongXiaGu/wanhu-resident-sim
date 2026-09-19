@@ -26,7 +26,7 @@ permissions:
 jobs:
   capture:
     runs-on: ubuntu-latest
-    timeout-minutes: 7
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -69,6 +69,8 @@ jobs:
         run: node scripts/capture-portrait-review.mjs
       - name: Capture independent art directions and pixel proofs
         run: node scripts/capture-art-directions.mjs
+      - name: Capture modular composer interactions and combination proofs
+        run: node scripts/capture-composer.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots
