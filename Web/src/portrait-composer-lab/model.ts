@@ -34,13 +34,18 @@ export function readInitial(): { look: Look; message: string } {
   } catch { return { look: { ...defaultLook }, message: '未能读取保存的配方，已使用默认组合。' }; }
 }
 export function randomLook(previous: Look, lockIdentity: boolean, seed: number): Look {
-  let state = seed >>> 0 || 1;
+  // 先混合种子，避免相邻居民种子的首轮随机值高度相关。
+  let state = seed >>> 0;
+  state = Math.imul(state ^ (state >>> 16), 0x7feb352d) >>> 0;
+  state = Math.imul(state ^ (state >>> 15), 0x846ca68b) >>> 0;
+  state = (state ^ (state >>> 16)) >>> 0 || 1;
   const next = () => { state ^= state << 13; state ^= state >>> 17; state ^= state << 5; return (state >>> 0) / 4294967296; };
   const result: Record<string, unknown> = { ...previous };
   for (const key of keys) {
     if (key === 'frame' || (lockIdentity && (key === 'faceFamilyId' || key === 'skinPaletteId'))) continue;
-    const alternatives = choices[key].filter(item => item.id !== previous[key]);
-    result[key] = alternatives[Math.floor(next() * alternatives.length)].id;
+    // 锁脸换装要求确实换一套；新人物/群体生成则必须覆盖完整目录，不能排除当前选项。
+    const pool = lockIdentity ? choices[key].filter(item => item.id !== previous[key]) : choices[key];
+    result[key] = pool[Math.floor(next() * pool.length)].id;
   }
   return parseLook(result);
 }
