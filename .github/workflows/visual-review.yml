@@ -2,27 +2,21 @@ name: Resident Visual Review
 
 on:
   push:
-    branches:
-      - main
-      - 'tmp-*'
+    branches: [main, 'tmp-*']
     paths:
       - 'Web/**'
       - 'Content/**'
       - 'Tools/**'
       - 'scripts/**'
       - 'package.json'
-      - 'Web/package.json'
-      - 'Web/vite.config.*'
       - '.github/workflows/visual-review.yml'
   workflow_dispatch:
 
 concurrency:
   group: resident-visual-review-${{ github.ref }}
   cancel-in-progress: true
-
 permissions:
   contents: read
-
 jobs:
   capture:
     runs-on: ubuntu-latest
@@ -32,6 +26,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Retain editable source with review artifacts
+        run: |
+          mkdir -p review-screenshots/avatar
+          git archive --format=zip --output=review-screenshots/avatar/source-and-contract.zip HEAD Web/src/avatar Web/src/App.tsx Web/src/resident/ResidentAvatar.tsx Web/src/main.tsx scripts Documentation/Avatar\ Workshop.md
       - name: Install CJK fonts
         run: |
           sudo apt-get update -qq
@@ -56,36 +54,22 @@ jobs:
         run: |
           npm run dev -w Web -- --host 127.0.0.1 --port 4173 > /tmp/wanhu-resident-vite.log 2>&1 &
           for i in {1..20}; do
-            if curl -fsS http://127.0.0.1:4173 >/dev/null; then
-              exit 0
-            fi
+            if curl -fsS http://127.0.0.1:4173 >/dev/null; then exit 0; fi
             sleep 1
           done
           cat /tmp/wanhu-resident-vite.log
           exit 1
-      - name: Capture resident review screenshots
+      - name: Review resident life and story continuity
         run: node scripts/capture-resident-review.mjs
-      - name: Capture unified portrait review screenshots
+      - name: Review frozen portrait frame contract
         run: node scripts/capture-portrait-review.mjs
-      - name: Capture independent art directions and pixel proofs
-        run: node scripts/capture-art-directions.mjs
-      - name: Capture modular composer interactions and combination proofs
+      - name: Review avatar editing, object saves and modular artwork
         run: |
-          node scripts/audit-composer-randomness.mjs
-          node scripts/capture-composer.mjs
-      - name: Capture anime expression and wardrobe proofs
-        run: |
-          node scripts/capture-anime-review.mjs
-          node scripts/audit-anime-eyes.mjs
-      - name: Capture modern guofeng art and shared wardrobe proofs
-        run: |
-          node scripts/capture-modern-anime.mjs
-          node scripts/audit-modern-mouths.mjs
-      - name: Capture independent open styles and UI context review
-        run: node scripts/capture-open-style-review.mjs
-      - name: Compress review previews
+          node scripts/capture-avatar-review.mjs
+          node scripts/review-avatar-integration.mjs
+      - name: Compress legacy review previews
         run: node scripts/compress-review-screenshots.mjs
-      - name: Upload screenshots
+      - name: Upload screenshots and editable components
         if: always()
         uses: actions/upload-artifact@v4
         with:

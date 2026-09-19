@@ -1,228 +1,49 @@
-# AGENTS.md
+# AGENTS — 居民逻辑网页demo
 
-本仓库用于《万户天工》的居民玩法、生活事件、人生经历、内容生产与 Web 原型验证。
+## 先理解项目
 
-## 项目别名与接续
+修改前读取最新 main、README、Documentation/居民逻辑网页Demo接续说明.md、人生经历与生活界面玩法规则V1、居民面板与生活事件V2、居民生活记录与故事连续性、Portrait System、Avatar Workshop、开发与部署工作流。再检查目标源码和最新 Actions。不要用聊天记忆代替当前仓库。
 
-- 本项目在对话中的固定简称是 **“居民逻辑网页demo”**。
-- 用户说“居民逻辑网页demo 做到哪了 / 继续做居民逻辑网页demo”等，默认指向 `JiongXiaGu/wanhu-resident-sim`。
-- 新对话不要只依赖聊天记忆；先读取 GitHub `main`、`README.md`、本文件、`Documentation/居民逻辑网页Demo接续说明.md`、`Documentation/居民面板与生活事件V2.md`、`Documentation/居民生活记录与故事连续性.md`、`Documentation/人生经历与生活界面玩法规则V1.md`，再根据最新 commit、Actions 与代码回答。
+本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
 
-## 项目边界
+## 当前头像方向
 
-### 这个仓库现在只验证玩法
+只有一套玩家可用的头像工坊：脸型、头发、衣服、表情四类离散选项。不同脸必须共享配件；表情不改变身份。玩家示例档案和任意真实居民使用同一编辑流程，按城市/居民稳定 ID 独立保存。
 
-Web Demo 的目标是回答：
+不再制作“完整人物图画廊，然后以后再拆模块”的交付。第一套日常线绘包在 Web/src/avatar/packs/linework，源 SVG 确实分层，部件与表情可以替换。画风未正式定稿，不把生成数量、SVG 复杂度或 CI PASS 当作审美结论。
 
-```text
-居民值不值得点？
-故事是否像真实生活？
-过去是否会影响后来？
-家庭 / 职业变化以后人物是否真的变化？
-城市建设是否能反馈到个人？
-人生经历是否值得翻阅？
-内容扩大后会不会明显重复？
-```
+旧错误实验、整图图库与专属测试已从当前树删除，不建立历史保留文件夹。需要旧版时查 Git 历史。未来画风作为同一编辑器的可组合素材包验证，不再分叉独立编辑网站。
 
-不要在这个仓库继续设计：
+## 正式 portrait 边界
 
-```text
-Unity Save 格式
-BlobAsset / ResidentContentBlob
-RuntimeIndex / StableIdHash 存档方案
-正式 ECS Hot / Cold 组件
-二进制序列化
-正式资源加载 / RenderTexture Cache
-```
+`Web/src/resident/portrait/`、`Content/Portrait/`、五字段 ResidentPortraitDNA、六个 PortraitFrame 与原有五层 RenderPlan 保持冻结。本次可编辑头像只作为 ResidentAvatar 上的 Web 覆盖，未应用居民继续使用原 Renderer；移除覆盖恢复原图。不要向正式 DNA 添加表情或画风字段。
 
-这些进入 Unity 工程时重新设计。Web TypeScript 类型、JSON Snapshot 和 Prototype Effect 都不是正式 Runtime 契约。
+编辑不得改变居民姓名、生日、性别、家庭、职业、故事和游戏日期。工坊在 App 当前会话内打开，不能通过另载一份快照掩盖对象绑定问题。
 
-### Content / Compiler 的作用
+## 玩法与内容不变量
 
-`Content/` 和 `Tools/` 继续保留，因为它们能帮助 Web 原型批量生产和稳定复现玩法：
+- 生活模式只显示当前 Activity、正在/最近 LifeEvent、少量 Routine，不做人工综合近况 Summary。
+- 人生模式只有年龄升序时间轴，不按少年/青年分组。一个 Chapter 对应一件事，不把三个 Stage 拆成三段历史。
+- 事实节点只显示年龄/标题。故事节点展开第一人称 memoryText，不重放 Stage 1/2/3，不显示起初/后来/最后。人生模式隐藏 Activity、Routine 与当前事件，末尾有“如今”。
+- 重要故事（recordToHistory 或结构效果）必须有 memoryText。普通 Routine 不写入永久历史。
+- 过去的 LifeTag 影响后来 Eligibility；无需扫描全文历史。保留未婚 → 成婚 → spouse/Household 改变 → newly-married → 后续两人生活 → 临时 Tag 消失的真实链。
+- Content 是权威；Stable ID 不由标题、数组顺序生成。新增内容遵守 Schema、Reference、Coverage。
+- generated 文件经 Compiler 生成，不手动修改。涉及内容契约的修改要同步 Authoring、Schema、Compiler、Web 消费者与审查。
 
-- Schema / Reference Validation
-- Stable ID
-- Name V2
-- LifeTag Registry
-- Occupation Group
-- Story Bucket
-- Coverage Report
-- Portrait Catalog
+## 代码与资源
 
-这些机制服务“内容不写乱、原型可重复、能统计缺口”，不是提前定义 Unity 存档。
+保持职责分离，必要处中文注释，不为美术问题新增自动对齐、逐脸偏移或复杂兼容引擎。四个 UI 选项可以拥有多个实际绘制层，表情必须位于 FrontHair 下方。脸型对应的眼形保留身份，不把同一组通用五官当作多个完整脸。
 
-## 当前编译状态
+草稿与已应用记录分离。切对象/关闭提示未保存修改；导入只改预览；严格验证版本与选项；写入失败不能假装成功。每对象独立 key，同对象外部更新要提示冲突。不要无授权删除浏览器内其他用户数据或改写旧存储键。
 
-当前主要 Authoring：
+素材制作可由 AI 辅助编写源资产，构建自动展开部件、组合、检查与导出。运行时不调用 AI。任何诊断图板必须明确标为诊断，不冒充真实玩家 UI。
 
-```text
-Content/Names/
-Content/Tags/
-Content/Occupations/
-Content/LifeEvents/
-Content/Routines/
-Content/Portrait/
-```
+## Git 与审查
 
-当前 `build-content` 顺序：
+最新 main → tmp-* → 集中修改 → 一个聚合 commit → Build + Resident Visual Review → 下载 Artifact 并实际打开截图 → 必要时聚合修正 → 重读 main → 合入 main → main 再审查。
 
-```text
-ContentContractCompiler
-↓
-StoryCompiler
-↓
-ResidentGenerator
-↓
-LifeEventCompiler
-↓
-StoryBucketCompiler
-↓
-ResidentSnapshotCompiler
-↓
-ResidentPortraitCompiler
-↓
-WebContentCompiler
-```
+不得一文件一 commit、空提交刷新、force 覆盖新 main 或依赖 Vercel。GitHub 工具可用时实际调用，不无依据声称无权限。任务交付要包含实际提交状态与关键截图，不只列后续计划。
 
-最终 Web Definition Bundle：`wanhu.resident-definitions.v6`。
-最终 Web Snapshot：`wanhu.resident-snapshot.v5`。
+保持 capture-resident-review 和正式 capture-portrait-review 的有效断言。删除实验只删对应失效测试；新增工坊须测：四类真实操作、不同脸共享配件、甲乙独立保存、取消/恢复/刷新、真实居民 UI、存储/导入错误、年龄版本及 96/64/48px。
 
-这些都只是 Web / Compiler 验证格式。
-
-## 居民玩法规则
-
-- `BirthDay` 推导年龄；Web 可以直接保存方便调试的字符串 ID 和显示字段。
-- 当前 Activity 主要按职业 / 时间 / 当前故事按需推导。
-- `Routine` 只负责生活感，不进入永久人生经历。
-- `LifeEvent` 是当前正在发生的一件连续事情，默认三阶段。
-- `Life Chapter` 是值得长期回看的经历；人生模式只看已经沉淀的过去。
-- 不维护独立“近况 Summary”。
-- 人生模式打开后，不混入 Activity、当前 LifeEvent 和 Routine。
-- 人生经历只有一条按年龄从小到大排列的时间轴，不显示“少年 / 青年 / 壮年”等分组。
-- 一个 Life Chapter 只对应一件事；Story Chapter 展开时显示该事件的 `memoryText`，不再重放 `起初 / 后来 / 最后` 或三阶段结构。
-- `stages` 只服务当前生活模式；`memoryText` 只服务人生回忆模式。
-
-## LifeTag / 连续故事
-
-- 多故事线不等于完整社会图。
-- 大多数故事独立结束；少量重要故事留下 `LifeTag`。
-- 后续故事读取 LifeTag / Family / Occupation 等紧凑状态，不扫描历史全文。
-- `requiredTags / forbiddenTags / addTags / removeTags` 已进入真实 Web Selector。
-- Story Bucket 已由 Web Selector 真正消费：先 `LifeStage + OccupationGroup` 粗筛，再做精确 Eligibility。
-
-## Prototype Effect 规则
-
-Web Demo 允许 Story 完成后直接改变 Demo 状态，这是为了验证玩法，不模拟 Unity 架构。
-
-当前可用于原型的结构效果：
-
-```text
-changeOccupation
-moveHousehold
-formMarriage
-addChild   # 目前不执行，直到需要真实 Child Resident 的玩法切片
-```
-
-Web 原型执行原则：
-
-- LifeTag 在故事完成时真实增减。
-- `changeOccupation / moveHousehold / formMarriage` 可以直接修改当前 Web Snapshot。
-- 结构型故事在 Web 中实际发生后，应进入人生经历，防止“文字说变了，人物没变”。
-- 结构效果一旦应用必须幂等，不能因 React 重渲染重复结算。
-- `formMarriage` 必须建立真实 `spouseId`，并让配偶进入同一 Household，Family Drawer 应能点到配偶。
-- Prototype Effect 的实现不应被解释为未来 Unity 的结构变更方式。
-
-当前自动验收链：
-
-```text
-未婚居民
-↓
-“这门亲事定下来了”
-↓
-真实 spouse / Household 变化
-↓
-lifetag.newly-married
-↓
-“两个人一起过日子以后”
-↓
-临时 LifeTag 被移除
-```
-
-Resident Visual Review 必须继续验证这条链，以及人生时间轴的年龄顺序、单节点单故事和 `memoryText` 展开表现。
-
-## 姓名规则
-
-- 姓名允许重复，不做全城唯一检测。
-- Given Name 使用审核过的完整 token，不默认任意汉字笛卡尔组合。
-- Household 先于成员生成；子女通常继承父系姓氏，配偶保留原姓。
-- `displayName` 是 Web 便利字段。
-
-## Portrait 规则
-
-- 头像是次要系统，目标是稳定识别、年龄清楚、允许换发型与衣服、方便迁移 Unity。
-- 当前唯一正式设计文档是 `Documentation/Portrait System.md`。
-- 正式身份数据只保留 `ResidentPortraitDNA`：`faceFamilyId / hairStyleId / outfitStyleId / skinPaletteId / baseHairColorId`。
-- 新美术框架只使用 `child / adult / elder` 三个视觉年龄段；游戏逻辑仍可保留更细 LifeStage。
-- Gender + AgeBand 产生六个固定 PortraitFrame。
-- Face / Hair / Outfit 必须按 Frame 直接作画；运行时不增加 Anchor、Mask、Offset Solver 或通用 Compatibility Engine。
-- 头像 Runtime 已完成最终清理：没有 PortraitStageProfile、共享 FeatureLayer、Stage Body 或 Frame 特判；所有 Frame 使用同一固定裁切与同一 RenderPlan。
-- `Content/Portrait/portrait-catalog.json` 是头像逻辑元数据唯一权威；`assets/art-manifest.json` 只负责 Web 美术映射。新增/删除头像 Stable ID 必须通过 PortraitCatalogAudit。
-- Face / Hair / Outfit / Neck 几何分别维护在 `portrait/assets/` 下，不再把全部 SVG Path 堆进 `catalog.ts`。
-- `female.adult` 已进入正式 Frame Proof：6 个 FaceFamily × 3 个 HairStyle × 4 个 OutfitStyle，Visual Review 必须覆盖全部 72 个组合。
-- 美术方向采用泛中国古代居民语汇：束/挽/盘发、交领/叠领/对襟常服、低饱和克制配色；不要靠夸张面部特征表达“中国感”。
-- 正式头像工作台入口是 `/?view=portraits`。
-- 当前画风评审入口是 `/?view=portrait-style-bakeoff`；必须与生产 PortraitRenderer/Frame 资产隔离，并同时评审平民、老人、贵族/公主和最高阶男性。上一轮 `/?view=portrait-style-study` 仅保留为历史实验。
-- 画风未定稿前，不把 Style Bakeoff 的 SVG Path 迁进正式 `portrait/assets/`。先选 2–3 个方向，再做换发型/换衣服/年龄/48px 等模块化 proof。
-- 头像美术验收完成后冻结 Stable ID 与 Frame 规范，再迁到 Unity；本仓库不因此设计 Unity ECS / Save。
-
-## 内容生产原则
-
-- Authoring 是权威来源，generated 文件不手工改。
-- Stable ID 不由标题和数组位置决定。
-- 批量生产前先做 Schema、Reference Check 和 Coverage。
-- LifeEvent 库扩大后优先迁移为“一条事件一个 Authoring 文件”。
-- Coverage 至少关注年龄、职业 / 职业组、家庭状态、性别题材、人生主题和故事重复率。
-- 不为了“数量”一次堆大量故事；先看试玩反馈和 Coverage 缺口。
-
-## 当前玩法验证优先级
-
-```text
-1. 人生经历阅读体验与回忆文本
-2. Story Effect 真正改变人物
-3. 过去经历 → 后续故事连续性
-4. 城市 / 世界变化 → 居民反馈
-5. 有限并行生活线 + 重大故事互斥
-6. 故事密度、重复率、人生节奏
-7. Coverage 驱动的内容扩充
-8. 玩家试玩反馈
-```
-
-Unity Runtime / Save 不再是本仓库的下一阶段。
-
-## 代码规则
-
-- Web 组件只消费 compiled / generated 数据。
-- Prototype reducer 可以直接改 Demo Snapshot，但必须限制在 Web 原型层。
-- Parser / Validator / Compiler / Web Prototype 职责分开。
-- 修改稳定 Authoring 字段时同步更新 Schema 和必要文档。
-- 玩法改动优先增加可自动验证的交互，而不是只写文档。
-
-## Git 与 GitHub Actions 视觉审查工作流
-
-- 高频迭代优先 `tmp-*`；玩法 / UI 分支优先 `tmp-prototype-*`。
-- 当前远端开发流程**不使用 Vercel Preview / Production，也不依赖任何线上部署做验收**。
-- **一次逻辑开发批次只向远端 `tmp-*` 推送一个聚合 commit。** 不允许按文件、按小步骤连续 push；每一轮应该对应一次清晰的 GitHub Actions 验收。
-- 如果 Build / Resident Visual Review 或截图人工审查发现问题，先把这一轮修正聚合完成，再推一个修正 commit；仍然禁止“一文件一 commit”。
-- 推荐使用 `create_blob → create_tree → create_commit → update_ref` 或等价的本地原子提交方式，一次更新完整批次。
-- Build 与 Resident Visual Review 必须通过后再推进 `main`。
-- UI / 头像 / 美术任务必须下载 `resident-visual-review` Artifact 并实际查看截图；**CI PASS 不等于美术验收 PASS**。
-- 更新 `main` 前重新读取最新 SHA，不基于过期 SHA 覆盖。
-- 进入 `main` 时同样只推进一个逻辑完整 commit；主分支再次以 GitHub Actions Build + Visual Review 验收。
-- Build 先执行 `build-content`，上传 `resident-generated-data` Artifact，再构建 Web。
-- Resident Visual Review 在 GitHub Runner 内启动本地 Vite，由 Playwright 执行交互、检查 DOM / 状态并截图；截图 Artifact 是当前唯一远端视觉验收依据。
-- 不为了“刷新网页”、触发截图或重复运行而制造空 commit。
-
-## 文档原则
-
-代码是具体实现的权威来源；测试用于验证实现。正式文档记录稳定的玩法规则、内容契约、职责边界和关键决策，不添加过程性机器元数据。
+CI PASS ≠ 美术 PASS。必须下载并看实际渲染，头发穿插、眼白溢出、嘴歪、衣领断开或 UI 遮挡时继续修复。最终如实区分已实现功能、艺术候选和未验证 Unity 迁移。

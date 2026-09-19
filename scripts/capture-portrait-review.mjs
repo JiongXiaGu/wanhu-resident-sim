@@ -73,37 +73,5 @@ await page.locator('[data-portrait-section="female-adult-outfits"]').screenshot(
 await page.locator('[data-portrait-section="hair-art"]').screenshot({path:outDir+'/47-portrait-hair-art.png'});
 await page.locator('[data-portrait-section="crowd"]').screenshot({path:outDir+'/48-portrait-crowd.png'});
 
-
-await page.goto(baseUrl+'/?view=portrait-style-study',{waitUntil:'networkidle'});
-await page.waitForSelector('[data-style-study="true"]');
-const styleIds=await page.locator('[data-style-study-id]').evaluateAll((items)=>items.map((item)=>item.getAttribute('data-style-study-id')));
-const expectedStyles=['editorial','fine-line','geometric','print','neo-folk','cel'];
-if(JSON.stringify(styleIds)!==JSON.stringify(expectedStyles)) throw new Error('Style exploration must expose six ordered independent studies: '+JSON.stringify(styleIds));
-for(const styleId of expectedStyles) {
-  const section=page.locator('[data-style-study-id="'+styleId+'"]');
-  if(await section.locator('svg').count()!==3) throw new Error(styleId+' study must render three independent SVG portraits.');
-}
-await page.screenshot({path:outDir+'/60-style-exploration-overview.png',fullPage:true});
-for(const [index,styleId] of expectedStyles.entries()) {
-  await page.locator('[data-style-study-id="'+styleId+'"]').screenshot({path:outDir+'/'+String(61+index).padStart(2,'0')+'-style-'+styleId+'.png'});
-}
-
-await page.goto(baseUrl+'/?view=portrait-style-bakeoff',{waitUntil:'networkidle'});
-await page.waitForSelector('[data-portrait-bakeoff="true"]');
-const bakeoffIds=await page.locator('[data-bakeoff-style]').evaluateAll((items)=>items.map((item)=>item.getAttribute('data-bakeoff-style')));
-const expectedBakeoff=['elegant-flat','neo-folk','cel-character','printmaker','geometric','ink-flat'];
-if(JSON.stringify(bakeoffIds)!==JSON.stringify(expectedBakeoff)) throw new Error('Portrait bakeoff must expose six ordered styles: '+JSON.stringify(bakeoffIds));
-for(const styleId of expectedBakeoff) {
-  const section=page.locator('[data-bakeoff-style="'+styleId+'"]');
-  if(await section.locator('[data-bakeoff-role]').count()!==5) throw new Error(styleId+' must render five social-role samples.');
-  const roles=await section.locator('[data-bakeoff-role]').evaluateAll((items)=>items.map((item)=>item.getAttribute('data-bakeoff-role')));
-  if(new Set(roles).size!==5) throw new Error(styleId+' role samples must be unique.');
-  if(await section.locator('svg').count()!==5) throw new Error(styleId+' must render five SVG portraits.');
-}
-if(await page.locator('.portrait-renderer').count()!==0) throw new Error('Style bakeoff must stay isolated from production PortraitRenderer.');
-await page.screenshot({path:outDir+'/70-style-bakeoff-overview.png',fullPage:true});
-for(const [index,styleId] of expectedBakeoff.entries()) {
-  await page.locator('[data-bakeoff-style="'+styleId+'"]').screenshot({path:outDir+'/'+String(71+index).padStart(2,'0')+'-bakeoff-'+styleId+'.png'});
-}
-
+// 已删除的画风画廊不再测试；上面的正式 Frame / 玩法回归保持原有断言。
 await browser.close();

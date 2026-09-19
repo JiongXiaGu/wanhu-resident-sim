@@ -1,0 +1,61 @@
+.avatar-workshop-entry {
+  position: fixed;
+  left: auto;
+  right: 22px;
+  top: auto;
+  bottom: 84px;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+  max-width: 180px;
+  padding: 8px 14px 8px 8px;
+  border: 1px solid #8d7966;
+  border-radius: 8px;
+  background: #25282def;
+  color: #e4ddd3;
+  font: 12px/1.4 "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  box-shadow: 0 8px 22px #0004;
+  cursor: pointer;
+}
+.avatar-workshop-entry img {
+  display: block;
+  width: 36px;
+  height: 36px;
+  background: #77727a;
+  border-radius: 5px;
+  object-fit: contain;
+}
+.avatar-workshop-entry small { display: block; color: #b4a696; font-size: 9px; margin-top: 3px; }
+.avatar-workshop-entry:focus-visible, .avatar-inline-edit:focus-visible { outline: 2px solid #dfbe98; outline-offset: 3px; }
+/* 不继承全局游戏按钮的宽度和字号，不遮挡姓名/关闭按钮。 */
+.resident-panel .resident-identity > button.avatar-inline-edit {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: max-content;
+  max-width: 100%;
+  height: 22px;
+  min-height: 22px;
+  margin-top: 4px;
+  padding: 2px 7px;
+  border: 1px solid #9d83614d;
+  border-radius: 4px;
+  color: #cbbb9f;
+  background: #302f292b;
+  font-family: inherit;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 400;
+  cursor: pointer;
+}
+.resident-avatar .avatar-custom-image { display: block; width: 100%; height: 100%; object-fit: contain; background: #767078; }
+.avatar-loading { position: fixed; inset: 0; z-index: 500; background: #15191dda; display: grid; place-items: center; color: #eee1cb; }
+.avatar-contract-entry { position: fixed; right: 20px; bottom: 20px; z-index: 60; padding: 10px 14px; background: #282a30; color: #e2cfb5; border: 1px solid #8e7964; border-radius: 6px; font-size: 12px; text-decoration: none; }
+@media (max-width:600px) {
+  .avatar-workshop-entry { left: auto; right: 12px; top: auto; bottom: 76px; padding: 6px 9px; gap: 7px; font-size: 11px; }
+  .avatar-workshop-entry img { width: 30px; height: 30px; }
+}

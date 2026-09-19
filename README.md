@@ -1,226 +1,84 @@
-# wanhu-resident-sim
+# 万户天工 · 居民逻辑网页demo
 
-《万户天工》居民玩法的 Web 演示、内容生产与原型验证仓库。固定简称：**居民逻辑网页demo**。
+验证居民当前生活、人生经历、故事连续性与可编辑头像。Web 原型不承担 Unity ECS、Blob、正式存档或资源加载设计。
 
-> 居民系统作为游戏玩法是否成立、是否有代入感、是否值得玩家持续点开和观察。
-
-Web Demo 是玩法原型，不是 Unity Runtime 设计稿。Unity ECS、BlobAsset、正式存档、RuntimeIndex、序列化和资源加载方式不在本仓库继续设计。
-
-## 当前任务：开放头像画风候选
+## 现在体验：头像工坊
 
 ```text
-/?view=portrait-style-directions-v2
+http://localhost:5173/?view=avatar-editor
 ```
 
-主题只有 **21岁女子 / 32岁男子**。各画风自由设计人物，不固定同一张脸、不强制古风服饰；现代赛璐璐、厚涂人物画、柔光三维感、漫画块面四组共八张独立位图概念稿。
+也可在首页点 **头像工坊**，或在任意居民的身份栏点 **编辑头像**。
 
-本轮使用原生图像生成工具制作概念画稿，不继续复用旧SVG脸。页面参考 UI 仓库当前 **Smoked Graphite + Aged Brass** 规范，提供原色大图、96/64/48px、身份栏试装、明暗场景、去名称/统一灰阶诊断、候选保存与官方参考资料。
+这一版是真实部件组合与对象保存：只有 **脸型、头发、衣服、表情** 四类。不是切换整张角色图，也不再提供帽子、调色或风格画廊。第一套原创 SVG 包“日常线绘”有 4 脸、6 发、4 衣、6 表情，支持男女儿童/成人/老人上下文。
 
-**这页只选画风，不具备捏脸、换装功能；三维感图片不是三维模型。** 已有组合实验和正式Runtime保留。画风入选后才做不同脸共享发型、服饰与表情的最小验证。说明与素材来源见 [Portrait Open Styles](Documentation/Portrait%20Open%20Styles.md)。
+编辑器左边选择玩家示例档案或当前城市任意居民，右边选择四类部件。点击 **应用** 才写入这个对象；未保存修改可撤销，切对象或关闭会提示。给甲改头像不会改变乙。关闭工坊后，实际居民信息面板显示刚应用的头像，游戏日期和故事不会重置。
 
-## 上一候选：现代国风人物
+两份玩家档案用于展示 21 岁女子、32 岁男子的独立保存；它们不是账号或玩家资料系统。居民列表来自当前真实快照。
 
-```text
-/?view=portrait-modern-anime-lab
-```
+支持透明 PNG/SVG、JSON 配方导入导出、96/64/48px 预览、深浅衬底。配方只含四个选项与版本，不含居民 ID；导入不会自动应用。
 
-首页或旧头像实验点击 **“现代国风 · 新画风与换装”**。这是一套重新绘制的美术：更细的眼型与轮廓、分束长发、衣料明暗、云纹和玉冠配饰，不复用旧 Anime / Composer 的美术。
+所有保存都在当前浏览器 localStorage，以城市和目标 ID 隔离。清除站点数据会丢失记录，需导出配方备份。正式居民 Snapshot 和五字段 DNA 未改，未定制居民使用原正式头像；恢复原头像只移除指定对象的 Web 覆盖。
 
-- 成年男女各 3 张脸，共 6 个面容；6 套协调表情、3 种发型、4 个帽饰选项、3 套共享服装。
-- 晴岚 / 霁夜 / 丹华是同一新画风的三组可编辑搭配，不是三套独立画风，也不是固定角色整图。
-- 不同脸继续共享配件，同脸换装和切换表情不改变身份；幞头摘下恢复原发型。
-- 96/64/48px 预览、独立保存、配方导入/导出和分享、透明 SVG / 1024px PNG 导出。
-- 旧版与正式 Runtime 保留。儿童老人、自由五官编辑、游戏情绪驱动和 Unity 导入不在本轮范围内。
+详见 [头像工坊](Documentation/Avatar%20Workshop.md)。美术是第一版候选，仍需用户实际验收，不以组合数或 CI 成功宣称画风达标。
 
-目标是现代二游审美与泛中国古代设计语言结合，不复制《原神》《鸣潮》游戏资源，不把原型称为已经达到其成品质量。画风仍待玩家选择。完整规则见 [Portrait Modern Anime Lab](Documentation/Portrait%20Modern%20Anime%20Lab.md)。
+## 清理结果
 
-## 上一版：二次元表情与换装
+已移除被否定的旧头像实验页面、固定整图图库、专属样式和专属截图脚本，相关错误实验文档也不再留在当前树；Git 历史保留旧版本。不会再把“先选完整画稿，之后再想办法做成 DIY”当成当前交付。
 
-```text
-/?view=portrait-anime-lab
-```
+当前只有：
 
-新实验独立重画成年男女各四张脸，提供平静、微笑、开心、大笑、生气、委屈、惊讶、害羞八套表情。每张脸仍能共享四种发型、四个帽饰选项和四套服装。
-
-嘴型以固定正面中线绘制；换表情不改脸型或衣装。支持肤色/发色/衣色、原尺寸对照、配方保存/分享、透明 PNG/SVG 导出。这里的表情定制是选择八套协调预设，不是自由拼接五官。
-
-原版 16 脸 DIY 与正式 Runtime 保留，实验配方和存储互不覆盖。规则见 [Portrait Anime Lab](Documentation/Portrait%20Anime%20Lab.md)。
-
-## 原版：16 脸头像 DIY
-
-```text
-/?view=portrait-composer-lab
-```
-
-这是实际 Face / Hair / Headwear / Outfit 分层组合，不是切换完整角色稿：
-
-- 成年女性 8 张脸、成年男性 8 张脸，共 16 张完整面容；每类六个发型，四种帽饰加无帽，六套衣服。
-- 宽圆、修长、方颌、心形面容男女分别作画，原有四种面容和 v1 配方保持兼容。
-- 每张脸共享全部发型、帽子和衣服：换脸不换装，换装不换脸，摘帽恢复同一发型 ID。
-- 默认“面容”与“全部脸型”，支持脸型×服饰矩阵、96/64/48px、配色、锁身份随机。
-- 自动保存、JSON 配方导入/导出、组合链接、透明 SVG/PNG、深浅背景与 24 人搭配样本。
-
-这是独立的成年人实验，不替换正式居民头像，不更改正式五字段 DNA 和六个 Frame。规则见 [Portrait Composer Lab](Documentation/Portrait%20Composer%20Lab.md)。
-
-## 新对话先读
-
-```text
-README.md
-AGENTS.md
-Documentation/居民逻辑网页Demo接续说明.md
-Documentation/人生经历与生活界面玩法规则V1.md
-Documentation/居民面板与生活事件V2.md
-Documentation/居民生活记录与故事连续性.md
-Documentation/StoryBucket与内容覆盖V1.md
-Documentation/Portrait System.md
-Documentation/Portrait Art Directions.md
-Documentation/Portrait Composer Lab.md
-Documentation/Portrait Anime Lab.md
-Documentation/Portrait Modern Anime Lab.md
-Documentation/Portrait Open Styles.md
-Documentation/开发与部署工作流.md
-```
-
-然后检查最新 main、GitHub Actions 和相关源码，不只依赖聊天记忆。
-
-## 当前结构
-
-```text
-Content/                 人工维护的故事、名字、职业、标签、头像与模拟内容
-Schemas/                 Authoring / Demo Schema
-Tools/                   编译、验证与覆盖统计
-Web/                     居民玩法 / UI / 美术实验
-Documentation/           稳定玩法、内容规则和工作流
-scripts/                 Playwright Visual Review 等辅助脚本
-居民故事/                 Legacy Story 素材
-```
-
-## 当前能验证的玩法
-
-### 居民当前生活
-
-姓名、年龄、职业、家庭、当前 Activity、正在经历/最近发生的 LifeEvent 与少量 Routine。Routine 只负责生活感，不进入永久人生经历。
-
-### LifeEvent 与人生经历
-
-LifeEvent 默认三个 Stage，随时间推进；完成后普通事件逐渐淡出，重要事件形成 Life Chapter。
-
-人生模式只看已经沉淀的过去：一条按年龄升序的时间轴，不按少年/青年/壮年分组。一个 Chapter 只对应一件事。故事展开显示一段第一人称 `memoryText`，不重放起初/后来/最后和三个阶段正文。人生模式隐藏 Activity、当前故事和 Routine，末尾保留“如今”。
-
-### LifeTag / Story Bucket / Prototype Effect
-
-过去的重要故事可以留下 LifeTag；后续 Eligibility 读取轻量状态，不扫描历史全文。Story Bucket 已由 Web Selector 使用，先按 LifeStage + OccupationGroup 粗筛，再进行精确资格检查。
-
-原型已支持 LifeTag 增减、`changeOccupation`、`moveHousehold`、`formMarriage` 直接改变 Demo 状态。它们只用于验证玩法，不代表 Unity 结构变更架构。
-
-自动验收保留以下连续链：
-
-```text
-未婚居民
-→ “这门亲事定下来了”
-→ 真实 spouse / Household 变化
-→ lifetag.newly-married
-→ “两个人一起过日子以后”进入候选池
-→ 临时 Tag 消失
-```
-
-## 正式头像与美术实验的边界
-
-正式居民和 `/?view=portraits` 使用唯一 `Web/src/resident/portrait/PortraitRenderer`。正式 Snapshot 保留：
-
-```text
-faceFamilyId
-hairStyleId
-outfitStyleId
-skinPaletteId
-baseHairColorId
-```
-
-Gender × child/adult/elder 产生六个固定 PortraitFrame。Face、Hair、Outfit 按 Frame 直接制作，运行时不自动校准。正式 `female.adult` 的六张脸×三发型×四服装，共 72 个组合仍在 Visual Review 中验收。
-
-`Content/Portrait/portrait-catalog.json` 是逻辑元数据权威，`assets/art-manifest.json` 仅负责 Web 美术映射，由 PortraitCatalogAudit 检查一致性。正式规则见 `Documentation/Portrait System.md`。
-
-| 页面 | 用途 |
+| 入口 | 职责 |
 | --- | --- |
-| `/?view=portrait-style-directions-v2` | 当前开放画风候选：两个年龄主题、四种画法、八张独立概念稿 |
-| `/?view=portrait-modern-anime-lab` | 新绘现代国风候选、三组搭配与可组合人物 |
-| `/?view=portrait-anime-lab` | 上一版成年二次元脸型、表情与共享换装实验 |
-| `/?view=portrait-composer-lab` | 原版成年头像 DIY、全部脸型与共享衣装验证 |
-| `/?view=portraits` | 冻结的正式头像工作台 |
-| `/?view=portrait-art-directions` | 绢彩、暖陶、朱墨三组完整角色稿，不是模块化资产 |
-| `/?view=portrait-style-bakeoff` | 历史风格比较 |
-| `/?view=portrait-style-study` | 更早的历史实验 |
+| `/` | 居民玩法页面，包含工坊入口 |
+| `/?view=avatar-editor` | 在同一 App 会话里打开统一工坊 |
+| `/?view=portraits` | 冻结正式 fallback 的开发检查页 |
 
-实验不会悄悄接入正式 Runtime。是否增加独立帽饰或表情字段、怎样落到六个正式 Frame，需要在体验后单独决定。
+正式 Renderer、Content、Schemas、Tools 和居民故事逻辑保留。
 
-## 内容编译链
+## 项目结构
 
 ```text
-ContentContractCompiler
-→ PortraitCatalogAudit
-→ StoryCompiler
-→ ResidentGenerator
-→ LifeEventCompiler
-→ StoryBucketCompiler
-→ ResidentSnapshotCompiler
-→ ResidentPortraitCompiler
-→ WebContentCompiler
+Content/                   Authoring 名字、职业、标签、故事、头像元数据
+Schemas/                   Web 原型内容契约
+Tools/                     内容编译器、Catalog Audit 与 Coverage
+Web/src/avatar/            统一编辑器、对象保存、SVG 素材包
+Web/src/resident/portrait/  冻结的正式 fallback Renderer
+Web/src/simulation/        居民生活与故事
+Documentation/             当前规范
+scripts/                   真实交互与视觉审查
+居民故事/                   既有故事素材
 ```
 
-输出在 `Web/public/generated/`，包括 Stable ID Registry、Name V2、LifeTag、Occupation Group、Portrait Catalog、Content Coverage、Story Buckets、Stories、Definitions 和 Resident Snapshot。
+## 保留的玩法
 
-```text
-definitions.json        wanhu.resident-definitions.v6
-resident-snapshot.json  wanhu.resident-snapshot.v5
-```
+生活模式展示身份、世界关联、当前 Activity、正在/最近 LifeEvent 与少量 Routine。人生模式只显示已沉淀的单一年龄升序时间轴，一件事一个 Chapter；展开第一人称 memoryText，不重放三个 Stage。普通 Routine 不进入永久历史。
 
-它们只服务 Web 原型与编译检查，不代表未来 Unity 存档。Authoring 是权威，generated 文件不手工编辑；Stable ID 不由标题或数组位置决定。新增内容先检查 Schema、Reference 与 Coverage，不为数量堆故事。
+LifeTag 和 Prototype Effect 让过去影响后来，保留成婚后真实 spouse/Household 改变并解锁后续生活事件的自动验收。游戏状态与外观编辑互相隔离。
 
-## 当前玩法验证路线
-
-人生经历/memoryText、Prototype Effect、过去影响后来、可组合头像、城市反馈、有限并行生活线、故事密度与 Coverage、玩家反馈。Unity Save / Blob / ECS Runtime Contract 不再是本仓库下一阶段。
+内容链仍为 Contract Compiler → Portrait Catalog Audit → Story / Resident / LifeEvent / StoryBucket / Snapshot / Portrait / Web Compiler。输出 definitions v6、resident-snapshot v5 等 `Web/public/generated/` 文件；这些是 Web 数据，不代表 Unity 存档，不手工修改。
 
 ## 本地运行
 
-在仓库根目录：
+需要 Node.js 22。在仓库根目录：
 
 ```bash
 npm install
 npm run dev
 ```
 
-当前画风候选：`http://localhost:5173/?view=portrait-style-directions-v2`。
-现代国风：`http://localhost:5173/?view=portrait-modern-anime-lab`。
-上一版二次元：`http://localhost:5173/?view=portrait-anime-lab`。
-原版 DIY：`http://localhost:5173/?view=portrait-composer-lab`。
+`npm run build` 执行构建；`npm run build-content` 只生成内容。
 
-构建：`npm run build`。只编译内容：`npm run build-content`。
+## 新对话接手
 
-## GitHub Actions / Visual Review
+先读最新 main、AGENTS、`Documentation/居民逻辑网页Demo接续说明.md`、玩法/生活/历史规范、`Portrait System.md`、`Avatar Workshop.md` 和 `开发与部署工作流.md`。源码与最新 Actions 是当前事实，不沿用旧聊天里的错误方案。
 
-不依赖 Vercel、Preview、Production 或公网部署。
+## GitHub Actions
 
-```text
-最新 main → tmp-* → 集中修改 → 一个聚合 commit
-→ GitHub Build + Resident Visual Review
-→ 下载 Artifact 并实际看截图
-→ 修正聚合提交（如需要）
-→ 重读 main SHA → 一个完整批次进入 main
-→ main 再次 Build + Visual Review + 截图审查
-```
+不依赖 Vercel。每批从 tmp-* 修改，先 Build 和 Resident Visual Review，下载并实际查看截图后才推进 main，main 再复查。
 
-Build 先执行 build-content 并上传 generated Artifact，再构建 Web。Resident Visual Review 在 Runner 内启动 Vite，Playwright 执行真实交互与截图。原有居民连续性、正式头像、研究稿、Composer、Anime与Modern Anime的验收全部保留；新增 `scripts/capture-open-style-review.mjs`。
+当前 Visual Review 保留居民故事与正式 72 组合检查，新增工坊的玩家/居民保存、草稿、恢复、导入、错误处理和年龄/部件检查。补充检查入口不遮挡现有界面、居民编辑按钮尺寸、异步导入与“应用后切对象”的保存归属。
 
-`resident-visual-review` Artifact：
+`resident-visual-review` Artifact 的 `avatar/` 包含实际编辑窗口、已应用居民面板、六上下文诊断板与原尺寸样本。`parts/` 是 270 份自动展开的独立 SVG 部件及 manifest；`samples/` 是渲染器组合样本，不是 Runtime 固定整图素材库；`review.json` 和 `integration-review.json` 记录自动结果。
 
-- 根目录：原有居民与正式头像预览。
-- `art-directions/`：完整角色研究原始 PNG 与 SVG/PNG。
-- `composer/`：原版 DIY 原始截图、导出样本和机器检查报告；480 个发型帽饰样本、48 个原尺寸样本、96 个脸型服饰样本。
-- `anime/`：上一版二次元原始截图和报告；64 个表情、128 个发型帽饰、32 个衣装样本。
-- `modern-anime/`：现代国风搭配、面容与表情、72 个发型帽饰、18 个衣装样本、小尺寸和交互报告。
-- `open-styles/`：新画风总览、灰阶/去名称诊断、八张原稿、24个原尺寸样本、16个UI场景试装、参考资料和移动端截图。
-- 各实验的导出样本不得冒充已通过量产的 Runtime 资源。尤其 `open-styles/exports/` 是独立位图研究稿，不是可换装分层资产。
-
-原版 2,880、上一版 Anime 4,096、新国风候选 1,296 个基础配方检查只证明组合与图层不变量，不代表同等数量的肉眼独特头像。开放画风页不再以组合数量验收美术；它只验证八张独立画稿的真实展示。所有实验子目录保留原始 PNG，不使用旧缩图脚本。
-
-**CI PASS 不等于美术 PASS**。美术任务必须下载并实际查看截图再合入 main，不制造空 commit 刷新结果。详细规范见 `Documentation/开发与部署工作流.md`。
+3,456 个基础组合只是测试覆盖量；原图保留不缩放。CI PASS 不能代替实际视觉审查。
