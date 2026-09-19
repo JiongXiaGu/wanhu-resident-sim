@@ -20,7 +20,8 @@ const PortraitAnimeLab = lazy(() => import('./portrait-anime-lab/PortraitAnimeLa
 const params = new URLSearchParams(window.location.search);
 const view = params.get('view');
 const composerEntry = <a className="portrait-view-entry" href="/?view=portrait-composer-lab">头像 DIY · 同脸换装</a>;
-const animeEntry = <a className="portrait-view-entry" style={{ bottom: '70px' }} href="/?view=portrait-anime-lab">二次元头像 · 表情与换装</a>;
+// 必须重置旧入口的 top/left；只设置 bottom 会把固定定位链接拉满页面高度。
+const animeEntry = <a className="portrait-view-entry" style={{ top: 'auto', left: 'auto', right: '14px', bottom: '14px' }} href="/?view=portrait-anime-lab">二次元头像 · 表情与换装</a>;
 const rootView = view === 'portrait-anime-lab'
   ? <Suspense fallback={<p role="status">正在打开二次元头像实验…</p>}><PortraitAnimeLab /></Suspense>
   : view === 'portrait-composer-lab'
