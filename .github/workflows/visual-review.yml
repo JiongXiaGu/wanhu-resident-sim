@@ -26,7 +26,7 @@ permissions:
 jobs:
   capture:
     runs-on: ubuntu-latest
-    timeout-minutes: 7
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -67,9 +67,14 @@ jobs:
         run: node scripts/capture-resident-review.mjs
       - name: Capture unified portrait review screenshots
         run: node scripts/capture-portrait-review.mjs
+      - name: Capture new portrait art directions
+        run: node scripts/capture-portrait-art-reboot.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs
+      - name: Archive reviewed source
+        run: git archive --format=zip --output=review-screenshots/reviewed-source.zip HEAD
       - name: Upload screenshots
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: resident-visual-review

@@ -6,7 +6,7 @@
 
 - 本项目在对话中的固定简称是 **“居民逻辑网页demo”**。
 - 用户说“居民逻辑网页demo 做到哪了 / 继续做居民逻辑网页demo”等，默认指向 `JiongXiaGu/wanhu-resident-sim`。
-- 新对话不要只依赖聊天记忆；先读取 GitHub `main`、`README.md`、本文件、`Documentation/居民逻辑网页Demo接续说明.md`、`Documentation/居民面板与生活事件V2.md`、`Documentation/居民生活记录与故事连续性.md`、`Documentation/人生经历与生活界面玩法规则V1.md`，再根据最新 commit、Actions 与代码回答。
+- 新对话不要只依赖聊天记忆；先读取 GitHub `main`、`README.md`、本文件、`Documentation/居民逻辑网页Demo接续说明.md`、`Documentation/居民面板与生活事件V2.md`、`Documentation/居民生活记录与故事连续性.md`、`Documentation/人生经历与生活界面玩法规则V1.md`，再根据最新 commit、Actions 与代码回答。头像美术任务另读 `Documentation/Portrait Art Reboot.md`。
 
 ## 项目边界
 
@@ -161,7 +161,7 @@ Resident Visual Review 必须继续验证这条链，以及人生时间轴的年
 ## Portrait 规则
 
 - 头像是次要系统，目标是稳定识别、年龄清楚、允许换发型与衣服、方便迁移 Unity。
-- 当前唯一正式设计文档是 `Documentation/Portrait System.md`。
+- 当前唯一正式 Runtime 设计文档是 `Documentation/Portrait System.md`。新美术方向的独立决策见 `Documentation/Portrait Art Reboot.md`，不改变 Runtime 契约。
 - 正式身份数据只保留 `ResidentPortraitDNA`：`faceFamilyId / hairStyleId / outfitStyleId / skinPaletteId / baseHairColorId`。
 - 新美术框架只使用 `child / adult / elder` 三个视觉年龄段；游戏逻辑仍可保留更细 LifeStage。
 - Gender + AgeBand 产生六个固定 PortraitFrame。
@@ -169,11 +169,12 @@ Resident Visual Review 必须继续验证这条链，以及人生时间轴的年
 - 头像 Runtime 已完成最终清理：没有 PortraitStageProfile、共享 FeatureLayer、Stage Body 或 Frame 特判；所有 Frame 使用同一固定裁切与同一 RenderPlan。
 - `Content/Portrait/portrait-catalog.json` 是头像逻辑元数据唯一权威；`assets/art-manifest.json` 只负责 Web 美术映射。新增/删除头像 Stable ID 必须通过 PortraitCatalogAudit。
 - Face / Hair / Outfit / Neck 几何分别维护在 `portrait/assets/` 下，不再把全部 SVG Path 堆进 `catalog.ts`。
-- `female.adult` 已进入正式 Frame Proof：6 个 FaceFamily × 3 个 HairStyle × 4 个 OutfitStyle，Visual Review 必须覆盖全部 72 个组合。
+- `female.adult` 的技术 Frame Proof 为 6 个 FaceFamily × 3 个 HairStyle × 4 个 OutfitStyle，Visual Review 必须继续覆盖全部 72 个组合；技术通过不代表该美术已定稿。
 - 美术方向采用泛中国古代居民语汇：束/挽/盘发、交领/叠领/对襟常服、低饱和克制配色；不要靠夸张面部特征表达“中国感”。
 - 正式头像工作台入口是 `/?view=portraits`。
-- 当前画风评审入口是 `/?view=portrait-style-bakeoff`；必须与生产 PortraitRenderer/Frame 资产隔离，并同时评审平民、老人、贵族/公主和最高阶男性。上一轮 `/?view=portrait-style-study` 仅保留为历史实验。
-- 画风未定稿前，不把 Style Bakeoff 的 SVG Path 迁进正式 `portrait/assets/`。先选 2–3 个方向，再做换发型/换衣服/年龄/48px 等模块化 proof。
+- 当前新美术评审入口是 `/?view=portrait-art-reboot`。三组方向必须与生产 PortraitRenderer/Frame 资产隔离，并同时评审平民、老人、贵族女性、高阶男性。旧 `portrait-style-study` / `portrait-style-bakeoff` 均只保留为历史，不能作为新方案的视觉模板。
+- Art Reboot 允许先用完整角色设定验证美术，但必须标明整图、透明底、分辨率及媒介限制；不能把 2.5D 绘制说成已完成的 3D 模型，不能用五张重复图证明千人多样性。
+- 画风未定稿前，不把任何新 Proof 迁进正式 `portrait/assets/`。先选择主方向与必要对照，再做换发型/换衣服/年龄/48px 等模块化验证。
 - 头像美术验收完成后冻结 Stable ID 与 Frame 规范，再迁到 Unity；本仓库不因此设计 Unity ECS / Save。
 
 ## 内容生产原则
@@ -202,7 +203,7 @@ Unity Runtime / Save 不再是本仓库的下一阶段。
 
 ## 代码规则
 
-- Web 组件只消费 compiled / generated 数据。
+- 居民 Web 组件只消费 compiled / generated 数据。独立美术 Proof 可以使用固定作画样本，但不得将其冒充居民生产数据。
 - Prototype reducer 可以直接改 Demo Snapshot，但必须限制在 Web 原型层。
 - Parser / Validator / Compiler / Web Prototype 职责分开。
 - 修改稳定 Authoring 字段时同步更新 Schema 和必要文档。
@@ -221,6 +222,7 @@ Unity Runtime / Save 不再是本仓库的下一阶段。
 - 进入 `main` 时同样只推进一个逻辑完整 commit；主分支再次以 GitHub Actions Build + Visual Review 验收。
 - Build 先执行 `build-content`，上传 `resident-generated-data` Artifact，再构建 Web。
 - Resident Visual Review 在 GitHub Runner 内启动本地 Vite，由 Playwright 执行交互、检查 DOM / 状态并截图；截图 Artifact 是当前唯一远端视觉验收依据。
+- 新美术页由 `scripts/capture-portrait-art-reboot.mjs` 追加验证，不能删除或替代既有居民玩法链、人生时间轴和正式头像回归。
 - 不为了“刷新网页”、触发截图或重复运行而制造空 commit。
 
 ## 文档原则
