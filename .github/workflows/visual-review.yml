@@ -73,6 +73,8 @@ jobs:
         run: |
           node scripts/audit-composer-randomness.mjs
           node scripts/capture-composer.mjs
+      - name: Capture anime expression and wardrobe proofs
+        run: node scripts/capture-anime-review.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots
