@@ -41,9 +41,9 @@ export function faceBase(frame:Frame,face:Recipe['face']):string {
 const eyeSpec={oval:{w:17,h:9,tilt:0,mouth:14},round:{w:17,h:11,tilt:1,mouth:15},angular:{w:19,h:7,tilt:3,mouth:17},long:{w:16,h:8,tilt:0,mouth:13}};
 export function expressionArt(frame:Frame,face:Recipe['face'],expression:Recipe['expression']):string {
  const spec=eyeSpec[face],child=isChild(frame),elder=isElder(frame),female=isFemale(frame),ink='#443a48';
- const y=child?151:151, w=spec.w, h=elder?Math.max(5,spec.h-3):child?spec.h+2:female?spec.h:Math.max(6,spec.h-2);
+ const y=151, w=spec.w, h=elder?Math.max(5,spec.h-3):child?spec.h+2:female?spec.h:Math.max(6,spec.h-2);
  const tilt=spec.tilt; let eyes='';
- let brow=expression==='angry'?'M104 128Q120 128 141 136':expression==='sad'?'M105 138Q123 132 140 126':expression==='surprise'?'M105 124Q123 115 140 124':'M105 131Q122 125 140 130';
+ const brow=expression==='angry'?'M104 128Q120 128 141 136':expression==='sad'?'M105 138Q123 132 140 126':expression==='surprise'?'M105 124Q123 115 140 124':'M105 131Q122 125 140 130';
  const brows=l(brow,elder?'#868088':ink,female?1.8:2.5);
  if(expression==='joy') {
   eyes=brows+l('M104 153Q122 133 141 153',ink,2.6)+l('M105 154L101 150',ink,1.2);
@@ -52,10 +52,10 @@ export function expressionArt(frame:Frame,face:Recipe['face'],expression:Recipe[
   const left=123-w,right=123+w;
   const white=`M${left} ${y-tilt}Q123 ${y-open*1.6} ${right} ${y+1}Q123 ${y+open*1.6} ${left} ${y-tilt}Z`;
   const irisW=elder?5.5:child?7.5:6.6;
-  // 虹膜贴合固定眼缝；所有颜色都为部件自身提供，不增加玩家调色选项。
-  const irisH=Math.max(3,open*.68);
-  eyes=brows+`<g data-eye-white>${p(white,'#fff9ee')}</g>`+
-   `<g data-eye-iris>${e(124,y,irisW,irisH,'#9d8168')+e(124,y-1,irisW*.5,irisH*.73,'#4b454c')+e(122,y-irisH*.42,1.8,1.4,'#fffdf2')+e(127,y+irisH*.45,1,.8,'#ebd5a7')}</g>`+
+  // 窄眼型留出虹膜/瞳孔余量；不要依靠遮罩隐藏超出眼白的形状。
+  const irisH=Math.max(2.2,open*.60);
+  eyes=brows+`<g data-eye-white="">${p(white,'#fff9ee')}</g>`+
+   `<g data-eye-iris="">${e(124,y,irisW,irisH,'#9d8168')+e(124,y-.3,irisW*.5,irisH*.73,'#4b454c')+e(122,y-irisH*.42,1.8,1.4,'#fffdf2')+e(127,y+irisH*.45,1,.8,'#ebd5a7')}</g>`+
    l(`M${left-2} ${y-tilt-2}Q121 ${y-open*1.7-1} ${right} ${y+1}`,ink,female?2.3:1.9)+
    l(`M${left+4} ${y+4}Q123 ${y+open*1.6} ${right-3} ${y+4}`,s.line,.85,.7);
   if(female) eyes+=l(`M${left} ${y-tilt}L${left-5} ${y-tilt-5}`,ink,1.5);
@@ -70,7 +70,7 @@ export function expressionArt(frame:Frame,face:Recipe['face'],expression:Recipe[
  if(expression==='angry') mouth=l(`M${161-mw} ${my+2}Q160 ${my-2} ${159+mw} ${my+2}`,'#96616c',1.8);
  if(expression==='sad') mouth=l(`M${163-mw} ${my+5}Q160 ${my-6} ${157+mw} ${my+5}`,'#a46c71',1.7);
  if(expression==='surprise') mouth=e(160,my+3,6.8,9.4,'#915363')+e(160,my+7,3.8,3,'#d69299');
- return art+`<g data-mouth>${mouth}</g>`;
+ return art+`<g data-mouth="">${mouth}</g>`;
 }
 export function neckArt(frame:Frame):string {
  if(isChild(frame)) return p('M140 202L140 233L123 249Q160 283 197 249L180 233L180 202Z',s.base,s.line,1)+p('M141 213Q159 230 179 213L179 235Q161 244 141 229Z',s.shade);
