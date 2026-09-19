@@ -81,6 +81,8 @@ jobs:
         run: |
           node scripts/capture-modern-anime.mjs
           node scripts/audit-modern-mouths.mjs
+      - name: Capture independent open styles and UI context review
+        run: node scripts/capture-open-style-review.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots

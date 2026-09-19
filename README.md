@@ -6,7 +6,19 @@
 
 Web Demo 是玩法原型，不是 Unity Runtime 设计稿。Unity ECS、BlobAsset、正式存档、RuntimeIndex、序列化和资源加载方式不在本仓库继续设计。
 
-## 最新候选：现代国风人物
+## 当前任务：开放头像画风候选
+
+```text
+/?view=portrait-style-directions-v2
+```
+
+主题只有 **21岁女子 / 32岁男子**。各画风自由设计人物，不固定同一张脸、不强制古风服饰；现代赛璐璐、厚涂人物画、柔光三维感、漫画块面四组共八张独立位图概念稿。
+
+本轮使用原生图像生成工具制作概念画稿，不继续复用旧SVG脸。页面参考 UI 仓库当前 **Smoked Graphite + Aged Brass** 规范，提供原色大图、96/64/48px、身份栏试装、明暗场景、去名称/统一灰阶诊断、候选保存与官方参考资料。
+
+**这页只选画风，不具备捏脸、换装功能；三维感图片不是三维模型。** 已有组合实验和正式Runtime保留。画风入选后才做不同脸共享发型、服饰与表情的最小验证。说明与素材来源见 [Portrait Open Styles](Documentation/Portrait%20Open%20Styles.md)。
+
+## 上一候选：现代国风人物
 
 ```text
 /?view=portrait-modern-anime-lab
@@ -65,6 +77,7 @@ Documentation/Portrait Art Directions.md
 Documentation/Portrait Composer Lab.md
 Documentation/Portrait Anime Lab.md
 Documentation/Portrait Modern Anime Lab.md
+Documentation/Portrait Open Styles.md
 Documentation/开发与部署工作流.md
 ```
 
@@ -129,6 +142,7 @@ Gender × child/adult/elder 产生六个固定 PortraitFrame。Face、Hair、Out
 
 | 页面 | 用途 |
 | --- | --- |
+| `/?view=portrait-style-directions-v2` | 当前开放画风候选：两个年龄主题、四种画法、八张独立概念稿 |
 | `/?view=portrait-modern-anime-lab` | 新绘现代国风候选、三组搭配与可组合人物 |
 | `/?view=portrait-anime-lab` | 上一版成年二次元脸型、表情与共享换装实验 |
 | `/?view=portrait-composer-lab` | 原版成年头像 DIY、全部脸型与共享衣装验证 |
@@ -175,6 +189,7 @@ npm install
 npm run dev
 ```
 
+当前画风候选：`http://localhost:5173/?view=portrait-style-directions-v2`。
 现代国风：`http://localhost:5173/?view=portrait-modern-anime-lab`。
 上一版二次元：`http://localhost:5173/?view=portrait-anime-lab`。
 原版 DIY：`http://localhost:5173/?view=portrait-composer-lab`。
@@ -194,7 +209,7 @@ npm run dev
 → main 再次 Build + Visual Review + 截图审查
 ```
 
-Build 先执行 build-content 并上传 generated Artifact，再构建 Web。Resident Visual Review 在 Runner 内启动 Vite，Playwright 执行真实交互与截图。原有居民连续性、正式头像、研究稿、Composer 与 Anime 的验收全部保留；新增 `scripts/capture-modern-anime.mjs`。
+Build 先执行 build-content 并上传 generated Artifact，再构建 Web。Resident Visual Review 在 Runner 内启动 Vite，Playwright 执行真实交互与截图。原有居民连续性、正式头像、研究稿、Composer、Anime与Modern Anime的验收全部保留；新增 `scripts/capture-open-style-review.mjs`。
 
 `resident-visual-review` Artifact：
 
@@ -203,8 +218,9 @@ Build 先执行 build-content 并上传 generated Artifact，再构建 Web。Res
 - `composer/`：原版 DIY 原始截图、导出样本和机器检查报告；480 个发型帽饰样本、48 个原尺寸样本、96 个脸型服饰样本。
 - `anime/`：上一版二次元原始截图和报告；64 个表情、128 个发型帽饰、32 个衣装样本。
 - `modern-anime/`：现代国风搭配、面容与表情、72 个发型帽饰、18 个衣装样本、小尺寸和交互报告。
-- 各实验的 `exports/` 或 `face-exports/` 都是当次渲染器输出的组合样本，不是 Runtime 固定整图资产。
+- `open-styles/`：新画风总览、灰阶/去名称诊断、八张原稿、24个原尺寸样本、16个UI场景试装、参考资料和移动端截图。
+- 各实验的导出样本不得冒充已通过量产的 Runtime 资源。尤其 `open-styles/exports/` 是独立位图研究稿，不是可换装分层资产。
 
-原版 2,880、上一版 Anime 4,096、新候选 1,296 个基础配方检查只证明组合与图层不变量，不代表同等数量的肉眼独特头像。所有实验子目录保留原始 PNG，不使用旧缩图脚本。
+原版 2,880、上一版 Anime 4,096、新国风候选 1,296 个基础配方检查只证明组合与图层不变量，不代表同等数量的肉眼独特头像。开放画风页不再以组合数量验收美术；它只验证八张独立画稿的真实展示。所有实验子目录保留原始 PNG，不使用旧缩图脚本。
 
 **CI PASS 不等于美术 PASS**。美术任务必须下载并实际查看截图再合入 main，不制造空 commit 刷新结果。详细规范见 `Documentation/开发与部署工作流.md`。
