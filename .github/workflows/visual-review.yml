@@ -64,7 +64,9 @@ jobs:
       - name: Review frozen portrait frame contract
         run: node scripts/capture-portrait-review.mjs
       - name: Review avatar editing, object saves and modular artwork
-        run: node scripts/capture-avatar-review.mjs
+        run: |
+          node scripts/capture-avatar-review.mjs
+          node scripts/review-avatar-integration.mjs
       - name: Compress legacy review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots and editable components
