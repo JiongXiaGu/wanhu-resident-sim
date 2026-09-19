@@ -6,17 +6,33 @@
 
 Web Demo 是玩法原型，不是 Unity Runtime 设计稿。Unity ECS、BlobAsset、正式存档、RuntimeIndex、序列化和资源加载方式不在本仓库继续设计。
 
-## 新增：二次元表情与换装
+## 最新候选：现代国风人物
+
+```text
+/?view=portrait-modern-anime-lab
+```
+
+首页或旧头像实验点击 **“现代国风 · 新画风与换装”**。这是一套重新绘制的美术：更细的眼型与轮廓、分束长发、衣料明暗、云纹和玉冠配饰，不复用旧 Anime / Composer 的美术。
+
+- 成年男女各 3 张脸，共 6 个面容；6 套协调表情、3 种发型、4 个帽饰选项、3 套共享服装。
+- 晴岚 / 霁夜 / 丹华是同一新画风的三组可编辑搭配，不是三套独立画风，也不是固定角色整图。
+- 不同脸继续共享配件，同脸换装和切换表情不改变身份；幞头摘下恢复原发型。
+- 96/64/48px 预览、独立保存、配方导入/导出和分享、透明 SVG / 1024px PNG 导出。
+- 旧版与正式 Runtime 保留。儿童老人、自由五官编辑、游戏情绪驱动和 Unity 导入不在本轮范围内。
+
+目标是现代二游审美与泛中国古代设计语言结合，不复制《原神》《鸣潮》游戏资源，不把原型称为已经达到其成品质量。画风仍待玩家选择。完整规则见 [Portrait Modern Anime Lab](Documentation/Portrait%20Modern%20Anime%20Lab.md)。
+
+## 上一版：二次元表情与换装
 
 ```text
 /?view=portrait-anime-lab
 ```
 
-首页或原版 DIY 点击“二次元头像 · 表情与换装”。新实验独立重画成年男女各四张脸，提供平静、微笑、开心、大笑、生气、委屈、惊讶、害羞八套表情。每张脸仍能共享四种发型、四个帽饰选项和四套服装。
+新实验独立重画成年男女各四张脸，提供平静、微笑、开心、大笑、生气、委屈、惊讶、害羞八套表情。每张脸仍能共享四种发型、四个帽饰选项和四套服装。
 
 嘴型以固定正面中线绘制；换表情不改脸型或衣装。支持肤色/发色/衣色、原尺寸对照、配方保存/分享、透明 PNG/SVG 导出。这里的表情定制是选择八套协调预设，不是自由拼接五官。
 
-原版 16 脸 DIY 与正式 Runtime 保留，实验配方和存储互不覆盖。完整规则见 [Portrait Anime Lab](Documentation/Portrait%20Anime%20Lab.md)。本轮不包含儿童、老人、游戏自动情绪或 Unity 导入。
+原版 16 脸 DIY 与正式 Runtime 保留，实验配方和存储互不覆盖。规则见 [Portrait Anime Lab](Documentation/Portrait%20Anime%20Lab.md)。
 
 ## 原版：16 脸头像 DIY
 
@@ -24,20 +40,15 @@ Web Demo 是玩法原型，不是 Unity Runtime 设计稿。Unity ECS、BlobAsse
 /?view=portrait-composer-lab
 ```
 
-居民首页右下角点击 **“头像 DIY · 同脸换装”** 即可进入。正式头像工作台和画风研究页也提供同一入口。
+这是实际 Face / Hair / Headwear / Outfit 分层组合，不是切换完整角色稿：
 
-这次是实际 Face / Hair / Headwear / Outfit 分层组合，不是切换完整角色稿：
+- 成年女性 8 张脸、成年男性 8 张脸，共 16 张完整面容；每类六个发型，四种帽饰加无帽，六套衣服。
+- 宽圆、修长、方颌、心形面容男女分别作画，原有四种面容和 v1 配方保持兼容。
+- 每张脸共享全部发型、帽子和衣服：换脸不换装，换装不换脸，摘帽恢复同一发型 ID。
+- 默认“面容”与“全部脸型”，支持脸型×服饰矩阵、96/64/48px、配色、锁身份随机。
+- 自动保存、JSON 配方导入/导出、组合链接、透明 SVG/PNG、深浅背景与 24 人搭配样本。
 
-- **成年女性 8 张脸、成年男性 8 张脸，共 16 张完整面容**；每类六个发型，四种帽饰加无帽，六套衣服。
-- 新增宽圆、修长、方颌、心形面容，男女分别作画；原有四种面容和 v1 配方保持兼容。
-- 每张脸都共享全部发型、帽子和衣服：换脸不换装，换装不换脸；摘帽恢复同一发型 ID。
-- 默认打开“面容”和“全部脸型”。可以在同一发型/衣装下比较八张脸，再直接选中一张。
-- 新增脸型×服饰矩阵，以及每张脸的 96/64/48px 原尺寸对照。
-- 肤色、发色、衣服配色；锁定面容与肤色后随机搭配。
-- 自动保存，支持 JSON 配方导入/导出、组合链接与透明 SVG/PNG 导出。
-- 白天/暮色、同脸对照、发型×帽饰矩阵和覆盖全部面容的 24 人搭配样本。
-
-它是独立的**成年人组合实验**，不替换正式居民头像，不更改正式五字段 DNA 和六个 Frame。儿童、老人、Unity 导入和全部组合美术仍需后续验证。规则见 [Portrait Composer Lab](Documentation/Portrait%20Composer%20Lab.md)。
+这是独立的成年人实验，不替换正式居民头像，不更改正式五字段 DNA 和六个 Frame。规则见 [Portrait Composer Lab](Documentation/Portrait%20Composer%20Lab.md)。
 
 ## 新对话先读
 
@@ -53,6 +64,7 @@ Documentation/Portrait System.md
 Documentation/Portrait Art Directions.md
 Documentation/Portrait Composer Lab.md
 Documentation/Portrait Anime Lab.md
+Documentation/Portrait Modern Anime Lab.md
 Documentation/开发与部署工作流.md
 ```
 
@@ -117,7 +129,8 @@ Gender × child/adult/elder 产生六个固定 PortraitFrame。Face、Hair、Out
 
 | 页面 | 用途 |
 | --- | --- |
-| `/?view=portrait-anime-lab` | 新的成年二次元脸型、表情与共享换装实验 |
+| `/?view=portrait-modern-anime-lab` | 新绘现代国风候选、三组搭配与可组合人物 |
+| `/?view=portrait-anime-lab` | 上一版成年二次元脸型、表情与共享换装实验 |
 | `/?view=portrait-composer-lab` | 原版成年头像 DIY、全部脸型与共享衣装验证 |
 | `/?view=portraits` | 冻结的正式头像工作台 |
 | `/?view=portrait-art-directions` | 绢彩、暖陶、朱墨三组完整角色稿，不是模块化资产 |
@@ -162,7 +175,8 @@ npm install
 npm run dev
 ```
 
-二次元实验：`http://localhost:5173/?view=portrait-anime-lab`。
+现代国风：`http://localhost:5173/?view=portrait-modern-anime-lab`。
+上一版二次元：`http://localhost:5173/?view=portrait-anime-lab`。
 原版 DIY：`http://localhost:5173/?view=portrait-composer-lab`。
 
 构建：`npm run build`。只编译内容：`npm run build-content`。
@@ -180,17 +194,17 @@ npm run dev
 → main 再次 Build + Visual Review + 截图审查
 ```
 
-Build 先执行 build-content 并上传 generated Artifact，再构建 Web。Resident Visual Review 在 Runner 内启动 Vite，Playwright 执行真实交互与截图。原有居民连续性、正式头像和研究稿验收保留；Composer 的双向图层独立性、帽饰恢复、下载/导入、保存/分享和小尺寸检查也全部保留。
+Build 先执行 build-content 并上传 generated Artifact，再构建 Web。Resident Visual Review 在 Runner 内启动 Vite，Playwright 执行真实交互与截图。原有居民连续性、正式头像、研究稿、Composer 与 Anime 的验收全部保留；新增 `scripts/capture-modern-anime.mjs`。
 
 `resident-visual-review` Artifact：
 
 - 根目录：原有居民与正式头像预览。
 - `art-directions/`：完整角色研究原始 PNG 与 SVG/PNG。
 - `composer/`：原版 DIY 原始截图、导出样本和机器检查报告；480 个发型帽饰样本、48 个原尺寸样本、96 个脸型服饰样本。
-- `composer/face-exports/`：原版渲染器输出的 16 份组合 SVG/PNG/JSON，不作为固定整图资产。
-- `anime/`：新二次元实验原始截图、嘴型几何/对称检查和交互报告；64 个脸型表情样本、128 个发型帽饰样本、32 个衣装样本。
-- `anime/exports/`：新渲染器输出的 64 份表情组合 SVG/PNG，不是运行时整图替换库。
+- `anime/`：上一版二次元原始截图和报告；64 个表情、128 个发型帽饰、32 个衣装样本。
+- `modern-anime/`：现代国风搭配、面容与表情、72 个发型帽饰、18 个衣装样本、小尺寸和交互报告。
+- 各实验的 `exports/` 或 `face-exports/` 都是当次渲染器输出的组合样本，不是 Runtime 固定整图资产。
 
-原版 2,880、新实验 4,096 个基础配方检查只证明组合与图层不变量，不是同等数量的肉眼独特头像。原版 24 人墙是分层覆盖演示，真实随机另用 512 个种子验收。所有实验子目录保留原始 PNG，不使用旧缩图脚本。
+原版 2,880、上一版 Anime 4,096、新候选 1,296 个基础配方检查只证明组合与图层不变量，不代表同等数量的肉眼独特头像。所有实验子目录保留原始 PNG，不使用旧缩图脚本。
 
-**CI PASS 不等于美术 PASS**；美术任务必须下载并实际查看截图再合入 main，不制造空 commit 刷新结果。详细规范见 `Documentation/开发与部署工作流.md`。
+**CI PASS 不等于美术 PASS**。美术任务必须下载并实际查看截图再合入 main，不制造空 commit 刷新结果。详细规范见 `Documentation/开发与部署工作流.md`。
