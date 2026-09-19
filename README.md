@@ -6,7 +6,19 @@
 
 Web Demo 是玩法原型，不是 Unity Runtime 设计稿。Unity ECS、BlobAsset、正式存档、RuntimeIndex、序列化和资源加载方式不在本仓库继续设计。
 
-## 现在体验：头像 DIY
+## 新增：二次元表情与换装
+
+```text
+/?view=portrait-anime-lab
+```
+
+首页或原版 DIY 点击“二次元头像 · 表情与换装”。新实验独立重画成年男女各四张脸，提供平静、微笑、开心、大笑、生气、委屈、惊讶、害羞八套表情。每张脸仍能共享四种发型、四个帽饰选项和四套服装。
+
+嘴型以固定正面中线绘制；换表情不改脸型或衣装。支持肤色/发色/衣色、原尺寸对照、配方保存/分享、透明 PNG/SVG 导出。这里的表情定制是选择八套协调预设，不是自由拼接五官。
+
+原版 16 脸 DIY 与正式 Runtime 保留，实验配方和存储互不覆盖。完整规则见 [Portrait Anime Lab](Documentation/Portrait%20Anime%20Lab.md)。本轮不包含儿童、老人、游戏自动情绪或 Unity 导入。
+
+## 原版：16 脸头像 DIY
 
 ```text
 /?view=portrait-composer-lab
@@ -40,6 +52,7 @@ Documentation/StoryBucket与内容覆盖V1.md
 Documentation/Portrait System.md
 Documentation/Portrait Art Directions.md
 Documentation/Portrait Composer Lab.md
+Documentation/Portrait Anime Lab.md
 Documentation/开发与部署工作流.md
 ```
 
@@ -71,7 +84,7 @@ LifeEvent 默认三个 Stage，随时间推进；完成后普通事件逐渐淡�
 
 ### LifeTag / Story Bucket / Prototype Effect
 
-过去的重要故事可留下 LifeTag；后续 Eligibility 读取轻量状态，不扫描历史全文。Story Bucket 已由 Web Selector 使用，先按 LifeStage + OccupationGroup 粗筛，再进行精确资格检查。
+过去的重要故事可以留下 LifeTag；后续 Eligibility 读取轻量状态，不扫描历史全文。Story Bucket 已由 Web Selector 使用，先按 LifeStage + OccupationGroup 粗筛，再进行精确资格检查。
 
 原型已支持 LifeTag 增减、`changeOccupation`、`moveHousehold`、`formMarriage` 直接改变 Demo 状态。它们只用于验证玩法，不代表 Unity 结构变更架构。
 
@@ -102,17 +115,16 @@ Gender × child/adult/elder 产生六个固定 PortraitFrame。Face、Hair、Out
 
 `Content/Portrait/portrait-catalog.json` 是逻辑元数据权威，`assets/art-manifest.json` 仅负责 Web 美术映射，由 PortraitCatalogAudit 检查一致性。正式规则见 `Documentation/Portrait System.md`。
 
-各页面职责：
-
 | 页面 | 用途 |
 | --- | --- |
-| `/?view=portrait-composer-lab` | 当前可交互的成年头像 DIY、全部脸型与共享衣装验证 |
+| `/?view=portrait-anime-lab` | 新的成年二次元脸型、表情与共享换装实验 |
+| `/?view=portrait-composer-lab` | 原版成年头像 DIY、全部脸型与共享衣装验证 |
 | `/?view=portraits` | 冻结的正式头像工作台 |
 | `/?view=portrait-art-directions` | 绢彩、暖陶、朱墨三组完整角色稿，不是模块化资产 |
 | `/?view=portrait-style-bakeoff` | 历史风格比较 |
 | `/?view=portrait-style-study` | 更早的历史实验 |
 
-实验不会悄悄接入正式 Runtime。是否增加独立帽饰字段、怎样落到六个正式 Frame，需要在 DIY 体验后单独决定。
+实验不会悄悄接入正式 Runtime。是否增加独立帽饰或表情字段、怎样落到六个正式 Frame，需要在体验后单独决定。
 
 ## 内容编译链
 
@@ -150,11 +162,8 @@ npm install
 npm run dev
 ```
 
-打开：
-
-```text
-http://localhost:5173/?view=portrait-composer-lab
-```
+二次元实验：`http://localhost:5173/?view=portrait-anime-lab`。
+原版 DIY：`http://localhost:5173/?view=portrait-composer-lab`。
 
 构建：`npm run build`。只编译内容：`npm run build-content`。
 
@@ -171,15 +180,17 @@ http://localhost:5173/?view=portrait-composer-lab
 → main 再次 Build + Visual Review + 截图审查
 ```
 
-Build 先执行 build-content 并上传 generated Artifact，再构建 Web。Resident Visual Review 在 Runner 内启动 Vite，Playwright 执行真实交互与截图。原有居民连续性、正式头像和研究稿验收保留；`scripts/capture-composer.mjs` 检查 DIY 配方、双向图层独立性、帽饰恢复、下载/导入、保存/分享和小尺寸，并调用 `capture-composer-faces.mjs` 覆盖新增面容。
+Build 先执行 build-content 并上传 generated Artifact，再构建 Web。Resident Visual Review 在 Runner 内启动 Vite，Playwright 执行真实交互与截图。原有居民连续性、正式头像和研究稿验收保留；Composer 的双向图层独立性、帽饰恢复、下载/导入、保存/分享和小尺寸检查也全部保留。
 
 `resident-visual-review` Artifact：
 
 - 根目录：原有居民与正式头像预览。
-- `art-directions/`：完整角色研究的原始 PNG 与 SVG/PNG。
-- `composer/`：DIY 原始截图、导出样本和机器检查报告。16 张发型帽饰矩阵覆盖 480 个渲染样本；全部脸型总览覆盖 48 个原尺寸样本；脸型×服饰矩阵覆盖 96 个样本。
-- `composer/face-exports/`：当前分层渲染器输出的 16 份组合 SVG/PNG/JSON，便于离线比较，不作为 Runtime 固定整图资产。
+- `art-directions/`：完整角色研究原始 PNG 与 SVG/PNG。
+- `composer/`：原版 DIY 原始截图、导出样本和机器检查报告；480 个发型帽饰样本、48 个原尺寸样本、96 个脸型服饰样本。
+- `composer/face-exports/`：原版渲染器输出的 16 份组合 SVG/PNG/JSON，不作为固定整图资产。
+- `anime/`：新二次元实验原始截图、嘴型几何/对称检查和交互报告；64 个脸型表情样本、128 个发型帽饰样本、32 个衣装样本。
+- `anime/exports/`：新渲染器输出的 64 份表情组合 SVG/PNG，不是运行时整图替换库。
 
-2,880 个基础配方检查只证明组合和图层不变量；不是 2,880 张肉眼独特的人像，更不表示全部美术已人工通过。24 人墙是分层覆盖演示，真实随机另用 512 个种子验收。
+原版 2,880、新实验 4,096 个基础配方检查只证明组合与图层不变量，不是同等数量的肉眼独特头像。原版 24 人墙是分层覆盖演示，真实随机另用 512 个种子验收。所有实验子目录保留原始 PNG，不使用旧缩图脚本。
 
-两个实验子目录保留原始 PNG，不使用旧缩图脚本。**CI PASS 不等于美术 PASS**；美术任务必须下载并实际查看截图再合入 main，不制造空 commit 刷新结果。详细规范见 `Documentation/开发与部署工作流.md`。
+**CI PASS 不等于美术 PASS**；美术任务必须下载并实际查看截图再合入 main，不制造空 commit 刷新结果。详细规范见 `Documentation/开发与部署工作流.md`。
