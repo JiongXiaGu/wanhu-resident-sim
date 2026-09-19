@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
-import {options,parts,labels,defaultFor,equalRecipe,parseRecipe,randomRecipe,optionLabel,type Part,type Recipe,type Target} from './model';
+import {options,packOptions,parts,labels,defaultFor,equalRecipe,parseRecipe,randomRecipe,optionLabel,packLabel,withPack,type PackId,type Part,type Recipe,type Target} from './model';
 import {applyRecipe,getRaw,parseEntry,removeRecipe,useSaved} from './store';
 import {AvatarImage,SavedAvatar} from './AvatarImage';
 import {downloadFile,downloadPng,renderAvatar} from './render';
@@ -40,7 +40,7 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
   node.addEventListener('keydown',trap,true);
   return()=>{blocks.forEach(block=>block.removeAttribute('inert'));node.removeEventListener('keydown',trap,true);if(previous?.isConnected)previous.focus();};
  },[pending]);
- function choose<K extends Part>(selected:K,value:Recipe[K]){setDraft(old=>({...old,[selected]:value}));setMessage('');}
+ function choose<K extends Part>(selected:K,value:Recipe[K]){setDraft(old=>({...old,[selected]:value}));setMessage('');}\n function choosePack(pack:PackId){setDraft(old=>withPack(old,pack));setMessage(`已切换到「${packLabel(pack)}」，脸型、头发、衣服和表情保持不变。`);}
  function reload(){epoch.current++;setDraft(saved.recipe??defaultFor(target));setBaseline(saved.recipe??defaultFor(target));setBaselineRaw(saved.raw);setMessage(saved.error||'已重新载入这个对象的头像。');}
  function save():boolean {
   try{applyRecipe(target.key,draft,baselineRaw);setBaseline({...draft});setBaselineRaw(getRaw(target.key));setMessage(`已应用到「${target.name}」。其他对象未改变。`);return true;}
@@ -88,9 +88,11 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
      <div className="av-sizes">{[96,64,48].map(size=><figure key={size}><AvatarImage frame={target.frame} recipe={draft} size={size} native/><figcaption>{size} px</figcaption></figure>)}</div>
      <div className="av-export"><button type="button" data-export="png" disabled={busy} onClick={png}>导出 PNG</button><button type="button" data-export="svg" onClick={()=>downloadFile(new Blob([renderAvatar(target.frame,draft)],{type:'image/svg+xml'}),'wanhu-avatar.svg')}>导出 SVG</button></div>
     </section>
-    <section className="av-choices"><div className="av-section-heading"><h2>选择部件</h2><span>日常线绘 / v1</span></div><div className="av-tabs" role="group" aria-label="头像部件">{parts.map(item=><button type="button" key={item} data-part-tab={item} aria-pressed={part===item} onClick={()=>setPart(item)}>{labels[item]}</button>)}</div>
+    <section className="av-choices"><div className="av-section-heading"><h2>选择部件</h2><span>{packLabel(draft.pack)}</span></div>
+     <div className="av-style-picker" role="group" aria-label="头像画风">{packOptions.map(style=><button type="button" className="av-style-option" key={style.id} data-pack={style.id} aria-pressed={draft.pack===style.id} onClick={()=>choosePack(style.id)}><AvatarImage frame={target.frame} recipe={{...draft,pack:style.id}} size={72}/><span><b>{style.label}</b><small>{style.note}</small></span><i aria-hidden="true">{draft.pack===style.id?'✓':''}</i></button>)}</div>
+     <div className="av-tabs" role="group" aria-label="头像部件">{parts.map(item=><button type="button" key={item} data-part-tab={item} aria-pressed={part===item} onClick={()=>setPart(item)}>{labels[item]}</button>)}</div>
      <div className="av-option-grid" role="group" aria-label={labels[part]}>{options[part].map(item=><button type="button" key={item.id} data-option={item.id} data-option-part={part} className="av-option" aria-pressed={draft[part]===item.id} onClick={()=>choose(part,item.id)}><AvatarImage frame={target.frame} recipe={{...draft,[part]:item.id}} size={112}/><span>{item.label}</span><i aria-hidden="true">{draft[part]===item.id?'✓':''}</i></button>)}</div>
-     <p className="av-choice-note">更换{labels[part]}，保留其他选择。男女和年龄由当前对象提供，不改居民身份数据。</p>
+     <p className="av-choice-note">画风只改变绘制方式；更换{labels[part]}时保留其他选择。男女和年龄由当前对象提供，不改居民身份数据。</p>
      <button className="av-random" type="button" data-random-outfit onClick={()=>{setDraft(old=>randomRecipe(crypto.getRandomValues(new Uint32Array(1))[0],old));setMessage('只随机更换头发和衣服，保留脸型与表情。');}}>随机搭配头发与衣服</button>
      <details className="av-tools"><summary>配方与部件审查</summary><div className="av-tools-actions"><button type="button" data-export="json" onClick={()=>downloadFile(new Blob([JSON.stringify(draft,null,2)],{type:'application/json'}),'wanhu-avatar.json')}>导出配方</button><button type="button" onClick={()=>fileInput.current?.click()}>导入配方</button><input ref={fileInput} data-import-recipe type="file" accept=".json,application/json" hidden onChange={event=>{void importFile(event.currentTarget.files?.[0]);}}/></div><p>导入只改当前预览，不携带居民编号，也不自动应用。</p><pre>{JSON.stringify(draft,null,2)}</pre></details>
     </section>
