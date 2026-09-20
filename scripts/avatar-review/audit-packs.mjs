@@ -274,7 +274,7 @@ async function auditPack(page,outRoot,spec){
             eyeChecks++;
           }
 
-          for(const hair of catalog.hair)for(const outfit of frameCatalog.outfit){
+          for(const hair of frameCatalog.hair)for(const outfit of frameCatalog.outfit){
             const recipe=m.parseRecipe({...look,hair:hair.id,outfit:outfit.id}),comboLayers=r.renderLayers(frame,recipe),svg=r.renderAvatar(frame,recipe);
             require(comboLayers.find(x=>x.id==='FaceBase').svg===faceSvg,`${spec.id} wardrobe changed face`);
             require(comboLayers.find(x=>x.id==='Expression').svg===expressionSvg,`${spec.id} wardrobe changed expression`);
