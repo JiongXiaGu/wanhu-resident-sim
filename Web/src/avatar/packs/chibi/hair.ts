@@ -1,8 +1,9 @@
 import type {Frame} from '../../model';
 import type {HairId} from './catalog';
+import type {ChibiHairLayers} from './art-spec';
 import {OUTLINE,hairColor,hairDark,hairLight,l,p} from './drawing';
 
-export function hairArt(frame:Frame,id:HairId):{back:string;front:string}{
+export function hairArt(frame:Frame,id:HairId):ChibiHairLayers{
  const base=hairColor(frame),dark=hairDark(frame),light=hairLight(frame);
  const back:Record<HairId,string>={
   crop:p('M83 151Q65 111 84 80Q108 40 160 39Q215 40 237 82Q254 113 237 154L224 181L96 181Z',base,OUTLINE,5),
@@ -20,5 +21,5 @@ export function hairArt(frame:Frame,id:HairId):{back:string;front:string}{
   wave:p('M78 148Q62 119 76 96Q70 72 92 62Q103 40 129 47Q150 31 169 43Q193 32 210 50Q235 49 242 72Q260 90 247 114Q260 137 243 158L228 171L221 141Q204 127 198 106Q184 123 168 130Q177 107 166 94Q151 118 129 132Q139 108 124 101Q108 123 90 137L90 173L78 160Z',base,OUTLINE,5)+p('M96 80Q118 58 146 59Q164 49 181 58Q209 55 226 80Q202 68 180 72Q147 66 112 87Z',light,'none',0,.42)+l('M84 109Q96 97 107 101M213 83Q229 91 238 105',light,4,.46),
   braid:p('M80 147Q65 103 92 72Q117 44 160 45Q205 40 233 73Q251 96 242 137L230 169L223 141Q205 126 196 106Q184 125 168 131Q178 107 165 94Q149 120 129 133Q136 110 121 102Q106 125 91 137L90 171L80 160Z',base,OUTLINE,5)+p('M100 83Q124 54 161 54Q201 51 225 82Q193 68 162 70Q129 69 107 89Z',light,'none',0,.44)+l('M119 95Q136 78 151 73M187 69Q208 75 220 92',light,4,.5)
  };
- return {back:back[id],front:front[id]};
+ return {back:back[id],headwearBack:'',front:front[id],headwearFront:''};
 }

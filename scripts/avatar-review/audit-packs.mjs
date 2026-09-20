@@ -4,7 +4,7 @@ import {basename,join} from 'node:path';
 import sharp from 'sharp';
 import {avatarReviewSpecs,styleRelationships} from './pack-specs.mjs';
 
-const layerOrder=['BackHair','Neck','Outfit','FaceBase','Expression','FrontHair'];
+const layerOrder=['BackHair','HeadwearBack','Neck','Outfit','FaceBase','Expression','FrontHair','HeadwearFront'];
 
 async function collectTsFiles(dir){
   const result=[];
@@ -117,8 +117,9 @@ async function auditPack(page,outRoot,spec){
   await mkdir(join(out,'samples'),{recursive:true});
 
   const data=await page.evaluate(async spec=>{
-    const m=await import('/src/avatar/model.ts'),r=await import('/src/avatar/render.ts');
+    const m=await import('/src/avatar/model.ts'),r=await import('/src/avatar/render.ts'),types=await import('/src/avatar/packs/types.ts');
     const require=(value,message)=>{if(!value)throw new Error(message);};
+    const expectedLayerOrder=types.layerOrder;
     const parser=new DOMParser(),host=document.createElement('div');
     host.style.cssText='position:absolute;left:-5000px;top:0;width:320px;height:320px';
     document.body.append(host);
@@ -127,7 +128,7 @@ async function auditPack(page,outRoot,spec){
     const pick=(part,id)=>catalog[part].some(option=>option.id===id)?id:m.recipeForPack(spec.id)[part];
     const baseRecipe=m.recipeForPack(spec.id);
     const parts=[],samples=[],boards=[],wardrobe=new Map();
-    let combinations=0,mouthChecks=0,eyeChecks=0,markerChecks=0;
+    let combinations=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,outfitStructureChecks=0;
 
     for(const frame of m.frames){
       const base={...baseRecipe,hair:pick('hair',frame.startsWith('male')?'crop':'bob'),outfit:pick('outfit','shirt'),expression:pick('expression','calm')};
@@ -141,10 +142,30 @@ async function auditPack(page,outRoot,spec){
 
       for(const hair of catalog.hair){
         const layers=r.renderLayers(frame,{...base,hair:hair.id});
-        addPart(`hair-${hair.id}-back`,layers.find(x=>x.id==='BackHair'));
-        addPart(`hair-${hair.id}-front`,layers.find(x=>x.id==='FrontHair'));
+        const back=layers.find(x=>x.id==='BackHair'),headwearBack=layers.find(x=>x.id==='HeadwearBack'),front=layers.find(x=>x.id==='FrontHair'),headwearFront=layers.find(x=>x.id==='HeadwearFront');
+        addPart(`hair-${hair.id}-back`,back);
+        addPart(`hair-${hair.id}-headwear-back`,headwearBack);
+        addPart(`hair-${hair.id}-front`,front);
+        addPart(`hair-${hair.id}-headwear-front`,headwearFront);
+        if(spec.headwearContract){
+          require(headwearBack&&headwearFront,`${spec.id} hair is missing Headwear layer slots`);
+          const mode=hair.headwear??'none',hasHeadwear=Boolean(headwearBack.svg||headwearFront.svg);
+          if(mode==='integrated')require(hasHeadwear,`${spec.id}/${hair.id} declares integrated headwear but draws no Headwear layer`);
+          else require(!hasHeadwear,`${spec.id}/${hair.id} draws Headwear content without integrated catalog metadata`);
+          headwearChecks++;
+        }
       }
-      for(const outfit of catalog.outfit)addPart(`outfit-${outfit.id}`,r.renderLayers(frame,{...base,outfit:outfit.id}).find(x=>x.id==='Outfit'));
+      for(const outfit of catalog.outfit){
+        const outfitLayer=r.renderLayers(frame,{...base,outfit:outfit.id}).find(x=>x.id==='Outfit');
+        addPart(`outfit-${outfit.id}`,outfitLayer);
+        if(spec.outfitContract){
+          host.innerHTML=r.svgDocument(outfitLayer.svg,spec.id);
+          require(host.querySelectorAll('[data-chibi-outfit-part="base"]').length>=1,`${spec.id}/${outfit.id} missing outfit base marker`);
+          require(host.querySelectorAll('[data-chibi-outfit-part="collar"]').length>=1,`${spec.id}/${outfit.id} missing outfit collar marker`);
+          require(!host.querySelector('[data-layer="FaceBase"]'),`${spec.id}/${outfit.id} outfit part leaked face geometry`);
+          outfitStructureChecks++;
+        }
+      }
 
       const faceGeometry=new Set();
       for(const face of catalog.face){
@@ -205,7 +226,7 @@ async function auditPack(page,outRoot,spec){
             require(comboLayers.find(x=>x.id==='Expression').svg===expressionSvg,`${spec.id} wardrobe changed expression`);
             const key=`${frame}/${hair.id}/${outfit.id}`,shared=JSON.stringify(comboLayers.filter(x=>!['FaceBase','Expression'].includes(x.id)));
             if(wardrobe.has(key))require(wardrobe.get(key)===shared,`${spec.id} face changed shared wardrobe`);else wardrobe.set(key,shared);
-            require(comboLayers.map(x=>x.id).join(',')==='BackHair,Neck,Outfit,FaceBase,Expression,FrontHair',`${spec.id} layer order changed`);
+            require(comboLayers.map(x=>x.id).join(',')===expectedLayerOrder.join(','),`${spec.id} layer order changed`);
             require(!/<image\\b|<script\\b|<foreignObject\\b|<mask\\b|<clipPath\\b/.test(svg),`${spec.id} used forbidden complete-image or auto-fit constructs`);
             for(const token of spec.extraForbiddenSvg)require(!svg.includes(token),`${spec.id} contains forbidden artwork marker: ${token}`);
             require(!parser.parseFromString(svg,'image/svg+xml').querySelector('parsererror'),`${spec.id} emitted invalid SVG`);
@@ -222,7 +243,7 @@ async function auditPack(page,outRoot,spec){
       if(matrixFrame){
         boards.push({name:`faces-${frame}`,title:`${meta.label} · ${frame} · ${catalog.face.length} 张脸`,columns:Math.min(4,catalog.face.length),cells:faces});
         boards.push({name:`expressions-${frame}`,title:`${meta.label} · ${frame} · ${catalog.face.length}脸 × ${catalog.expression.length}表情`,columns:Math.min(6,catalog.expression.length),cells:expressions});
-        boards.push({name:`hair-${frame}`,title:`${meta.label} · ${frame} · ${catalog.face.length}脸 × ${catalog.hair.length}头发`,columns:Math.min(6,catalog.hair.length),cells:hairs});
+        boards.push({name:`hair-${frame}`,title:`${meta.label} · ${frame} · ${catalog.face.length}脸 × ${catalog.hair.length}${spec.headwearContract?'头部造型 / Headwear':'头发'}`,columns:Math.min(6,catalog.hair.length),cells:hairs});
         boards.push({name:`outfits-${frame}`,title:`${meta.label} · ${frame} · ${catalog.face.length}脸 × ${catalog.outfit.length}衣服`,columns:Math.min(4,catalog.outfit.length),cells:outfits});
       }else if(spec.nonAdultFaceBoards){
         boards.push({name:`age-${frame}`,title:`${meta.label} · ${frame} · 年龄上下文`,columns:Math.min(4,catalog.face.length),cells:faces});
@@ -250,7 +271,7 @@ async function auditPack(page,outRoot,spec){
     }
 
     host.remove();
-    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length]))};
+    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length]))};
   },spec);
 
   for(const part of data.parts){
@@ -283,6 +304,8 @@ async function auditPack(page,outRoot,spec){
     mouthChecks:data.mouthChecks,
     eyeChecks:data.eyeChecks,
     markerChecks:data.markerChecks,
+    headwearChecks:data.headwearChecks,
+    outfitStructureChecks:data.outfitStructureChecks,
     exportedParts:data.parts.length,
     samples:data.samples.length,
     boards:data.boards.length,

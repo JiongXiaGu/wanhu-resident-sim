@@ -19,11 +19,13 @@ export const chibiCutePack={
     const hair=hairArt(frame,hairId);
     return [
       {id:'BackHair',svg:hair.back},
+      {id:'HeadwearBack',svg:hair.headwearBack},
       {id:'Neck',svg:neckArt(frame)},
       {id:'Outfit',svg:outfitArt(frame,outfit)},
       {id:'FaceBase',svg:faceBase(frame,face)},
       {id:'Expression',svg:expressionArt(frame,face,expression)},
       {id:'FrontHair',svg:hair.front},
+      {id:'HeadwearFront',svg:hair.headwearFront},
     ];
   },
 } satisfies AvatarPack;

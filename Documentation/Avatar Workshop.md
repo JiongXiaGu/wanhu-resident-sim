@@ -27,18 +27,20 @@ App 当前城市快照、日期
 
 ```text
 BackHair
+HeadwearBack
 Neck
 Outfit
 FaceBase
 Expression
 FrontHair
+HeadwearFront
 ```
 
-表情在前发下方，不能把眼睛或眉毛画到刘海上。
+表情在 FrontHair 与 HeadwearFront 下方，不能把眼睛、眉毛或情绪符号画到刘海 / 帽檐上。Headwear 是 Hair 内部绘制层，不是第五个玩家选项。
 
 - Face：轮廓、耳朵、鼻子、肤色与年龄细节。
-- Hair：同一个选择包含前后两个绘制层。
-- Outfit：完整肩部和领口。
+- Hair：同一个选择包含 BackHair / HeadwearBack / FrontHair / HeadwearFront；无帽造型的两个 Headwear slot 为空。
+- Outfit：完整肩部和领口；Q版内部按 base / collar / overlay / detail 作者标记组织，但仍只占一个 Outfit Renderer layer。
 - Expression：该脸型对应的一套眉眼口变化，不是全脸整图替换。
 
 画布统一 `0 0 320 320`。眼形使用按脸型编写的作者规格，年龄使用直接绘制的脸部轮廓和肩颈轮廓；不按头发或衣服自动搜索位置，不引入兼容图、锚点求解器或逐人物偏移补丁。固定镜像仅用于正面对称绘画。
@@ -104,6 +106,7 @@ Web/src/avatar/
       index.ts            该画风唯一公开入口
       drawing.ts / faces.ts / hair.ts / outfits.ts
     chibi/
+      art-spec.ts          Q版 V2 Hair / Headwear / Outfit 内部作者契约
       catalog.ts
       index.ts
       drawing.ts / faces.ts / hair.ts / outfits.ts
@@ -117,7 +120,7 @@ AI 辅助美术生产发生在开发阶段：按照统一画布和包内画法�
 
 ### 新画风扩展点
 
-新增画风时不再修改 `render.ts` 或 `AvatarEditor.tsx`。画风目录只公开一个 `index.ts`，在里面组装 BackHair / Neck / Outfit / FaceBase / Expression / FrontHair；然后只在 `packs/registry.ts` 注册一次。画风标题、说明和编辑器排序都由这个注册表派生，避免 `model.ts`、`render.ts` 与 UI 三处重复登记。
+新增画风时不再修改 `render.ts` 或 `AvatarEditor.tsx`。画风目录只公开一个 `index.ts`，并按统一 8 层契约组装 BackHair / HeadwearBack / Neck / Outfit / FaceBase / Expression / FrontHair / HeadwearFront；然后只在 `packs/registry.ts` 注册一次。画风标题、说明和编辑器排序都由这个注册表派生，避免 `model.ts`、`render.ts` 与 UI 三处重复登记。
 
 `pack id` 属于持久化配方契约，发布后不要改名；目录名只是源码组织。废弃画风的兼容映射集中放在 registry 的 legacy alias，不在 `model.ts` 继续堆特殊分支。
 

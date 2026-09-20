@@ -13,6 +13,8 @@ export const avatarReviewSpecs=[
     expressionMarker:null,
     faceMarker:null,
     extraForbiddenSvg:[],
+    headwearContract:false,
+    outfitContract:false,
   },
   {
     id:'chibi-cute-v1',
@@ -28,6 +30,8 @@ export const avatarReviewSpecs=[
     expressionMarker:'[data-expression-style="chibi"]',
     faceMarker:null,
     extraForbiddenSvg:['soft-paint','sp-hair','sp-skin'],
+    headwearContract:true,
+    outfitContract:true,
   },
   {
     id:'simple-flat-v1',
@@ -43,6 +47,8 @@ export const avatarReviewSpecs=[
     expressionMarker:'[data-expression-style="simple-flat"]',
     faceMarker:'[data-simple-flat-face]',
     extraForbiddenSvg:['data-expression-style="chibi"','cb-','sp-hair','sp-skin'],
+    headwearContract:false,
+    outfitContract:false,
   },
 ];
 

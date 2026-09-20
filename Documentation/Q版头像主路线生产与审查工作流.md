@@ -21,13 +21,13 @@
 - [x] Phase 0B：Visual Review 改为 Registry 驱动
 - [x] Phase 0C：确定 Q版可爱为下一阶段主路线
 - [x] Phase 1：让 Pack 拥有自己的素材 Catalog，解除“所有画风必须共享同一套选项”的限制
-- [ ] **Phase 2：建立 Q版 V2 美术规范与头部 / 衣装内部图层规范**
-- [ ] Phase 3：第一批古代居民核心素材
+- [x] Phase 2：建立 Q版 V2 美术规范与头部 / 衣装内部图层规范
+- [ ] **Phase 3：第一批古代居民核心素材**
 - [ ] Phase 4：年龄 / 性别扩展与职业可读性
 - [ ] Phase 5：大规模素材生产与批次 QA
 - [ ] Phase 6：旧画风隐藏 / 兼容 / 退役决策
 
-**下一项唯一主任务：Phase 2。**
+**下一项唯一主任务：Phase 3 / Batch A。**
 
 ---
 
@@ -105,14 +105,29 @@ Phase 1 完成后，才进入 Phase 2。
 
 这是下一轮最重要的扩展类别。
 
-第一阶段仍保持一个玩家可见的 Hair 类，但允许一个 Hair option 内部包含：
+第一阶段仍保持一个玩家可见的 Hair 类。Phase 2 已固定 Renderer 图层顺序：
 
 ```text
 BackHair
+HeadwearBack
+Neck
+Outfit
+FaceBase
+Expression
 FrontHair
-HeadwearBack(optional)
-HeadwearFront(optional)
+HeadwearFront
 ```
+
+其中同一个 Hair option 内部拥有：
+
+```text
+BackHair
+HeadwearBack
+FrontHair
+HeadwearFront
+```
+
+没有帽饰的 Hair 也保留两个空 Headwear slot。带帽 / 头巾 / 发冠的 Hair 必须在 Catalog 标记 `headwear: integrated`，实际帽饰 geometry 只能进入 HeadwearBack / HeadwearFront；不能偷塞进 FaceBase、Expression 或 Outfit。
 
 这样可以画：
 
@@ -158,6 +173,25 @@ HeadwearFront(optional)
 - 老年长衫式日常装
 
 这里是“泛中国古代”视觉语言，不绑定具体朝代，不堆复杂纹样。
+
+### Outfit 内部作者层规范
+
+Outfit 仍然只有一个玩家可见类别和一个 Renderer `Outfit` layer，不增加 Recipe 字段。Q版内部按以下作者 slot 标记：
+
+```text
+base      身体与大面积主轮廓
+collar    领口 / 衣襟，必须明确存在
+overlay   外搭、左右襟片、围裙式大块叠层
+detail    少量缝线、扣结、边缘强调
+```
+
+规则：
+
+- `base` 与 `collar` 是每个 Outfit 的必需项。
+- Neck 独立位于 Outfit 后方；Outfit 不重画皮肤或替换 Neck。
+- 古代感首先通过 collar / overlay silhouette 表达，不靠细碎纹样。
+- 不增加自动领口对齐器、逐 Face offset 或 mask / clipPath 遮挡补丁。
+- 未来新增服饰时 Actions 必须能检测 Q版 Outfit 的 base / collar 标记。
 
 ## Expression
 
@@ -213,6 +247,16 @@ serious
 - 避免高频复杂纹样。
 - 职业可用颜色区分，但不要变成“职业制服图标化”。
 - 允许低饱和红、蓝、土黄、米白、灰绿、褐色等古代日常色感。
+
+## 内部图层
+
+Phase 2 固定：
+
+- `HeadwearBack` 位于 BackHair 之后、FaceBase 之前，用于帽后片、头巾后结等需要盖住后发但处在脸后方的部分。
+- `HeadwearFront` 永远在 FrontHair 之后，用于帽檐、前结、额前巾片等需要覆盖刘海的部分。
+- Expression 始终在 FrontHair / HeadwearFront 下方，不允许情绪符号穿过帽檐。
+- 参考画风暂时输出空 Headwear layer，保证同一 Renderer contract。
+- 当前旧 Q版 6 个 Hair 全部标记 `headwear: none`；Phase 3 新增真正帽饰后才出现 `integrated`。
 
 ## 古代感
 
@@ -477,6 +521,21 @@ Q版专项自动检查：
 
 人工 / 自动回归通过后才进入 Phase 2。
 
+## 2026-09-20：Phase 2 完成
+
+已完成：
+
+- Renderer 层契约从 6 层扩展为 8 层，加入 `HeadwearBack / HeadwearFront`。
+- Headwear 仍属于 Hair option 内部，不增加第五个 Recipe 字段。
+- Q版 Hair 使用固定 `back / headwearBack / front / headwearFront` 作者返回结构。
+- Q版 Hair Catalog 增加 `headwear: none | integrated` 元数据；旧 6 个 Hair 当前均为 none。
+- Q版 Outfit 固定 `base / collar / overlay / detail` 内部作者标记，现有四套衣服已按原绘制顺序包装，视觉不应变化。
+- Runtime 会直接检查所有 Pack 是否遵守 8 层顺序。
+- Actions 会导出 Headwear slot、检查 integrated / none 是否与实际图层一致，并检查 Q版 Outfit 至少存在 base + collar。
+- 不引入自动 anchor solver、逐脸 offset、mask / clipPath 兼容补丁。
+
+Phase 2 只建立生产契约，不新增古代帽子或古代服饰；真正美术从 Phase 3 / Batch A 开始。
+
 ---
 
 # 11. 每轮结束必须更新这里
@@ -484,7 +543,7 @@ Q版专项自动检查：
 ## 当前执行点
 
 ```text
-Phase 2 — Q版 V2 美术规范与头部 / 衣装内部图层规范
+Phase 3 — Batch A：成年男女核心古代居民素材
 状态：未开始
 ```
 

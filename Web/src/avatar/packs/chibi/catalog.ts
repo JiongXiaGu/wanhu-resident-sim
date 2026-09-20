@@ -8,12 +8,12 @@ export const chibiCatalog=defineCatalog({
     {id:'long',label:'清秀',note:'修长脸形 · 平缓眉眼'},
   ],
   hair:[
-    {id:'crop',label:'利落短发'},
-    {id:'bob',label:'齐颈短发'},
-    {id:'long',label:'自然长发'},
-    {id:'pony',label:'高马尾'},
-    {id:'wave',label:'蓬松卷发'},
-    {id:'braid',label:'侧编发'},
+    {id:'crop',label:'利落短发',headwear:'none'},
+    {id:'bob',label:'齐颈短发',headwear:'none'},
+    {id:'long',label:'自然长发',headwear:'none'},
+    {id:'pony',label:'高马尾',headwear:'none'},
+    {id:'wave',label:'蓬松卷发',headwear:'none'},
+    {id:'braid',label:'侧编发',headwear:'none'},
   ],
   outfit:[
     {id:'tee',label:'简约上衣'},
