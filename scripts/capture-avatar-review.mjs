@@ -4,7 +4,7 @@ import {join} from 'node:path';
 import {chromium} from 'playwright';
 import sharp from 'sharp';
 import {auditAvatarArt} from './audit-avatar-art.mjs';
-import {auditSoftPaint} from './audit-avatar-softpaint.mjs';
+import {auditChibiCute} from './audit-avatar-chibi.mjs';
 const out='review-screenshots/avatar';await mkdir(out,{recursive:true});
 const retired=['portrait-anime-lab','portrait-art-directions','portrait-composer-lab','portrait-modern-anime-lab','portrait-open-styles','portrait-style-bakeoff','portrait-style-study'];
 const entries=await readdir('Web/src');assert(retired.every(name=>!entries.includes(name)),'Retired experiments remain in src');
@@ -41,14 +41,14 @@ try{
  const allTargets=await page.locator('[data-target-key]').evaluateAll(nodes=>nodes.map(n=>({key:n.dataset.targetKey,kind:n.dataset.targetKind,frame:n.dataset.targetFrame,id:n.dataset.targetResident})));
  assert.equal(allTargets.filter(t=>t.kind==='resident').length,snapshot.residents.length);
  assert.deepEqual(await page.locator('[data-part-tab]').evaluateAll(nodes=>nodes.map(n=>n.dataset.partTab)),['face','hair','outfit','expression']);
- assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.pack)),['linework-v1','soft-paint-v1']);
+ assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.pack)),['linework-v1','chibi-cute-v1']);
  const a=allTargets.find(t=>t.id===residentA),b=allTargets.find(t=>t.kind==='resident'&&t.key!==a.key),players=allTargets.filter(t=>t.kind==='player');
  assert.equal(await key(),a.key);assert.equal(await stored(a.key),null);
  await select(players[0].key);await choose('face','round');await choose('hair','bob');await choose('outfit','knit');await choose('expression','smile');
  await sizes();const beforeStyle=await recipe();await screenshot('01-player-female-linework');
- await choosePack('soft-paint-v1');const afterStyle=await recipe();for(const field of ['face','hair','outfit','expression'])assert.equal(afterStyle[field],beforeStyle[field],'Style switch changed semantic option '+field);
- assert.notEqual(await image(),null);await apply();const playerSaved=await stored(players[0].key);assert.equal(JSON.parse(playerSaved).pack,'soft-paint-v1');assert.equal(await stored(players[1].key),null);
- await screenshot('01b-player-female-soft-paint');
+ await choosePack('chibi-cute-v1');const afterStyle=await recipe();for(const field of ['face','hair','outfit','expression'])assert.equal(afterStyle[field],beforeStyle[field],'Style switch changed semantic option '+field);
+ assert.notEqual(await image(),null);await apply();const playerSaved=await stored(players[0].key);assert.equal(JSON.parse(playerSaved).pack,'chibi-cute-v1');assert.equal(await stored(players[1].key),null);
+ await screenshot('01b-player-female-chibi');
  await select(players[1].key);await choose('face','angular');await choose('hair','crop');await choose('outfit','shirt');await choose('expression','calm');await apply();await screenshot('02-player-male-linework');
  assert.equal(await stored(players[0].key),playerSaved);
  await page.locator('[data-part-tab="expression"]').click();await screenshot('03-expression-options');
@@ -56,7 +56,7 @@ try{
  await page.locator('[data-part-tab="outfit"]').click();await screenshot('05-outfit-options');
  checks.push('Only four editable categories; style pack switch preserves the four semantic IDs; two player profiles save independently; actual resident roster is loaded from the current city snapshot');
 
- await select(a.key);await choosePack('soft-paint-v1');await choose('face','round');await choose('hair','pony');await choose('outfit','jacket');await choose('expression','joy');
+ await select(a.key);await choosePack('chibi-cute-v1');await choose('face','round');await choose('hair','pony');await choose('outfit','jacket');await choose('expression','joy');
  assert.equal(await stored(a.key),null,'Preview must not persist before apply');
  await apply();const aSaved=await stored(a.key),aImage=await image();await screenshot('06-resident-applied');
  await select(b.key);await choose('face','long');await choose('hair','crop');await choose('outfit','tee');await choose('expression','sad');await apply();const bSaved=await stored(b.key);
@@ -119,9 +119,9 @@ try{
  await page.setViewportSize({width:320,height:800});await sizes();
  await page.setViewportSize({width:1600,height:1100});
  const audit=await auditAvatarArt(page,out);
- const softAudit=await auditSoftPaint(page);
- checks.push('Two editable style packs; six age/gender contexts; shared parts; face-specific expressions; native previews; transparent parts and diagnostic boards');
+ const chibiAudit=await auditChibiCute(page);
+ checks.push('Two editable style packs including a proportionally distinct chibi pack; six age/gender contexts; shared parts; face-specific expressions; native previews; transparent parts and diagnostic boards');
  assert.deepEqual(errors,[],'Browser errors');
- await writeFile(join(out,'review.json'),JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',...audit,softPaint:softAudit,residentCount:snapshot.residents.length,checks,artisticApproval:'Requires actual inspection of both style packs and the real editor; CI is not a quality rating'},null,2));
+ await writeFile(join(out,'review.json'),JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',...audit,chibiCute:chibiAudit,residentCount:snapshot.residents.length,checks,artisticApproval:'Requires actual inspection of both style packs and the real editor; CI is not a quality rating'},null,2));
  console.log(checks.join('\n'));
 }catch(error){await page.screenshot({path:join(out,'failure.png'),fullPage:true}).catch(()=>{});await writeFile(join(out,'failure.txt'),String(error)+'\n'+errors.join('\n'));throw error;}finally{await browser.close();}

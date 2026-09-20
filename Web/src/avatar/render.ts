@@ -2,10 +2,10 @@ import { frames, options, packOptions, parseRecipe, type Frame, type PackId, typ
 import { faceBase as lineFace, expressionArt as lineExpression, neckArt as lineNeck } from './packs/linework/faces';
 import { hairArt as lineHair } from './packs/linework/hair';
 import { outfitArt as lineOutfit } from './packs/linework/outfits';
-import { faceBase as softFace, expressionArt as softExpression, neckArt as softNeck } from './packs/softpaint/faces';
-import { hairArt as softHair } from './packs/softpaint/hair';
-import { outfitArt as softOutfit } from './packs/softpaint/outfits';
-import { softPaintDefs } from './packs/softpaint/drawing';
+import { faceBase as chibiFace, expressionArt as chibiExpression, neckArt as chibiNeck } from './packs/chibi/faces';
+import { hairArt as chibiHair } from './packs/chibi/hair';
+import { outfitArt as chibiOutfit } from './packs/chibi/outfits';
+import { chibiDefs } from './packs/chibi/drawing';
 
 export type Layer = { id:'BackHair'|'Neck'|'Outfit'|'FaceBase'|'Expression'|'FrontHair'; svg:string };
 export type AvatarPack = {
@@ -28,16 +28,18 @@ export const lineworkPack:AvatarPack={
   ];
  }
 };
-export const softPaintPack:AvatarPack={
- id:'soft-paint-v1',title:'柔光插画',note:'弱描边 · 柔和体积光',viewBox:'0 0 320 320',frames,options,defs:softPaintDefs,layers(frame,recipe){
-  const hair=softHair(frame,recipe.hair);
+
+export const chibiCutePack:AvatarPack={
+ id:'chibi-cute-v1',title:'Q版可爱',note:'大头比例 · 豆豆眼 · 贴纸感',viewBox:'0 0 320 320',frames,options,defs:chibiDefs,layers(frame,recipe){
+  const hair=chibiHair(frame,recipe.hair);
   return [
-   {id:'BackHair',svg:hair.back},{id:'Neck',svg:softNeck(frame)},{id:'Outfit',svg:softOutfit(frame,recipe.outfit)},
-   {id:'FaceBase',svg:softFace(frame,recipe.face)},{id:'Expression',svg:softExpression(frame,recipe.face,recipe.expression)},{id:'FrontHair',svg:hair.front},
+   {id:'BackHair',svg:hair.back},{id:'Neck',svg:chibiNeck(frame)},{id:'Outfit',svg:chibiOutfit(frame,recipe.outfit)},
+   {id:'FaceBase',svg:chibiFace(frame,recipe.face)},{id:'Expression',svg:chibiExpression(frame,recipe.face,recipe.expression)},{id:'FrontHair',svg:hair.front},
   ];
  }
 };
-export const avatarPacks:Record<PackId,AvatarPack>={'linework-v1':lineworkPack,'soft-paint-v1':softPaintPack};
+
+export const avatarPacks:Record<PackId,AvatarPack>={'linework-v1':lineworkPack,'chibi-cute-v1':chibiCutePack};
 export const packCatalog=packOptions.map(meta=>({...meta,viewBox:avatarPacks[meta.id].viewBox}));
 export const getPack=(id:PackId):AvatarPack=>avatarPacks[id];
 
@@ -49,9 +51,11 @@ export function renderLayers(frame:Frame,recipe:Recipe):Layer[] {
 export const svgDocument=(inner:string,pack:PackId='linework-v1')=>`<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">${getPack(pack).defs()}${inner}</svg>`;
 export const renderAvatar=(frame:Frame,recipe:Recipe)=>{const safe=parseRecipe(recipe);return svgDocument(renderLayers(frame,safe).map(layer=>`<g data-layer="${layer.id}">${layer.svg}</g>`).join(''),safe.pack);};
 export const avatarSource=(frame:Frame,recipe:Recipe)=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(renderAvatar(frame,recipe));
+
 export function downloadFile(blob:Blob,name:string):void {
  const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+
 export async function downloadPng(frame:Frame,recipe:Recipe):Promise<void>{
  const image=new Image();image.src=avatarSource(frame,recipe);await image.decode();
  const canvas=document.createElement('canvas');canvas.width=640;canvas.height=640;
