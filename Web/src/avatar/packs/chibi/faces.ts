@@ -3,7 +3,7 @@ import type {ExpressionId,FaceId} from './catalog';
 import {headFrameFor,headFrameSignature,headShell} from './head-frame';
 import {CHEEK,EYE,OUTLINE,SKIN,SKIN_SHADOW,e,isChild,isElder,isFemale,l,mirror,p} from './drawing';
 
-const eyeSpec={oval:{dx:37,ry:10},round:{dx:40,ry:11},angular:{dx:39,ry:8},long:{dx:36,ry:9}};
+const eyeSpec:Record<FaceId,{dx:number;ry:number}>={oval:{dx:36,ry:9.5},round:{dx:39,ry:11},angular:{dx:38,ry:8},long:{dx:35,ry:9},broad:{dx:40,ry:9},tapered:{dx:35.5,ry:10}};
 const stageOf=(frame:Frame)=>frame.endsWith('child')?'child':frame.endsWith('elder')?'elder':'adult';
 const sexOf=(frame:Frame)=>frame.startsWith('female')?'female':'male';
 
@@ -43,7 +43,7 @@ export function neckArt(frame:Frame):string{
  return `<g data-neck-stage="adult" data-neck-sex="${female?'female':'male'}">${p(`M${left} 224L${left-3} 254Q160 267 ${right+3} 254L${right} 224Z`,SKIN,OUTLINE,4)}${p(`M${left+1} 233Q160 248 ${right-1} 233L${right+1} 251Q160 262 ${left-1} 250Z`,SKIN_SHADOW,'none',0,.42)}</g>`;
 }
 
-// 腮红为唯一一层 Expression 作者资产；坐标固定在六 Frame × 四脸的共同安全区。
+// 腮红为唯一一层 Expression 作者资产；坐标固定在六 Frame × 全部 Face 的共同安全区。
 // 不读取脸部轮廓、不裁切、不求解位置。更换 Face 后由 QA 对真实填充轮廓作检查。
 function cheekTint(frame:Frame,expression:ExpressionId):string{
  const child=isChild(frame),elder=isElder(frame),female=isFemale(frame),shy=expression==='shy';
@@ -60,7 +60,7 @@ export function expressionArt(frame:Frame,face:FaceId,expression:ExpressionId):s
  const spec=eyeSpec[face],child=isChild(frame),elder=isElder(frame),female=isFemale(frame),stage=stageOf(frame);
  const cy=child?164:elder?171:168,dx=spec.dx+(!female&&!child?2:0);
  const leftX=160-dx,rightX=160+dx;
- const ry=child?spec.ry+1:elder?(female?5.5:4.5):female?spec.ry:Math.max(5,spec.ry-4);
+ const ry=child?spec.ry+1:elder?(female?5.5:4.5):female?spec.ry:Math.max(8,spec.ry-1.5);
  const browStroke=child?(female?3:4):elder?(female?4.2:6):female?3.1:5.5;
  const browColor=elder?(female?'#8e7c72':'#82766c'):OUTLINE;
  let eyes='',brows='';
@@ -79,10 +79,10 @@ export function expressionArt(frame:Frame,face:FaceId,expression:ExpressionId):s
     // 外眼角的短弧与细眉相配，不用巨大睫毛或眼白强化性别。
     eyes+=l(`M${leftX-11} ${cy-5}Q${leftX-5} ${cy-9} ${leftX+2} ${cy-7}`,EYE,2.5)+l(`M${rightX-2} ${cy-7}Q${rightX+5} ${cy-9} ${rightX+11} ${cy-5}`,EYE,2.5);
    }else{
-    eyes+=[leftX,rightX].map(x=>l(`M${x-10} ${cy-4}L${x+8} ${cy-4}`,EYE,2.8)).join('');
+    eyes+=[leftX,rightX].map(x=>l(`M${x-9} ${cy-eyeRy+1}Q${x} ${cy-eyeRy-1} ${x+8} ${cy-eyeRy+1}`,EYE,2.8)).join('');
    }
   }
-  if(female&&!elder)eyes+=[leftX,rightX].map(x=>e(x-2,cy-3,1.8,1.8,'#fffaf2','none',0,.85)).join('');
+  if(!elder)eyes+=[leftX,rightX].map(x=>e(x-2,cy-3,1.8,1.8,'#fffaf2','none',0,.85)).join('');
  }
  if(expression==='angry')brows=l(`M${leftX-12} ${cy-25}L${leftX+10} ${cy-17}`,browColor,browStroke)+l(`M${rightX+12} ${cy-25}L${rightX-10} ${cy-17}`,browColor,browStroke);
  else if(expression==='sad')brows=l(`M${leftX-11} ${cy-19}Q${leftX} ${cy-28} ${leftX+10} ${cy-24}`,browColor,browStroke)+l(`M${rightX-10} ${cy-24}Q${rightX} ${cy-28} ${rightX+11} ${cy-19}`,browColor,browStroke);

@@ -1,217 +1,71 @@
 # 头像工坊 / Avatar Workshop
 
-## 当前范围
+## 当前入口和体验
 
-头像工坊是 Neka / Picrew 式离散部件编辑器，不是完整人物图片画廊。玩家只编辑四类：
+`/?view=avatar-editor` 与首页头像工坊默认打开自由创作；居民身份栏“编辑头像”仍直接绑定该居民。两个上下文共用一个编辑器，不建立第二套捏脸页面。
 
-```text
-Face
-Hair
-Outfit
-Expression
-```
+自由创作可直接选择男/女、儿童/成年/老年；六份样板分别保存。指定对象可选原玩家示例与真实城市居民，年龄/性别保持锁定。自由创作的 Frame 是编辑上下文，不是第五种素材分类，不修改真实居民身份。
 
-Headwear 仍属于 Hair 内部作者层；腮红与情绪符号属于 Expression。人物年龄与性别来自目标对象，不写入 Recipe。
+始终只有 Face / Hair / Outfit / Expression。帽巾属于 Hair 内部作者层，腮红属于 Expression。
 
-同一个编辑器用于玩家示例档案和当前城市真实居民。编辑外观不得改变姓名、生日、家庭、职业、故事或游戏日期。未定制居民继续使用冻结的正式 Portrait Renderer。
+## 当前美术与阶段
 
-## 当前唯一美术基线
+唯一运行时 Pack：`chibi-cute-v1`。当前 6 Face / 30 Hair / 24 Outfit / 8 Expression；每个 Frame 只显示适用素材。六脸型族拥有六 Frame 各自的下脸画稿，不是36个玩家选项。
 
-运行时只保留：
+Phase 7 的技术成果保留，但用户未认可其最终画法。当前进入 [Phase 8 头像美术体系与创作工坊](Phase%208%20头像美术体系与创作工坊.md)：8A 重画样板、改善桌面编辑，随后才分批处理剩余素材。
 
-```text
-chibi-cute-v1 = active
-```
+UI 中“本轮样板”只表示本次候选，不代表用户已验收；过滤可只显示本轮样板。日常样板只载入草稿。随机本类仅修改当前分类，随机搭配只修改 Hair / Outfit。
 
-`linework-v1`、`simple-flat-v1`、`soft-paint-v1` 的美术实现已经从当前资源树退役；需要查看旧实现时使用 Git 历史。旧 Recipe 中这些 pack ID 仍可读取，`parseRecipe` 会将其迁移到 `chibi-cute-v1`，但不会自动改写 localStorage。
+## 不变的组合结构
 
-Q版当前玩家可选总量：
+六个固定 Frame：female/male × child/adult/elder。`head-frame.ts` 定义每个 Frame 唯一上头型、太阳穴、耳位与 signature。Face 只改下脸和五官；Hair 只接收 Frame 与 Hair ID，不读取 Face。
+
+禁止 face-dependent offset/scale、逐脸补丁、anchor solver、mask / clipPath 自动适配。Hair Coverage probes 仅用于 QA，不能拿它驱动变形。稀疏发际可以露内部头皮，不允许头型从外轮廓冒出。
+
+层序：
 
 ```text
-Face        4
-Hair        30
-Outfit      24
-Expression  8
+BackHair → HeadwearBack → Neck → Outfit
+→ FaceBase → Expression → FrontHair → HeadwearFront
 ```
 
-child / adult / elder 使用各自年龄段 Hair / Outfit。旧 `crop/bob/long/pony/wave/braid` 与 `tee/shirt/knit/jacket` 集中在 `packs/compatibility.ts`，仅用于旧 Recipe 解析与确定性 Frame fallback，不进入 UI 或 Random。
+integrated 帽饰进入两个 Headwear 作者层；无帽为空。Outfit 内部 base / collar / overlay / detail 不变，其中 base/collar 必须存在。
 
-## Head Frame / Hair Coverage
+母版 320×320 是头肩胸像，不将裙腰、腰带或腰围裙强塞到下边缘。完整帽身不能被 FrontHair 切成横条。详见 Phase 8 作者规则。
 
-六个 Frame：
-
-```text
-female.child
-male.child
-female.adult
-male.adult
-female.elder
-male.elder
-```
-
-每个 Frame 只有一个固定 Head Frame。它定义：
-
-- 头顶隐藏轮廓；
-- 左右太阳穴；
-- 耳位；
-- 上半脸公共接缝。
-
-Face 的 round / oval / angular / long 只能改变面颊、下颌、下巴、眼形、眉形等身份差异，不得改变 Hair 需要适配的头顶框架。
-
-Hair / Headwear 永远不接收 Face ID，也不做：
-
-```text
-face-dependent offset
-face-dependent scale
-anchor solver
-mask / clipPath 自动适配
-逐脸作者补丁
-```
-
-除“同一 Frame + Hair 在四脸下 geometry 完全一致”外，Phase 6 新增 Hair Coverage Contract：固定 QA probes 位于 crown / crown-left / crown-right / temple-left / temple-right，所有 active Hair 的外轮廓都必须覆盖这些点。它只用于审查，不参与运行时变形。
-
-`scalpExposure:'intentional'` 只表示发际区域可以表现稀疏头皮，例如老年疏发；仍不允许 Hair 外轮廓之外露出 Head Frame。
-
-## Renderer 图层
-
-固定顺序：
-
-```text
-BackHair
-HeadwearBack
-Neck
-Outfit
-FaceBase
-Expression
-FrontHair
-HeadwearFront
-```
-
-同一个 Hair 选项可以同时提供 BackHair / HeadwearBack / FrontHair / HeadwearFront。带头巾、巾帽等素材必须声明 `headwear:'integrated'`；无帽素材为 `headwear:'none'`。
-
-Outfit 仍只有一个玩家选项和一个 Renderer layer，但 Q版作者内部使用：
-
-```text
-base
-collar
-overlay
-detail
-```
-
-其中 base 与 collar 必须存在。
-
-## Recipe 与旧数据兼容
-
-当前 Recipe：
+## Recipe 与兼容
 
 ```json
-{
-  "schema": "wanhu.avatar",
-  "version": 1,
-  "pack": "chibi-cute-v1",
-  "face": "oval",
-  "hair": "bound",
-  "outfit": "commoner",
-  "expression": "smile"
-}
+{"schema":"wanhu.avatar","version":1,"pack":"chibi-cute-v1","face":"oval","hair":"bound","outfit":"commoner","expression":"smile"}
 ```
 
-旧 pack ID：
+Recipe 不含年龄、性别、目标ID。导入先验证协议和 Catalog，再按当前 Frame 做 exact → compatibilityKey → 默认/首项的确定性回退；仅改变预览，应用/保存才落盘。
 
-```text
-soft-paint-v1
-linework-v1
-simple-flat-v1
-```
-
-会映射到 `chibi-cute-v1`。旧 modern Hair / Outfit ID 仍可被 parseRecipe 接受；进入具体目标 Frame 后按 compatibilityKey → 当前 Frame 可用默认/首项确定性回退。预览 fallback 不自动写回存储，只有玩家点击“应用”才保存。
-
-新玩家默认配方不再借用旧 modern ID 做过渡，而是直接使用各 Frame 的年龄专属 Hair / Outfit。
+旧 pack `linework-v1/simple-flat-v1/soft-paint-v1` 只作 alias → Q版。旧 Hair `crop/bob/long/pony/wave/braid` 和 Outfit `tee/shirt/knit/jacket` 在 compatibility.ts 保留为解析专用，不进入 UI/Random。注意 Face 的 `long` 是仍可选择的清秀脸，不等于旧 Hair 的同名兼容 ID。
 
 ## 保存边界
 
-每个对象独立保存：
-
 ```text
-wanhu.avatar.v1:city:<citySeed>:resident:<id>
-wanhu.avatar.v1:city:<citySeed>:player:female
-wanhu.avatar.v1:city:<citySeed>:player:male
+wanhu.avatar.v1:city:<seed>:studio:<frame>
+wanhu.avatar.v1:city:<seed>:player:female
+wanhu.avatar.v1:city:<seed>:player:male
+wanhu.avatar.v1:city:<seed>:resident:<id>
 ```
 
-导入只改变预览；严格验证 schema/version/字段/选项。切对象或关闭时如有草稿必须提示。恢复原头像只删除当前对象覆盖。跨标签页同对象更新必须提示冲突。写入失败不能显示成功。
+旧键保持，不批量改写、不静默迁移。一个目标一份保存；六自由样板互不覆盖，也不覆盖居民。切对象/框架、关闭时有未保存修改必须确认。导入是草稿，恢复仅删除当前目标覆盖，同对象跨标签页更新须提示冲突，写入失败不能显示成功。
 
-这是 Web localStorage 原型，不代表 Unity 正式存档设计。
+自由样板是 localStorage Web 原型，不是账号/云存档或 Unity Save。JSON 没有 Frame，导入前要选目标框架；PNG/SVG 则导出当前所见框架。
 
-## 当前源码结构
+真实居民的姓名、生日、性别、家庭、职业、故事和日期不变。正式五字段 DNA 与 `Web/src/resident/portrait/` 冻结；未定制居民显示原 Renderer，移除覆盖后恢复原图。
 
-```text
-Web/src/avatar/
-  model.ts
-  store.ts
-  render.ts
-  AvatarImage.tsx
-  AvatarEditor.tsx
-  Integration.tsx
-  editor.css
-  entry.css
-  packs/
-    catalog.ts
-    compatibility.ts
-    registry.ts
-    types.ts
-    chibi/
-      art-spec.ts
-      head-frame.ts
-      catalog.ts
-      drawing.ts
-      faces.ts
-      hair.ts
-      outfits.ts
-      index.ts
-```
+## 源码职责
 
-旧画风资源目录不在当前树建立 archive；Git 已保存历史。
+model/store/render：Recipe、目标默认、保存和统一层序。Integration：App 内的目标与入口。AvatarEditor：草稿、目标切换、保存与部件浏览。studio.tsx：六框架上下文与样板标记。packs/chibi：Catalog 与静态画稿；sample-hair.ts 存放8A重画ID，其余 Hair 待后续分批处理，不能同时保留同 ID 两套画稿。
 
-## Actions / Artifact 审查
+## Review
 
-Resident Visual Review 必须验证：
+沿用 Build + Resident Visual Review；新 Face 自动进入全组合、头发跨 Face 不变及腮红检查。8A 追加六框架独立保存、模板预览、草稿切换、延迟导入、样板过滤/随机等真实 UI 测试。图板和实际桌面 UI 都必须下载人工打开。
 
-- 四类真实编辑操作；
-- 玩家 / 居民对象独立保存、取消、刷新、恢复、冲突与导入导出；
-- 六 Frame Catalog 过滤；
-- Random 不使用 compatibility-only ID；
-- 旧 pack ID 与旧 modern ID 迁移；
-- 同一 Frame + Hair/Headwear 跨四 Face geometry 完全一致；
-- 六 Frame Head Frame signature 一致；
-- 全部 active Hair 通过 Hair Coverage probes；
-- child / adult / elder Hair / Outfit 96 / 64 / 48px；
-- Headwear 图层契约；
-- Outfit base / collar；
-- 移动端和实际居民面板。
+移动端不再截图或列为美术必看项。诊断图只辅助审查，不能冒充玩家 UI；技术 PASS 不能替代用户美术认可。
 
-Artifact 新增：
-
-```text
-avatar/packs/chibi-cute-v1/hair-coverage-female.child.png
-avatar/packs/chibi-cute-v1/hair-coverage-male.child.png
-avatar/packs/chibi-cute-v1/hair-coverage-female.adult.png
-avatar/packs/chibi-cute-v1/hair-coverage-male.adult.png
-avatar/packs/chibi-cute-v1/hair-coverage-female.elder.png
-avatar/packs/chibi-cute-v1/hair-coverage-male.elder.png
-```
-
-这些图上的虚线与蓝点是诊断辅助，不是玩家 UI。
-
-CI PASS 不能代替人工视觉审查。尤其要看头顶是否露出 Head Frame、太阳穴断开、发髻漂浮、48px 轮廓、衣领断裂与移动端遮挡。
-
-## Phase 7：美术精修
-
-当前阶段为美术精修，而非 Unity 迁移。资产数量、四类编辑项、六 Frame、单 Pack 与兼容规则均不变。详见 [Phase 7 头像美术精修与验收](Phase%207%20头像美术精修与验收.md)。
-
-FaceBase 不再常驻腮红；Expression 在固定共同安全区内绘制唯一一对色块，并由真实脸轮廓检查保证余量。Hair 只按 Frame 重画发际/髻形，不读取 Face ID。Outfit 的连续斜襟、圆领、夹袄与围襟均仍属于原四个作者层。
-
-Resident Visual Review 增加独立轻量 `capture-avatar-art-polish.mjs`：192 个腮红组合、3 个越界负对照、统一发色衣色的男女/年龄图及腮红安全区图。后两图必须实际下载打开，不能只读报告中的 automated-pass。
-
-## 未实现
-
-当前不包含连续参数捏脸、独立 Headwear 分类、自动 Hair fit、服务端同步、Unity Runtime 导入或正式存档迁移。Q版是 Web 美术基线，不等于最终 Unity 实现。
+未做：全量 Hair/Outfit 重画、独立帽子分类、连续参数捏脸、自动 Hair fit、服务端同步、Unity Runtime/正式存档迁移。

@@ -33,7 +33,7 @@ async function auditSourceIsolation(){
   }
 }
 
-async function renderBoards(page,outDir,boards,{background='#fffaf6',subtitle='实际可编辑 SVG 组合诊断'}={}){
+export async function renderBoards(page,outDir,boards,{background='#fffaf6',subtitle='实际可编辑 SVG 组合诊断'}={}){
   await mkdir(outDir,{recursive:true});
   const board=await page.context().newPage();
   await board.setViewportSize({width:1440,height:1000});
@@ -557,9 +557,9 @@ async function auditPack(page,outRoot,spec){
             const option=catalog.hair.find(item=>item.id===hairId);require(option,`Head Frame hair ${hairId} missing from ${spec.id}`);
             fixedCells.push({label:`${face.label} / ${option.label}`,svg:r.renderAvatar(frame,{...foundation,face:face.id,hair:hairId})});
           }
-          boards.push({name:`face-frame-hats-${frame}`,title:`${meta.label} · ${frame} · 固定 Hair/Headwear × 4脸`,columns:spec.headFrameHats.length,cells:fixedCells});
+          boards.push({name:`face-frame-hats-${frame}`,title:`${meta.label} · ${frame} · 固定 Hair/Headwear × ${catalog.face.length}脸`,columns:spec.headFrameHats.length,cells:fixedCells});
           const scholar=spec.headFrameHats.includes('scholar-cap')&&catalog.hair.find(item=>item.id==='scholar-cap');
-          if(scholar)boards.push({name:`face-frame-scholar-${frame}`,title:`${meta.label} · ${frame} · 固定书生巾帽 · 4脸 · 96/64/48px`,columns:catalog.face.length,cells:catalog.face.map(face=>({label:face.label,svg:r.renderAvatar(frame,{...foundation,face:face.id,hair:scholar.id}),sizes:true}))});
+          if(scholar)boards.push({name:`face-frame-scholar-${frame}`,title:`${meta.label} · ${frame} · 固定书生巾帽 · ${catalog.face.length}脸 · 96/64/48px`,columns:catalog.face.length,cells:catalog.face.map(face=>({label:face.label,svg:r.renderAvatar(frame,{...foundation,face:face.id,hair:scholar.id}),sizes:true}))});
         }
         if(spec.featuredHair?.length){
           const cells=spec.featuredHair.map(id=>{

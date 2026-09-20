@@ -1,51 +1,37 @@
 # 居民逻辑网页 Demo 接续说明
 
-固定简称：居民逻辑网页demo。仓库：`JiongXiaGu/wanhu-resident-sim`。
+仓库：`JiongXiaGu/wanhu-resident-sim`；固定简称：居民逻辑网页demo。
 
 ## 接手顺序
 
-先读取最新 main、README、AGENTS，再读本文件、人生经历与生活界面玩法规则V1、居民面板与生活事件V2、居民生活记录与故事连续性、Portrait System、Avatar Workshop、Q版头像主路线生产与审查工作流、开发与部署工作流。头像相关任务必须确认主路线文档里的“当前执行点”，随后检查实际源码、最新 Build 和 Resident Visual Review，不用聊天记忆替代仓库证据。
+读取最新 main 与 SHA、AGENTS、README、本文件、玩法/生活/历史规范、Portrait System、Avatar Workshop、Q版头像主路线生产与审查工作流、开发与部署工作流。头像任务追加 Phase 8 头像美术体系与创作工坊。先读当前执行点，再检查源码与同 SHA Actions，不用聊天记忆覆盖仓库。
 
-## 当前定位
+## 当前执行点
 
-验证居民玩法、故事连续性、人生经历、UI 阅读与可编辑头像。Content、Schemas、Compiler、Coverage 服务 Web 原型内容生产，不是 Unity ECS、BlobAsset、正式存档或资源加载设计。正式 Unity 迁移时另行设计。
+Phase 8A：美术体系样板重建 + 自由创作桌面入口。基线为 `d6dc414df4d3e64948d77c2360553d0273ab292c`。用户指出 Phase 7 的脸、帽子、衣装依然不自然，之前从未认可它们为最终画法；不要把技术通过误读为审美定稿。
 
-## 当前头像任务
+本轮重画六脸型族（保留原四 ID、新增 broad/tapered）、六个 Hair ID 和五个 Outfit 样板；衣领模板也修正连续性。仅一套 Q版 Pack，仍四分类。其余发型/衣装待 8B 分批重画，不声称已全量完成。先由用户验收8A样板，不自动继续批量生产或 Unity 迁移。
 
-唯一玩家编辑流程是头像工坊 `/?view=avatar-editor`，也可从居民身份栏进入。只有脸型、头发、衣服、表情四类；不同脸共享配件，并保存到玩家示例档案或当前城市的指定居民。
+主入口默认自由创作：男/女、儿童/成年/老年六框架可直接选，分别存入 `studio:<frame>`。指定对象模式仍显示原玩家档案与城市居民；Frame 锁定，不能修改居民年龄/性别。两种模式共用编辑器、Recipe 和Renderer。旧 player/resident 保存键不变。导入不自动保存，模板载入不自动应用。
 
-`Web/src/avatar/` 现在只保留统一编辑器、按对象保存的 Web 覆盖记录和 `chibi-cute-v1` 一套运行时 SVG 素材包。Phase 6 已将 `linework-v1`、`simple-flat-v1` 的实现从当前树退役，旧 pack ID 与 `soft-paint-v1` 一样仅作为 Recipe 迁移 alias。Q版当前玩家可选总量为 4 Face / 30 Hair / 24 Outfit / 8 Expression；child / adult / elder 使用年龄专属 Hair / Outfit。六 Frame 统一由 `head-frame.ts` 提供固定 Head Frame，并通过 Hair Coverage probes 检查所有 active Hair 不得露出头型。旧 6 Hair / 4 Outfit 集中为 compatibility-only ID，不进入 UI 或 Random。编辑仍只影响外观；必须保留居民姓名、年龄、家庭、职业与故事。
+移动端不再截图。核心证据在 `avatar/phase8a/`：六脸型图板、帽发、服饰、三年龄综合图，以及自由创作与绑定居民桌面 UI。必须真实下载并打开，不能只看 automated-pass。
 
-旧风格墙、完整位图图库以及多个分叉编辑实验已从工作树删除，Git 历史足以保留。不得重新创建历史实验目录或把固定整图当作可编辑素材。
+## 继续保持
 
-`Web/src/resident/portrait/` 及 `Content/Portrait/` 的正式五字段 DNA、六个 Frame 保持冻结。未定制居民继续使用原 Renderer；只有已应用对象展示新覆盖图。`/?view=portraits` 保留为该契约的开发验收页，不是面向玩家的第二套编辑系统。
+正式 `Web/src/resident/portrait/`、Content/Portrait、五字段 ResidentPortraitDNA 和原五层正式 RenderPlan 冻结。未定制居民仍用原 Renderer；工坊只是按对象保存的 Web 覆盖。
 
-## 当前美术执行点：Phase 7
-
-7A / 7B 已形成美术精修候选并完成临时分支 Actions 与关键截图人工审查，等待用户最终美术验收。继续工作前读取 [Phase 7 头像美术精修与验收](Phase%207%20头像美术精修与验收.md)，并重新核对 main 与同 SHA 的 Actions。不要重复 Phase 5C / Phase 6，不要因为旧阶段文档提到多 Pack 就恢复旧资源。
-
-本轮腮红归于唯一 Expression 组；Hair 只按 Frame 重画，不读取 Face；衣领、肩线与老年造型只属于现有资产作者层。新增 `capture-avatar-art-polish.mjs` 输出 192 个腮红组合的检查、统一色彩形体对照和安全区图，不能只生成不打开。素材总数与兼容 ID 保持不变。后续优先根据用户截图反馈微调美术，不自动扩素材或迁 Unity。
+单一运行时 `chibi-cute-v1`，旧 pack 只保留 alias。十个 compatibility-only Hair/Outfit 仍可解析但不进入 UI/Random。每个 Frame 一个固定 Head Frame，Face 只改下脸，Hair 不读 Face。八层工坊 Renderer 和 Outfit 四个作者层不变。禁止逐脸 offset、solver 和 mask/clipPath 自动适配。
 
 ## 居民玩法不变量
 
-生活模式只回答当前事实：身份、世界关联、Activity、正在经历/最近 LifeEvent、少量 Routine。没有综合近况 Summary。
+生活只展示当前 Activity、正在/最近 LifeEvent 和少量 Routine，不建立人工近况摘要。人生只有一条年龄升序时间轴，一个 Chapter 对应一件事，展开第一人称 memoryText，不重放三个 Stage。
 
-人生模式只看已沉淀的过去：单一年龄升序时间轴，不按少年青年等分组；一个 Chapter 对应一件事。事实节点只显示年龄和标题；故事展开一段第一人称 memoryText，不重放三个 Stage。隐藏 Activity、当前故事和 Routine，末尾保留“如今”。
+重要故事或结构型 Effect 必须有 memoryText；普通 Routine 不进永久历史。保留未婚 → 成婚/家庭真正改变 → newly-married → 后续共同生活 → 临时 Tag 消失的连续性验收。外观编辑不得重建 App 或改日期、故事、职业、家庭、生日。
 
-LifeEvent 三个 stages 服务过程；memoryText 服务往事。重要故事或结构型 effect 必须有 memoryText。普通 Routine 不进入永久人生历史。
+Content → Contract/Catalog Audit → Story/Resident/LifeEvent/StoryBucket/Snapshot/Portrait/Web Compiler → generated。生成物不手改。仓库验证 Web 玩法/内容/UI，不设计 Unity ECS/Blob/正式Save。
 
-LifeTag 影响后续 Eligibility，不扫描历史全文。Prototype Effect 可以在 Web 中直接改变职业、家庭、婚姻等状态，但不代表 Unity Runtime 架构。
+## 交付流程
 
-必须保留连续性验收：未婚居民 → 这门亲事定下来了 → spouse/Household 真正改变 → newly-married → 两个人一起过日子以后进入候选池 → 临时 Tag 消失。
+最新main → tmp-* → 聚合修改 → Build + Resident Visual Review → 下载看图 → 必要时修正 → 重读main → 推进审查过的提交 → main重跑并再看图。
 
-## 数据链与后续方向
-
-Content Authoring → Contract / Catalog Audit → Story / Resident / LifeEvent / StoryBucket / Snapshot / Portrait / Web Compiler → Web/public/generated。definitions v6、resident-snapshot v5 仍是 Web 原型契约，generated 不手工修改。
-
-后续围绕人物可读性、外观编辑、故事密度、过去影响后来、城市反馈、有限并行生活线与 Coverage 推进。不重启本仓库的 Unity 存档/Blob/ECS 设计。
-
-## 执行与验收
-
-最新 main → tmp-* → 集中修改并一次聚合提交 → Build + Resident Visual Review → 下载 Artifact 并打开关键截图 → 必要时聚合修复 → 重读 main → 合入 main → main 再次检查。
-
-不依赖 Vercel / Preview / Production。CI 成功不证明美术成功。头像任务必须实际操作换部件、保存到甲、检查乙不变，并查看小尺寸、各年龄、不同脸和配件组合。不再用“画风页存在”“SVG 数量很多”冒充 DIY 已完成。
+不依赖Vercel；不force覆盖并行工作；不一文件一提交。最终写main SHA、两个检查、是否下载人工查看；贴关键桌面截图；区分实现、候选、未完成。

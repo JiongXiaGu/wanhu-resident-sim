@@ -21,7 +21,7 @@ const image=()=>page.locator('.av-main-art img').getAttribute('src');
 const stored=async target=>page.evaluate(k=>localStorage.getItem('wanhu.avatar.v1:'+k),target);
 async function ready(){await page.evaluate(async()=>{await document.fonts.ready;await Promise.all([...document.querySelectorAll('img')].map(i=>i.decode()));});}
 async function choose(part,value){await page.locator(`[data-part-tab="${part}"]`).click();await page.locator(`[data-option-part="${part}"][data-option="${value}"]`).click();await page.waitForFunction(({part,value})=>JSON.parse(document.querySelector('[data-avatar-editor]').dataset.recipe)[part]===value,{part,value});await ready();}
-async function select(target){await page.locator(`[data-target-key="${target}"]`).click();await page.waitForFunction(k=>document.querySelector('[data-avatar-editor]').dataset.target===k,target);await ready();}
+async function select(target){if(await editor.getAttribute('data-editor-context')==='studio'){await page.locator('[data-editor-mode="bound"]').click();}await page.locator(`[data-target-key="${target}"]`).click();await page.waitForFunction(k=>document.querySelector('[data-avatar-editor]').dataset.target===k,target);await ready();}
 async function apply(){const expected=JSON.stringify(await recipe()),target=await key();await page.locator('[data-apply-avatar]').click();await page.waitForFunction(({target,expected})=>localStorage.getItem('wanhu.avatar.v1:'+target)===expected,{target,expected});await page.waitForFunction(()=>document.querySelector('[data-avatar-editor]').dataset.dirty==='false');}
 async function screenshot(name,locator=page.locator('.av-dialog')){await ready();await locator.screenshot({path:join(out,name+'.png'),animations:'disabled',caret:'hide'});}
 async function sizes(){const rows=await page.locator('[data-native-avatar]').evaluateAll(images=>images.map(i=>({n:+i.dataset.nativeAvatar,w:i.getBoundingClientRect().width,h:i.getBoundingClientRect().height})));assert.equal(rows.length,3);for(const row of rows){assert.equal(row.w,row.n);assert.equal(row.h,row.n);}assert(await page.locator('.av-dialog').evaluate(node=>node.scrollWidth<=node.clientWidth),'Dialog horizontal overflow');}
@@ -185,7 +185,7 @@ try{
  assert(adultLegacyOutfits.every(id=>!adultMaleOutfit.includes(id)),'Male adult UI still exposes legacy Outfit');
  await screenshot('10d-adult-male-outfit-options');await page.locator('[data-cancel-draft]').click();await ready();
  await select(players[0].key);await page.locator('[data-preview-light]').click();await screenshot('10-light-preview');
- await page.setViewportSize({width:390,height:844});await sizes();await screenshot('11-mobile');
+ await page.setViewportSize({width:390,height:844});await sizes(); // Narrow-screen smoke only; art review no longer captures mobile screenshots.
  await page.setViewportSize({width:320,height:800});await sizes();
  await page.setViewportSize({width:1600,height:1100});
  const packAudit=await auditRegisteredAvatarPacks(page,out);

@@ -6,6 +6,14 @@
 
 本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
 
+## 当前执行点：Phase 8A
+
+先读 `Documentation/Phase 8 头像美术体系与创作工坊.md`。Phase 7 的美术没有被用户认可为最终画法；结构和兼容成果继续保留。本轮先做少量重画样板、六框架自由创作与桌面美术审查，不自动开始全量扩充。
+
+主入口自由创作可以直接选男/女、儿童/成年/老年；这是六份独立样板目标，不是第五种素材分类或修改居民身份。保存到 studio:<frame>，原 player/resident 键保持。绑定居民模式锁定年龄/性别。切框架也必须遵守草稿确认、延迟导入隔离、独立保存/刷新。
+
+移动端不再截图或列为人工必查；基础窄屏溢出 smoke 可以保留。本轮全部新图板与真实桌面 UI 必须下载打开。样板标记只表示候选，不代表用户已定稿。
+
 ## 当前头像方向
 
 只有一套玩家可用的头像工坊与一套运行时美术包：`chibi-cute-v1`。玩家只编辑脸型、头发、衣服、表情四类离散选项。child / adult / elder 可拥有独立 Hair / Outfit。每个 female/male × child/adult/elder Frame 只有一个固定 Head Frame；Face 只改下半脸与五官，Hair / Headwear 不读取 Face ID。Hair 还必须通过固定 Coverage probes 覆盖 Head Frame 外轮廓；不得通过逐 Face offset、scale、mask 或 clipPath 自动适配。
@@ -50,6 +58,6 @@
 
 不得一文件一 commit、空提交刷新、force 覆盖新 main 或依赖 Vercel。GitHub 工具可用时实际调用，不无依据声称无权限。任务交付要包含实际提交状态与关键截图，不只列后续计划。
 
-保持 capture-resident-review 和正式 capture-portrait-review 的有效断言。删除实验只删对应失效测试；新增工坊须测：四类真实操作、同一 Frame + Hair/Headwear 在四脸下 geometry 完全一致、六 Frame Head Frame 顶线/接缝一致、全部 active Hair 通过 Hair Coverage probes、Frame Catalog 过滤与 deterministic fallback、Phase 5A child UI 不得暴露旧通用 Hair/Outfit、女童/男童儿童专属 Hair / Outfit 96/64/48px、Phase 5B adult UI 不得暴露旧现代 Hair/Outfit、成年男女 Hair / Outfit / 组合 96/64/48px、Phase 5C elder UI 只含 elder-* 素材且 compatibility-only 旧 ID 六 Frame 均不可见、老年男女 Hair / Outfit / 组合 96/64/48px、Phase 5D 六 Frame 综合图板、旧 Recipe 全 Frame deterministic fallback 与 Hair/Outfit UI 密度上限、成年职业可读性、Headwear none/integrated 与前后层契约、Q版 Outfit base/collar 结构、甲乙独立保存、取消/恢复/刷新、真实居民 UI、存储/导入错误。
+保持 capture-resident-review 和正式 capture-portrait-review 的有效断言。删除实验只删对应失效测试；新增工坊须测：四类真实操作、同一 Frame + Hair/Headwear 在全部 Face 下 geometry 完全一致、六 Frame Head Frame 顶线/接缝一致、全部 active Hair 通过 Hair Coverage probes、Frame Catalog 过滤与 deterministic fallback、Phase 5A child UI 不得暴露旧通用 Hair/Outfit、女童/男童儿童专属 Hair / Outfit 96/64/48px、Phase 5B adult UI 不得暴露旧现代 Hair/Outfit、成年男女 Hair / Outfit / 组合 96/64/48px、Phase 5C elder UI 只含 elder-* 素材且 compatibility-only 旧 ID 六 Frame 均不可见、老年男女 Hair / Outfit / 组合 96/64/48px、Phase 5D 六 Frame 综合图板、旧 Recipe 全 Frame deterministic fallback 与 Hair/Outfit UI 密度上限、成年职业可读性、Headwear none/integrated 与前后层契约、Q版 Outfit base/collar 结构、甲乙独立保存、取消/恢复/刷新、真实居民 UI、存储/导入错误。
 
 CI PASS ≠ 美术 PASS。必须下载并看实际渲染，头发穿插、眼白溢出、嘴歪、衣领断开或 UI 遮挡时继续修复。最终如实区分已实现功能、艺术候选和未验证 Unity 迁移。

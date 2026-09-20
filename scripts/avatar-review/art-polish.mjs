@@ -82,7 +82,7 @@ export async function auditChibiArtPolish(page){
     report:{cases,paintedSamples,negativeControls,safeZone:zone,visualApproval:'Manual review of shape comparison and real UI required'},
     boards:[
      {name:'phase7-shape-comparison',title:'Phase 7 · 不靠颜色的男女 / 年龄对照 · 96 / 64 / 48px',columns:2,cells:shapeCells},
-     {name:'phase7-blush-safe-zones',title:'Phase 7 · 腮红安全区诊断 · 六 Frame × 四 Face · shy 最大范围',columns:4,cells:safetyCells},
+     {name:'phase7-blush-safe-zones',title:'Phase 7 · 腮红安全区诊断 · 六 Frame × 全部 Face · shy 最大范围',columns:4,cells:safetyCells},
     ],
    };
   }finally{host.remove();}

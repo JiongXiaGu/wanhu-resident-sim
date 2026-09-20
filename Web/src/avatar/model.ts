@@ -8,7 +8,7 @@ export type {PackId,Part};
 export type Choices=Record<Part,string>;
 export type Recipe={schema:'wanhu.avatar';version:1;pack:PackId}&Choices;
 export type Frame=CatalogFrame;
-export type Target={key:string;name:string;detail:string;frame:Frame;seed:number;kind:'player'|'resident';residentId?:number};
+export type Target={key:string;name:string;detail:string;frame:Frame;seed:number;kind:'studio'|'player'|'resident';residentId?:number};
 
 export const frames:Frame[]=[...catalogFrames];
 export const labels:Record<Part,string>={face:'脸型',hair:'头发',outfit:'衣服',expression:'表情'};
@@ -110,7 +110,21 @@ const playerWardrobeByFrame:Record<Frame,{hair:string;outfit:string}>={
   'male.elder':{hair:'elder-swept',outfit:'elder-long-robe'},
 };
 
+// 自由创作使用六个独立样板目标；不把年龄/性别塞进 Recipe，也不改城市居民。
+export const foundationLooks:Record<Frame,{hair:string;outfit:string}>={
+ 'female.child':{hair:'child-topknot',outfit:'child-short-robe'},
+ 'male.child':{hair:'child-topknot',outfit:'child-short-robe'},
+ 'female.adult':{hair:'bound',outfit:'adult-female-ruqun'},
+ 'male.adult':{hair:'bound',outfit:'commoner'},
+ 'female.elder':{hair:'elder-soft-bun',outfit:'elder-long-robe'},
+ 'male.elder':{hair:'elder-swept',outfit:'elder-long-robe'},
+};
+export function foundationRecipe(frame:Frame):Recipe{
+ return fitRecipeToFrame({...recipeForPack(activePackId,frame),...foundationLooks[frame],face:'oval',expression:'smile'},frame);
+}
+
 export function defaultFor(target:Target):Recipe{
+  if(target.kind==='studio')return foundationRecipe(target.frame);
   const pack=activePackId,base=recipeForPack(pack,target.frame);
   if(target.kind==='player'){
     return fitRecipeToFrame(parseRecipe({...base,...playerWardrobeByFrame[target.frame]}),target.frame);

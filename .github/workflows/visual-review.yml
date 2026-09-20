@@ -10,7 +10,9 @@ on:
       - 'scripts/**'
       - 'package.json'
       - '.github/workflows/visual-review.yml'
-      - 'Documentation/Q版头像主路线生产与审查工作流.md'
+      - 'Documentation/**'
+      - 'AGENTS.md'
+      - 'README.md'
   workflow_dispatch:
 
 concurrency:
@@ -30,6 +32,7 @@ jobs:
       - name: Retain editable source with review artifacts
         run: |
           mkdir -p review-screenshots/avatar
+          git rev-parse HEAD > review-screenshots/avatar/source-commit.txt
           git archive --format=zip --output=review-screenshots/avatar/source-and-contract.zip HEAD Web/src/avatar Web/src/App.tsx Web/src/resident/ResidentAvatar.tsx Web/src/main.tsx scripts Documentation AGENTS.md README.md .github/workflows/visual-review.yml
       - name: Install CJK fonts
         run: |
@@ -69,6 +72,8 @@ jobs:
           node scripts/capture-avatar-review.mjs
           node scripts/review-avatar-integration.mjs
           node scripts/capture-avatar-art-polish.mjs
+      - name: Review Phase 8A art foundation and six-frame studio
+        run: node scripts/capture-avatar-foundation.mjs
       - name: Compress legacy review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots and editable components

@@ -13,7 +13,8 @@ try{
  await page.goto(`${process.env.REVIEW_BASE_URL??'http://127.0.0.1:4173'}/?view=avatar-editor`,{waitUntil:'networkidle'});
  await page.locator('[data-avatar-editor]').waitFor();
  const {report,boards}=await auditChibiArtPolish(page);
- assert.equal(report.cases,192,'Must audit six frames × four faces × eight expressions');
+ const expected=await page.evaluate(async()=>{const m=await import('/src/avatar/model.ts');return m.frames.reduce((n,f)=>n+m.optionsFor('chibi-cute-v1','face',f).length*m.optionsFor('chibi-cute-v1','expression',f).length,0);});
+ assert.equal(report.cases,expected,'Must audit the actual six-frame Face × Expression catalog');
  assert.equal(report.negativeControls,3,'Oversize, outside-face and actual-contour negative controls must fail');
  assert.deepEqual(errors,[],'Avatar review page emitted errors');
  for(const board of boards){
