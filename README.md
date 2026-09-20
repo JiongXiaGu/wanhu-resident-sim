@@ -79,6 +79,6 @@ npm run dev
 
 当前 Visual Review 保留居民故事与正式 72 组合检查，新增工坊的玩家/居民保存、草稿、恢复、导入、错误处理和年龄/部件检查。补充检查入口不遮挡现有界面、居民编辑按钮尺寸、异步导入与“应用后切对象”的保存归属。
 
-`resident-visual-review` Artifact 的 `avatar/` 包含实际编辑窗口、已应用居民面板、六上下文诊断板与原尺寸样本。原 `parts/` / `samples/` 检查日常线绘；`avatar/chibi-cute/` 单独检查Q版；`avatar/simple-flat/` 单独包含极简简笔的部件、组合样本、成人脸/头发/服装/表情矩阵、child/adult/elder 年龄证明、96/64/48px 与三画风同配置对照。三套包各检查 3,456 个基础组合；组合数量只代表覆盖，不代表美术定稿。
+`resident-visual-review` Artifact 的 `avatar/` 包含实际编辑窗口、已应用居民面板与原尺寸样本；每个注册画风统一输出到 `avatar/packs/<pack-id>/`，跨画风固定配置对照放在 `avatar/style-comparisons/`。Review 会从运行时 Pack Registry 读取实际画风顺序，并要求每个注册 Pack 都有一份小型 Review Spec；新增画风不再复制整套 Audit 脚本。每包仍检查 3,456 个基础组合；组合数量只代表覆盖，不代表美术定稿。
 
 3,456 个基础组合只是测试覆盖量；原图保留不缩放。CI PASS 不能代替实际视觉审查。

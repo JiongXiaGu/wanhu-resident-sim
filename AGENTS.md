@@ -16,6 +16,8 @@
 
 新增画风统一走 `Web/src/avatar/packs/<style>/index.ts` + `packs/registry.ts`。每个 pack 的标题、说明、顺序和运行时实现以 registry 为唯一注册入口；不要为了新增一个 pack 再去 `render.ts`、`AvatarEditor.tsx`、`model.ts` 分别复制一套登记逻辑。已发布的 pack id 属于配方持久化契约，不随目录或美术重命名；废弃 ID 的兼容 alias 集中放在 registry。
 
+新增画风的视觉审查统一走 `scripts/avatar-review/audit-packs.mjs`，只在 `pack-specs.mjs` 增加该画风真正独有的审查参数。不要再创建 `audit-avatar-<style>.mjs` 复制整套组合遍历。capture-avatar-review 必须读取 Registry 的实际 Pack 列表并自动验证每个 Pack 切换后四个语义 ID 不变；Registry 新增但缺 Review Spec 时 CI 应直接失败。
+
 ## 正式 portrait 边界
 
 `Web/src/resident/portrait/`、`Content/Portrait/`、五字段 ResidentPortraitDNA、六个 PortraitFrame 与原有五层 RenderPlan 保持冻结。本次可编辑头像只作为 ResidentAvatar 上的 Web 覆盖，未应用居民继续使用原 Renderer；移除覆盖恢复原图。不要向正式 DNA 添加表情或画风字段。

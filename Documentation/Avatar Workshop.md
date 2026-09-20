@@ -117,7 +117,7 @@ AI 辅助美术生产发生在开发阶段：按照统一画布和包内画法�
 
 `pack id` 属于持久化配方契约，发布后不要改名；目录名只是源码组织。废弃画风的兼容映射集中放在 registry 的 legacy alias，不在 `model.ts` 继续堆特殊分支。
 
-`audit-avatar-art.mjs` 继续验证日常线绘包；`audit-avatar-chibi.mjs` 验证 Q版；`audit-avatar-simple-flat.mjs` 独立验证极简简笔的共享部件、图层、SVG 合法性、眼睛/嘴型、源文件不导入其他包 geometry 与全组合检查，并输出男女成人三画风同配置、Face / Hair / Outfit / Expression 矩阵、年龄证明和 96/64/48px 图板。每个包每个 Frame 有颈部 1、FaceBase 4、前后发 12、衣服 4、脸型对应表情 24；这些是作者源规则的确定性展开，不代表把完整人物图切成了若干文件。
+素材审查统一由 `scripts/avatar-review/audit-packs.mjs` 执行；`pack-specs.mjs` 只描述每套画风真正不同的检查参数，例如矩阵范围、表情标记、眼睛约束、原尺寸/年龄证明，以及 Q版与极简简笔之间的比例差异。脚本会从运行时 Pack Registry 读取实际注册顺序，并要求 Registry 与 Review Spec 一一对应；因此新增画风只需新增美术包、在 `packs/registry.ts` 注册一次，再补一份小型 Spec，不再复制三四百行 Audit。每个包每个 Frame 仍有颈部 1、FaceBase 4、前后发 12、衣服 4、脸型对应表情 24；这些是作者源规则的确定性展开，不代表把完整人物图切成了若干文件。
 
 `soft-paint-v1` 因用户否定已从当前工作树删除，旧本地配方读取时只映射同一四项语义到 `chibi-cute-v1`，不会自动重写 localStorage。未来新增画风包继续复用同一编辑和保存边界，不再新增独立实验页；新包必须先证明不同脸共享头发、衣服和表情，不能把完整生成图登记为可换部件。
 
@@ -133,7 +133,7 @@ AI 辅助美术生产发生在开发阶段：按照统一画布和包内画法�
 - 六组脸型板、六组表情板、六组发型板、六组服装板；这些是诊断图板，不是固定整图资源或冒充玩家 UI。
 - 96/64/48 原尺寸，桌面及 390/320px；深浅衬底；儿童老人实际样本。
 
-`resident-visual-review` Artifact 的 `avatar/` 保留原始 PNG，不经过旧预览缩图。`parts/` 是可组合 SVG 导出，`samples/` 是当次渲染器输出的组合示例，`review.json` 是自动检查记录。下载并实际查看窗口、真实居民面板、所有图板与小尺寸后才能合并 main；main 必须再次跑完和核对。
+`resident-visual-review` Artifact 的 `avatar/` 保留原始 PNG，不经过旧预览缩图。每个画风统一位于 `avatar/packs/<pack-id>/`，其中 `parts/` 是可组合 SVG 导出、`samples/` 是当次渲染器输出的组合示例、`review.json` 是该 Pack 自动检查记录；跨画风对照在 `avatar/style-comparisons/`。下载并实际查看窗口、真实居民面板、关键图板与小尺寸后才能合并 main；main 必须再次跑完和核对。
 
 ## 明确未宣称的能力
 

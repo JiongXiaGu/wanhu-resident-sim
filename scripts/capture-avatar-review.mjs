@@ -3,9 +3,7 @@ import {mkdir,readFile,readdir,writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {chromium} from 'playwright';
 import sharp from 'sharp';
-import {auditAvatarArt} from './audit-avatar-art.mjs';
-import {auditChibiCute} from './audit-avatar-chibi.mjs';
-import {auditSimpleFlat} from './audit-avatar-simple-flat.mjs';
+import {auditRegisteredAvatarPacks} from './avatar-review/audit-packs.mjs';
 const out='review-screenshots/avatar';await mkdir(out,{recursive:true});
 const retired=['portrait-anime-lab','portrait-art-directions','portrait-composer-lab','portrait-modern-anime-lab','portrait-open-styles','portrait-style-bakeoff','portrait-style-study'];
 const entries=await readdir('Web/src');assert(retired.every(name=>!entries.includes(name)),'Retired experiments remain in src');
@@ -42,25 +40,36 @@ try{
  const allTargets=await page.locator('[data-target-key]').evaluateAll(nodes=>nodes.map(n=>({key:n.dataset.targetKey,kind:n.dataset.targetKind,frame:n.dataset.targetFrame,id:n.dataset.targetResident})));
  assert.equal(allTargets.filter(t=>t.kind==='resident').length,snapshot.residents.length);
  assert.deepEqual(await page.locator('[data-part-tab]').evaluateAll(nodes=>nodes.map(n=>n.dataset.partTab)),['face','hair','outfit','expression']);
- assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.pack)),['linework-v1','chibi-cute-v1','simple-flat-v1']);
+ const registeredPacks=await page.evaluate(async()=>{const model=await import('/src/avatar/model.ts');return model.packOptions.map(pack=>({id:pack.id,label:pack.label}));});
+ const packIds=registeredPacks.map(pack=>pack.id),reviewPack=packIds.at(-1);assert(reviewPack,'At least one avatar pack is required');
+ assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.pack)),packIds);
+ const semanticFields=['face','hair','outfit','expression'];
  const a=allTargets.find(t=>t.id===residentA),b=allTargets.find(t=>t.kind==='resident'&&t.key!==a.key),players=allTargets.filter(t=>t.kind==='player');
  assert.equal(await key(),a.key);assert.equal(await stored(a.key),null);
+
  await select(players[0].key);await choose('face','round');await choose('hair','bob');await choose('outfit','knit');await choose('expression','smile');
- await sizes();const beforeStyle=await recipe();await screenshot('01-player-female-linework');
- await choosePack('chibi-cute-v1');const afterChibi=await recipe();for(const field of ['face','hair','outfit','expression'])assert.equal(afterChibi[field],beforeStyle[field],'Chibi style switch changed semantic option '+field);
- assert.notEqual(await image(),null);await screenshot('01b-player-female-chibi');
- await choosePack('simple-flat-v1');const afterSimple=await recipe();for(const field of ['face','hair','outfit','expression'])assert.equal(afterSimple[field],beforeStyle[field],'Simple-flat style switch changed semantic option '+field);
- await screenshot('01c-player-female-simple-flat');await apply();const playerSaved=await stored(players[0].key);assert.equal(JSON.parse(playerSaved).pack,'simple-flat-v1');assert.equal(await stored(players[1].key),null);
- await select(players[1].key);await choose('face','angular');await choose('hair','crop');await choose('outfit','shirt');await choose('expression','calm');await screenshot('02-player-male-linework');
- const maleBeforeStyle=await recipe();await choosePack('simple-flat-v1');const maleSimpleStyle=await recipe();for(const field of ['face','hair','outfit','expression'])assert.equal(maleSimpleStyle[field],maleBeforeStyle[field],'Male simple-flat switch changed semantic option '+field);
- await screenshot('02b-player-male-simple-flat');await apply();
- assert.equal(await stored(players[0].key),playerSaved);
+ await sizes();const beforeStyle=await recipe();
+ for(let index=0;index<registeredPacks.length;index++){
+  const pack=registeredPacks[index];await choosePack(pack.id);const styled=await recipe();
+  for(const field of semanticFields)assert.equal(styled[field],beforeStyle[field],pack.id+' style switch changed semantic option '+field);
+  assert.notEqual(await image(),null);await screenshot(`01-style-${String(index+1).padStart(2,'0')}-${pack.id}`);
+ }
+ await apply();const playerSaved=await stored(players[0].key);assert.equal(JSON.parse(playerSaved).pack,reviewPack);assert.equal(await stored(players[1].key),null);
+
+ await select(players[1].key);await choose('face','angular');await choose('hair','crop');await choose('outfit','shirt');await choose('expression','calm');
+ const maleBeforeStyle=await recipe();
+ for(let index=0;index<registeredPacks.length;index++){
+  const pack=registeredPacks[index];await choosePack(pack.id);const styled=await recipe();
+  for(const field of semanticFields)assert.equal(styled[field],maleBeforeStyle[field],pack.id+' male style switch changed semantic option '+field);
+  await screenshot(`02-style-${String(index+1).padStart(2,'0')}-${pack.id}`);
+ }
+ await apply();assert.equal(await stored(players[0].key),playerSaved);
  await page.locator('[data-part-tab="expression"]').click();await screenshot('03-expression-options');
  await page.locator('[data-part-tab="hair"]').click();await screenshot('04-hair-options');
  await page.locator('[data-part-tab="outfit"]').click();await screenshot('05-outfit-options');
  checks.push('Only four editable categories; style pack switch preserves the four semantic IDs; two player profiles save independently; actual resident roster is loaded from the current city snapshot');
 
- await select(a.key);await choosePack('simple-flat-v1');await choose('face','round');await choose('hair','pony');await choose('outfit','jacket');await choose('expression','joy');
+ await select(a.key);await choosePack(reviewPack);await choose('face','round');await choose('hair','pony');await choose('outfit','jacket');await choose('expression','joy');
  assert.equal(await stored(a.key),null,'Preview must not persist before apply');
  await apply();const aSaved=await stored(a.key),aImage=await image();await screenshot('06-resident-applied');
  await select(b.key);await choose('face','long');await choose('hair','crop');await choose('outfit','tee');await choose('expression','sad');await apply();const bSaved=await stored(b.key);
@@ -122,11 +131,9 @@ try{
  await page.setViewportSize({width:390,height:844});await sizes();await screenshot('11-mobile');
  await page.setViewportSize({width:320,height:800});await sizes();
  await page.setViewportSize({width:1600,height:1100});
- const audit=await auditAvatarArt(page,out);
- const chibiAudit=await auditChibiCute(page);
- const simpleFlatAudit=await auditSimpleFlat(page);
- checks.push('Three editable style packs including proportionally distinct chibi and modern simple-flat packs; six age/gender contexts; shared parts; face-specific expressions; native previews; transparent parts and diagnostic boards');
+ const packAudit=await auditRegisteredAvatarPacks(page,out);
+ checks.push(`${packIds.length} registered editable style packs are exercised automatically; six age/gender contexts, shared parts, face-specific expressions, native previews and diagnostic boards remain covered`);
  assert.deepEqual(errors,[],'Browser errors');
- await writeFile(join(out,'review.json'),JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',...audit,chibiCute:chibiAudit,simpleFlat:simpleFlatAudit,residentCount:snapshot.residents.length,checks,artisticApproval:'Requires actual inspection of all three style packs and the real editor; CI is not a quality rating'},null,2));
+ await writeFile(join(out,'review.json'),JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',avatarPacks:packAudit,residentCount:snapshot.residents.length,checks,artisticApproval:'Requires actual screenshot inspection; registry coverage and CI are not an art quality rating'},null,2));
  console.log(checks.join('\n'));
 }catch(error){await page.screenshot({path:join(out,'failure.png'),fullPage:true}).catch(()=>{});await writeFile(join(out,'failure.txt'),String(error)+'\n'+errors.join('\n'));throw error;}finally{await browser.close();}
