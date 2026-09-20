@@ -54,45 +54,46 @@ async function auditModelContract(page){
   return page.evaluate(async()=>{
     const m=await import('/src/avatar/model.ts'),r=await import('/src/avatar/render.ts');
     const require=(value,message)=>{if(!value)throw new Error(message);};
-    let randomRows=0,randomIdentityChecks=0,invalidRecipeChecks=0,switchChecks=0,compatibilityChecks=0;
+    let randomRows=0,randomIdentityChecks=0,invalidRecipeChecks=0,switchChecks=0,compatibilityChecks=0,frameScopeChecks=0;
     const coverage={};
 
     for(const meta of r.packCatalog){
-      const catalog=m.catalogFor(meta.id),base=m.recipeForPack(meta.id);
-      m.parseRecipe(base);
+      const catalog=m.catalogFor(meta.id),globalBase=m.recipeForPack(meta.id);
+      m.parseRecipe(globalBase);
       coverage[meta.id]={};
 
       for(const part of m.parts){
         let rejected=false;
-        try{m.parseRecipe({...base,[part]:'__invalid__'});}catch{rejected=true;}
+        try{m.parseRecipe({...globalBase,[part]:'__invalid__'});}catch{rejected=true;}
         require(rejected,`${meta.id} accepted an option outside its own ${part} catalog`);
         invalidRecipeChecks++;
       }
 
-      const rows=Array.from({length:1024},(_,seed)=>m.randomRecipeForPack(seed,meta.id));
-      randomRows+=rows.length;
-      for(const part of m.parts){
-        const allowed=new Set(catalog[part].map(option=>option.id));
-        const used=new Set(rows.map(row=>row[part]));
-        require([...used].every(id=>allowed.has(id)),`${meta.id} random emitted invalid ${part}`);
-        require([...allowed].every(id=>used.has(id)),`${meta.id} random omitted ${part} option`);
-        coverage[meta.id][part]=used.size;
-      }
+      for(const frame of m.frames){
+        const base=m.recipeForPack(meta.id,frame),rows=Array.from({length:1024},(_,seed)=>m.randomRecipeForPack(seed,meta.id,undefined,frame));
+        randomRows+=rows.length;coverage[meta.id][frame]={};
+        for(const part of m.parts){
+          const allowed=new Set(m.optionsFor(meta.id,part,frame).map(option=>option.id));
+          const used=new Set(rows.map(row=>row[part]));
+          require([...used].every(id=>allowed.has(id)),`${meta.id}/${frame} random emitted invalid ${part}`);
+          require([...allowed].every(id=>used.has(id)),`${meta.id}/${frame} random omitted ${part} option`);
+          coverage[meta.id][frame][part]=used.size;
+        }
 
-      for(let seed=0;seed<100;seed++){
-        const value=m.randomRecipeForPack(seed,meta.id,base);
-        require(value.face===base.face&&value.expression===base.expression,`${meta.id} wardrobe random changed identity`);
-        if(catalog.hair.length>1)require(value.hair!==base.hair,`${meta.id} wardrobe random did not change hair`);
-        if(catalog.outfit.length>1)require(value.outfit!==base.outfit,`${meta.id} wardrobe random did not change outfit`);
-        randomIdentityChecks++;
-      }
+        for(let seed=0;seed<40;seed++){
+          const value=m.randomRecipeForPack(seed,meta.id,base,frame),hairCount=m.optionsFor(meta.id,'hair',frame).length,outfitCount=m.optionsFor(meta.id,'outfit',frame).length;
+          require(value.face===base.face&&value.expression===base.expression,`${meta.id}/${frame} wardrobe random changed identity`);
+          if(hairCount>1)require(value.hair!==base.hair,`${meta.id}/${frame} wardrobe random did not change hair`);
+          if(outfitCount>1)require(value.outfit!==base.outfit,`${meta.id}/${frame} wardrobe random did not change outfit`);
+          randomIdentityChecks++;
+        }
 
-      for(const target of r.packCatalog){
-        const first=m.withPack(base,target.id),second=m.withPack(base,target.id);
-        require(JSON.stringify(first)===JSON.stringify(second),`${meta.id} → ${target.id} mapping is not deterministic`);
-        const targetCatalog=m.catalogFor(target.id);
-        for(const part of m.parts)require(targetCatalog[part].some(option=>option.id===first[part]),`${meta.id} → ${target.id} mapped outside target ${part} catalog`);
-        switchChecks++;
+        for(const target of r.packCatalog){
+          const first=m.withPack(base,target.id,frame),second=m.withPack(base,target.id,frame);
+          require(JSON.stringify(first)===JSON.stringify(second),`${meta.id} → ${target.id} / ${frame} mapping is not deterministic`);
+          for(const part of m.parts)require(m.optionsFor(target.id,part,frame).some(option=>option.id===first[part]),`${meta.id} → ${target.id} / ${frame} mapped outside target ${part} frame catalog`);
+          switchChecks++;
+        }
       }
     }
 
@@ -107,6 +108,17 @@ async function auditModelContract(page){
           compatibilityChecks++;
         }
       }
+
+      for(const option of chibiCatalog[part].filter(option=>option.frames)){
+        const source=m.parseRecipe({...chibi,[part]:option.id});
+        for(const frame of m.frames){
+          const allowed=m.optionsFor('chibi-cute-v1',part,frame).some(item=>item.id===option.id),fitted=m.fitRecipeToFrame(source,frame);
+          if(allowed)require(fitted[part]===option.id,`${part}/${option.id} was lost inside allowed frame ${frame}`);
+          else require(fitted[part]!==option.id,`${part}/${option.id} leaked into disallowed frame ${frame}`);
+          require(m.optionsFor('chibi-cute-v1',part,frame).some(item=>item.id===fitted[part]),`${part}/${option.id} fallback escaped ${frame} catalog`);
+          frameScopeChecks++;
+        }
+      }
     }
 
     const legacy=m.parseRecipe({...chibi,pack:'soft-paint-v1'});
@@ -119,7 +131,7 @@ async function auditModelContract(page){
       invalidRecipeChecks++;
     }
 
-    return {randomRows,randomIdentityChecks,invalidRecipeChecks,switchChecks,compatibilityChecks,coverage,activePackId:m.activePackId};
+    return {randomRows,randomIdentityChecks,invalidRecipeChecks,switchChecks,compatibilityChecks,frameScopeChecks,coverage,activePackId:m.activePackId};
   });
 }
 
@@ -137,13 +149,21 @@ async function auditPack(page,outRoot,spec){
     document.body.append(host);
     const meta=r.packCatalog.find(item=>item.id===spec.id),catalog=m.catalogFor(spec.id);
     require(meta,`Review spec references unregistered pack ${spec.id}`);
-    const pick=(part,id)=>catalog[part].some(option=>option.id===id)?id:m.recipeForPack(spec.id)[part];
+    const pick=(part,id,frame)=>{const available=frame?m.optionsFor(spec.id,part,frame):catalog[part];return available.some(option=>option.id===id)?id:(frame?m.recipeForPack(spec.id,frame):m.recipeForPack(spec.id))[part];};
     const baseRecipe=m.recipeForPack(spec.id);
     const parts=[],samples=[],boards=[],wardrobe=new Map(),headGeometry=new Map(),frameSignature=new Map();
-    let combinations=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,ageSexChecks=0,roleChecks=0,outfitStructureChecks=0;
+    let combinations=0,expected=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,frameCatalogChecks=0,ageSexChecks=0,roleChecks=0,outfitStructureChecks=0;
 
     for(const frame of m.frames){
-      const base={...baseRecipe,hair:pick('hair',frame.startsWith('male')?'crop':'bob'),outfit:pick('outfit','shirt'),expression:pick('expression','calm')};
+      const frameCatalog=Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame)]));
+      if(spec.frameCatalogContract){
+        for(const part of m.parts)for(const option of catalog[part]){
+          const visible=frameCatalog[part].some(item=>item.id===option.id),shouldBeVisible=!option.frames||option.frames.includes(frame);
+          require(visible===shouldBeVisible,`${spec.id}/${frame}/${part}/${option.id} frame visibility disagrees with catalog metadata`);frameCatalogChecks++;
+        }
+      }
+      expected+=frameCatalog.face.length*frameCatalog.expression.length*frameCatalog.hair.length*frameCatalog.outfit.length;
+      const frameBase=m.recipeForPack(spec.id,frame),base={...frameBase,hair:pick('hair',frame.startsWith('male')?'crop':'bob',frame),outfit:pick('outfit','shirt',frame),expression:pick('expression','calm',frame)};
       const faces=[],expressions=[],hairs=[],outfits=[];
       const addPart=(name,layer)=>{
         require(layer,`Missing layer ${name} in ${spec.id}/${frame}`);
@@ -152,7 +172,7 @@ async function auditPack(page,outRoot,spec){
       const initial=r.renderLayers(frame,base);
       addPart('neck',initial.find(x=>x.id==='Neck'));
 
-      for(const hair of catalog.hair){
+      for(const hair of frameCatalog.hair){
         const layers=r.renderLayers(frame,{...base,hair:hair.id});
         const back=layers.find(x=>x.id==='BackHair'),headwearBack=layers.find(x=>x.id==='HeadwearBack'),front=layers.find(x=>x.id==='FrontHair'),headwearFront=layers.find(x=>x.id==='HeadwearFront');
         addPart(`hair-${hair.id}-back`,back);
@@ -167,7 +187,7 @@ async function auditPack(page,outRoot,spec){
           headwearChecks++;
         }
       }
-      for(const outfit of catalog.outfit){
+      for(const outfit of frameCatalog.outfit){
         const outfitLayer=r.renderLayers(frame,{...base,outfit:outfit.id}).find(x=>x.id==='Outfit');
         addPart(`outfit-${outfit.id}`,outfitLayer);
         if(spec.outfitContract){
@@ -180,7 +200,7 @@ async function auditPack(page,outRoot,spec){
       }
 
       const faceGeometry=new Set();
-      for(const face of catalog.face){
+      for(const face of frameCatalog.face){
         const reference={...base,face:face.id},baseline=r.renderLayers(frame,reference),faceLayer=baseline.find(x=>x.id==='FaceBase');
         require(faceLayer,`Missing FaceBase in ${spec.id}/${frame}/${face.id}`);
         const faceSvg=faceLayer.svg;
@@ -204,7 +224,7 @@ async function auditPack(page,outRoot,spec){
         }
 
         if(spec.faceFrameContract){
-          for(const hair of catalog.hair){
+          for(const hair of frameCatalog.hair){
             const headLayers=r.renderLayers(frame,{...reference,hair:hair.id}).filter(layer=>['BackHair','HeadwearBack','FrontHair','HeadwearFront'].includes(layer.id));
             const geometry=JSON.stringify(headLayers),key=`${frame}/${hair.id}`;
             if(headGeometry.has(key))require(headGeometry.get(key)===geometry,`${spec.id}/${frame}/${hair.id} changed Hair/Headwear geometry with face=${face.id}`);else headGeometry.set(key,geometry);
@@ -212,7 +232,7 @@ async function auditPack(page,outRoot,spec){
           }
         }
 
-        for(const expression of catalog.expression){
+        for(const expression of frameCatalog.expression){
           const look={...reference,expression:expression.id},layers=r.renderLayers(frame,look),expressionLayer=layers.find(x=>x.id==='Expression');
           require(expressionLayer,`Missing Expression in ${spec.id}/${frame}/${face.id}/${expression.id}`);
           const expressionSvg=expressionLayer.svg;
@@ -254,7 +274,7 @@ async function auditPack(page,outRoot,spec){
             eyeChecks++;
           }
 
-          for(const hair of catalog.hair)for(const outfit of catalog.outfit){
+          for(const hair of catalog.hair)for(const outfit of frameCatalog.outfit){
             const recipe=m.parseRecipe({...look,hair:hair.id,outfit:outfit.id}),comboLayers=r.renderLayers(frame,recipe),svg=r.renderAvatar(frame,recipe);
             require(comboLayers.find(x=>x.id==='FaceBase').svg===faceSvg,`${spec.id} wardrobe changed face`);
             require(comboLayers.find(x=>x.id==='Expression').svg===expressionSvg,`${spec.id} wardrobe changed expression`);
@@ -268,24 +288,23 @@ async function auditPack(page,outRoot,spec){
           }
         }
 
-        for(const hair of catalog.hair)hairs.push({label:`${face.label} / ${hair.label}`,svg:r.renderAvatar(frame,{...reference,hair:hair.id})});
-        for(const outfit of catalog.outfit)outfits.push({label:`${face.label} / ${outfit.label}`,svg:r.renderAvatar(frame,{...reference,outfit:outfit.id})});
+        for(const hair of frameCatalog.hair)hairs.push({label:`${face.label} / ${hair.label}`,svg:r.renderAvatar(frame,{...reference,hair:hair.id})});
+        for(const outfit of frameCatalog.outfit)outfits.push({label:`${face.label} / ${outfit.label}`,svg:r.renderAvatar(frame,{...reference,outfit:outfit.id})});
       }
 
-      require(faceGeometry.size===catalog.face.length,`${spec.id} faces are not independent outlines`);
+      require(faceGeometry.size===frameCatalog.face.length,`${spec.id} faces are not independent outlines`);
       const matrixFrame=spec.matrixFrames==='all'||frame.endsWith('adult');
       if(matrixFrame){
-        boards.push({name:`faces-${frame}`,title:`${meta.label} · ${frame} · ${catalog.face.length} 张脸`,columns:Math.min(4,catalog.face.length),cells:faces});
-        boards.push({name:`expressions-${frame}`,title:`${meta.label} · ${frame} · ${catalog.face.length}脸 × ${catalog.expression.length}表情`,columns:Math.min(6,catalog.expression.length),cells:expressions});
-        boards.push({name:`hair-${frame}`,title:`${meta.label} · ${frame} · ${catalog.face.length}脸 × ${catalog.hair.length}${spec.headwearContract?'头部造型 / Headwear':'头发'}`,columns:Math.min(6,catalog.hair.length),cells:hairs});
-        boards.push({name:`outfits-${frame}`,title:`${meta.label} · ${frame} · ${catalog.face.length}脸 × ${catalog.outfit.length}衣服`,columns:Math.min(4,catalog.outfit.length),cells:outfits});
+        boards.push({name:`faces-${frame}`,title:`${meta.label} · ${frame} · ${frameCatalog.face.length} 张脸`,columns:Math.min(4,frameCatalog.face.length),cells:faces});
+        boards.push({name:`expressions-${frame}`,title:`${meta.label} · ${frame} · ${frameCatalog.face.length}脸 × ${frameCatalog.expression.length}表情`,columns:Math.min(6,frameCatalog.expression.length),cells:expressions});
+        boards.push({name:`hair-${frame}`,title:`${meta.label} · ${frame} · ${frameCatalog.face.length}脸 × ${frameCatalog.hair.length}${spec.headwearContract?'头部造型 / Headwear':'头发'}`,columns:Math.min(6,frameCatalog.hair.length),cells:hairs});
+        boards.push({name:`outfits-${frame}`,title:`${meta.label} · ${frame} · ${frameCatalog.face.length}脸 × ${frameCatalog.outfit.length}衣服`,columns:Math.min(4,frameCatalog.outfit.length),cells:outfits});
       }else if(spec.nonAdultFaceBoards){
         boards.push({name:`age-${frame}`,title:`${meta.label} · ${frame} · 年龄上下文`,columns:Math.min(4,catalog.face.length),cells:faces});
       }
     }
 
-    const expected=m.frames.length*catalog.face.length*catalog.expression.length*catalog.hair.length*catalog.outfit.length;
-    require(combinations===expected,`${spec.id} expected ${expected} combinations, got ${combinations}`);
+    require(combinations===expected,`${spec.id} expected ${expected} frame-valid combinations, got ${combinations}`);
 
     if(spec.ageSexContract){
       const preferred=(part,id)=>catalog[part].some(option=>option.id===id)?id:baseRecipe[part];
@@ -319,6 +338,18 @@ async function auditPack(page,outRoot,spec){
       require(metrics['male.adult'].outfitWidth>metrics['female.adult'].outfitWidth+12,`${spec.id} adult male/female shoulder silhouettes are not distinct enough`);
       require(metrics['male.adult'].neckWidth>metrics['female.adult'].neckWidth+4,`${spec.id} adult male/female neck silhouettes are not distinct enough`);
       boards.push({name:'age-sex-proof',title:`${meta.label} · Phase 4B · 年龄 × 性别可读性`,columns:3,cells});
+    }
+
+    if(spec.frameAssetProof?.length){
+      const cells=[];
+      for(const proof of spec.frameAssetProof){
+        const hairOptions=m.optionsFor(spec.id,'hair',proof.frame),outfitOptions=m.optionsFor(spec.id,'outfit',proof.frame);
+        require(hairOptions.some(option=>option.id===proof.hair),`${spec.id}/${proof.frame} frame proof hair ${proof.hair} is unavailable`);
+        require(outfitOptions.some(option=>option.id===proof.outfit),`${spec.id}/${proof.frame} frame proof outfit ${proof.outfit} is unavailable`);
+        const frameBase=m.recipeForPack(spec.id,proof.frame),recipe={...frameBase,face:pick('face','round',proof.frame),hair:proof.hair,outfit:proof.outfit,expression:pick('expression','calm',proof.frame)};
+        cells.push({label:`${proof.label} · ${proof.frame}`,svg:r.renderAvatar(proof.frame,recipe),sizes:true});frameCatalogChecks+=2;
+      }
+      boards.push({name:'frame-specific-assets',title:`${meta.label} · Phase 4C · Frame 专属 Hair / Outfit`,columns:3,cells});
     }
 
     if(spec.roleProof?.length){
@@ -403,7 +434,7 @@ async function auditPack(page,outRoot,spec){
     }
 
     host.remove();
-    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,ageSexChecks,roleChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length]))};
+    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,frameCatalogChecks,ageSexChecks,roleChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length])),frameCatalogCounts:Object.fromEntries(m.frames.map(frame=>[frame,Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame).length]))]))};
   },spec);
 
   for(const part of data.parts){
@@ -415,6 +446,7 @@ async function auditPack(page,outRoot,spec){
     order:layerOrder,
     count:data.parts.length,
     catalogCounts:data.catalogCounts,
+    frameCatalogCounts:data.frameCatalogCounts,
     parts:data.parts.map(({svg,...rest})=>rest),
     note:'Generated from the pack-owned catalog. Face, hair, outfit and expression remain independently selectable.',
   },null,2));
@@ -433,12 +465,14 @@ async function auditPack(page,outRoot,spec){
     combinations:data.combinations,
     expectedCombinations:data.expected,
     catalogCounts:data.catalogCounts,
+    frameCatalogCounts:data.frameCatalogCounts,
     mouthChecks:data.mouthChecks,
     eyeChecks:data.eyeChecks,
     markerChecks:data.markerChecks,
     headwearChecks:data.headwearChecks,
     faceFrameChecks:data.faceFrameChecks,
     headGeometryChecks:data.headGeometryChecks,
+    frameCatalogChecks:data.frameCatalogChecks,
     ageSexChecks:data.ageSexChecks,
     roleChecks:data.roleChecks,
     outfitStructureChecks:data.outfitStructureChecks,

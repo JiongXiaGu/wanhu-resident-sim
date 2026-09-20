@@ -1,11 +1,19 @@
 export const parts=['face','hair','outfit','expression'] as const;
 export type Part=typeof parts[number];
 
+export const catalogFrames=[
+  'female.child','female.adult','female.elder',
+  'male.child','male.adult','male.elder',
+] as const;
+export type CatalogFrame=typeof catalogFrames[number];
+
 export type CatalogOption={
   id:string;
   label:string;
   note?:string;
-  // 跨 Pack 切换时只用于显式兼容映射。省略时默认使用自身 id。
+  // 省略表示六个 Frame 都可用；声明后只在对应年龄 / 性别上下文出现。
+  frames?:readonly CatalogFrame[];
+  // 跨 Pack 或跨 Frame 回退时只用于显式语义兼容。省略时默认使用自身 id。
   compatibilityKey?:string;
 };
 
@@ -20,8 +28,20 @@ export type CatalogDefaults=Record<Part,string>;
 
 export function defineCatalog<const T extends AvatarCatalog>(catalog:T):T{return catalog;}
 
+export function optionSupportsFrame(option:CatalogOption,frame:CatalogFrame):boolean{
+  return !option.frames||option.frames.includes(frame);
+}
+
+export function catalogOptionsForFrame(catalog:AvatarCatalog,part:Part,frame:CatalogFrame):readonly CatalogOption[]{
+  return catalog[part].filter(option=>optionSupportsFrame(option,frame));
+}
+
 export function hasCatalogOption(catalog:AvatarCatalog,part:Part,id:unknown):id is string{
   return typeof id==='string'&&catalog[part].some(option=>option.id===id);
+}
+
+export function hasCatalogOptionForFrame(catalog:AvatarCatalog,part:Part,id:unknown,frame:CatalogFrame):id is string{
+  return typeof id==='string'&&catalog[part].some(option=>option.id===id&&optionSupportsFrame(option,frame));
 }
 
 export function catalogOption(catalog:AvatarCatalog,part:Part,id:string):CatalogOption|undefined{

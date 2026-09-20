@@ -48,6 +48,39 @@ export function outfitArt(frame:Frame,id:OutfitId):string{
    outfitPart('detail',p('M154 282L160 276L167 282L165 320H155Z','#d8d6d2','none',0,.9));
  }
 
+ if(id==='child-short-robe'){
+  return outfitPart('base',p(body,'#b98b63',OUTLINE,5))+
+   outfitPart('collar',p(`M134 ${top-3}L160 ${top+18}L145 ${top+36}L111 ${top+8}Z`,'#ead9bd',OUTLINE,3.4))+
+   outfitPart('collar',p(`M186 ${top-3}L160 ${top+18}L175 ${top+36}L209 ${top+8}Z`,'#d7bd98',OUTLINE,3.4))+
+   outfitPart('overlay',p('M82 271L116 253L145 289L137 320H49L70 276Z','#9c704c','none',0,.38))+
+   outfitPart('detail',l('M113 286L105 319M205 286L216 318','#75543f',2.3,.58));
+ }
+
+ if(id==='child-apprentice'){
+  return outfitPart('base',p(body,'#7f9295',OUTLINE,5))+
+   outfitPart('collar',p(`M136 ${top-4}L160 ${top+20}L144 ${top+38}L110 ${top+9}Z`,'#f2eadb',OUTLINE,3.4))+
+   outfitPart('collar',p(`M184 ${top-4}L160 ${top+20}L176 ${top+38}L210 ${top+9}Z`,'#e4d8c5',OUTLINE,3.4))+
+   outfitPart('overlay',p('M151 282L160 273L169 282L167 320H153Z','#61777a','none',0,.88))+
+   outfitPart('detail',l('M94 290Q111 299 120 318M226 290Q209 299 201 318','#d7ddd4',2.3,.65));
+ }
+
+ if(id==='elder-long-robe'){
+  return outfitPart('base',p(body,'#817764',OUTLINE,5))+
+   outfitPart('collar',p(`M132 ${top-4}L160 ${top+18}L145 ${top+38}L101 ${top+9}Z`,'#d8cbb1',OUTLINE,3.5))+
+   outfitPart('collar',p(`M188 ${top-4}L160 ${top+18}L175 ${top+38}L219 ${top+9}Z`,'#c8b99b',OUTLINE,3.5))+
+   outfitPart('overlay',p('M91 268L132 248L153 284L142 320H42L53 291Z','#635b4e',OUTLINE,2.7))+
+   outfitPart('overlay',p('M229 268L188 248L167 284L178 320H278L267 291Z','#958a73',OUTLINE,2.7))+
+   outfitPart('detail',l('M149 293L143 320M171 293L178 320','#4d493f',2.6,.65));
+ }
+
+ if(id==='elder-warm-coat'){
+  return outfitPart('base',p(body,'#69756e',OUTLINE,5))+
+   outfitPart('collar',p(`M130 ${top-5}Q160 ${top+17} 190 ${top-5}L184 ${top+17}Q160 ${top+40} 136 ${top+17}Z`,'#ded5c1',OUTLINE,3.6))+
+   outfitPart('overlay',p('M104 257L134 247L153 282L140 320H34L49 287Z','#4f5c57',OUTLINE,2.8))+
+   outfitPart('overlay',p('M216 257L186 247L167 282L180 320H286L271 287Z','#7d8980',OUTLINE,2.8))+
+   outfitPart('detail',p('M153 288L160 281L167 288L166 320H154Z','#b29b74','none',0,.82));
+ }
+
  if(id==='commoner'){
   return outfitPart('base',p(body,'#b68a62',OUTLINE,5))+
    outfitPart('collar',p(`M${child?133:130} ${top-3}L160 ${top+20}L145 ${top+40}L${child?111:102} ${top+10}Z`,'#ead9bf',OUTLINE,3.5))+

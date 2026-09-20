@@ -1,4 +1,4 @@
-import {catalogOption,parts,type Part} from './catalog';
+import {catalogFrames,catalogOption,optionSupportsFrame,parts,type Part} from './catalog';
 import {chibiCutePack} from './chibi';
 import {lineworkPack} from './linework';
 import {simpleFlatPack} from './simple-flat';
@@ -15,6 +15,17 @@ function validatePack(pack:AvatarPack):void{
     const ids=options.map(option=>option.id);
     if(new Set(ids).size!==ids.length)throw new Error(`Avatar pack ${pack.id} has duplicate ${part} IDs.`);
     if(!ids.includes(pack.defaults[part]))throw new Error(`Avatar pack ${pack.id} default ${part} is not in its catalog.`);
+
+    for(const option of options){
+      if(!option.frames)continue;
+      if(option.frames.length===0)throw new Error(`Avatar pack ${pack.id} ${part}/${option.id} has an empty frame scope.`);
+      if(new Set(option.frames).size!==option.frames.length)throw new Error(`Avatar pack ${pack.id} ${part}/${option.id} repeats frame scopes.`);
+      if(option.frames.some(frame=>!catalogFrames.includes(frame)))throw new Error(`Avatar pack ${pack.id} ${part}/${option.id} references an unknown frame.`);
+    }
+
+    for(const frame of catalogFrames){
+      if(!options.some(option=>optionSupportsFrame(option,frame)))throw new Error(`Avatar pack ${pack.id} has no ${part} option for ${frame}.`);
+    }
   }
 }
 for(const pack of packs)validatePack(pack);

@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
-import {optionsFor,packOptions,parts,labels,defaultFor,equalRecipe,parseRecipe,randomRecipe,optionLabel,packLabel,withPack,type PackId,type Part,type Recipe,type Target} from './model';
+import {fitRecipeToFrame,optionsFor,packOptions,parts,labels,defaultFor,equalRecipe,parseRecipe,randomRecipe,optionLabel,packLabel,withPack,type PackId,type Part,type Recipe,type Target} from './model';
 import {applyRecipe,getRaw,parseEntry,removeRecipe,useSaved} from './store';
 import {AvatarImage,SavedAvatar} from './AvatarImage';
 import {downloadFile,downloadPng,renderAvatar} from './render';
@@ -11,8 +11,8 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
  const [key,setKey]=useState(initialKey),[part,setPart]=useState<Part>('face'),[search,setSearch]=useState('');
  const target=targets.find(item=>item.key===key)??targets[0];
  const saved=useSaved(target.key);
- const [draft,setDraft]=useState<Recipe>(()=>saved.recipe??defaultFor(target));
- const [baseline,setBaseline]=useState<Recipe>(()=>saved.recipe??defaultFor(target));
+ const [draft,setDraft]=useState<Recipe>(()=>fitRecipeToFrame(saved.recipe??defaultFor(target),target.frame));
+ const [baseline,setBaseline]=useState<Recipe>(()=>fitRecipeToFrame(saved.recipe??defaultFor(target),target.frame));
  const [baselineRaw,setBaselineRaw]=useState<string|null>(saved.raw);
  const [message,setMessage]=useState(saved.error),[pending,setPending]=useState<Pending|null>(null),[busy,setBusy]=useState(false),[light,setLight]=useState(false);
  const dialog=useRef<HTMLDialogElement>(null),fileInput=useRef<HTMLInputElement>(null),epoch=useRef(0);
@@ -42,11 +42,11 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
  },[pending]);
  function choose<K extends Part>(selected:K,value:Recipe[K]){setDraft(old=>({...old,[selected]:value}));setMessage('');}
  function choosePack(pack:PackId){
-  const next=withPack(draft,pack),changed=parts.filter(item=>next[item]!==draft[item]);
+  const next=withPack(draft,pack,target.frame),changed=parts.filter(item=>next[item]!==draft[item]);
   setDraft(next);
   setMessage(changed.length===0?`已切换到「${packLabel(pack)}」，当前四项选择均可直接保留。`:`已切换到「${packLabel(pack)}」；${changed.map(item=>labels[item]).join('、')}按显式兼容规则映射到该画风可用素材。`);
  }
- function reload(){epoch.current++;setDraft(saved.recipe??defaultFor(target));setBaseline(saved.recipe??defaultFor(target));setBaselineRaw(saved.raw);setMessage(saved.error||'已重新载入这个对象的头像。');}
+ function reload(){epoch.current++;const next=fitRecipeToFrame(saved.recipe??defaultFor(target),target.frame);setDraft(next);setBaseline(next);setBaselineRaw(saved.raw);setMessage(saved.error||'已重新载入这个对象的头像。');}
  function save():boolean {
   try{applyRecipe(target.key,draft,baselineRaw);setBaseline({...draft});setBaselineRaw(getRaw(target.key));setMessage(`已应用到「${target.name}」。其他对象未改变。`);return true;}
   catch(error){setMessage(error instanceof Error?error.message:'保存失败。草稿仍保留，未假装保存成功。');return false;}
@@ -58,7 +58,7 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
    if(!next){setMessage('这个对象已不在当前城市中。');return;}
    let raw:string|null=null,warning='';
    try{raw=getRaw(next.key);}catch{warning='无法读取本地保存；当前只可预览或导出。';}
-   const entry=parseEntry(raw),nextRecipe=entry.recipe??defaultFor(next);
+   const entry=parseEntry(raw),nextRecipe=fitRecipeToFrame(entry.recipe??defaultFor(next),next.frame);
    // 同一事件中批量提交目标、草稿与基线。不能等 useEffect 再把上一人的脸换掉。
    setKey(next.key);setDraft(nextRecipe);setBaseline(nextRecipe);setBaselineRaw(raw);setMessage(warning||entry.error);
    return;
@@ -70,7 +70,7 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
  function request(action:Pending){if(action.kind==='restore'||dirty)setPending(action);else finish(action);}
  async function importFile(file:File|undefined){
   if(!file)return;const token=++epoch.current;
-  try{if(file.size>8192)throw new Error('配方文件不能超过 8 KB。');const next=parseRecipe(JSON.parse(await file.text()));if(token!==epoch.current)return;setDraft(next);setMessage('配方已载入预览。点击应用才会保存到当前对象。');}
+  try{if(file.size>8192)throw new Error('配方文件不能超过 8 KB。');const parsed=parseRecipe(JSON.parse(await file.text())),next=fitRecipeToFrame(parsed,target.frame);if(token!==epoch.current)return;setDraft(next);setMessage(equalRecipe(parsed,next)?'配方已载入预览。点击应用才会保存到当前对象。':'配方已载入，并按当前年龄 / 性别映射到可用素材。点击应用才会保存。');}
   catch(error){if(token===epoch.current)setMessage(error instanceof Error?error.message:'配方无法读取。');}
   finally{if(fileInput.current)fileInput.current.value='';}
  }
@@ -94,11 +94,11 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
      <div className="av-export"><button type="button" data-export="png" disabled={busy} onClick={png}>导出 PNG</button><button type="button" data-export="svg" onClick={()=>downloadFile(new Blob([renderAvatar(target.frame,draft)],{type:'image/svg+xml'}),'wanhu-avatar.svg')}>导出 SVG</button></div>
     </section>
     <section className="av-choices"><div className="av-section-heading"><h2>选择部件</h2><span>{packLabel(draft.pack)}</span></div>
-     <div className="av-style-picker" role="group" aria-label="头像画风">{packOptions.map(style=>{const preview=withPack(draft,style.id);return <button type="button" className="av-style-option" key={style.id} data-pack={style.id} data-pack-lifecycle={style.lifecycle} aria-pressed={draft.pack===style.id} onClick={()=>choosePack(style.id)}><AvatarImage frame={target.frame} recipe={preview} size={72}/><span><b>{style.label}</b><small>{style.note}</small></span><i aria-hidden="true">{draft.pack===style.id?'✓':''}</i></button>;})}</div>
+     <div className="av-style-picker" role="group" aria-label="头像画风">{packOptions.map(style=>{const preview=withPack(draft,style.id,target.frame);return <button type="button" className="av-style-option" key={style.id} data-pack={style.id} data-pack-lifecycle={style.lifecycle} aria-pressed={draft.pack===style.id} onClick={()=>choosePack(style.id)}><AvatarImage frame={target.frame} recipe={preview} size={72}/><span><b>{style.label}</b><small>{style.note}</small></span><i aria-hidden="true">{draft.pack===style.id?'✓':''}</i></button>;})}</div>
      <div className="av-tabs" role="group" aria-label="头像部件">{parts.map(item=><button type="button" key={item} data-part-tab={item} aria-pressed={part===item} onClick={()=>setPart(item)}>{labels[item]}</button>)}</div>
-     <div className="av-option-grid" role="group" aria-label={labels[part]}>{optionsFor(draft.pack,part).map(item=><button type="button" key={item.id} data-option={item.id} data-option-part={part} className="av-option" aria-pressed={draft[part]===item.id} onClick={()=>choose(part,item.id)}><AvatarImage frame={target.frame} recipe={{...draft,[part]:item.id}} size={112}/><span>{item.label}</span><i aria-hidden="true">{draft[part]===item.id?'✓':''}</i></button>)}</div>
-     <p className="av-choice-note">画风只改变绘制方式；更换{labels[part]}时保留其他选择。男女和年龄由当前对象提供，不改居民身份数据。</p>
-     <button className="av-random" type="button" data-random-outfit onClick={()=>{setDraft(old=>randomRecipe(crypto.getRandomValues(new Uint32Array(1))[0],old));setMessage('只随机更换头发和衣服，保留脸型与表情。');}}>随机搭配头发与衣服</button>
+     <div className="av-option-grid" role="group" aria-label={labels[part]}>{optionsFor(draft.pack,part,target.frame).map(item=><button type="button" key={item.id} data-option={item.id} data-option-part={part} className="av-option" aria-pressed={draft[part]===item.id} onClick={()=>choose(part,item.id)}><AvatarImage frame={target.frame} recipe={{...draft,[part]:item.id}} size={112}/><span>{item.label}</span><i aria-hidden="true">{draft[part]===item.id?'✓':''}</i></button>)}</div>
+     <p className="av-choice-note">画风只改变绘制方式；更换{labels[part]}时保留其他选择。当前对象只显示适合其年龄 / 性别 Frame 的素材；更换外观不会改居民身份数据。</p>
+     <button className="av-random" type="button" data-random-outfit onClick={()=>{setDraft(old=>randomRecipe(crypto.getRandomValues(new Uint32Array(1))[0],old,target.frame));setMessage('只随机更换头发和衣服，保留脸型与表情。');}}>随机搭配头发与衣服</button>
      <details className="av-tools"><summary>配方与部件审查</summary><div className="av-tools-actions"><button type="button" data-export="json" onClick={()=>downloadFile(new Blob([JSON.stringify(draft,null,2)],{type:'application/json'}),'wanhu-avatar.json')}>导出配方</button><button type="button" onClick={()=>fileInput.current?.click()}>导入配方</button><input ref={fileInput} data-import-recipe type="file" accept=".json,application/json" hidden onChange={event=>{void importFile(event.currentTarget.files?.[0]);}}/></div><p>导入只改当前预览，不携带居民编号，也不自动应用。</p><pre>{JSON.stringify(draft,null,2)}</pre></details>
     </section>
    </div>

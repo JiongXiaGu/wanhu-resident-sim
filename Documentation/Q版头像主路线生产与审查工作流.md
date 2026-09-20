@@ -26,6 +26,7 @@
 - [x] Phase 4：年龄 / 性别扩展与职业可读性
   - [x] Phase 4A：Face Frame Pass（脸部框架回正）
   - [x] Phase 4B：child / adult / elder、男女与职业可读性
+  - [x] Phase 4C：Frame-specific Asset Catalog（年龄专属 Hair / Outfit）
 - [ ] **Phase 5：大规模素材生产与批次 QA**
 - [ ] Phase 6：旧画风隐藏 / 兼容 / 退役决策
 
@@ -117,6 +118,8 @@ Phase 4A 确认：**Face 负责适配统一头部框架，Hair / Headwear 不跟
 - 同一 Frame + Hair 下，BackHair / FrontHair / HeadwearBack / HeadwearFront 必须在四张 Face 中保持完全一致。
 
 Phase 4B 已把 Face Frame 扩展到全部六个 Frame：female/male × child/adult/elder。每个 Frame 都有稳定的额头顶线、太阳穴接缝和耳位；Hair / Headwear 仍不读取 Face ID。
+
+Phase 4C 改变的是素材可用范围而不是头部自动适配：共享 AvatarEditor、Recipe 和八层 Renderer，但 Hair / Outfit 不再要求 child / adult / elder 共用同一素材。Catalog option 可声明 `frames`；同一 Frame 内 Hair 仍不能随 Face 变化。Recipe 不增加年龄字段，Frame 继续来自当前玩家 / 居民对象。
 
 ## Hair / 头部造型
 
@@ -644,7 +647,24 @@ Phase 4A 通过后，Phase 4B 才处理 child / adult / elder、男女成熟度�
 - 新增职业跨年龄 proof：书生/学徒与掌柜分别检查 child / adult / elder，确保职业语义在不同年龄仍可读。
 - Hair / Headwear 仍严格要求同一 Frame + Hair 在四张 Face 下 geometry 完全一致。
 
-Phase 4B 不新增第五分类，也不新增 face-dependent Hair；通过后进入 Phase 5 大规模素材生产与批次 QA。
+Phase 4B 不新增第五分类，也不新增 face-dependent Hair。
+
+## 2026-09-20：Phase 4C Frame-specific Asset Catalog
+
+本轮把之前错误的“所有年龄尽量复用同一套 Hair / Outfit”约束移除，改为：
+
+- 共享编辑器、四字段 Recipe、Pack、八层 Renderer 与保存流程。
+- `CatalogOption.frames` 控制素材可用的 female/male × child/adult/elder Frame；省略时仍表示六 Frame 通用。
+- UI、随机搭配、跨 Pack 预览与 Review 只使用当前 Frame 可用的素材。
+- Recipe 仍不保存年龄 / 性别；目标对象提供 Frame。旧 Recipe、导入 Recipe 或居民自然跨年龄后，如果某素材不再适用，按 exact → compatibilityKey → 当前 Frame 默认/首项确定性回退，预览阶段不自动改写存储。
+- 同一 Frame + Hair 在四张 Face 下仍必须 geometry 完全一致；不同 Frame 不再要求使用同一个 Hair ID。
+- 成年古代 Batch A 的 `bound / low-bun / work-headscarf / scholar-cap / merchant-wrap` 与 `commoner / laborer / merchant / scholar / artisan` 限定为 adult。
+- 第一批儿童专属 proof：`child-topknot / child-double-bun`，`child-short-robe / child-apprentice`。
+- 第一批老年专属 proof：`elder-low-knot / elder-swept`，`elder-long-robe / elder-warm-coat`。
+- 旧基础 6 Hair / 4 Outfit 暂时继续六 Frame 通用，用于旧 Recipe 兼容和过渡，不代表后续新古代素材继续跨年龄共享。
+- Actions 的组合数改成逐 Frame 动态计算，并新增 Frame Catalog metadata、fallback、儿童 / 成年 / 老年专属素材图板与真实 UI 选项截图。
+
+Phase 4C 不引入 Head Shell、hat-fit、anchor solver、逐 Face offset、mask / clipPath，也不增加第五个玩家分类。通过后进入 Phase 5，后续批量素材生产应优先按 child / adult / elder 分批，而不是先画一件再强行兼容六个 Frame。
 
 ---
 
@@ -654,7 +674,7 @@ Phase 4B 不新增第五分类，也不新增 face-dependent Hair；通过后进
 
 ```text
 Phase 5 — 大规模素材生产与批次 QA
-状态：未开始
+状态：未开始（Phase 4C Frame-specific Asset Catalog 完成后，从分年龄素材批次开始）
 ```
 
 ## 下一次执行必须先回答

@@ -6,7 +6,7 @@
 
 同一个编辑器用于玩家示例档案和当前城市的全部真实居民。首页“头像工坊”打开玩家档案；居民身份栏“编辑头像”直接打开对应居民。`/?view=avatar-editor` 也可直接打开工坊，底层仍是同一个 App，不会重建游戏会话。
 
-`linework-v1`（日常线绘）、`chibi-cute-v1`（Q版可爱）与 `simple-flat-v1`（极简简笔）都是原创、真实分层的 SVG 画风包。自 2026-09-20 起，`chibi-cute-v1` 是后续素材扩充主路线；另外两套暂时作为 reference / compatibility 保留。三套已经完成 Pack-owned Catalog。`chibi-cute-v1` 当前为 4 Face / 11 Hair / 9 Outfit / 8 Expression，并已加入第一批古代居民素材；`linework-v1`、`simple-flat-v1` 保持各自旧 Catalog。UI、Recipe 校验、随机和 Actions 组合遍历都从当前 Pack 自己的 Catalog 读取。具体阶段、素材边界和人工美术审查以 [Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md) 为准。
+`linework-v1`（日常线绘）、`chibi-cute-v1`（Q版可爱）与 `simple-flat-v1`（极简简笔）都是原创、真实分层的 SVG 画风包。自 2026-09-20 起，`chibi-cute-v1` 是后续素材扩充主路线；另外两套暂时作为 reference / compatibility 保留。三套已经完成 Pack-owned Catalog。`chibi-cute-v1` 当前为 4 Face / 15 Hair / 13 Outfit / 8 Expression；其中新增 4 Hair + 4 Outfit 用于 child / elder 的 Frame-specific proof，成年古代 Batch A 保持独立范围；`linework-v1`、`simple-flat-v1` 保持各自旧 Catalog。UI、Recipe 校验、随机和 Actions 组合遍历都从当前 Pack 自己的 Catalog 读取。具体阶段、素材边界和人工美术审查以 [Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md) 为准。
 
 画风是待用户验收的候选，不声称复制用户参考图、某位 Neka 画手或商业游戏。Q版方向只借鉴“大头比例、极简五官、腮红、粗轮廓、贴纸感”等通用视觉特征；现代日常服饰与可组合性优先，不强行添加中国古代饰物。历史错误实验已从当前工作树删除，不再建立保留区；旧内容使用 Git 历史查阅。
 
@@ -47,7 +47,7 @@ HeadwearFront
 
 换发型、衣服时 FaceBase / Expression 不变；换表情时 FaceBase 与衣装不变；换脸型时头发、衣服、颈部不变，Expression 使用新脸型对应的眉眼口设计。
 
-Q版六个 Frame 都遵守 Face Frame：female/male × child/adult/elder 各自固定额头顶线、太阳穴接缝和耳位。round / oval / angular / long 的差异主要发生在面颊、下颌、下巴和五官。Hair / Headwear 从不接收 Face ID；同一个 Hair 在同一 Frame 的四张脸上必须返回完全相同的 BackHair / HeadwearBack / FrontHair / HeadwearFront。child 通过更圆短的下脸、更大的眼睛和较窄肩颈表现年龄；elder 通过眼下 / 口周年龄线、较弱腮红和较缓肩颈表达，不把“灰发”当作唯一年龄信息。
+Q版六个 Frame 都遵守 Face Frame：female/male × child/adult/elder 各自固定额头顶线、太阳穴接缝和耳位。round / oval / angular / long 的差异主要发生在面颊、下颌、下巴和五官。Hair / Headwear 从不接收 Face ID；同一个 Hair 在同一 Frame 的四张脸上必须返回完全相同的 BackHair / HeadwearBack / FrontHair / HeadwearFront。但不同 Frame 不再强制共用同一 Hair / Outfit。child、adult、elder 可以拥有独立素材列表；年龄辨识优先来自专属轮廓和服饰，而不是把成人素材缩放或仅换灰发。
 
 ## 保存、预览与取消
 
@@ -127,6 +127,8 @@ AI 辅助美术生产发生在开发阶段：按照统一画布和包内画法�
 
 `pack id` 属于持久化配方契约，发布后不要改名；目录名只是源码组织。废弃画风的兼容映射集中放在 registry 的 legacy alias，不在 `model.ts` 继续堆特殊分支。
 
+Catalog option 还可以声明 `frames`。省略表示六个 Frame 通用；显式声明后，AvatarEditor、随机和 Review 只会在对应 Frame 使用该素材。Recipe 本身仍只有四个外观字段，年龄 / 性别继续由目标对象提供；不适用的旧素材只在预览时确定性映射，不会未经“应用”写回 localStorage。
+
 每个 Pack 现在还声明 `lifecycle`：`active`、`reference` 或 `legacy`。普通画风选择只显示 active/reference；legacy 仍可渲染旧 Recipe。当前 active 是 `chibi-cute-v1`，另外两套为 reference。新对象默认使用 active Pack。
 
 跨 Pack 切换先保留目标 Pack 也拥有的同 ID；若目标缺少该 ID，则使用素材上的显式 `compatibilityKey` 寻找对应项，仍无匹配时回到目标 Pack 的 defaults。这个映射是确定性的，不随机换人。Phase 1 暂不保存 per-pack draft history，因此 Q版专属素材如果切到旧 Pack 后发生 fallback，再切回 Q版不会自动恢复那个专属素材，需要玩家重新选择；后续只有确有需要才增加 per-pack 历史。
@@ -145,6 +147,7 @@ AI 辅助美术生产发生在开发阶段：按照统一画布和包内画法�
 - 每个画风包按自己的 Catalog 动态执行六上下文 × Face × Hair × Outfit × Expression 全组合 SVG、层序与身份不变量；当前三套恰好仍各为 3,456 组合，但不再写死。\n- 跨 Pack 切换按 exact ID → compatibilityKey → target defaults 的确定性规则映射；当前共享旧 ID 的配置仍保持不变，同时三套最终 SVG 必须真正不同。
 - 眉眼口与前发遮挡顺序、嘴型中线、虹膜范围。
 - 六组脸型板、六组表情板、六组发型板、六组服装板；这些是诊断图板，不是固定整图资源或冒充玩家 UI。
+- Q版额外检查每个 Frame 的可用 Catalog、跨年龄 deterministic fallback，以及 child/adult/elder 专属 Hair / Outfit 的 96/64/48px 对照；不能再用“同一成人素材跨三年龄可渲染”作为质量目标。
 - 96/64/48 原尺寸，桌面及 390/320px；深浅衬底；儿童老人实际样本。
 
 `resident-visual-review` Artifact 的 `avatar/` 保留原始 PNG，不经过旧预览缩图。每个画风统一位于 `avatar/packs/<pack-id>/`，其中 `parts/` 是可组合 SVG 导出、`samples/` 是当次渲染器输出的组合示例、`review.json` 是该 Pack 自动检查记录；跨画风对照在 `avatar/style-comparisons/`。下载并实际查看窗口、真实居民面板、关键图板与小尺寸后才能合并 main；main 必须再次跑完和核对。
