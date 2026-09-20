@@ -152,13 +152,13 @@ async function auditPack(page,outRoot,spec){
     const pick=(part,id,frame)=>{const available=frame?m.optionsFor(spec.id,part,frame):catalog[part];return available.some(option=>option.id===id)?id:(frame?m.recipeForPack(spec.id,frame):m.recipeForPack(spec.id))[part];};
     const baseRecipe=m.recipeForPack(spec.id);
     const parts=[],samples=[],boards=[],wardrobe=new Map(),headGeometry=new Map(),frameSignature=new Map();
-    let combinations=0,expected=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,frameCatalogChecks=0,childBatchChecks=0,adultBatchChecks=0,ageSexChecks=0,roleChecks=0,outfitStructureChecks=0;
+    let combinations=0,expected=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,frameCatalogChecks=0,childBatchChecks=0,adultBatchChecks=0,elderBatchChecks=0,compatibilityOnlyChecks=0,ageSexChecks=0,roleChecks=0,outfitStructureChecks=0;
 
     for(const frame of m.frames){
       const frameCatalog=Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame)]));
       if(spec.frameCatalogContract){
         for(const part of m.parts)for(const option of catalog[part]){
-          const visible=frameCatalog[part].some(item=>item.id===option.id),shouldBeVisible=!option.frames||option.frames.includes(frame);
+          const visible=frameCatalog[part].some(item=>item.id===option.id),shouldBeVisible=option.selectable!==false&&(!option.frames||option.frames.includes(frame));
           require(visible===shouldBeVisible,`${spec.id}/${frame}/${part}/${option.id} frame visibility disagrees with catalog metadata`);frameCatalogChecks++;
         }
       }
@@ -407,6 +407,44 @@ async function auditPack(page,outRoot,spec){
       }
     }
 
+    if(spec.elderBatchContract){
+      for(const id of spec.compatibilityOnlyHair??[]){
+        const option=catalog.hair.find(item=>item.id===id);
+        require(option&&option.selectable===false,`${spec.id} legacy Hair ${id} must be compatibility-only after Phase 5C`);
+        for(const frame of m.frames)require(!m.optionsFor(spec.id,'hair',frame).some(item=>item.id===id),`${spec.id}/${frame} still exposes compatibility-only Hair ${id}`);
+        compatibilityOnlyChecks+=m.frames.length+1;
+      }
+      for(const id of spec.compatibilityOnlyOutfits??[]){
+        const option=catalog.outfit.find(item=>item.id===id);
+        require(option&&option.selectable===false,`${spec.id} legacy Outfit ${id} must be compatibility-only after Phase 5C`);
+        for(const frame of m.frames)require(!m.optionsFor(spec.id,'outfit',frame).some(item=>item.id===id),`${spec.id}/${frame} still exposes compatibility-only Outfit ${id}`);
+        compatibilityOnlyChecks+=m.frames.length+1;
+      }
+
+      for(const frame of ['female.elder','male.elder']){
+        const hairOptions=m.optionsFor(spec.id,'hair',frame),outfitOptions=m.optionsFor(spec.id,'outfit',frame);
+        require(hairOptions.every(option=>option.frames?.includes(frame)),`${spec.id}/${frame} still exposes non-elder Hair in Phase 5C`);
+        require(outfitOptions.every(option=>option.frames?.includes(frame)),`${spec.id}/${frame} still exposes non-elder Outfit in Phase 5C`);
+        const hairIds=(spec.elderBatchHair??[]).filter(id=>hairOptions.some(option=>option.id===id));
+        const outfitIds=(spec.elderBatchOutfits??[]).filter(id=>outfitOptions.some(option=>option.id===id));
+        require(hairIds.length>=6,`${spec.id}/${frame} elder Hair batch is too small`);
+        require(outfitIds.length>=6,`${spec.id}/${frame} elder Outfit batch is too small`);
+
+        const foundation={...m.recipeForPack(spec.id,frame),face:pick('face','round',frame),expression:pick('expression','calm',frame)};
+        const hairCells=hairIds.map(id=>{const option=catalog.hair.find(item=>item.id===id);return {label:option?.label??id,svg:r.renderAvatar(frame,{...foundation,hair:id,outfit:outfitIds[0]}),sizes:true};});
+        const outfitCells=outfitIds.map(id=>{const option=catalog.outfit.find(item=>item.id===id);return {label:option?.label??id,svg:r.renderAvatar(frame,{...foundation,hair:hairIds[0],outfit:id}),sizes:true};});
+        const comboCells=Array.from({length:Math.min(6,hairIds.length,outfitIds.length)},(_,index)=>({
+          label:`${catalog.hair.find(item=>item.id===hairIds[index])?.label??hairIds[index]} / ${catalog.outfit.find(item=>item.id===outfitIds[index])?.label??outfitIds[index]}`,
+          svg:r.renderAvatar(frame,{...foundation,hair:hairIds[index],outfit:outfitIds[index]}),
+          sizes:true,
+        }));
+        boards.push({name:`phase5c-elder-hair-${frame.startsWith('female')?'female':'male'}`,title:`${meta.label} · Phase 5C · ${frame} · 老年专属 Hair`,columns:Math.min(6,hairCells.length),cells:hairCells});
+        boards.push({name:`phase5c-elder-outfit-${frame.startsWith('female')?'female':'male'}`,title:`${meta.label} · Phase 5C · ${frame} · 老年专属 Outfit`,columns:Math.min(6,outfitCells.length),cells:outfitCells});
+        boards.push({name:`phase5c-elder-combos-${frame.startsWith('female')?'female':'male'}`,title:`${meta.label} · Phase 5C · ${frame} · 老年组合 96 / 64 / 48px`,columns:3,cells:comboCells});
+        elderBatchChecks+=hairIds.length+outfitIds.length+comboCells.length;
+      }
+    }
+
     if(spec.roleProof?.length){
       for(const gender of ['female','male']){
         const frame=`${gender}.adult`,roleSvgs=[],cells=[];
@@ -489,7 +527,7 @@ async function auditPack(page,outRoot,spec){
     }
 
     host.remove();
-    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,frameCatalogChecks,childBatchChecks,adultBatchChecks,ageSexChecks,roleChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length])),frameCatalogCounts:Object.fromEntries(m.frames.map(frame=>[frame,Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame).length]))]))};
+    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,frameCatalogChecks,childBatchChecks,adultBatchChecks,elderBatchChecks,compatibilityOnlyChecks,ageSexChecks,roleChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part).length])),compatibilityOnlyCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].filter(option=>option.selectable===false).length])),frameCatalogCounts:Object.fromEntries(m.frames.map(frame=>[frame,Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame).length]))]))};
   },spec);
 
   for(const part of data.parts){
@@ -501,6 +539,7 @@ async function auditPack(page,outRoot,spec){
     order:layerOrder,
     count:data.parts.length,
     catalogCounts:data.catalogCounts,
+    compatibilityOnlyCounts:data.compatibilityOnlyCounts,
     frameCatalogCounts:data.frameCatalogCounts,
     parts:data.parts.map(({svg,...rest})=>rest),
     note:'Generated from the pack-owned catalog. Face, hair, outfit and expression remain independently selectable.',
@@ -520,6 +559,7 @@ async function auditPack(page,outRoot,spec){
     combinations:data.combinations,
     expectedCombinations:data.expected,
     catalogCounts:data.catalogCounts,
+    compatibilityOnlyCounts:data.compatibilityOnlyCounts,
     frameCatalogCounts:data.frameCatalogCounts,
     mouthChecks:data.mouthChecks,
     eyeChecks:data.eyeChecks,
@@ -530,6 +570,8 @@ async function auditPack(page,outRoot,spec){
     frameCatalogChecks:data.frameCatalogChecks,
     childBatchChecks:data.childBatchChecks,
     adultBatchChecks:data.adultBatchChecks,
+    elderBatchChecks:data.elderBatchChecks,
+    compatibilityOnlyChecks:data.compatibilityOnlyChecks,
     ageSexChecks:data.ageSexChecks,
     roleChecks:data.roleChecks,
     outfitStructureChecks:data.outfitStructureChecks,

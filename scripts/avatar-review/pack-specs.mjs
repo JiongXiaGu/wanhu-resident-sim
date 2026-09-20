@@ -69,8 +69,18 @@ export const avatarReviewSpecs=[
     ],
     adultLegacyHair:['crop','bob','long','pony','wave','braid'],
     adultLegacyOutfits:['tee','shirt','knit','jacket'],
+    elderBatchContract:true,
+    elderBatchHair:[
+      'elder-low-knot','elder-swept','elder-soft-bun','elder-coiled-bun',
+      'elder-short-bound','elder-side-knot','elder-loose-back','elder-thin-fringe',
+    ],
+    elderBatchOutfits:[
+      'elder-long-robe','elder-warm-coat','elder-simple-robe','elder-work-jacket','elder-padded-robe','elder-fine-robe',
+    ],
+    compatibilityOnlyHair:['crop','bob','long','pony','wave','braid'],
+    compatibilityOnlyOutfits:['tee','shirt','knit','jacket'],
     ageSexContract:true,
-    ageSexRecipe:{face:'round',hair:'crop',outfit:'tee',expression:'calm'},
+    ageSexRecipe:{face:'round',hair:'bound',outfit:'commoner',expression:'calm'},
     roleProof:[
       {id:'commoner',label:'平民',hair:'bound',outfit:'commoner',expression:'calm'},
       {id:'laborer',label:'劳作',hair:'work-headscarf',outfit:'laborer',expression:'serious'},

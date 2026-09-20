@@ -1,4 +1,4 @@
-import {catalogFrames,catalogLabel,catalogOption,catalogOptionsForFrame,hasCatalogOption,hasCatalogOptionForFrame,parts,type AvatarCatalog,type CatalogFrame,type CatalogOption,type Part} from './packs/catalog';
+import {catalogFrames,catalogLabel,catalogOption,catalogOptionsForFrame,catalogSelectableOptions,hasCatalogOption,hasCatalogOptionForFrame,parts,type AvatarCatalog,type CatalogFrame,type CatalogOption,type Part} from './packs/catalog';
 import {activePackId,getPack,isPackId,mapChoicesToPack,normalizePackId,packCatalog,packLabel,packOptions,type PackId} from './packs/registry';
 
 export {activePackId,packCatalog,packLabel,packOptions,parts};
@@ -14,7 +14,7 @@ export const frames:Frame[]=[...catalogFrames];
 export const labels:Record<Part,string>={face:'脸型',hair:'头发',outfit:'衣服',expression:'表情'};
 
 export const catalogFor=(pack:PackId):AvatarCatalog=>getPack(pack).catalog;
-export const optionsFor=(pack:PackId,part:Part,frame?:Frame):readonly CatalogOption[]=>frame?catalogOptionsForFrame(catalogFor(pack),part,frame):catalogFor(pack)[part];
+export const optionsFor=(pack:PackId,part:Part,frame?:Frame):readonly CatalogOption[]=>frame?catalogOptionsForFrame(catalogFor(pack),part,frame):catalogSelectableOptions(catalogFor(pack),part);
 export const optionLabel=(pack:PackId,part:Part,id:string):string=>catalogLabel(catalogFor(pack),part,id);
 
 function frameChoice(pack:PackId,part:Part,id:string,frame:Frame):string{

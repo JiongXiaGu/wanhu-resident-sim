@@ -13,6 +13,8 @@ export type CatalogOption={
   note?:string;
   // 省略表示六个 Frame 都可用；声明后只在对应年龄 / 性别上下文出现。
   frames?:readonly CatalogFrame[];
+  // false 表示仅保留旧 Recipe / 跨 Pack 兼容，不再出现在任何玩家可选列表。
+  selectable?:boolean;
   // 跨 Pack 或跨 Frame 回退时只用于显式语义兼容。省略时默认使用自身 id。
   compatibilityKey?:string;
 };
@@ -29,7 +31,11 @@ export type CatalogDefaults=Record<Part,string>;
 export function defineCatalog<const T extends AvatarCatalog>(catalog:T):T{return catalog;}
 
 export function optionSupportsFrame(option:CatalogOption,frame:CatalogFrame):boolean{
-  return !option.frames||option.frames.includes(frame);
+  return option.selectable!==false&&(!option.frames||option.frames.includes(frame));
+}
+
+export function catalogSelectableOptions(catalog:AvatarCatalog,part:Part):readonly CatalogOption[]{
+  return catalog[part].filter(option=>option.selectable!==false);
 }
 
 export function catalogOptionsForFrame(catalog:AvatarCatalog,part:Part,frame:CatalogFrame):readonly CatalogOption[]{

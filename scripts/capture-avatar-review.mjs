@@ -52,12 +52,12 @@ try{
   : frame.endsWith('elder')
    ? {hair:'elder-swept',outfit:'elder-long-robe'}
    : {hair:'adult-traveler-wrap',outfit:'adult-service-robe'};
- const alternateHair=frame=>frame.endsWith('child')?'child-tufted':frame.endsWith('elder')?'bob':'adult-loose-tied';
- const quotaHair=frame=>frame.endsWith('child')?'child-double-knots':frame.endsWith('elder')?'wave':'bound';
+ const alternateHair=frame=>frame.endsWith('child')?'child-tufted':frame.endsWith('elder')?'elder-loose-back':'adult-loose-tied';
+ const quotaHair=frame=>frame.endsWith('child')?'child-double-knots':frame.endsWith('elder')?'elder-thin-fringe':'bound';
  const externalLook=frame=>frame.endsWith('child')
   ? {hair:'child-short-fringe',outfit:'child-winter'}
   : frame.endsWith('elder')
-   ? {hair:'long',outfit:'elder-warm-coat'}
+   ? {hair:frame.startsWith('female')?'elder-soft-bun':'elder-side-knot',outfit:'elder-warm-coat'}
    : {hair:'adult-loose-tied',outfit:'adult-winter-coat'};
  assert.equal(await key(),a.key);assert.equal(await stored(a.key),null);
 
@@ -163,8 +163,16 @@ try{
   await page.locator('[data-cancel-draft]').click();await ready();
  }
  if(elder){
-  await select(elder.key);await choosePack(reviewPack);await choose('face','oval');await choose('hair','elder-swept');await choose('outfit','elder-long-robe');await choose('expression','smile');await screenshot('09-elder-frame-assets');
-  await page.locator('[data-part-tab="hair"]').click();await screenshot('09b-elder-hair-options');await page.locator('[data-part-tab="outfit"]').click();await screenshot('09c-elder-outfit-options');await page.locator('[data-cancel-draft]').click();await ready();
+  await select(elder.key);await choosePack(reviewPack);await choose('face','oval');await choose('hair','elder-thin-fringe');await choose('outfit','elder-padded-robe');await choose('expression','smile');await screenshot('09-elder-phase5c');
+  await page.locator('[data-part-tab="hair"]').click();
+  const elderHairIds=await page.locator('[data-option-part="hair"]').evaluateAll(nodes=>nodes.map(node=>node.dataset.option));
+  assert(elderHairIds.length>=6&&elderHairIds.every(id=>id?.startsWith('elder-')),'Elder UI still exposes non-elder Hair');
+  await screenshot('09b-elder-hair-options');
+  await page.locator('[data-part-tab="outfit"]').click();
+  const elderOutfitIds=await page.locator('[data-option-part="outfit"]').evaluateAll(nodes=>nodes.map(node=>node.dataset.option));
+  assert(elderOutfitIds.length>=6&&elderOutfitIds.every(id=>id?.startsWith('elder-')),'Elder UI still exposes non-elder Outfit');
+  await screenshot('09c-elder-outfit-options');
+  await page.locator('[data-cancel-draft]').click();await ready();
  }
  const adultLegacyHair=['crop','bob','long','pony','wave','braid'],adultLegacyOutfits=['tee','shirt','knit','jacket'];
  await select(players[0].key);await choosePack(reviewPack);await choose('hair','adult-high-bun');await choose('outfit','adult-female-ruqun');
@@ -194,7 +202,7 @@ try{
  await page.setViewportSize({width:320,height:800});await sizes();
  await page.setViewportSize({width:1600,height:1100});
  const packAudit=await auditRegisteredAvatarPacks(page,out);
- checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; Q版 Phase 5A keeps child UI child-only, and Phase 5B verifies adult UI contains only adult-authored ancient Hair/Outfit while legacy recipes still fall back deterministically`);
+ checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; Q版 Phase 5A/5B/5C keep child, adult and elder UI age-authored only, while compatibility-only legacy IDs still parse and fall back deterministically`);
  assert.deepEqual(errors,[],'Browser errors');
  await writeFile(join(out,'review.json'),JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',avatarPacks:packAudit,residentCount:snapshot.residents.length,checks,artisticApproval:'Requires actual screenshot inspection; registry coverage and CI are not an art quality rating'},null,2));
  console.log(checks.join('\n'));

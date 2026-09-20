@@ -21,7 +21,7 @@ export const chibiCatalog=defineCatalog({
     {id:'child-half-up',label:'学童半束',note:'男童专属 · 半束短发',headwear:'none',frames:['male.child'],compatibilityKey:'long'},
     {id:'child-short-fringe',label:'短刘海',note:'儿童专属 · 圆润短发',headwear:'none',frames:CHILD,compatibilityKey:'wave'},
 
-    // Phase 5B：adult 只展示成年古代作者资产；男女可以拥有自己的发型子集。
+    // Phase 5B：adult 只展示成年古代作者资产。
     {id:'bound',label:'日常束发',note:'成年专属 · 简化束髻',headwear:'none',frames:ADULT,compatibilityKey:'crop'},
     {id:'low-bun',label:'低髻',note:'成年女性 · 低位发髻',headwear:'none',frames:['female.adult'],compatibilityKey:'bob'},
     {id:'work-headscarf',label:'劳作头巾',note:'成年专属 · 劳作居民',headwear:'integrated',frames:ADULT,compatibilityKey:'crop'},
@@ -38,16 +38,23 @@ export const chibiCatalog=defineCatalog({
     {id:'adult-loose-tied',label:'松束发',note:'成年专属 · 日常低束',headwear:'none',frames:ADULT,compatibilityKey:'wave'},
     {id:'adult-traveler-wrap',label:'行旅包巾',note:'成年专属 · 轻便包巾',headwear:'integrated',frames:ADULT,compatibilityKey:'crop'},
 
+    // Phase 5C：elder 只展示老年作者资产，男女各有独立子集。
     {id:'elder-low-knot',label:'老者低束',note:'老年专属 · 低位收束',headwear:'none',frames:ELDER,compatibilityKey:'bob'},
     {id:'elder-swept',label:'老者拢发',note:'老年专属 · 贴头拢发',headwear:'none',frames:ELDER,compatibilityKey:'crop'},
+    {id:'elder-soft-bun',label:'松软低髻',note:'老年女性 · 柔和低髻',headwear:'none',frames:['female.elder'],compatibilityKey:'braid'},
+    {id:'elder-coiled-bun',label:'盘髻',note:'老年女性 · 紧凑盘髻',headwear:'none',frames:['female.elder'],compatibilityKey:'pony'},
+    {id:'elder-short-bound',label:'老者短束',note:'老年男性 · 短发收束',headwear:'none',frames:['male.elder'],compatibilityKey:'braid'},
+    {id:'elder-side-knot',label:'老者侧髻',note:'老年男性 · 侧后束髻',headwear:'none',frames:['male.elder'],compatibilityKey:'pony'},
+    {id:'elder-loose-back',label:'松拢长发',note:'老年专属 · 后拢长发',headwear:'none',frames:ELDER,compatibilityKey:'long'},
+    {id:'elder-thin-fringe',label:'疏发',note:'老年专属 · 稀疏额发',headwear:'none',frames:ELDER,compatibilityKey:'wave'},
 
-    // 旧基础 Hair 只留给 elder 过渡和历史 Recipe 解析；Phase 5C 再完成 elder 清理。
-    {id:'crop',label:'利落短发',headwear:'none',frames:ELDER},
-    {id:'bob',label:'齐颈短发',headwear:'none',frames:ELDER},
-    {id:'long',label:'自然长发',headwear:'none',frames:ELDER},
-    {id:'pony',label:'高马尾',headwear:'none',frames:ELDER},
-    {id:'wave',label:'蓬松卷发',headwear:'none',frames:ELDER},
-    {id:'braid',label:'侧编发',headwear:'none',frames:ELDER},
+    // 旧基础 Hair 仅用于历史 Recipe / reference Pack 兼容，不再出现在 active Q版任何 Frame 的 UI。
+    {id:'crop',label:'利落短发',note:'旧配方兼容',headwear:'none',selectable:false},
+    {id:'bob',label:'齐颈短发',note:'旧配方兼容',headwear:'none',selectable:false},
+    {id:'long',label:'自然长发',note:'旧配方兼容',headwear:'none',selectable:false},
+    {id:'pony',label:'高马尾',note:'旧配方兼容',headwear:'none',selectable:false},
+    {id:'wave',label:'蓬松卷发',note:'旧配方兼容',headwear:'none',selectable:false},
+    {id:'braid',label:'侧编发',note:'旧配方兼容',headwear:'none',selectable:false},
   ],
   outfit:[
     {id:'child-short-robe',label:'童子短衣',note:'儿童专属 · 短身交领',frames:CHILD,compatibilityKey:'tee'},
@@ -72,12 +79,16 @@ export const chibiCatalog=defineCatalog({
 
     {id:'elder-long-robe',label:'老者常服',note:'老年专属 · 宽松长衫',frames:ELDER,compatibilityKey:'shirt'},
     {id:'elder-warm-coat',label:'老者夹衣',note:'老年专属 · 厚领外搭',frames:ELDER,compatibilityKey:'knit'},
+    {id:'elder-simple-robe',label:'素色长衫',note:'老年专属 · 朴素常服',frames:ELDER,compatibilityKey:'tee'},
+    {id:'elder-work-jacket',label:'劳作厚褂',note:'老年专属 · 宽松劳作',frames:ELDER,compatibilityKey:'jacket'},
+    {id:'elder-padded-robe',label:'冬日棉袄',note:'老年专属 · 厚实夹棉',frames:ELDER,compatibilityKey:'adult-winter-coat'},
+    {id:'elder-fine-robe',label:'掌柜长衫',note:'老年专属 · 整洁外出服',frames:ELDER,compatibilityKey:'merchant'},
 
-    // 旧现代 Outfit 只留给 elder 过渡和历史 Recipe 解析。
-    {id:'tee',label:'简约上衣',frames:ELDER},
-    {id:'shirt',label:'开领衬衫',frames:ELDER},
-    {id:'knit',label:'针织开衫',frames:ELDER},
-    {id:'jacket',label:'短外套',frames:ELDER},
+    // 旧现代 Outfit 仅用于历史 Recipe / reference Pack 兼容。
+    {id:'tee',label:'简约上衣',note:'旧配方兼容',selectable:false},
+    {id:'shirt',label:'开领衬衫',note:'旧配方兼容',selectable:false},
+    {id:'knit',label:'针织开衫',note:'旧配方兼容',selectable:false},
+    {id:'jacket',label:'短外套',note:'旧配方兼容',selectable:false},
   ],
   expression:[
     {id:'calm',label:'平静'},

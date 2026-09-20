@@ -30,7 +30,7 @@
 - [ ] **Phase 5：大规模素材生产与批次 QA**
   - [x] Phase 5A：儿童专属素材批次
   - [x] Phase 5B：成年居民素材批次
-  - [ ] Phase 5C：老年素材批次
+  - [x] Phase 5C：老年素材批次
   - [ ] Phase 5D：三年龄综合 QA
 - [ ] Phase 6：旧画风隐藏 / 兼容 / 退役决策
 
@@ -697,6 +697,20 @@ Phase 5A 结束后进入 Phase 5B 成年居民素材批次；不回头要求儿�
 
 Phase 5B 完成后进入 Phase 5C 老年素材批次；旧基础 Hair / Outfit 最终是否完全退出 active Q版 UI，将在 elder 批次完成后统一决定。
 
+## 2026-09-20：Phase 5C 老年素材批次
+
+本轮完成：
+
+- elder Hair 扩展为独立老年资产。female.elder 与 male.elder 均有 6 个可选 Hair；在既有 `elder-low-knot / elder-swept` 基础上，新增老年女性 `elder-soft-bun / elder-coiled-bun`、老年男性 `elder-short-bound / elder-side-knot`，以及男女共用的 `elder-loose-back / elder-thin-fringe`。
+- elder Outfit 扩展为 6 套：`elder-long-robe / elder-warm-coat / elder-simple-robe / elder-work-jacket / elder-padded-robe / elder-fine-robe`，覆盖日常、劳作、冬季与较整洁外出服。
+- 旧基础 Hair `crop / bob / long / pony / wave / braid` 和旧现代 Outfit `tee / shirt / knit / jacket` 正式改成 `selectable:false` 的 compatibility-only ID：`parseRecipe` 仍接受，跨 Pack / 旧 Recipe 仍能识别，但 child / adult / elder 三个年龄段 UI、Random 与普通 `optionsFor()` 都不会再返回这些 ID。
+- active Q版 Pack 默认 Hair / Outfit 改为可选择的 `bound + commoner`，避免默认配方依赖 compatibility-only ID。
+- Pack Registry 的 counts 改为只统计 selectable 素材；Review 额外记录 compatibility-only counts，避免把旧兼容 ID 误报成玩家可选资产。
+- Actions 新增 Phase 5C contract：compatibility-only ID 在六个 Frame 都不得出现在 UI；female.elder / male.elder Hair 均 ≥ 6、Outfit 均 ≥ 6；分别输出老年男女 Hair / Outfit / 组合 96 / 64 / 48px 图板。
+- 真实编辑器老年居民使用 `elder-thin-fringe + elder-padded-robe` 做回归，并直接断言 elder Hair / Outfit 全部为 `elder-*`。
+
+Phase 5C 完成后，child / adult / elder 三个年龄段已经全部完成素材分离；下一步进入 Phase 5D 三年龄综合 QA，不再继续批量加资产，重点检查三年龄之间的整体美术一致性、兼容迁移与 UI 密度。
+
 ---
 
 # 11. 每轮结束必须更新这里
@@ -704,8 +718,8 @@ Phase 5B 完成后进入 Phase 5C 老年素材批次；旧基础 Hair / Outfit �
 ## 当前执行点
 
 ```text
-Phase 5C — 老年素材批次
-状态：未开始（Phase 5B 成年居民素材批次完成）
+Phase 5D — 三年龄综合 QA
+状态：未开始（Phase 5A / 5B / 5C 素材批次均已完成）
 ```
 
 ## 下一次执行必须先回答

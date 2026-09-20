@@ -1,4 +1,4 @@
-import {catalogFrames,catalogOption,optionSupportsFrame,parts,type Part} from './catalog';
+import {catalogFrames,catalogOption,catalogSelectableOptions,optionSupportsFrame,parts,type Part} from './catalog';
 import {chibiCutePack} from './chibi';
 import {lineworkPack} from './linework';
 import {simpleFlatPack} from './simple-flat';
@@ -15,6 +15,8 @@ function validatePack(pack:AvatarPack):void{
     const ids=options.map(option=>option.id);
     if(new Set(ids).size!==ids.length)throw new Error(`Avatar pack ${pack.id} has duplicate ${part} IDs.`);
     if(!ids.includes(pack.defaults[part]))throw new Error(`Avatar pack ${pack.id} default ${part} is not in its catalog.`);
+    const defaultOption=options.find(option=>option.id===pack.defaults[part]);
+    if(defaultOption?.selectable===false)throw new Error(`Avatar pack ${pack.id} default ${part} cannot be compatibility-only.`);
 
     for(const option of options){
       if(!option.frames)continue;
@@ -38,7 +40,7 @@ export const packCatalog=packs.map(pack=>({
   note:pack.note,
   lifecycle:pack.lifecycle,
   viewBox:pack.viewBox,
-  counts:Object.fromEntries(parts.map(part=>[part,pack.catalog[part].length])) as Record<Part,number>,
+  counts:Object.fromEntries(parts.map(part=>[part,catalogSelectableOptions(pack.catalog,part).length])) as Record<Part,number>,
 })) as ReadonlyArray<{id:PackId;label:string;note:string;lifecycle:PackLifecycle;viewBox:'0 0 320 320';counts:Record<Part,number>}>;
 
 export const packOptions=packCatalog.filter(pack=>pack.lifecycle!=='legacy');

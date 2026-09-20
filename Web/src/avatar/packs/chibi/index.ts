@@ -12,7 +12,7 @@ export const chibiCutePack={
   lifecycle:'active',
   viewBox:'0 0 320 320',
   catalog:chibiCatalog,
-  defaults:{face:'oval',hair:'long',outfit:'knit',expression:'smile'},
+  defaults:{face:'oval',hair:'bound',outfit:'commoner',expression:'smile'},
   defs:chibiDefs,
   layers(frame,recipe){
     const face=recipe.face as FaceId,hairId=recipe.hair as HairId,outfit=recipe.outfit as OutfitId,expression=recipe.expression as ExpressionId;

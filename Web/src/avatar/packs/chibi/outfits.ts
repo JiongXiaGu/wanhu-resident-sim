@@ -158,6 +158,40 @@ export function outfitArt(frame:Frame,id:OutfitId):string{
    outfitPart('detail',p('M150 286L160 278L170 286L167 320H153Z','#d5b582','none',0,.9)+l('M144 299L176 299','#684932',2.4,.66));
  }
 
+ if(id==='elder-simple-robe'){
+  return outfitPart('base',p(body,'#7c735f',OUTLINE,5))+
+   outfitPart('collar',p(`M132 ${top-4}L160 ${top+18}L145 ${top+38}L101 ${top+9}Z`,'#d8cdb7',OUTLINE,3.5))+
+   outfitPart('collar',p(`M188 ${top-4}L160 ${top+18}L175 ${top+38}L219 ${top+9}Z`,'#c8bda4',OUTLINE,3.5))+
+   outfitPart('overlay',p('M92 268L132 249L153 284L141 320H43L54 291Z','#655e50',OUTLINE,2.6))+
+   outfitPart('overlay',p('M228 268L188 249L167 284L179 320H277L266 291Z','#918671',OUTLINE,2.6))+
+   outfitPart('detail',l('M149 294L143 320M171 294L177 320','#4e4a40',2.5,.64));
+ }
+
+ if(id==='elder-work-jacket'){
+  return outfitPart('base',p(body,'#666b58',OUTLINE,5))+
+   outfitPart('collar',p(`M131 ${top-4}L160 ${top+17}L145 ${top+36}L102 ${top+8}Z`,'#d2c6aa',OUTLINE,3.5))+
+   outfitPart('collar',p(`M189 ${top-4}L160 ${top+17}L175 ${top+36}L218 ${top+8}Z`,'#bfb18f',OUTLINE,3.5))+
+   outfitPart('overlay',p('M83 274L125 254L150 289L136 320H40L52 291Z','#505546',OUTLINE,2.8))+
+   outfitPart('overlay',p('M237 274L195 254L170 289L184 320H280L268 291Z','#7b8068',OUTLINE,2.8))+
+   outfitPart('detail',p('M147 291L160 284L173 291L169 320H151Z','#4b4d42','none',0,.84));
+ }
+
+ if(id==='elder-padded-robe'){
+  return outfitPart('base',p(body,'#64736d',OUTLINE,5))+
+   outfitPart('collar',p(`M126 ${top-7}Q160 ${top+12} 194 ${top-7}L188 ${top+19}Q160 ${top+43} 132 ${top+19}Z`,'#ded2bb',OUTLINE,3.8))+
+   outfitPart('overlay',p('M101 256L135 246L153 282L140 320H39L51 288Z','#4d5e57',OUTLINE,2.9))+
+   outfitPart('overlay',p('M219 256L185 246L167 282L180 320H281L269 288Z','#819087',OUTLINE,2.9))+
+   outfitPart('detail',p('M151 289L160 281L169 289L167 320H153Z','#aa9069','none',0,.88)+l('M139 302L181 302','#d2c6ae',2.3,.6));
+ }
+
+ if(id==='elder-fine-robe'){
+  return outfitPart('base',p(body,'#806b61',OUTLINE,5))+
+   outfitPart('collar',p(`M130 ${top-5}Q160 ${top+18} 190 ${top-5}L185 ${top+15}Q160 ${top+41} 135 ${top+15}Z`,'#eadbc4',OUTLINE,3.6))+
+   outfitPart('overlay',p('M104 259L134 248L153 283L141 320H41L53 289Z','#674f46',OUTLINE,2.8))+
+   outfitPart('overlay',p('M216 259L186 248L167 283L179 320H279L267 289Z','#9d8070',OUTLINE,2.8))+
+   outfitPart('detail',l('M84 301L236 301','#c6a575',2.6,.74)+p('M151 292L160 285L169 292L166 305H154Z','#b89260','none',0,.9));
+ }
+
  if(id==='elder-long-robe'){
   return outfitPart('base',p(body,'#817764',OUTLINE,5))+
    outfitPart('collar',p(`M132 ${top-4}L160 ${top+18}L145 ${top+38}L101 ${top+9}Z`,'#d8cbb1',OUTLINE,3.5))+
