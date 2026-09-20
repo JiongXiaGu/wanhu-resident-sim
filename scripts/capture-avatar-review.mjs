@@ -40,34 +40,46 @@ try{
  const allTargets=await page.locator('[data-target-key]').evaluateAll(nodes=>nodes.map(n=>({key:n.dataset.targetKey,kind:n.dataset.targetKind,frame:n.dataset.targetFrame,id:n.dataset.targetResident})));
  assert.equal(allTargets.filter(t=>t.kind==='resident').length,snapshot.residents.length);
  assert.deepEqual(await page.locator('[data-part-tab]').evaluateAll(nodes=>nodes.map(n=>n.dataset.partTab)),['face','hair','outfit','expression']);
- const registeredPacks=await page.evaluate(async()=>{const model=await import('/src/avatar/model.ts');return model.packOptions.map(pack=>({id:pack.id,label:pack.label}));});
- const packIds=registeredPacks.map(pack=>pack.id),reviewPack=packIds.at(-1);assert(reviewPack,'At least one avatar pack is required');
+ const registeredPacks=await page.evaluate(async()=>{const model=await import('/src/avatar/model.ts');return model.packOptions.map(pack=>({id:pack.id,label:pack.label,lifecycle:pack.lifecycle,counts:pack.counts}));});
+ const packIds=registeredPacks.map(pack=>pack.id),activePacks=registeredPacks.filter(pack=>pack.lifecycle==='active'),reviewPack=activePacks[0]?.id;
+ assert.equal(activePacks.length,1,'Exactly one selectable active avatar pack is required');assert(reviewPack,'An active avatar pack is required');
  assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.pack)),packIds);
+ assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.packLifecycle)),registeredPacks.map(pack=>pack.lifecycle));
  const semanticFields=['face','hair','outfit','expression'];
  const a=allTargets.find(t=>t.id===residentA),b=allTargets.find(t=>t.kind==='resident'&&t.key!==a.key),players=allTargets.filter(t=>t.kind==='player');
  assert.equal(await key(),a.key);assert.equal(await stored(a.key),null);
 
- await select(players[0].key);await choose('face','round');await choose('hair','bob');await choose('outfit','knit');await choose('expression','smile');
- await sizes();const beforeStyle=await recipe();
+ await select(players[0].key);assert.equal((await recipe()).pack,reviewPack,'New player draft must start from the active pack');
+ await choose('face','round');await choose('hair','bob');await choose('outfit','knit');await choose('expression','smile');
+ await sizes();const beforeStyle=await recipe();let expectedStyle=beforeStyle;
  for(let index=0;index<registeredPacks.length;index++){
-  const pack=registeredPacks[index];await choosePack(pack.id);const styled=await recipe();
-  for(const field of semanticFields)assert.equal(styled[field],beforeStyle[field],pack.id+' style switch changed semantic option '+field);
+  const pack=registeredPacks[index];
+  expectedStyle=await page.evaluate(async({recipe,pack})=>{const model=await import('/src/avatar/model.ts');return model.withPack(recipe,pack);},{recipe:expectedStyle,pack:pack.id});
+  await choosePack(pack.id);const styled=await recipe();assert.deepEqual(styled,expectedStyle,pack.id+' style switch did not follow explicit compatibility mapping');
   assert.notEqual(await image(),null);await screenshot(`01-style-${String(index+1).padStart(2,'0')}-${pack.id}`);
+ }
+ await choosePack(reviewPack);
+ for(const part of semanticFields){
+  await page.locator(`[data-part-tab="${part}"]`).click();
+  const expectedCount=await page.evaluate(async({pack,part})=>{const model=await import('/src/avatar/model.ts');return model.optionsFor(pack,part).length;},{pack:reviewPack,part});
+  assert.equal(await page.locator(`[data-option-part="${part}"]`).count(),expectedCount,`UI did not use ${reviewPack} ${part} catalog`);
  }
  await apply();const playerSaved=await stored(players[0].key);assert.equal(JSON.parse(playerSaved).pack,reviewPack);assert.equal(await stored(players[1].key),null);
 
- await select(players[1].key);await choose('face','angular');await choose('hair','crop');await choose('outfit','shirt');await choose('expression','calm');
- const maleBeforeStyle=await recipe();
+ await select(players[1].key);assert.equal((await recipe()).pack,reviewPack,'Second player draft must start from the active pack');
+ await choose('face','angular');await choose('hair','crop');await choose('outfit','shirt');await choose('expression','calm');
+ let maleExpected=await recipe();
  for(let index=0;index<registeredPacks.length;index++){
-  const pack=registeredPacks[index];await choosePack(pack.id);const styled=await recipe();
-  for(const field of semanticFields)assert.equal(styled[field],maleBeforeStyle[field],pack.id+' male style switch changed semantic option '+field);
+  const pack=registeredPacks[index];
+  maleExpected=await page.evaluate(async({recipe,pack})=>{const model=await import('/src/avatar/model.ts');return model.withPack(recipe,pack);},{recipe:maleExpected,pack:pack.id});
+  await choosePack(pack.id);assert.deepEqual(await recipe(),maleExpected,pack.id+' male style switch did not follow explicit compatibility mapping');
   await screenshot(`02-style-${String(index+1).padStart(2,'0')}-${pack.id}`);
  }
- await apply();assert.equal(await stored(players[0].key),playerSaved);
+ await choosePack(reviewPack);await apply();assert.equal(await stored(players[0].key),playerSaved);
  await page.locator('[data-part-tab="expression"]').click();await screenshot('03-expression-options');
  await page.locator('[data-part-tab="hair"]').click();await screenshot('04-hair-options');
  await page.locator('[data-part-tab="outfit"]').click();await screenshot('05-outfit-options');
- checks.push('Only four editable categories; style pack switch preserves the four semantic IDs; two player profiles save independently; actual resident roster is loaded from the current city snapshot');
+ checks.push('Only four editable categories; UI option grids come from the current Pack Catalog; pack switches follow deterministic exact/compatibility mapping; two player profiles save independently; actual resident roster is loaded from the current city snapshot');
 
  await select(a.key);await choosePack(reviewPack);await choose('face','round');await choose('hair','pony');await choose('outfit','jacket');await choose('expression','joy');
  assert.equal(await stored(a.key),null,'Preview must not persist before apply');
@@ -132,7 +144,7 @@ try{
  await page.setViewportSize({width:320,height:800});await sizes();
  await page.setViewportSize({width:1600,height:1100});
  const packAudit=await auditRegisteredAvatarPacks(page,out);
- checks.push(`${packIds.length} registered editable style packs are exercised automatically; six age/gender contexts, shared parts, face-specific expressions, native previews and diagnostic boards remain covered`);
+ checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; each Pack owns its Catalog and dynamic combination count; six age/gender contexts, shared parts, native previews and diagnostic boards remain covered`);
  assert.deepEqual(errors,[],'Browser errors');
  await writeFile(join(out,'review.json'),JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',avatarPacks:packAudit,residentCount:snapshot.residents.length,checks,artisticApproval:'Requires actual screenshot inspection; registry coverage and CI are not an art quality rating'},null,2));
  console.log(checks.join('\n'));

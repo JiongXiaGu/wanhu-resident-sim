@@ -20,41 +20,24 @@
 - [x] Phase 0A：统一 Pack Registry
 - [x] Phase 0B：Visual Review 改为 Registry 驱动
 - [x] Phase 0C：确定 Q版可爱为下一阶段主路线
-- [ ] **Phase 1：让 Pack 拥有自己的素材 Catalog，解除“所有画风必须共享同一套选项”的限制**
-- [ ] Phase 2：建立 Q版 V2 美术规范与头部 / 衣装内部图层规范
+- [x] Phase 1：让 Pack 拥有自己的素材 Catalog，解除“所有画风必须共享同一套选项”的限制
+- [ ] **Phase 2：建立 Q版 V2 美术规范与头部 / 衣装内部图层规范**
 - [ ] Phase 3：第一批古代居民核心素材
 - [ ] Phase 4：年龄 / 性别扩展与职业可读性
 - [ ] Phase 5：大规模素材生产与批次 QA
 - [ ] Phase 6：旧画风隐藏 / 兼容 / 退役决策
 
-**下一项唯一主任务：Phase 1。**
+**下一项唯一主任务：Phase 2。**
 
 ---
 
-# 1. 为什么 Phase 1 必须先做
+# 1. Phase 1 结果：Pack-owned Catalog
 
-当前 `model.ts` 仍有一套全局：
+Phase 1 已完成。原先 `model.ts` 的全局 options 已移除，三个 Pack 现在各自拥有 `catalog.ts` 与 defaults；当前三套恰好仍保留原有 4 Face / 6 Hair / 4 Outfit / 6 Expression，但这只是当前素材数量，不再是跨 Pack 强制契约。
 
-```text
-4 Face
-6 Hair
-4 Outfit
-6 Expression
-```
+现在 UI、Recipe 校验、随机搭配、Actions 全组合审查都会读取**当前 Pack 自己的 Catalog**。因此后续 Q版可以独立增加 10+ 头部造型、古代帽子、古代服装与新表情，reference Pack 不需要同步补画。
 
-三个 Pack 共用同一个选项 Catalog。
-
-这对“比较三套画风”很好，但不适合下一阶段：
-
-> Q版可爱增加 10+ 头部造型、古代帽子、10+ 古代服装与更多表情，而另外两套逐步冻结。
-
-如果直接往全局 `options` 添加新 ID，会迫使 `linework-v1` 与 `simple-flat-v1` 也为所有新素材补画，形成错误耦合。
-
-因此在大量画新素材前，必须先完成：
-
-## Pack-owned Catalog
-
-目标结构：
+当前结构：
 
 ```text
 AvatarPack
@@ -77,7 +60,7 @@ UI 根据当前 Pack 自己的 Catalog 显示选项。
 3. 旧 Pack 继续能读取自己的旧 Recipe。
 4. 从 Q版专属素材切到旧 Pack 时，不要求旧 Pack 伪造同名素材。
 5. 跨 Pack 映射必须是**显式 fallback / compatibility key**，不能随机换人。
-6. 切换回来 Q版时，尽量恢复该对象最近一次 Q版选择；若本轮暂不做 per-pack draft history，则必须在文档和测试中明确当前 fallback 行为。
+6. Phase 1 暂不做 per-pack draft history：如果 Q版专属素材切到旧 Pack 时发生 fallback，再切回 Q版不会自动恢复原专属素材，需要重新选择。只有后续确有需求才增加 per-pack history。
 7. Random 只能从当前 Pack 可用 Catalog 中取值。
 8. Review 组合数改为按 Pack Catalog 动态计算，不再把每包固定 3456 当成永久常数。
 
@@ -91,7 +74,7 @@ reference   仍可在编辑器中对照，但不要求继续扩素材
 legacy      只为旧 Recipe 渲染，不再出现在普通画风选择 UI
 ```
 
-近期建议：
+当前已经执行：
 
 ```text
 chibi-cute-v1   active
@@ -99,7 +82,7 @@ simple-flat-v1  reference
 linework-v1     reference
 ```
 
-先不要删除旧 Pack。
+普通画风选择显示 active/reference；legacy 预留给未来旧 Recipe 兼容。当前不删除旧 Pack。
 
 ---
 
@@ -478,6 +461,22 @@ Q版专项自动检查：
 
 当前全局 options 强迫所有 Pack 同步拥有所有素材，如果直接扩 Q版，会让已准备退役的画风产生大量无意义维护。
 
+## 2026-09-20：Phase 1 完成
+
+已完成：
+
+- 每个 Pack 独立 `catalog.ts` 与 defaults。
+- `chibi-cute-v1=active`；另外两套为 reference。
+- 新对象默认使用 active Q版 Pack。
+- Recipe 校验严格按 Recipe 自己的 Pack Catalog。
+- UI 选项网格按当前 Pack Catalog 动态生成。
+- Random 只从当前 Pack Catalog 取值。
+- 跨 Pack 映射固定为 exact ID → compatibilityKey → target defaults，不随机。
+- Actions 组合数改为按各 Pack Catalog 动态计算，不再永久写死 3456。
+- 旧 `soft-paint-v1` alias 继续映射到 Q版，且不偷偷改写 localStorage。
+
+人工 / 自动回归通过后才进入 Phase 2。
+
 ---
 
 # 11. 每轮结束必须更新这里
@@ -485,7 +484,7 @@ Q版专项自动检查：
 ## 当前执行点
 
 ```text
-Phase 1 — Pack-owned Catalog
+Phase 2 — Q版 V2 美术规范与头部 / 衣装内部图层规范
 状态：未开始
 ```
 

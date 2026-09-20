@@ -1,7 +1,8 @@
-import type {Frame,Recipe} from '../../model';
+import type {Frame} from '../../model';
+import type {OutfitId} from './catalog';
 import {INK,isChild,isFemale,l,p} from './drawing';
 
-export function outfitArt(frame:Frame,id:Recipe['outfit']):string{
+export function outfitArt(frame:Frame,id:OutfitId):string{
  const child=isChild(frame),female=isFemale(frame);
  const body=child
   ?'M139 236L119 247Q88 252 69 270L48 320H272L251 270Q232 252 181 236Q160 251 139 236Z'

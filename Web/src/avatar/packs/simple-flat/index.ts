@@ -1,4 +1,5 @@
 import type {AvatarPack} from '../types';
+import {simpleFlatCatalog,type ExpressionId,type FaceId,type HairId,type OutfitId} from './catalog';
 import {expressionArt,faceBase,neckArt} from './faces';
 import {hairArt} from './hair';
 import {outfitArt} from './outfits';
@@ -7,16 +8,20 @@ export const simpleFlatPack={
   id:'simple-flat-v1',
   title:'极简简笔',
   note:'极简线稿 · 平面色块 · 图标式头像',
+  lifecycle:'reference',
   viewBox:'0 0 320 320',
+  catalog:simpleFlatCatalog,
+  defaults:{face:'oval',hair:'long',outfit:'knit',expression:'smile'},
   defs:()=> '',
   layers(frame,recipe){
-    const hair=hairArt(frame,recipe.hair);
+    const face=recipe.face as FaceId,hairId=recipe.hair as HairId,outfit=recipe.outfit as OutfitId,expression=recipe.expression as ExpressionId;
+    const hair=hairArt(frame,hairId);
     return [
       {id:'BackHair',svg:hair.back},
       {id:'Neck',svg:neckArt(frame)},
-      {id:'Outfit',svg:outfitArt(frame,recipe.outfit)},
-      {id:'FaceBase',svg:faceBase(frame,recipe.face)},
-      {id:'Expression',svg:expressionArt(frame,recipe.face,recipe.expression)},
+      {id:'Outfit',svg:outfitArt(frame,outfit)},
+      {id:'FaceBase',svg:faceBase(frame,face)},
+      {id:'Expression',svg:expressionArt(frame,face,expression)},
       {id:'FrontHair',svg:hair.front},
     ];
   },

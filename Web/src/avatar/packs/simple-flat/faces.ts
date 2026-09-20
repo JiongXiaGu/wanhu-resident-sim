@@ -1,7 +1,8 @@
-import type {Frame,Recipe} from '../../model';
+import type {Frame} from '../../model';
+import type {ExpressionId,FaceId} from './catalog';
 import {BLUSH,INK,SKIN,SKIN_WARM,SOFT_INK,c,e,isChild,isElder,isFemale,l,mirror,p} from './drawing';
 
-const shapes:Record<'female'|'male'|'child'|'elder',Record<Recipe['face'],string>>={
+const shapes:Record<'female'|'male'|'child'|'elder',Record<FaceId,string>>={
  female:{
   oval:'M108 104Q111 73 160 70Q209 73 212 104L212 158Q210 194 184 213Q160 230 136 213Q110 194 108 158Z',
   round:'M102 108Q106 76 160 73Q214 76 218 108L218 158Q218 191 194 210Q178 222 160 222Q140 222 125 210Q102 191 102 158Z',
@@ -28,7 +29,7 @@ const shapes:Record<'female'|'male'|'child'|'elder',Record<Recipe['face'],string
  }
 };
 
-export function faceBase(frame:Frame,face:Recipe['face']):string{
+export function faceBase(frame:Frame,face:FaceId):string{
  const group=isChild(frame)?'child':isElder(frame)?'elder':isFemale(frame)?'female':'male';
  const earY=isChild(frame)?153:157;
  let art=mirror(e(108,earY,8,12,SKIN,INK,2.4))+p(shapes[group][face],SKIN,INK,3.1);
@@ -55,7 +56,7 @@ const eyeSpec={
  long:{dx:29,rx:3.1,ry:3.5,brow:17,mouth:10},
 };
 
-export function expressionArt(frame:Frame,face:Recipe['face'],expression:Recipe['expression']):string{
+export function expressionArt(frame:Frame,face:FaceId,expression:ExpressionId):string{
  const spec=eyeSpec[face],child=isChild(frame),elder=isElder(frame),female=isFemale(frame);
  const y=child?151:154, leftX=160-spec.dx,rightX=160+spec.dx;
  const browY=y-17, browWidth=spec.brow, browStroke=child?2.1:female?2.35:2.8;

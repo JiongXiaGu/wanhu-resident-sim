@@ -6,7 +6,7 @@
 
 同一个编辑器用于玩家示例档案和当前城市的全部真实居民。首页“头像工坊”打开玩家档案；居民身份栏“编辑头像”直接打开对应居民。`/?view=avatar-editor` 也可直接打开工坊，底层仍是同一个 App，不会重建游戏会话。
 
-`linework-v1`（日常线绘）、`chibi-cute-v1`（Q版可爱）与 `simple-flat-v1`（极简简笔）都是原创、真实分层的 SVG 画风包。自 2026-09-20 起，`chibi-cute-v1` 是后续素材扩充主路线；另外两套暂时作为 reference / compatibility 保留。当前三套仍共享旧核心语义，但在大规模扩 Q版素材前，必须先完成 Pack-owned Catalog，让 Q版可以独立增加 Hair / Outfit / Expression 而不强迫旧 Pack 同步补画。具体阶段、素材边界和人工美术审查以 [Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md) 为准。
+`linework-v1`（日常线绘）、`chibi-cute-v1`（Q版可爱）与 `simple-flat-v1`（极简简笔）都是原创、真实分层的 SVG 画风包。自 2026-09-20 起，`chibi-cute-v1` 是后续素材扩充主路线；另外两套暂时作为 reference / compatibility 保留。三套已经完成 Pack-owned Catalog：当前虽然仍恰好共享 4 / 6 / 4 / 6 旧核心 ID，但 UI、Recipe 校验、随机、Actions 组合遍历都从当前 Pack 自己的 Catalog 读取，Q版后续可以独立增加素材。具体阶段、素材边界和人工美术审查以 [Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md) 为准。
 
 画风是待用户验收的候选，不声称复制用户参考图、某位 Neka 画手或商业游戏。Q版方向只借鉴“大头比例、极简五官、腮红、粗轮廓、贴纸感”等通用视觉特征；现代日常服饰与可组合性优先，不强行添加中国古代饰物。历史错误实验已从当前工作树删除，不再建立保留区；旧内容使用 Git 历史查阅。
 
@@ -96,15 +96,19 @@ Web/src/avatar/
   Integration.tsx         当前 App / 居民对象绑定
   editor.css / entry.css  仅工坊样式
   packs/
-    types.ts              统一 Layer / AvatarPack 契约
-    registry.ts           唯一画风注册表、顺序、名称与旧 ID alias
+    catalog.ts            Pack Catalog 通用类型、四类 Part 与查询辅助
+    types.ts              统一 Layer / AvatarPack / lifecycle 契约
+    registry.ts           唯一画风注册表、生命周期、默认 active Pack 与兼容映射
     linework/
+      catalog.ts          该画风自己的 Face / Hair / Outfit / Expression
       index.ts            该画风唯一公开入口
       drawing.ts / faces.ts / hair.ts / outfits.ts
     chibi/
+      catalog.ts
       index.ts
       drawing.ts / faces.ts / hair.ts / outfits.ts
     simple-flat/
+      catalog.ts
       index.ts
       drawing.ts / faces.ts / hair.ts / outfits.ts
 ```
@@ -117,6 +121,10 @@ AI 辅助美术生产发生在开发阶段：按照统一画布和包内画法�
 
 `pack id` 属于持久化配方契约，发布后不要改名；目录名只是源码组织。废弃画风的兼容映射集中放在 registry 的 legacy alias，不在 `model.ts` 继续堆特殊分支。
 
+每个 Pack 现在还声明 `lifecycle`：`active`、`reference` 或 `legacy`。普通画风选择只显示 active/reference；legacy 仍可渲染旧 Recipe。当前 active 是 `chibi-cute-v1`，另外两套为 reference。新对象默认使用 active Pack。
+
+跨 Pack 切换先保留目标 Pack 也拥有的同 ID；若目标缺少该 ID，则使用素材上的显式 `compatibilityKey` 寻找对应项，仍无匹配时回到目标 Pack 的 defaults。这个映射是确定性的，不随机换人。Phase 1 暂不保存 per-pack draft history，因此 Q版专属素材如果切到旧 Pack 后发生 fallback，再切回 Q版不会自动恢复那个专属素材，需要玩家重新选择；后续只有确有需要才增加 per-pack 历史。
+
 素材审查统一由 `scripts/avatar-review/audit-packs.mjs` 执行；`pack-specs.mjs` 只描述每套画风真正不同的检查参数，例如矩阵范围、表情标记、眼睛约束、原尺寸/年龄证明，以及 Q版与极简简笔之间的比例差异。脚本会从运行时 Pack Registry 读取实际注册顺序，并要求 Registry 与 Review Spec 一一对应；因此新增画风只需新增美术包、在 `packs/registry.ts` 注册一次，再补一份小型 Spec，不再复制三四百行 Audit。每个包每个 Frame 仍有颈部 1、FaceBase 4、前后发 12、衣服 4、脸型对应表情 24；这些是作者源规则的确定性展开，不代表把完整人物图切成了若干文件。
 
 `soft-paint-v1` 因用户否定已从当前工作树删除，旧本地配方读取时只映射同一四项语义到 `chibi-cute-v1`，不会自动重写 localStorage。未来新增画风包继续复用同一编辑和保存边界，不再新增独立实验页；新包必须先证明不同脸共享头发、衣服和表情，不能把完整生成图登记为可换部件。
@@ -128,7 +136,7 @@ AI 辅助美术生产发生在开发阶段：按照统一画布和包内画法�
 - 真实玩家/居民编辑、应用、撤销、切对象、关闭、刷新、恢复默认。
 - 甲乙分离，实际居民面板显示，城市日期、身份和故事不因开关编辑器重置。
 - 有效/无效导入、配额失败、同对象跨标签冲突、PNG/SVG/JSON 实际下载。
-- 每个画风包分别执行六上下文 × 4 脸 × 6 发 × 4 衣 × 6 表情，即每包 3,456 个基础组合的 SVG、层序与身份不变量。\n- 同一成人配置在 `linework-v1`、`chibi-cute-v1` 与 `simple-flat-v1` 间切换时，四个语义 ID 保持不变，同时三套最终 SVG 必须真正不同；极简简笔的头部宽度与头身比还要与 Q 版保持明确差异。
+- 每个画风包按自己的 Catalog 动态执行六上下文 × Face × Hair × Outfit × Expression 全组合 SVG、层序与身份不变量；当前三套恰好仍各为 3,456 组合，但不再写死。\n- 跨 Pack 切换按 exact ID → compatibilityKey → target defaults 的确定性规则映射；当前共享旧 ID 的配置仍保持不变，同时三套最终 SVG 必须真正不同。
 - 眉眼口与前发遮挡顺序、嘴型中线、虹膜范围。
 - 六组脸型板、六组表情板、六组发型板、六组服装板；这些是诊断图板，不是固定整图资源或冒充玩家 UI。
 - 96/64/48 原尺寸，桌面及 390/320px；深浅衬底；儿童老人实际样本。

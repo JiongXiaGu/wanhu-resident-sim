@@ -1,6 +1,7 @@
-import type {Frame,Recipe} from '../../model';
+import type {Frame} from '../../model';
+import type {OutfitId} from './catalog';
 import {p,l,e,isChild,isFemale} from './drawing';
-export function outfitArt(frame:Frame,id:Recipe['outfit']):string {
+export function outfitArt(frame:Frame,id:OutfitId):string {
  const child=isChild(frame),female=isFemale(frame);
  // 三种肩颈画法直接提供最终坐标，不以脸型或头发计算偏移。
  const body=child?'M133 235L114 249Q85 253 68 272L48 320H274L252 270Q233 251 187 236Q161 259 133 235Z':female?'M126 249L101 261Q65 271 48 295L34 320H288L271 291Q246 267 193 248Q160 278 126 249Z':'M126 249L91 261Q51 271 30 299L20 320H303L286 294Q260 267 194 248Q159 278 126 249Z';

@@ -1,7 +1,8 @@
-import type {Frame,Recipe} from '../../model';
+import type {Frame} from '../../model';
+import type {OutfitId} from './catalog';
 import {OUTLINE,isChild,p,l} from './drawing';
 
-export function outfitArt(frame:Frame,id:Recipe['outfit']):string{
+export function outfitArt(frame:Frame,id:OutfitId):string{
  const child=isChild(frame),top=child?244:250;
  const body=child?'M136 241L118 250Q88 254 70 272L48 320H272L250 272Q232 254 184 241Q160 258 136 241Z':'M134 247L108 257Q72 262 51 286L36 320H284L269 286Q246 263 187 247Q160 266 134 247Z';
  if(id==='tee'){

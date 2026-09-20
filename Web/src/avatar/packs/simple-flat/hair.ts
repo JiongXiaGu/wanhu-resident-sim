@@ -1,10 +1,11 @@
-import type {Frame,Recipe} from '../../model';
+import type {Frame} from '../../model';
+import type {HairId} from './catalog';
 import {hairColor,hairLine,hairShade,isChild,isFemale,l,p} from './drawing';
 
-export function hairArt(frame:Frame,id:Recipe['hair']):{back:string;front:string}{
+export function hairArt(frame:Frame,id:HairId):{back:string;front:string}{
  const base=hairColor(frame),shade=hairShade(frame),ink=hairLine(frame),child=isChild(frame),female=isFemale(frame);
  const top=child?66:58;
- const back:Record<Recipe['hair'],string>={
+ const back:Record<HairId,string>={
   crop:p(`M105 145Q94 105 112 ${top+8}Q132 ${top-13} 161 ${top-12}Q195 ${top-12} 213 ${top+12}Q227 103 215 149L207 176L113 176Z`,base,ink,3.1),
   bob:p(`M101 132Q91 94 113 ${top+5}Q132 ${top-14} 160 ${top-13}Q194 ${top-14} 215 ${top+10}Q231 95 220 137L226 201Q228 224 211 235L196 226L188 205H132L123 226L108 235Q92 224 94 201Z`,base,ink,3.1)+p('M102 178Q104 209 113 225L123 207L119 177Z',shade,'none',0,.42)+p('M218 178Q216 209 207 225L197 207L201 177Z',shade,'none',0,.42),
   long:p(`M102 126Q90 91 113 ${top+3}Q133 ${top-15} 160 ${top-13}Q195 ${top-15} 216 ${top+9}Q230 94 220 133L230 220L232 318H190L184 231H136L130 318H88L91 222Z`,base,ink,3.1)+p('M94 185Q104 234 99 305H116Q122 250 114 191Z',shade,'none',0,.4)+p('M226 185Q216 234 221 305H204Q198 250 206 191Z',shade,'none',0,.4),
@@ -13,7 +14,7 @@ export function hairArt(frame:Frame,id:Recipe['hair']):{back:string;front:string
   braid:p(`M102 132Q91 94 114 ${top+5}Q134 ${top-14} 160 ${top-13}Q195 ${top-14} 216 ${top+10}Q229 97 220 135L215 179L202 196H118L104 179Z`,base,ink,3.1)+p('M106 170Q92 184 101 198Q89 212 99 226Q89 240 101 253Q92 267 104 281Q98 297 112 313L123 307Q128 295 119 283Q129 269 119 257Q130 243 119 230Q128 215 117 204Q124 188 113 177Z',base,ink,3)+l('M103 188L116 201L104 214L117 227L105 241L119 254L107 268L121 282L111 298',shade,2.6,.9)
  };
  const cap=`M103 145Q92 105 113 ${top+9}Q133 ${top-13} 160 ${top-12}Q194 ${top-13} 215 ${top+10}Q228 99 219 137L211 158`;
- const front:Record<Recipe['hair'],string>={
+ const front:Record<HairId,string>={
   crop:p(cap+'Q204 129 197 108Q184 120 171 125Q178 109 168 96Q154 116 137 126Q143 107 131 102Q119 121 106 128L108 159L102 154Z',base,ink,3.1)+l('M121 87Q141 69 164 70M183 69Q201 75 209 91',ink,1.6,.48),
   bob:p(cap+'Q204 129 196 107Q184 122 170 128Q177 107 167 95Q153 119 135 130Q141 109 128 102Q116 123 105 131L107 170L101 161Z',base,ink,3.1)+l('M121 84Q141 68 163 69M183 68Q201 75 209 91',ink,1.6,.5),
   long:p(cap+'Q204 129 196 106Q184 123 169 130Q178 108 166 94Q151 120 133 131Q139 110 126 102Q114 124 104 132L106 169L101 161Z',base,ink,3.1)+l('M120 84Q141 67 163 69M184 68Q202 75 210 91',ink,1.6,.5),

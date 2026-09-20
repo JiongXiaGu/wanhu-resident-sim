@@ -1,6 +1,7 @@
-import type { Frame, Recipe } from '../../model';
+import type {Frame} from '../../model';
+import type {ExpressionId,FaceId} from './catalog';
 import { p,l,e,mirror,skin as s,isChild,isElder,isFemale } from './drawing';
-const contours: Record<'female'|'male'|'child'|'elder',Record<Recipe['face'],string>> = {
+const contours: Record<'female'|'male'|'child'|'elder',Record<FaceId,string>> = {
  female: {
   oval:'M86 106C87 75 116 59 160 60C205 59 233 77 234 108L232 155Q230 184 209 204L180 225Q161 240 143 228L112 206Q89 188 87 159Z',
   round:'M85 105C86 74 117 60 160 60C204 59 233 75 235 105L237 153Q239 182 216 204Q192 230 160 232Q129 231 105 208Q81 185 83 157Z',
@@ -26,7 +27,7 @@ const contours: Record<'female'|'male'|'child'|'elder',Record<Recipe['face'],str
   long:'M92 107Q95 65 161 64Q227 66 230 108L228 158L220 188Q229 204 209 221L181 244Q167 254 157 251L139 243L115 223Q98 209 99 190L93 160Z',
  },
 };
-export function faceBase(frame:Frame,face:Recipe['face']):string {
+export function faceBase(frame:Frame,face:FaceId):string {
  const category=isChild(frame)?'child':isElder(frame)?'elder':isFemale(frame)?'female':'male';
  const ears=mirror(p('M89 145Q75 137 77 153Q79 172 92 174L94 157Z',s.base,s.line,1.1)+l('M82 149Q88 147 85 159',s.shade,2));
  let art=ears+p(contours[category][face],s.base,s.line,1.2)+p('M92 116Q104 83 157 77Q197 76 221 98L204 90Q169 80 136 98L96 126Z',s.light)+
@@ -39,7 +40,7 @@ export function faceBase(frame:Frame,face:Recipe['face']):string {
 }
 // 每个 face 的眼形和口宽为作者规格。表情改变眉眼口，不根据脸型求解位置。
 const eyeSpec={oval:{w:17,h:9,tilt:0,mouth:14},round:{w:17,h:11,tilt:1,mouth:15},angular:{w:19,h:7,tilt:3,mouth:17},long:{w:16,h:8,tilt:0,mouth:13}};
-export function expressionArt(frame:Frame,face:Recipe['face'],expression:Recipe['expression']):string {
+export function expressionArt(frame:Frame,face:FaceId,expression:ExpressionId):string {
  const spec=eyeSpec[face],child=isChild(frame),elder=isElder(frame),female=isFemale(frame),ink='#443a48';
  const y=151, w=spec.w, h=elder?Math.max(5,spec.h-3):child?spec.h+2:female?spec.h:Math.max(6,spec.h-2);
  const tilt=spec.tilt; let eyes='';

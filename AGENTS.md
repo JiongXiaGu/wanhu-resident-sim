@@ -16,6 +16,8 @@
 
 新增画风统一走 `Web/src/avatar/packs/<style>/index.ts` + `packs/registry.ts`。每个 pack 的标题、说明、顺序和运行时实现以 registry 为唯一注册入口；不要为了新增一个 pack 再去 `render.ts`、`AvatarEditor.tsx`、`model.ts` 分别复制一套登记逻辑。已发布的 pack id 属于配方持久化契约，不随目录或美术重命名；废弃 ID 的兼容 alias 集中放在 registry。
 
+每个 Pack 必须拥有自己的 `catalog.ts` 与 defaults；UI、parseRecipe、随机和 Review 都只能从该 Pack Catalog 读取，不允许重新引入一份全局 options 迫使所有画风同步实现新 ID。当前 lifecycle：`chibi-cute-v1=active`，`linework-v1/simple-flat-v1=reference`。跨 Pack 不兼容素材只能按 exact ID → compatibilityKey → target defaults 显式回退，不得随机。
+
 新增画风的视觉审查统一走 `scripts/avatar-review/audit-packs.mjs`，只在 `pack-specs.mjs` 增加该画风真正独有的审查参数。不要再创建 `audit-avatar-<style>.mjs` 复制整套组合遍历。capture-avatar-review 必须读取 Registry 的实际 Pack 列表并自动验证每个 Pack 切换后四个语义 ID 不变；Registry 新增但缺 Review Spec 时 CI 应直接失败。
 
 ## 正式 portrait 边界
