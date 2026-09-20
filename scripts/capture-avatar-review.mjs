@@ -47,7 +47,7 @@ try{
  assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.packLifecycle)),registeredPacks.map(pack=>pack.lifecycle));
  const semanticFields=['face','hair','outfit','expression'];
  const a=allTargets.find(t=>t.id===residentA),b=allTargets.find(t=>t.kind==='resident'&&t.key!==a.key),players=allTargets.filter(t=>t.kind==='player');
- async function captureHeadShell(frame,name){const target=allTargets.find(t=>t.frame===frame);assert(target,`Missing real avatar target for ${frame}`);await select(target.key);await choosePack(reviewPack);await choose('face','round');await choose('hair','scholar-cap');await choose('outfit','scholar');await choose('expression','calm');await screenshot(name);await page.locator('[data-cancel-draft]').click();await ready();}
+ async function captureHeadShell(frame,name){const target=allTargets.find(t=>t.frame===frame);assert(target,`Missing real avatar target for ${frame}`);await select(target.key);await choosePack(reviewPack);await choose('face','round');await choose('hair','scholar-cap');await choose('outfit','scholar');await choose('expression','calm');await screenshot(name);if(await editor.getAttribute('data-dirty')==='true'){await page.locator('[data-cancel-draft]').click();await ready();}}
  assert.equal(await key(),a.key);assert.equal(await stored(a.key),null);
 
  await select(players[0].key);assert.equal((await recipe()).pack,reviewPack,'New player draft must start from the active pack');

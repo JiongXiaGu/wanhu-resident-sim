@@ -113,7 +113,7 @@ function merchantWrap(g:ShellGuide){
 
 export function getIntegratedHeadShell(frame:Frame,id:IntegratedHairId,colors:ShellColors):ChibiHeadShell{
   const g=guides[frame];
-  const signature=`${frame}:${id}:${g.bandLeft}:${g.bandRight}:${g.bandTop}:${g.bandBottom}:${g.capTop}:${g.capHalf}`;
+  const signature=[g.bandLeft,g.bandRight,g.bandTop,g.bandBottom,g.capTop,g.capHalf,g.skullPath,g.frontHairPath,g.sideLockPath,g.backLockPath].join('|');
   const headShellBase=group(
     `data-chibi-head-shell="" data-head-shell-frame="${frame}" data-head-shell-hair="${id}" data-head-shell-signature="${signature}"`,
     p(g.skullPath,colors.base,OUTLINE,5)+p(`M${g.bandLeft+8} ${g.bandTop-4}Q160 ${g.bandTop-24} ${g.bandRight-8} ${g.bandTop-4}Q160 ${g.bandTop-14} ${g.bandLeft+8} ${g.bandTop-4}Z`,colors.light,'none',0,.22)
