@@ -58,7 +58,7 @@ try{
   await choosePack(pack.id);const styled=await recipe();assert.deepEqual(styled,expectedStyle,pack.id+' style switch did not follow explicit compatibility mapping');
   assert.notEqual(await image(),null);await screenshot(`01-style-${String(index+1).padStart(2,'0')}-${pack.id}`);
  }
- await choosePack(reviewPack);
+ await choosePack(reviewPack);await choose('hair','scholar-cap');await choose('outfit','scholar');await choose('expression','calm');await screenshot('01z-female-scholar-fit');
  for(const part of semanticFields){
   await page.locator(`[data-part-tab="${part}"]`).click();
   const expectedCount=await page.evaluate(async({pack,part})=>{const model=await import('/src/avatar/model.ts');return model.optionsFor(pack,part).length;},{pack:reviewPack,part});
@@ -75,7 +75,7 @@ try{
   await choosePack(pack.id);assert.deepEqual(await recipe(),maleExpected,pack.id+' male style switch did not follow explicit compatibility mapping');
   await screenshot(`02-style-${String(index+1).padStart(2,'0')}-${pack.id}`);
  }
- await choosePack(reviewPack);await apply();assert.equal(await stored(players[0].key),playerSaved);
+ await choosePack(reviewPack);await choose('hair','scholar-cap');await choose('outfit','scholar');await choose('expression','serious');await screenshot('02z-male-scholar-fit');await apply();assert.equal(await stored(players[0].key),playerSaved);
  await page.locator('[data-part-tab="expression"]').click();await screenshot('03-expression-options');
  await page.locator('[data-part-tab="hair"]').click();await screenshot('04-hair-options');
  await page.locator('[data-part-tab="outfit"]').click();await screenshot('05-outfit-options');

@@ -8,7 +8,7 @@
 
 ## 当前头像方向
 
-只有一套玩家可用的头像工坊：脸型、头发、衣服、表情四类离散选项。不同脸必须共享配件；表情不改变身份。玩家示例档案和任意真实居民使用同一编辑流程，按城市/居民稳定 ID 独立保存。
+只有一套玩家可用的头像工坊：脸型、头发、衣服、表情四类离散选项。不同脸必须共享同一配件作者源；integrated Headwear 允许通过统一 head-fit profile 做轻量脸宽 / 额头高度适配，但禁止逐帽子逐脸 offset。表情不改变身份。玩家示例档案和任意真实居民使用同一编辑流程，按城市/居民稳定 ID 独立保存。
 
 不再制作“完整人物图画廊，然后以后再拆模块”的交付。当前 `chibi-cute-v1` 是主美术路线；Phase 3 / Batch A 已加入首批古代头部造型、服饰与 shy / serious 表情。`linework-v1` 与 `simple-flat-v1` 暂保留为 reference / compatibility，不再优先扩素材。Q版必须在头身比例、五官、轮廓线和发型体积上保持独立视觉语言，并逐步转向泛中国古代模拟经营居民。当前仍只有 Face / Hair / Outfit / Expression 四个玩家可见类别：帽子第一阶段归入 Hair / 头部造型内部，腮红和情绪符号归入 Expression。主路线与阶段顺序以 `Documentation/Q版头像主路线生产与审查工作流.md` 为准；CI PASS 不等于美术定稿。
 
@@ -50,6 +50,6 @@
 
 不得一文件一 commit、空提交刷新、force 覆盖新 main 或依赖 Vercel。GitHub 工具可用时实际调用，不无依据声称无权限。任务交付要包含实际提交状态与关键截图，不只列后续计划。
 
-保持 capture-resident-review 和正式 capture-portrait-review 的有效断言。删除实验只删对应失效测试；新增工坊须测：四类真实操作、不同脸共享配件、Headwear none/integrated 与前后层契约、Q版 Outfit base/collar 结构、甲乙独立保存、取消/恢复/刷新、真实居民 UI、存储/导入错误、年龄版本及 96/64/48px。
+保持 capture-resident-review 和正式 capture-portrait-review 的有效断言。删除实验只删对应失效测试；新增工坊须测：四类真实操作、不同脸共享配件作者源、Headwear none/integrated 与前后层契约、integrated Headwear 的 4 Face fit / 男女帽下发 / 96/64/48px、Q版 Outfit base/collar 结构、甲乙独立保存、取消/恢复/刷新、真实居民 UI、存储/导入错误、年龄版本。
 
 CI PASS ≠ 美术 PASS。必须下载并看实际渲染，头发穿插、眼白溢出、嘴歪、衣领断开或 UI 遮挡时继续修复。最终如实区分已实现功能、艺术候选和未验证 Unity 迁移。

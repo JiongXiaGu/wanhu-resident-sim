@@ -16,7 +16,7 @@ export const chibiCutePack={
   defs:chibiDefs,
   layers(frame,recipe){
     const face=recipe.face as FaceId,hairId=recipe.hair as HairId,outfit=recipe.outfit as OutfitId,expression=recipe.expression as ExpressionId;
-    const hair=hairArt(frame,hairId);
+    const hair=hairArt(frame,hairId,face);
     return [
       {id:'BackHair',svg:hair.back},
       {id:'HeadwearBack',svg:hair.headwearBack},
