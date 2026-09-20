@@ -21,7 +21,6 @@ const image=()=>page.locator('.av-main-art img').getAttribute('src');
 const stored=async target=>page.evaluate(k=>localStorage.getItem('wanhu.avatar.v1:'+k),target);
 async function ready(){await page.evaluate(async()=>{await document.fonts.ready;await Promise.all([...document.querySelectorAll('img')].map(i=>i.decode()));});}
 async function choose(part,value){await page.locator(`[data-part-tab="${part}"]`).click();await page.locator(`[data-option-part="${part}"][data-option="${value}"]`).click();await page.waitForFunction(({part,value})=>JSON.parse(document.querySelector('[data-avatar-editor]').dataset.recipe)[part]===value,{part,value});await ready();}
-async function choosePack(value){await page.locator(`[data-pack="${value}"]`).click();await page.waitForFunction(value=>JSON.parse(document.querySelector('[data-avatar-editor]').dataset.recipe).pack===value,value);await ready();}
 async function select(target){await page.locator(`[data-target-key="${target}"]`).click();await page.waitForFunction(k=>document.querySelector('[data-avatar-editor]').dataset.target===k,target);await ready();}
 async function apply(){const expected=JSON.stringify(await recipe()),target=await key();await page.locator('[data-apply-avatar]').click();await page.waitForFunction(({target,expected})=>localStorage.getItem('wanhu.avatar.v1:'+target)===expected,{target,expected});await page.waitForFunction(()=>document.querySelector('[data-avatar-editor]').dataset.dirty==='false');}
 async function screenshot(name,locator=page.locator('.av-dialog')){await ready();await locator.screenshot({path:join(out,name+'.png'),animations:'disabled',caret:'hide'});}
@@ -42,11 +41,9 @@ try{
  assert.deepEqual(await page.locator('[data-part-tab]').evaluateAll(nodes=>nodes.map(n=>n.dataset.partTab)),['face','hair','outfit','expression']);
  const registeredPacks=await page.evaluate(async()=>{const model=await import('/src/avatar/model.ts');return model.packOptions.map(pack=>({id:pack.id,label:pack.label,lifecycle:pack.lifecycle,counts:pack.counts}));});
  const packIds=registeredPacks.map(pack=>pack.id),activePacks=registeredPacks.filter(pack=>pack.lifecycle==='active'),reviewPack=activePacks[0]?.id;
- assert.equal(activePacks.length,1,'Exactly one selectable active avatar pack is required');assert(reviewPack,'An active avatar pack is required');
- assert.equal(reviewPack,'chibi-cute-v1','Phase 5D requires Q版可爱 to remain the only active baseline');
- assert.deepEqual(registeredPacks.filter(pack=>pack.lifecycle==='reference').map(pack=>pack.id).sort(),['linework-v1','simple-flat-v1'],'Phase 5D keeps the two older packs as reference until Phase 6');
- assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.pack)),packIds);
- assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.packLifecycle)),registeredPacks.map(pack=>pack.lifecycle));
+ assert.deepEqual(packIds,['chibi-cute-v1'],'Phase 6 keeps only the Q版 runtime pack');
+ assert.equal(activePacks.length,1,'Exactly one active avatar pack is required');assert.equal(reviewPack,'chibi-cute-v1');
+ assert.equal(await page.locator('[data-pack]').count(),0,'Retired style picker should not remain in the player UI');
  const semanticFields=['face','hair','outfit','expression'];
  const a=allTargets.find(t=>t.id===residentA),b=allTargets.find(t=>t.kind==='resident'&&t.key!==a.key),players=allTargets.filter(t=>t.kind==='player');
  const frameLook=frame=>frame.endsWith('child')
@@ -65,14 +62,8 @@ try{
 
  await select(players[0].key);assert.equal((await recipe()).pack,reviewPack,'New player draft must start from the active pack');
  await choose('face','round');await choose('hair','low-bun');await choose('outfit','adult-female-ruqun');await choose('expression','smile');
- await sizes();const beforeStyle=await recipe();let expectedStyle=beforeStyle;
- for(let index=0;index<registeredPacks.length;index++){
-  const pack=registeredPacks[index];
-  expectedStyle=await page.evaluate(async({recipe,pack,frame})=>{const model=await import('/src/avatar/model.ts');return model.withPack(recipe,pack,frame);},{recipe:expectedStyle,pack:pack.id,frame:players[0].frame});
-  await choosePack(pack.id);const styled=await recipe();assert.deepEqual(styled,expectedStyle,pack.id+' style switch did not follow explicit compatibility mapping');
-  assert.notEqual(await image(),null);await screenshot(`01-style-${String(index+1).padStart(2,'0')}-${pack.id}`);
- }
- await choosePack(reviewPack);await choose('face','round');await choose('hair','scholar-cap');await choose('outfit','scholar');await choose('expression','calm');await screenshot('01z-female-face-frame-scholar');
+ await sizes();assert.notEqual(await image(),null);await screenshot('01-q-chibi-baseline');
+ await choose('face','round');await choose('hair','scholar-cap');await choose('outfit','scholar');await choose('expression','calm');await screenshot('01z-female-head-frame-scholar');
  for(const part of semanticFields){
   await page.locator(`[data-part-tab="${part}"]`).click();
   const expectedCount=await page.evaluate(async({pack,part,frame})=>{const model=await import('/src/avatar/model.ts');return model.optionsFor(pack,part,frame).length;},{pack:reviewPack,part,frame:players[0].frame});
@@ -82,20 +73,14 @@ try{
 
  await select(players[1].key);assert.equal((await recipe()).pack,reviewPack,'Second player draft must start from the active pack');
  await choose('face','angular');await choose('hair','adult-short-bound');await choose('outfit','adult-male-short-robe');await choose('expression','calm');
- let maleExpected=await recipe();
- for(let index=0;index<registeredPacks.length;index++){
-  const pack=registeredPacks[index];
-  maleExpected=await page.evaluate(async({recipe,pack,frame})=>{const model=await import('/src/avatar/model.ts');return model.withPack(recipe,pack,frame);},{recipe:maleExpected,pack:pack.id,frame:players[1].frame});
-  await choosePack(pack.id);assert.deepEqual(await recipe(),maleExpected,pack.id+' male style switch did not follow explicit compatibility mapping');
-  await screenshot(`02-style-${String(index+1).padStart(2,'0')}-${pack.id}`);
- }
- await choosePack(reviewPack);await choose('face','angular');await choose('hair','scholar-cap');await choose('outfit','scholar');await choose('expression','serious');await screenshot('02z-male-face-frame-scholar');await apply();assert.equal(await stored(players[0].key),playerSaved);
+ await screenshot('02-q-chibi-male-baseline');
+ await choose('face','angular');await choose('hair','scholar-cap');await choose('outfit','scholar');await choose('expression','serious');await screenshot('02z-male-head-frame-scholar');await apply();assert.equal(await stored(players[0].key),playerSaved);
  await page.locator('[data-part-tab="expression"]').click();await screenshot('03-expression-options');
  await page.locator('[data-part-tab="hair"]').click();await screenshot('04-hair-options');
  await page.locator('[data-part-tab="outfit"]').click();await screenshot('05-outfit-options');
- checks.push('Only four editable categories; UI option grids come from the current Pack Catalog; pack switches follow deterministic exact/compatibility mapping; two player profiles save independently; actual resident roster is loaded from the current city snapshot');
+ checks.push('Only four editable categories; the player UI exposes only the Q版 baseline; retired pack IDs migrate through recipe compatibility instead of remaining as selectable artwork; two player profiles save independently; actual resident roster is loaded from the current city snapshot');
 
- await select(a.key);await choosePack(reviewPack);await choose('face','round');const aLook=frameLook(a.frame);await choose('hair',aLook.hair);await choose('outfit',aLook.outfit);await choose('expression','shy');
+ await select(a.key);await choose('face','round');const aLook=frameLook(a.frame);await choose('hair',aLook.hair);await choose('outfit',aLook.outfit);await choose('expression','shy');
  assert.equal(await stored(a.key),null,'Preview must not persist before apply');
  await apply();const aSaved=await stored(a.key),aImage=await image();await screenshot('06-resident-applied');
  await select(b.key);await choose('face','long');const bLook=frameLook(b.frame);await choose('hair',bLook.hair);await choose('outfit',bLook.outfit);await choose('expression','serious');await apply();const bSaved=await stored(b.key);
@@ -153,7 +138,7 @@ try{
  await page.locator('[data-open-avatar-workshop]').click();await editor.waitFor();
  const child=allTargets.find(t=>t.frame.endsWith('child')),elder=allTargets.find(t=>t.frame.endsWith('elder'));
  if(child){
-  await select(child.key);await choosePack(reviewPack);await choose('face','round');await choose('hair','child-short-fringe');await choose('outfit','child-winter');await choose('expression','calm');await screenshot('08-child-phase5a');
+  await select(child.key);await choose('face','round');await choose('hair','child-short-fringe');await choose('outfit','child-winter');await choose('expression','calm');await screenshot('08-child-phase5a');
   await page.locator('[data-part-tab="hair"]').click();
   const childHairIds=await page.locator('[data-option-part="hair"]').evaluateAll(nodes=>nodes.map(node=>node.dataset.option));
   assert(childHairIds.length>=5&&childHairIds.every(id=>id?.startsWith('child-')),'Child UI still exposes non-child Hair');
@@ -165,7 +150,7 @@ try{
   await page.locator('[data-cancel-draft]').click();await ready();
  }
  if(elder){
-  await select(elder.key);await choosePack(reviewPack);await choose('face','oval');await choose('hair','elder-thin-fringe');await choose('outfit','elder-padded-robe');await choose('expression','smile');await screenshot('09-elder-phase5c');
+  await select(elder.key);await choose('face','oval');await choose('hair','elder-thin-fringe');await choose('outfit','elder-padded-robe');await choose('expression','smile');await screenshot('09-elder-phase5c');
   await page.locator('[data-part-tab="hair"]').click();
   const elderHairIds=await page.locator('[data-option-part="hair"]').evaluateAll(nodes=>nodes.map(node=>node.dataset.option));
   assert(elderHairIds.length>=6&&elderHairIds.every(id=>id?.startsWith('elder-')),'Elder UI still exposes non-elder Hair');
@@ -177,7 +162,7 @@ try{
   await page.locator('[data-cancel-draft]').click();await ready();
  }
  const adultLegacyHair=['crop','bob','long','pony','wave','braid'],adultLegacyOutfits=['tee','shirt','knit','jacket'];
- await select(players[0].key);await choosePack(reviewPack);await choose('hair','adult-high-bun');await choose('outfit','adult-female-ruqun');
+ await select(players[0].key);await choose('hair','adult-high-bun');await choose('outfit','adult-female-ruqun');
  await page.locator('[data-part-tab="hair"]').click();
  const adultFemaleHair=await page.locator('[data-option-part="hair"]').evaluateAll(nodes=>nodes.map(node=>node.dataset.option));
  assert(adultFemaleHair.length>=10,'Female adult Hair batch is too small');
@@ -188,7 +173,7 @@ try{
  assert(adultFemaleOutfit.length>=10,'Female adult Outfit batch is too small');
  assert(adultLegacyOutfits.every(id=>!adultFemaleOutfit.includes(id)),'Female adult UI still exposes legacy Outfit');
  await screenshot('10b-adult-female-outfit-options');await page.locator('[data-cancel-draft]').click();await ready();
- await select(players[1].key);await choosePack(reviewPack);await choose('hair','adult-braided-tail');await choose('outfit','adult-male-long-robe');
+ await select(players[1].key);await choose('hair','adult-braided-tail');await choose('outfit','adult-male-long-robe');
  await page.locator('[data-part-tab="hair"]').click();
  const adultMaleHair=await page.locator('[data-option-part="hair"]').evaluateAll(nodes=>nodes.map(node=>node.dataset.option));
  assert(adultMaleHair.length>=11,'Male adult Hair batch is too small');
@@ -204,7 +189,7 @@ try{
  await page.setViewportSize({width:320,height:800});await sizes();
  await page.setViewportSize({width:1600,height:1100});
  const packAudit=await auditRegisteredAvatarPacks(page,out);
- checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; Phase 5D keeps chibi-cute-v1 active, linework/simple-flat reference, all six Q版 Frames age-authored, and compatibility-only legacy IDs deterministic but invisible`);
+ checks.push(`${packIds.length} runtime style pack remains after Phase 6 cleanup; all six Q版 Frames stay age-authored, Hair Coverage is audited separately, and compatibility-only legacy IDs remain deterministic but invisible`);
  assert.deepEqual(errors,[],'Browser errors');
  await writeFile(join(out,'review.json'),JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',avatarPacks:packAudit,residentCount:snapshot.residents.length,checks,artisticApproval:'Requires actual screenshot inspection; registry coverage and CI are not an art quality rating'},null,2));
  console.log(checks.join('\n'));

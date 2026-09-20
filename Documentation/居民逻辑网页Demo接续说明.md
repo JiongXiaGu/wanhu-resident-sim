@@ -14,7 +14,7 @@
 
 唯一玩家编辑流程是头像工坊 `/?view=avatar-editor`，也可从居民身份栏进入。只有脸型、头发、衣服、表情四类；不同脸共享配件，并保存到玩家示例档案或当前城市的指定居民。
 
-`Web/src/avatar/` 包含统一编辑器、按对象保存的 Web 覆盖记录和三套真实分层 SVG 素材包。当前 `chibi-cute-v1` 是后续主美术路线；`linework-v1`、`simple-flat-v1` 暂作 reference；Phase 6 再决定是否转 legacy。Pack-owned Catalog 已完成。Q版当前玩家可选总量为 4 Face / 30 Hair / 24 Outfit / 8 Expression；Phase 5A / 5B / 5C 已分别完成 child / adult / elder 的年龄段专属素材，Phase 5D 已完成六 Frame 综合 QA、旧 Recipe 全 Frame fallback 与 UI 密度检查。旧 6 Hair / 4 Outfit 仅作为 compatibility-only Recipe ID 保留，不再出现在 active Q版任一 Frame 的 UI；UI、校验、随机与 Actions 都按当前 Pack 自己的素材列表工作，旧 Pack 不同步补画。编辑仍只影响外观；必须保留居民姓名、年龄、家庭、职业与故事。
+`Web/src/avatar/` 现在只保留统一编辑器、按对象保存的 Web 覆盖记录和 `chibi-cute-v1` 一套运行时 SVG 素材包。Phase 6 已将 `linework-v1`、`simple-flat-v1` 的实现从当前树退役，旧 pack ID 与 `soft-paint-v1` 一样仅作为 Recipe 迁移 alias。Q版当前玩家可选总量为 4 Face / 30 Hair / 24 Outfit / 8 Expression；child / adult / elder 使用年龄专属 Hair / Outfit。六 Frame 统一由 `head-frame.ts` 提供固定 Head Frame，并通过 Hair Coverage probes 检查所有 active Hair 不得露出头型。旧 6 Hair / 4 Outfit 集中为 compatibility-only ID，不进入 UI 或 Random。编辑仍只影响外观；必须保留居民姓名、年龄、家庭、职业与故事。
 
 旧风格墙、完整位图图库以及多个分叉编辑实验已从工作树删除，Git 历史足以保留。不得重新创建历史实验目录或把固定整图当作可编辑素材。
 

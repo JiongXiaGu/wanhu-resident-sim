@@ -8,15 +8,15 @@
 
 ## 当前头像方向
 
-只有一套玩家可用的头像工坊：脸型、头发、衣服、表情四类离散选项。共享的是编辑器、Recipe 与 Renderer 契约，不强制 child / adult / elder 共用同一套美术资产。Catalog option 可以声明可用 `frames`；UI 只展示当前目标 Frame 可用的 Hair / Outfit。不同脸必须共享同一 Frame 内固定的 Hair / Headwear 作者 geometry；Face 通过统一 Face Frame 适配发型，而不是让发型跟脸变。表情不改变身份。玩家示例档案和任意真实居民使用同一编辑流程，按城市/居民稳定 ID 独立保存。
+只有一套玩家可用的头像工坊与一套运行时美术包：`chibi-cute-v1`。玩家只编辑脸型、头发、衣服、表情四类离散选项。child / adult / elder 可拥有独立 Hair / Outfit。每个 female/male × child/adult/elder Frame 只有一个固定 Head Frame；Face 只改下半脸与五官，Hair / Headwear 不读取 Face ID。Hair 还必须通过固定 Coverage probes 覆盖 Head Frame 外轮廓；不得通过逐 Face offset、scale、mask 或 clipPath 自动适配。
 
-不再制作“完整人物图画廊，然后以后再拆模块”的交付。当前 `chibi-cute-v1` 是主美术路线；Phase 3 / Batch A 已加入首批成年古代头部造型与服饰；Phase 5A / 5B / 5C 已分别完成 child / adult / elder 的独立 Hair / Outfit 批次，Phase 5D 已完成三年龄综合 QA。旧基础 modern ID 仅作为 compatibility-only Recipe 兼容，不再出现在 active Q版任一 Frame 的普通 UI。`linework-v1` 与 `simple-flat-v1` 暂保留为 reference / compatibility，不再优先扩素材。Q版必须在头身比例、五官、轮廓线和发型体积上保持独立视觉语言，并逐步转向泛中国古代模拟经营居民。当前仍只有 Face / Hair / Outfit / Expression 四个玩家可见类别：帽子第一阶段归入 Hair / 头部造型内部，腮红和情绪符号归入 Expression。主路线与阶段顺序以 `Documentation/Q版头像主路线生产与审查工作流.md` 为准；CI PASS 不等于美术定稿。
+不再制作“完整人物图画廊，然后以后再拆模块”的交付。当前 `chibi-cute-v1` 是主美术路线；Phase 3 / Batch A 已加入首批成年古代头部造型与服饰；Phase 5A / 5B / 5C 已分别完成 child / adult / elder 的独立 Hair / Outfit 批次，Phase 5D 已完成三年龄综合 QA。旧基础 modern ID 仅作为 compatibility-only Recipe 兼容，不再出现在 Q版任一 Frame 的普通 UI。`linework-v1`、`simple-flat-v1` 与 `soft-paint-v1` 的运行时美术资源已经退役；旧 pack ID 只作为导入/本地旧 Recipe 的迁移 alias，确定性映射到 `chibi-cute-v1`。Q版必须在头身比例、五官、轮廓线和发型体积上保持独立视觉语言，并逐步转向泛中国古代模拟经营居民。当前仍只有 Face / Hair / Outfit / Expression 四个玩家可见类别：帽子第一阶段归入 Hair / 头部造型内部，腮红和情绪符号归入 Expression。主路线与阶段顺序以 `Documentation/Q版头像主路线生产与审查工作流.md` 为准；CI PASS 不等于美术定稿。
 
 旧错误实验、整图图库、被否定的 `soft-paint-v1` 与其专属审查已从当前树删除，不建立历史保留文件夹。需要旧版时查 Git 历史。未来画风作为同一编辑器的可组合素材包验证，不再分叉独立编辑网站。
 
 新增画风统一走 `Web/src/avatar/packs/<style>/index.ts` + `packs/registry.ts`。每个 pack 的标题、说明、顺序和运行时实现以 registry 为唯一注册入口；不要为了新增一个 pack 再去 `render.ts`、`AvatarEditor.tsx`、`model.ts` 分别复制一套登记逻辑。已发布的 pack id 属于配方持久化契约，不随目录或美术重命名；废弃 ID 的兼容 alias 集中放在 registry。
 
-每个 Pack 必须拥有自己的 `catalog.ts` 与 defaults；UI、parseRecipe、随机和 Review 都只能从该 Pack Catalog 读取，不允许重新引入一份全局 options 迫使所有画风同步实现新 ID。Catalog option 可省略 `frames` 表示六 Frame 通用，或显式限制到 child / adult / elder、女性 / 男性；不要为年龄专属素材增加新的玩家可见分类或新的 Recipe 字段。当前 lifecycle：`chibi-cute-v1=active`，`linework-v1/simple-flat-v1=reference`。跨 Pack 不兼容素材只能按 exact ID → compatibilityKey → target defaults 显式回退，不得随机。
+`chibi-cute-v1` 拥有自己的 `catalog.ts` 与 defaults；UI、parseRecipe、随机和 Review 都只从当前 Catalog 读取。Catalog option 可用 `frames` 限制年龄/性别。旧 modern Hair/Outfit 集中放在 `packs/compatibility.ts`，只用于旧 Recipe；旧 pack alias 也集中在那里。未来如果重新增加第二套真实画风，再恢复多 Pack UI 与跨 Pack 审查，不提前保留无效资源。
 
 新增画风的视觉审查统一走 `scripts/avatar-review/audit-packs.mjs`，只在 `pack-specs.mjs` 增加该画风真正独有的审查参数。不要再创建 `audit-avatar-<style>.mjs` 复制整套组合遍历。capture-avatar-review 必须读取 Registry 的实际 Pack 列表并自动验证每个 Pack 切换后四个语义 ID 不变；Registry 新增但缺 Review Spec 时 CI 应直接失败。
 
@@ -38,7 +38,7 @@
 
 ## 代码与资源
 
-保持职责分离，必要处中文注释，不为美术问题新增自动对齐、逐脸偏移或复杂兼容引擎。禁止 Hair / Headwear 接收 Face ID 或做 face-dependent scale / offset；六个 Frame 的上半脸都通过 face-frame.ts 统一各自的额头、太阳穴与耳位，脸型差异放到下脸和五官。不同 Frame 可以拥有不同 Hair / Outfit Catalog；同一 Frame 内的同一 Hair 才要求跨 Face geometry 不变。年龄变化或导入导致素材不适用时，按当前 Pack 内 exact → compatibilityKey → Frame 可用默认/首项确定性回退；预览回退不自动写回存储。四个 UI 选项可以拥有多个实际绘制层；统一 Renderer 顺序为 BackHair → HeadwearBack → Neck → Outfit → FaceBase → Expression → FrontHair → HeadwearFront。Headwear 仍属于 Hair，不增加 Recipe 字段；表情必须位于 FrontHair / HeadwearFront 下方。Q版 Outfit 内部使用 base / collar / overlay / detail 作者标记，base 与 collar 必须存在。脸型对应的眼形保留身份，不把同一组通用五官当作多个完整脸。
+保持职责分离，必要处中文注释，不为美术问题新增自动对齐、逐脸偏移或复杂兼容引擎。禁止 Hair / Headwear 接收 Face ID 或做 face-dependent scale / offset；六个 Frame 的上半脸都通过 `head-frame.ts` 统一各自的头顶、太阳穴与耳位，脸型差异放到下脸和五官。不同 Frame 可以拥有不同 Hair / Outfit Catalog；同一 Frame 内的同一 Hair 才要求跨 Face geometry 不变。年龄变化或导入导致素材不适用时，按当前 Pack 内 exact → compatibilityKey → Frame 可用默认/首项确定性回退；预览回退不自动写回存储。四个 UI 选项可以拥有多个实际绘制层；统一 Renderer 顺序为 BackHair → HeadwearBack → Neck → Outfit → FaceBase → Expression → FrontHair → HeadwearFront。Headwear 仍属于 Hair，不增加 Recipe 字段；表情必须位于 FrontHair / HeadwearFront 下方。Q版 Outfit 内部使用 base / collar / overlay / detail 作者标记，base 与 collar 必须存在。脸型对应的眼形保留身份，不把同一组通用五官当作多个完整脸。
 
 草稿与已应用记录分离。切对象/关闭提示未保存修改；导入只改预览；严格验证版本与选项；写入失败不能假装成功。每对象独立 key，同对象外部更新要提示冲突。不要无授权删除浏览器内其他用户数据或改写旧存储键。
 
@@ -50,6 +50,6 @@
 
 不得一文件一 commit、空提交刷新、force 覆盖新 main 或依赖 Vercel。GitHub 工具可用时实际调用，不无依据声称无权限。任务交付要包含实际提交状态与关键截图，不只列后续计划。
 
-保持 capture-resident-review 和正式 capture-portrait-review 的有效断言。删除实验只删对应失效测试；新增工坊须测：四类真实操作、同一 Frame + Hair/Headwear 在四脸下 geometry 完全一致、六 Frame Face Frame 顶线/接缝一致、Frame Catalog 过滤与 deterministic fallback、Phase 5A child UI 不得暴露旧通用 Hair/Outfit、女童/男童儿童专属 Hair / Outfit 96/64/48px、Phase 5B adult UI 不得暴露旧现代 Hair/Outfit、成年男女 Hair / Outfit / 组合 96/64/48px、Phase 5C elder UI 只含 elder-* 素材且 compatibility-only 旧 ID 六 Frame 均不可见、老年男女 Hair / Outfit / 组合 96/64/48px、Phase 5D 六 Frame 综合图板、旧 Recipe 全 Frame deterministic fallback 与 Hair/Outfit UI 密度上限、成年职业可读性、Headwear none/integrated 与前后层契约、Q版 Outfit base/collar 结构、甲乙独立保存、取消/恢复/刷新、真实居民 UI、存储/导入错误。
+保持 capture-resident-review 和正式 capture-portrait-review 的有效断言。删除实验只删对应失效测试；新增工坊须测：四类真实操作、同一 Frame + Hair/Headwear 在四脸下 geometry 完全一致、六 Frame Head Frame 顶线/接缝一致、全部 active Hair 通过 Hair Coverage probes、Frame Catalog 过滤与 deterministic fallback、Phase 5A child UI 不得暴露旧通用 Hair/Outfit、女童/男童儿童专属 Hair / Outfit 96/64/48px、Phase 5B adult UI 不得暴露旧现代 Hair/Outfit、成年男女 Hair / Outfit / 组合 96/64/48px、Phase 5C elder UI 只含 elder-* 素材且 compatibility-only 旧 ID 六 Frame 均不可见、老年男女 Hair / Outfit / 组合 96/64/48px、Phase 5D 六 Frame 综合图板、旧 Recipe 全 Frame deterministic fallback 与 Hair/Outfit UI 密度上限、成年职业可读性、Headwear none/integrated 与前后层契约、Q版 Outfit base/collar 结构、甲乙独立保存、取消/恢复/刷新、真实居民 UI、存储/导入错误。
 
 CI PASS ≠ 美术 PASS。必须下载并看实际渲染，头发穿插、眼白溢出、嘴歪、衣领断开或 UI 遮挡时继续修复。最终如实区分已实现功能、艺术候选和未验证 Unity 迁移。

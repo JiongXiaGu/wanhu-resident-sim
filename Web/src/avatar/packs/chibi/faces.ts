@@ -1,6 +1,6 @@
 import type {Frame} from '../../model';
 import type {ExpressionId,FaceId} from './catalog';
-import {faceFrameFor,faceFrameSignature,faceShell} from './face-frame';
+import {headFrameFor,headFrameSignature,headShell} from './head-frame';
 import {CHEEK,EYE,OUTLINE,SKIN,SKIN_SHADOW,e,isChild,isElder,isFemale,l,mirror,p} from './drawing';
 
 const eyeSpec={oval:{dx:38,ry:10},round:{dx:40,ry:11},angular:{dx:39,ry:8},long:{dx:36,ry:9}};
@@ -9,11 +9,11 @@ const stageOf=(frame:Frame)=>frame.endsWith('child')?'child':frame.endsWith('eld
 const sexOf=(frame:Frame)=>frame.startsWith('female')?'female':'male';
 
 export function faceBase(frame:Frame,face:FaceId):string{
- const guide=faceFrameFor(frame),signature=faceFrameSignature(frame),stage=stageOf(frame),sex=sexOf(frame);
+ const guide=headFrameFor(frame),signature=headFrameSignature(frame),stage=stageOf(frame),sex=sexOf(frame);
  const earX=guide.earX,earY=guide.earY;
  const ear=mirror(e(earX,earY,stage==='child'?11:12,stage==='child'?15:16,SKIN,OUTLINE,4)+p(`M${earX-4} ${earY-3}Q${earX+3} ${earY-8} ${earX+5} ${earY+2}Q${earX+1} ${earY+7} ${earX-4} ${earY+5}Z`,SKIN_SHADOW,'none',0,.72));
- const shellMeta=` data-face-frame="${guide.id}" data-frame-signature="${signature}" data-frame-left="${guide.left}" data-frame-right="${guide.right}" data-frame-top-y="${guide.topY}" data-frame-temple-y="${guide.templeY}" data-frame-side-y="${guide.sideY}" data-age-stage="${stage}" data-sex="${sex}"`;
- let art=ear+`<g data-chibi-face-shell="" data-face-id="${face}"${shellMeta}>${p(faceShell(frame,face),'url(#cb-skin)',OUTLINE,4.5)}</g>`;
+ const shellMeta=` data-head-frame="${guide.id}" data-frame-signature="${signature}" data-frame-left="${guide.left}" data-frame-right="${guide.right}" data-frame-top-y="${guide.topY}" data-frame-temple-y="${guide.templeY}" data-frame-side-y="${guide.sideY}" data-age-stage="${stage}" data-sex="${sex}"`;
+ let art=ear+`<g data-chibi-head-shell="" data-face-id="${face}"${shellMeta}>${p(headShell(frame,face),'url(#cb-skin)',OUTLINE,4.5)}</g>`;
 
  const cheekY=stage==='child'?190:stage==='elder'?194:195;
  const cheekX=stage==='child'?116:118;

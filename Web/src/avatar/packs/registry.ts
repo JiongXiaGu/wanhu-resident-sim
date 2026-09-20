@@ -1,10 +1,9 @@
 import {catalogFrames,catalogOption,catalogSelectableOptions,optionSupportsFrame,parts,type Part} from './catalog';
 import {chibiCutePack} from './chibi';
-import {lineworkPack} from './linework';
-import {simpleFlatPack} from './simple-flat';
+import {retiredPackAliases} from './compatibility';
 import type {AvatarPack,PackLifecycle} from './types';
 
-const packs=[lineworkPack,chibiCutePack,simpleFlatPack] as const;
+const packs=[chibiCutePack] as const;
 
 export type PackId=typeof packs[number]['id'];
 
@@ -49,9 +48,7 @@ const active=packCatalog.find(pack=>pack.lifecycle==='active');
 if(!active)throw new Error('Avatar registry requires at least one active pack.');
 export const activePackId:PackId=active.id;
 
-const legacyPackAliases:Readonly<Record<string,PackId>>={
-  'soft-paint-v1':'chibi-cute-v1',
-};
+const legacyPackAliases:Readonly<Record<string,PackId>>=retiredPackAliases;
 
 export function normalizePackId(value:unknown):unknown{
   if(typeof value!=='string')return value;

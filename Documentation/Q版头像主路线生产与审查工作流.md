@@ -7,7 +7,7 @@
 当前主路线：
 
 - **主美术方向：`chibi-cute-v1` / Q版可爱**
-- `linework-v1`、`simple-flat-v1`：暂时保留为对照 / 兼容画风，不再作为优先素材扩充对象。
+- 当前运行时只保留 `chibi-cute-v1`；`linework-v1`、`simple-flat-v1`、`soft-paint-v1` 只保留旧 Recipe 迁移 alias，旧美术实现由 Git 历史保存。
 - 当前玩家编辑仍保持四个主类别：**Face / Hair / Outfit / Expression**。
 - 近期不新增玩家可见的第五类“帽子”或“腮红”分类。
 - 帽子、头巾、发冠等第一阶段先作为 **Hair / 头部造型** 的组成部分；必要时内部增加 Headwear 图层，但不立即增加 Recipe 字段。
@@ -24,7 +24,7 @@
 - [x] Phase 2：建立 Q版 V2 美术规范与头部 / 衣装内部图层规范
 - [x] Phase 3：第一批古代居民核心素材
 - [x] Phase 4：年龄 / 性别扩展与职业可读性
-  - [x] Phase 4A：Face Frame Pass（脸部框架回正）
+  - [x] Phase 4A：Head Frame Pass（脸部框架回正）
   - [x] Phase 4B：child / adult / elder、男女与职业可读性
   - [x] Phase 4C：Frame-specific Asset Catalog（年龄专属 Hair / Outfit）
 - [x] **Phase 5：大规模素材生产与批次 QA**
@@ -32,9 +32,14 @@
   - [x] Phase 5B：成年居民素材批次
   - [x] Phase 5C：老年素材批次
   - [x] Phase 5D：三年龄综合 QA
-- [ ] Phase 6：旧画风隐藏 / 兼容 / 退役决策
+- [x] **Phase 6：Head Frame / Hair Coverage + 旧画风退役 + 清理**
+  - [x] Phase 6A：固定 Head Frame / Hair Coverage Contract
+  - [x] Phase 6B：修正现有 Hair 头型覆盖，重点修复 elder
+  - [x] Phase 6C：退役旧运行时 Pack，集中 compatibility
+  - [x] Phase 6D：六 Frame × active Hair 综合 QA
+- [ ] Phase 7：Unity 迁移前准备 / 后续素材决策
 
-**下一项唯一主任务：Phase 6。**
+**下一项唯一主任务：Phase 7。**
 
 ---
 
@@ -73,23 +78,13 @@ UI 根据当前 Pack 自己的 Catalog 显示选项。
 
 ### Pack 生命周期
 
-预留：
-
-```text
-active      主路线，可继续扩素材
-reference   仍可在编辑器中对照，但不要求继续扩素材
-legacy      只为旧 Recipe 渲染，不再出现在普通画风选择 UI
-```
-
-当前已经执行：
+Phase 6 之后当前运行时 Registry 只注册：
 
 ```text
 chibi-cute-v1   active
-simple-flat-v1  reference
-linework-v1     reference
 ```
 
-普通画风选择显示 active/reference；legacy 预留给未来旧 Recipe 兼容。当前不删除旧 Pack。
+`linework-v1`、`simple-flat-v1`、`soft-paint-v1` 不再拥有运行时美术目录；旧 pack ID 集中在 compatibility alias 中，导入/读取时迁移到 Q版。玩家 UI 不再显示画风选择器。以后若重新增加第二套真实画风，必须重新经过 Pack Registry + Review Spec + 视觉对照，而不是为了兼容保留死资源。
 
 ---
 
@@ -108,7 +103,7 @@ Phase 1 完成后，才进入 Phase 2。
 
 第一轮仍可维持 4 个 Face，再根据实际审查看是否扩到 6 个。
 
-### Face Frame 原则
+### Head Frame 原则
 
 Phase 4A 确认：**Face 负责适配统一头部框架，Hair / Headwear 不跟 Face 变化。**
 
@@ -121,7 +116,7 @@ Phase 4A 确认：**Face 负责适配统一头部框架，Hair / Headwear 不跟
 - round / oval / angular / long 不能通过挤压头发或帽子来表达差异。
 - 同一 Frame + Hair 下，BackHair / FrontHair / HeadwearBack / HeadwearFront 必须在四张 Face 中保持完全一致。
 
-Phase 4B 已把 Face Frame 扩展到全部六个 Frame：female/male × child/adult/elder。每个 Frame 都有稳定的额头顶线、太阳穴接缝和耳位；Hair / Headwear 仍不读取 Face ID。
+Phase 4B 已把 Head Frame 扩展到全部六个 Frame：female/male × child/adult/elder。每个 Frame 都有稳定的额头顶线、太阳穴接缝和耳位；Hair / Headwear 仍不读取 Face ID。
 
 Phase 4C 改变的是素材可用范围而不是头部自动适配：共享 AvatarEditor、Recipe 和八层 Renderer，但 Hair / Outfit 不再要求 child / adult / elder 共用同一素材。Catalog option 可声明 `frames`；同一 Frame 内 Hair 仍不能随 Face 变化。Recipe 不增加年龄字段，Frame 继续来自当前玩家 / 居民对象。
 
@@ -452,7 +447,7 @@ Q版专项自动检查：
 - Simple Flat / Linework 不得被 import 成 Q版实际 geometry。
 - Headwear 内部图层存在时，必须位于正确前后关系。
 - 同一 Frame + Hair 的四个头部层在所有 Face 下必须字节一致；Face 不允许驱动 Hair / Headwear geometry。
-- adult Face 必须声明统一 Face Frame signature，并保持相同额头顶线 / 太阳穴框架。
+- adult Face 必须声明统一 Head Frame signature，并保持相同额头顶线 / 太阳穴框架。
 - Catalog 新增素材不能让旧 Recipe 失效。
 
 ---
@@ -529,34 +524,18 @@ Q版专项自动检查：
 
 ---
 
-# 9. 旧画风退役规则
+# 9. 旧画风退役结果
 
-不要因为 Q版成为主路线就立即删除旧 Pack。
+Phase 6 已执行旧画风清理：
 
-## reference 阶段
+- `linework-v1` 与 `simple-flat-v1` 的当前运行时目录删除，`soft-paint-v1` 此前已删除。
+- Git 历史承担旧美术留档，不在当前树建立 archive。
+- 三个旧 pack ID 仍可被旧 Recipe / JSON 导入识别，但统一迁移到 `chibi-cute-v1`。
+- 迁移只发生在解析/预览，不主动批量改写 localStorage。
+- 玩家 UI 不再显示画风选择器。
+- 旧 modern Hair / Outfit ID 集中到 `packs/compatibility.ts`，继续支持旧 Recipe → 当前 Frame 的 deterministic fallback。
 
-- 仍可选择。
-- 继续渲染旧 Recipe。
-- 不要求跟随 Q版新增所有素材。
-- 不再主动增加新素材。
-
-## legacy 阶段
-
-- 普通玩家 UI 隐藏。
-- 已保存旧 Recipe 仍能渲染。
-- JSON 导入旧 Recipe 仍按明确兼容规则处理。
-- Actions 保留最小兼容检查。
-
-## 删除 Pack
-
-只有同时满足：
-
-- 没有需要保留的本地 Recipe 兼容要求，或已有正式迁移。
-- 用户明确确认删除。
-- Git 历史足够保留旧美术。
-- 删除不会破坏现有居民覆盖记录。
-
-当前不执行删除。
+这次选择的是“保留数据可解释性，删除无效运行时美术资源”，而不是继续维护隐藏的第二、第三套画风。
 
 ---
 
@@ -620,7 +599,7 @@ Phase 2 只建立生产契约，不新增古代帽子或古代服饰；真正美
 
 通过本批后，Phase 4 转向 child / adult / elder 与男女职业可读性，不继续无节制堆成年素材。
 
-## 2026-09-20：Phase 4A Face Frame Pass
+## 2026-09-20：Phase 4A Head Frame Pass
 
 上一轮尝试让 integrated Headwear 根据不同 Face 做缩放 / 位移适配，人工视觉审查证明方向错误：帽子和头发随脸变化后复杂度上升，而且同一发型的稳定性被破坏。因此该实现已从当前树撤销，不作为后续基础。
 
@@ -628,7 +607,7 @@ Phase 2 只建立生产契约，不新增古代帽子或古代服饰；真正美
 
 - Hair / Headwear 是稳定资产，不接受 Face ID。
 - 删除 head-fit 运行时适配与逐脸帽饰 wrapper。
-- `female.adult` 与 `male.adult` 各自建立统一上半脸 Face Frame。
+- `female.adult` 与 `male.adult` 各自建立统一上半脸 Head Frame。
 - 四个 Face 共用同一额头顶线、太阳穴 / 帽沿接触区和耳位；差异集中在脸的下半部与五官。
 - Actions 明确检查每个 Frame × Hair 的四层头部 geometry 在四张 Face 下完全相同。
 - Actions 输出固定书生巾帽 / 劳作头巾 / 掌柜包头 × 4 Face 图板，以及书生巾帽四脸 96 / 64 / 48px 图板。
@@ -641,7 +620,7 @@ Phase 4A 通过后，Phase 4B 才处理 child / adult / elder、男女成熟度�
 
 本轮完成：
 
-- Face Frame 从成年男女扩展到六个 Frame，child / elder 也遵守“Face 适配固定 Hair / Headwear”的原则。
+- Head Frame 从成年男女扩展到六个 Frame，child / elder 也遵守“Face 适配固定 Hair / Headwear”的原则。
 - child 使用更短、更圆的下脸与更大的眼睛，肩颈更窄；不是缩小成人。
 - adult male 的下颌、眼睛、眉线、颈部和肩宽与 adult female 明确分开，不只靠头发区分。
 - elder 增加眼下纹、口周纹、眉线下垂、较弱腮红和更窄 / 更缓的肩颈轮廓，不再只依赖灰发。
@@ -718,12 +697,32 @@ Phase 5C 完成后，child / adult / elder 三个年龄段已经全部完成素�
 - 新增 `phase5d-age-overview`：female/male × child/adult/elder 六个 Frame 同图检查，并在每个样本同时展示 96 / 64 / 48px。样本使用各年龄、各性别真实可选的 Hair / Outfit，不再用成人默认素材去代替儿童或老年造型。
 - 六个 Frame 的 Hair / Outfit 普通 UI 继续只读取当前 Frame Catalog，并增加每类不超过 12 个可选项的密度门槛；当前实际 Hair 为 6 / 10 / 6（female）与 5 / 11 / 6（male），Outfit 为 6 / 10 / 6。
 - 旧 compatibility-only Hair 6 个与 Outfit 4 个继续保留给历史 Recipe；Review 对这 10 个 ID × 六个 Frame 全部执行两次 deterministic fallback，对比结果一致、不能泄漏旧 ID，且最终必须落入目标 Frame 的 active Catalog。
-- 既有模型审查继续覆盖 Random 只能命中当前 Frame 可选项、跨 Pack exact → compatibilityKey → defaults 映射、六 Frame Face Frame、Hair/Headwear 跨 Face geometry、Outfit base/collar，以及 localStorage、导入导出、跨标签页冲突和对象隔离。
+- 既有模型审查继续覆盖 Random 只能命中当前 Frame 可选项、跨 Pack exact → compatibilityKey → defaults 映射、六 Frame Head Frame、Hair/Headwear 跨 Face geometry、Outfit base/collar，以及 localStorage、导入导出、跨标签页冲突和对象隔离。
 - lifecycle 暂不在 Phase 5D 改动：`chibi-cute-v1=active`，`linework-v1/simple-flat-v1=reference`。是否把 reference Pack 转成 legacy、是否隐藏普通选择入口，留到 Phase 6 决定。
 - compatibility-only ID **继续保留**，不在 Phase 5D 删除；删除会破坏旧 Recipe 的可解释性，而它们已经不会进入 UI 或 Random。
 - Q版经过三年龄综合 QA 后，可作为 Unity 迁移前的 Web 美术基线；这只表示当前四字段组合、美术语言与六 Frame 结构已经形成稳定基线，不表示 Unity Runtime、正式存档或最终美术已经迁移/冻结。
 
-Phase 5 完成。下一步只进入 Phase 6 的旧画风隐藏 / 兼容 / 退役决策，不继续无目标扩素材。
+Phase 5 完成。下一步进入 Phase 6。
+
+## 2026-09-20：Phase 6 Head Frame / Hair Coverage 与资源清理
+
+用户在实际截图中指出：部分 Hair 的外轮廓没有完全盖住固定头型，尤其老年疏发会看到 Head Frame 从头发顶部露出。问题根因不是某个 Face，而是旧契约只验证“同一 Hair 不随 Face 变化”，没有验证“Hair 必须覆盖固定 Head Frame”。
+
+本轮执行：
+
+- 将 `face-frame.ts` 明确收敛为 `head-frame.ts`。六个 sex × age Frame 各只有一个 Head Frame；四张 Face 只改变下半脸和五官。
+- elder Head Frame 的隐藏 crown 下收，疏发外轮廓同时上扩，避免 Head Frame 顶线从 Hair 上方露出。
+- 新增固定 Hair Coverage probes：crown / crown-left / crown-right / temple-left / temple-right。它们只做 QA，不参与运行时 offset / scale。
+- `elder-thin-fringe` 标记 `scalpExposure:'intentional'`，表示可表现稀疏发际，但仍必须覆盖 Head Frame 外轮廓。
+- Actions 为六 Frame × 全 active Hair 输出 `hair-coverage-<frame>` 诊断图，虚线和 probe 点只用于审查。
+- 保持禁止 face-dependent Hair、逐 Face offset、anchor solver、mask / clipPath。
+- 玩家默认 Recipe 改为直接使用各 Frame 的当前年龄素材，不再通过旧 modern ID 绕一层 fallback。
+- `linework-v1`、`simple-flat-v1` 运行时资源退役；与 `soft-paint-v1` 一起只保留 pack alias → Q版迁移。
+- 旧 modern Hair / Outfit 从主 Catalog 正文抽到 `packs/compatibility.ts`；仍可解析，但不进入 UI/Random。
+- 单画风后删除玩家 UI 中冗余的画风选择器及对应 CSS。
+- Q版仍是唯一 active Web 美术基线；Unity Runtime / 正式存档迁移未在本阶段实施。
+
+Phase 6 完成后，仓库进入单一 Q版头像主线，后续新增 Hair 必须先满足 Head Frame + Hair Coverage 契约。
 
 ---
 
@@ -732,8 +731,8 @@ Phase 5 完成。下一步只进入 Phase 6 的旧画风隐藏 / 兼容 / 退役
 ## 当前执行点
 
 ```text
-Phase 6 — 旧画风隐藏 / 兼容 / 退役决策
-状态：未开始（Phase 5A / 5B / 5C / 5D 均已完成）
+Phase 7 — Unity 迁移前准备 / 后续素材决策
+状态：未开始（Phase 6 Head Frame / Hair Coverage 与资源清理已完成）
 ```
 
 ## 下一次执行必须先回答

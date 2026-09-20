@@ -1,4 +1,5 @@
 import {defineCatalog} from '../catalog';
+import {compatibilityHairOptions,compatibilityOutfitOptions} from '../compatibility';
 
 const CHILD=['female.child','male.child'] as const;
 const ADULT=['female.adult','male.adult'] as const;
@@ -46,15 +47,9 @@ export const chibiCatalog=defineCatalog({
     {id:'elder-short-bound',label:'老者短束',note:'老年男性 · 短发收束',headwear:'none',frames:['male.elder'],compatibilityKey:'braid'},
     {id:'elder-side-knot',label:'老者侧髻',note:'老年男性 · 侧后束髻',headwear:'none',frames:['male.elder'],compatibilityKey:'pony'},
     {id:'elder-loose-back',label:'松拢长发',note:'老年专属 · 后拢长发',headwear:'none',frames:ELDER,compatibilityKey:'long'},
-    {id:'elder-thin-fringe',label:'疏发',note:'老年专属 · 稀疏额发',headwear:'none',frames:ELDER,compatibilityKey:'wave'},
+    {id:'elder-thin-fringe',label:'疏发',note:'老年专属 · 稀疏额发',headwear:'none',scalpExposure:'intentional',frames:ELDER,compatibilityKey:'wave'},
 
-    // 旧基础 Hair 仅用于历史 Recipe / reference Pack 兼容，不再出现在 active Q版任何 Frame 的 UI。
-    {id:'crop',label:'利落短发',note:'旧配方兼容',headwear:'none',selectable:false},
-    {id:'bob',label:'齐颈短发',note:'旧配方兼容',headwear:'none',selectable:false},
-    {id:'long',label:'自然长发',note:'旧配方兼容',headwear:'none',selectable:false},
-    {id:'pony',label:'高马尾',note:'旧配方兼容',headwear:'none',selectable:false},
-    {id:'wave',label:'蓬松卷发',note:'旧配方兼容',headwear:'none',selectable:false},
-    {id:'braid',label:'侧编发',note:'旧配方兼容',headwear:'none',selectable:false},
+    ...compatibilityHairOptions,
   ],
   outfit:[
     {id:'child-short-robe',label:'童子短衣',note:'儿童专属 · 短身交领',frames:CHILD,compatibilityKey:'tee'},
@@ -84,11 +79,7 @@ export const chibiCatalog=defineCatalog({
     {id:'elder-padded-robe',label:'冬日棉袄',note:'老年专属 · 厚实夹棉',frames:ELDER,compatibilityKey:'adult-winter-coat'},
     {id:'elder-fine-robe',label:'掌柜长衫',note:'老年专属 · 整洁外出服',frames:ELDER,compatibilityKey:'merchant'},
 
-    // 旧现代 Outfit 仅用于历史 Recipe / reference Pack 兼容。
-    {id:'tee',label:'简约上衣',note:'旧配方兼容',selectable:false},
-    {id:'shirt',label:'开领衬衫',note:'旧配方兼容',selectable:false},
-    {id:'knit',label:'针织开衫',note:'旧配方兼容',selectable:false},
-    {id:'jacket',label:'短外套',note:'旧配方兼容',selectable:false},
+    ...compatibilityOutfitOptions,
   ],
   expression:[
     {id:'calm',label:'平静'},

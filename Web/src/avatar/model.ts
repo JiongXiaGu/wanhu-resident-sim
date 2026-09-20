@@ -101,14 +101,19 @@ export function randomRecipeForPack(seed:number,pack:PackId,previous?:Recipe,fra
 
 export const randomRecipe=(seed:number,previous?:Recipe,frame?:Frame):Recipe=>randomRecipeForPack(seed,previous?.pack??activePackId,previous,frame);
 
+const playerWardrobeByFrame:Record<Frame,{hair:string;outfit:string}>={
+  'female.child':{hair:'child-double-bun',outfit:'child-fine-robe'},
+  'male.child':{hair:'child-topknot',outfit:'child-apprentice'},
+  'female.adult':{hair:'low-bun',outfit:'adult-female-ruqun'},
+  'male.adult':{hair:'adult-short-bound',outfit:'adult-male-long-robe'},
+  'female.elder':{hair:'elder-soft-bun',outfit:'elder-fine-robe'},
+  'male.elder':{hair:'elder-swept',outfit:'elder-long-robe'},
+};
+
 export function defaultFor(target:Target):Recipe{
   const pack=activePackId,base=recipeForPack(pack,target.frame);
   if(target.kind==='player'){
-    return fitRecipeToFrame(parseRecipe({
-      ...base,
-      hair:preferred(pack,'hair',target.frame.startsWith('male')?'crop':'long',target.frame),
-      outfit:preferred(pack,'outfit',target.frame.startsWith('male')?'shirt':'knit',target.frame),
-    }),target.frame);
+    return fitRecipeToFrame(parseRecipe({...base,...playerWardrobeByFrame[target.frame]}),target.frame);
   }
   const randomized=randomRecipe(target.seed,undefined,target.frame);
   return fitRecipeToFrame({...randomized,expression:preferred(pack,'expression','calm',target.frame)},target.frame);

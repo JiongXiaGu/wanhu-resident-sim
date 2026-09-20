@@ -121,9 +121,11 @@ async function auditModelContract(page){
       }
     }
 
-    const legacy=m.parseRecipe({...chibi,pack:'soft-paint-v1'});
-    require(legacy.pack==='chibi-cute-v1','Legacy soft-paint alias no longer maps to chibi-cute-v1');
-    for(const part of m.parts)require(legacy[part]===chibi[part],'Legacy alias rewrote semantic choices');
+    for(const oldPack of ['soft-paint-v1','linework-v1','simple-flat-v1']){
+      const legacy=m.parseRecipe({...chibi,pack:oldPack});
+      require(legacy.pack==='chibi-cute-v1',`Retired pack ${oldPack} no longer migrates to chibi-cute-v1`);
+      for(const part of m.parts)require(legacy[part]===chibi[part],`Retired pack ${oldPack} rewrote semantic choices`);
+    }
 
     for(const value of [null,[],{}, {...m.defaultRecipe,target:'other'}, {...m.defaultRecipe,version:2}]){
       let rejected=false;try{m.parseRecipe(value);}catch{rejected=true;}
@@ -141,7 +143,7 @@ async function auditPack(page,outRoot,spec){
   await mkdir(join(out,'samples'),{recursive:true});
 
   const data=await page.evaluate(async spec=>{
-    const m=await import('/src/avatar/model.ts'),r=await import('/src/avatar/render.ts'),types=await import('/src/avatar/packs/types.ts');
+    const m=await import('/src/avatar/model.ts'),r=await import('/src/avatar/render.ts'),types=await import('/src/avatar/packs/types.ts'),head=await import('/src/avatar/packs/chibi/head-frame.ts');
     const require=(value,message)=>{if(!value)throw new Error(message);};
     const expectedLayerOrder=types.layerOrder;
     const parser=new DOMParser(),host=document.createElement('div');
@@ -152,7 +154,7 @@ async function auditPack(page,outRoot,spec){
     const pick=(part,id,frame)=>{const available=frame?m.optionsFor(spec.id,part,frame):catalog[part];return available.some(option=>option.id===id)?id:(frame?m.recipeForPack(spec.id,frame):m.recipeForPack(spec.id))[part];};
     const baseRecipe=m.recipeForPack(spec.id);
     const parts=[],samples=[],boards=[],wardrobe=new Map(),headGeometry=new Map(),frameSignature=new Map();
-    let combinations=0,expected=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,frameCatalogChecks=0,childBatchChecks=0,adultBatchChecks=0,elderBatchChecks=0,phase5dChecks=0,compatibilityOnlyChecks=0,ageSexChecks=0,roleChecks=0,outfitStructureChecks=0;
+    let combinations=0,expected=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,headFrameChecks=0,hairCoverageChecks=0,headGeometryChecks=0,frameCatalogChecks=0,childBatchChecks=0,adultBatchChecks=0,elderBatchChecks=0,phase5dChecks=0,compatibilityOnlyChecks=0,ageSexChecks=0,roleChecks=0,outfitStructureChecks=0;
 
     for(const frame of m.frames){
       const frameCatalog=Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame)]));
@@ -186,6 +188,17 @@ async function auditPack(page,outRoot,spec){
           else require(!hasHeadwear,`${spec.id}/${hair.id} draws Headwear content without integrated catalog metadata`);
           headwearChecks++;
         }
+        if(spec.hairCoverageContract){
+          const headLayers=layers.filter(layer=>['BackHair','HeadwearBack','FrontHair','HeadwearFront'].includes(layer.id));
+          host.innerHTML=r.svgDocument(headLayers.map(layer=>`<g data-layer="${layer.id}">${layer.svg}</g>`).join(''),spec.id);
+          const shapes=[...host.querySelectorAll('[data-layer="BackHair"] path,[data-layer="HeadwearBack"] path,[data-layer="FrontHair"] path,[data-layer="HeadwearFront"] path')];
+          require(shapes.length>0,`${spec.id}/${frame}/${hair.id} has no Hair coverage geometry`);
+          for(const point of head.hairCoveragePoints(frame)){
+            const p=new DOMPoint(point.x,point.y);
+            require(shapes.some(shape=>shape.isPointInFill(p)),`${spec.id}/${frame}/${hair.id} leaves Head Frame exposed at ${point.name} (${point.x},${point.y})`);
+            hairCoverageChecks++;
+          }
+        }
       }
       for(const outfit of frameCatalog.outfit){
         const outfitLayer=r.renderLayers(frame,{...base,outfit:outfit.id}).find(x=>x.id==='Outfit');
@@ -210,20 +223,20 @@ async function auditPack(page,outRoot,spec){
         faces.push({label:face.label,svg:referenceSvg,sizes:true});
         samples.push({name:`${frame}-${face.id}`,frame,recipe:reference,svg:referenceSvg});
 
-        if(spec.faceFrameContract&&spec.faceFrameFrames?.includes(frame)){
+        if(spec.headFrameContract&&spec.headFrameFrames?.includes(frame)){
           host.innerHTML=referenceSvg;
-          const shell=host.querySelector('[data-chibi-face-shell]');
-          require(shell,`${spec.id}/${frame}/${face.id} missing Face Frame shell metadata`);
-          require(shell.getAttribute('data-face-frame')===frame,`${spec.id}/${frame}/${face.id} uses the wrong Face Frame`);
+          const shell=host.querySelector('[data-chibi-head-shell]');
+          require(shell,`${spec.id}/${frame}/${face.id} missing Head Frame shell metadata`);
+          require(shell.getAttribute('data-head-frame')===frame,`${spec.id}/${frame}/${face.id} uses the wrong Head Frame`);
           const signature=shell.getAttribute('data-frame-signature');
-          require(signature,`${spec.id}/${frame}/${face.id} missing Face Frame signature`);
+          require(signature,`${spec.id}/${frame}/${face.id} missing Head Frame signature`);
           if(frameSignature.has(frame))require(frameSignature.get(frame)===signature,`${spec.id}/${frame} face options no longer share the same upper frame`);else frameSignature.set(frame,signature);
           const topY=Number(shell.getAttribute('data-frame-top-y')),shellBox=shell.getBBox();
           require(Math.abs(shellBox.y-topY)<1.5,`${spec.id}/${frame}/${face.id} escaped the common forehead top line`);
-          faceFrameChecks++;
+          headFrameChecks++;
         }
 
-        if(spec.faceFrameContract){
+        if(spec.headFrameContract){
           for(const hair of frameCatalog.hair){
             const headLayers=r.renderLayers(frame,{...reference,hair:hair.id}).filter(layer=>['BackHair','HeadwearBack','FrontHair','HeadwearFront'].includes(layer.id));
             const geometry=JSON.stringify(headLayers),key=`${frame}/${hair.id}`;
@@ -293,6 +306,19 @@ async function auditPack(page,outRoot,spec){
       }
 
       require(faceGeometry.size===frameCatalog.face.length,`${spec.id} faces are not independent outlines`);
+      if(spec.hairCoverageContract){
+        const foundation={...base,face:pick('face','round',frame),outfit:frameCatalog.outfit[0].id,expression:pick('expression','calm',frame)};
+        boards.push({
+          name:`hair-coverage-${frame}`,
+          title:`${meta.label} · ${frame} · Hair Coverage / Head Frame 诊断`,
+          columns:Math.min(6,frameCatalog.hair.length),
+          cells:frameCatalog.hair.map(hair=>({
+            label:`${hair.label}${hair.scalpExposure==='intentional'?' · 稀疏头皮':''}`,
+            svg:r.renderAvatar(frame,{...foundation,hair:hair.id})+head.hairCoverageOverlay(frame),
+            sizes:true,
+          })),
+        });
+      }
       const matrixFrame=spec.matrixFrames==='all'||frame.endsWith('adult');
       if(matrixFrame){
         boards.push({name:`faces-${frame}`,title:`${meta.label} · ${frame} · ${frameCatalog.face.length} 张脸`,columns:Math.min(4,frameCatalog.face.length),cells:faces});
@@ -318,7 +344,7 @@ async function auditPack(page,outRoot,spec){
       for(const gender of ['female','male'])for(const stage of ['child','adult','elder']){
         const frame=`${gender}.${stage}`,recipe={...baseRecipe,...proof},svg=r.renderAvatar(frame,recipe);
         host.innerHTML=svg;
-        const faceNode=host.querySelector('[data-layer="FaceBase"] [data-chibi-face-shell]'),outfitNode=host.querySelector('[data-layer="Outfit"]'),neckNode=host.querySelector('[data-layer="Neck"]');
+        const faceNode=host.querySelector('[data-layer="FaceBase"] [data-chibi-head-shell]'),outfitNode=host.querySelector('[data-layer="Outfit"]'),neckNode=host.querySelector('[data-layer="Neck"]');
         require(faceNode&&outfitNode&&neckNode,`${spec.id}/${frame} missing age/sex proof layers`);
         require(faceNode.getAttribute('data-age-stage')===stage,`${spec.id}/${frame} has wrong age marker`);
         require(faceNode.getAttribute('data-sex')===gender,`${spec.id}/${frame} has wrong sex marker`);
@@ -525,14 +551,14 @@ async function auditPack(page,outRoot,spec){
     if(spec.featuredHair?.length||spec.featuredOutfits?.length||spec.featuredExpressions?.length){
       for(const gender of ['female','male']){
         const frame=`${gender}.adult`,foundation={...baseRecipe,face:pick('face','round'),hair:pick('hair','bound'),outfit:pick('outfit','commoner'),expression:pick('expression','calm')};
-        if(spec.faceFrameContract&&spec.faceFrameHats?.length){
+        if(spec.headFrameContract&&spec.headFrameHats?.length){
           const fixedCells=[];
-          for(const face of catalog.face)for(const hairId of spec.faceFrameHats){
-            const option=catalog.hair.find(item=>item.id===hairId);require(option,`Face Frame hair ${hairId} missing from ${spec.id}`);
+          for(const face of catalog.face)for(const hairId of spec.headFrameHats){
+            const option=catalog.hair.find(item=>item.id===hairId);require(option,`Head Frame hair ${hairId} missing from ${spec.id}`);
             fixedCells.push({label:`${face.label} / ${option.label}`,svg:r.renderAvatar(frame,{...foundation,face:face.id,hair:hairId})});
           }
-          boards.push({name:`face-frame-hats-${frame}`,title:`${meta.label} · ${frame} · 固定 Hair/Headwear × 4脸`,columns:spec.faceFrameHats.length,cells:fixedCells});
-          const scholar=spec.faceFrameHats.includes('scholar-cap')&&catalog.hair.find(item=>item.id==='scholar-cap');
+          boards.push({name:`face-frame-hats-${frame}`,title:`${meta.label} · ${frame} · 固定 Hair/Headwear × 4脸`,columns:spec.headFrameHats.length,cells:fixedCells});
+          const scholar=spec.headFrameHats.includes('scholar-cap')&&catalog.hair.find(item=>item.id==='scholar-cap');
           if(scholar)boards.push({name:`face-frame-scholar-${frame}`,title:`${meta.label} · ${frame} · 固定书生巾帽 · 4脸 · 96/64/48px`,columns:catalog.face.length,cells:catalog.face.map(face=>({label:face.label,svg:r.renderAvatar(frame,{...foundation,face:face.id,hair:scholar.id}),sizes:true}))});
         }
         if(spec.featuredHair?.length){
@@ -560,7 +586,7 @@ async function auditPack(page,outRoot,spec){
     }
 
     host.remove();
-    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,frameCatalogChecks,childBatchChecks,adultBatchChecks,elderBatchChecks,phase5dChecks,compatibilityOnlyChecks,ageSexChecks,roleChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part).length])),compatibilityOnlyCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].filter(option=>option.selectable===false).length])),frameCatalogCounts:Object.fromEntries(m.frames.map(frame=>[frame,Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame).length]))]))};
+    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,headFrameChecks,hairCoverageChecks,headGeometryChecks,frameCatalogChecks,childBatchChecks,adultBatchChecks,elderBatchChecks,phase5dChecks,compatibilityOnlyChecks,ageSexChecks,roleChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part).length])),compatibilityOnlyCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].filter(option=>option.selectable===false).length])),frameCatalogCounts:Object.fromEntries(m.frames.map(frame=>[frame,Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame).length]))]))};
   },spec);
 
   for(const part of data.parts){
@@ -598,7 +624,8 @@ async function auditPack(page,outRoot,spec){
     eyeChecks:data.eyeChecks,
     markerChecks:data.markerChecks,
     headwearChecks:data.headwearChecks,
-    faceFrameChecks:data.faceFrameChecks,
+    headFrameChecks:data.headFrameChecks,
+    hairCoverageChecks:data.hairCoverageChecks,
     headGeometryChecks:data.headGeometryChecks,
     frameCatalogChecks:data.frameCatalogChecks,
     childBatchChecks:data.childBatchChecks,
@@ -636,7 +663,7 @@ async function auditStyleComparisons(page,outRoot,registered){
         const recipe=m.withPack(semantic,pack.id);
         return {id:pack.id,label:pack.label,svg:r.renderAvatar(frame,recipe),recipe};
       });
-      require(new Set(rendered.map(item=>item.svg)).size===rendered.length,`Visible packs rendered identical SVG for ${frame}`);
+      if(rendered.length>1)require(new Set(rendered.map(item=>item.svg)).size===rendered.length,`Visible packs rendered identical SVG for ${frame}`);
       const metrics={};
       for(const item of rendered){
         host.innerHTML=item.svg;
@@ -650,14 +677,14 @@ async function auditStyleComparisons(page,outRoot,registered){
         else if(relation.type==='relative-face-width-max')require(metrics[relation.pack].faceWidth<metrics[relation.other].faceWidth*relation.factor,`${relation.pack} face width is too close to ${relation.other}`);
         styleChecks++;
       }
-      boards.push({name:`style-compare-${frame}`,title:`${frame} · 同一语义跨画风对比`,columns:rendered.length,cells:rendered.map(item=>({label:item.label,svg:item.svg,sizes:true}))});
+      boards.push({name:`style-compare-${frame}`,title:rendered.length>1?`${frame} · 同一语义跨画风对比`:`${frame} · Q版主画风基线`,columns:rendered.length,cells:rendered.map(item=>({label:item.label,svg:item.svg,sizes:true}))});
     }
     host.remove();
     return {styleChecks,boards};
   },{registered,relationships:styleRelationships});
 
-  const out=join(outRoot,'style-comparisons');
-  await renderBoards(page,out,result.boards,{background:'#fffaf6',subtitle:'从 active Pack 出发，按显式兼容规则映射到各画风'});
+  const out=join(outRoot,registered.length>1?'style-comparisons':'baseline');
+  await renderBoards(page,out,result.boards,{background:'#fffaf6',subtitle:registered.length>1?'从 active Pack 出发，按显式兼容规则映射到各画风':'唯一 active Pack 的比例与语义基线'});
   const report={registeredPacks:registered.map(item=>({id:item.id,lifecycle:item.lifecycle,counts:item.counts})),styleChecks:result.styleChecks,boards:result.boards.length};
   await writeFile(join(out,'review.json'),JSON.stringify(report,null,2));
   return report;

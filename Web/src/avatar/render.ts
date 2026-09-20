@@ -1,4 +1,4 @@
-import {fitRecipeToFrame,frames,type Frame,type PackId,type Recipe} from './model';
+import {activePackId,fitRecipeToFrame,frames,type Frame,type PackId,type Recipe} from './model';
 import {avatarPacks,getPack,packCatalog} from './packs/registry';
 import {layerOrder,type AvatarPack,type Layer} from './packs/types';
 
@@ -12,7 +12,7 @@ export function renderLayers(frame:Frame,recipe:Recipe):Layer[] {
  if(layers.map(layer=>layer.id).join(',')!==layerOrder.join(','))throw new Error(`头像画风 ${safe.pack} 的图层顺序不符合当前契约。`);
  return layers;
 }
-export const svgDocument=(inner:string,pack:PackId='linework-v1')=>{const definition=getPack(pack);return `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="${definition.viewBox}">${definition.defs()}${inner}</svg>`;};
+export const svgDocument=(inner:string,pack:PackId=activePackId)=>{const definition=getPack(pack);return `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="${definition.viewBox}">${definition.defs()}${inner}</svg>`;};
 export const renderAvatar=(frame:Frame,recipe:Recipe)=>{const safe=fitRecipeToFrame(recipe,frame);return svgDocument(renderLayers(frame,safe).map(layer=>`<g data-layer="${layer.id}">${layer.svg}</g>`).join(''),safe.pack);};
 export const avatarSource=(frame:Frame,recipe:Recipe)=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(renderAvatar(frame,recipe));
 

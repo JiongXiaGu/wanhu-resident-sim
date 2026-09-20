@@ -17,6 +17,10 @@ export type CatalogOption={
   selectable?:boolean;
   // 跨 Pack 或跨 Frame 回退时只用于显式语义兼容。省略时默认使用自身 id。
   compatibilityKey?:string;
+  // 仅 Hair 使用：帽饰仍属于 Hair 内部作者层，不增加玩家 Recipe 字段。
+  headwear?:'none'|'integrated';
+  // 仅 Hair 使用：允许内部发际区域表现稀疏头皮；不允许 Hair 外轮廓露出 Head Frame。
+  scalpExposure?:'none'|'intentional';
 };
 
 export type AvatarCatalog={

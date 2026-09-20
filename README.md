@@ -10,9 +10,9 @@ http://localhost:5173/?view=avatar-editor
 
 也可在首页点 **头像工坊**，或在任意居民的身份栏点 **编辑头像**。
 
-这一版是真实部件组合与对象保存：只有 **脸型、头发、衣服、表情** 四类。不是切换整张角色图，也不提供帽子、调色或五官滑杆。编辑器现在有三套原创 SVG 画风包：`linework-v1`（日常线绘）、`chibi-cute-v1`（Q版可爱）与 `simple-flat-v1`（极简简笔）。`chibi-cute-v1` 当前玩家可选素材为 **4 脸、30 个头部造型、24 套衣服、8 个表情**；child / adult / elder 已全部使用各自年龄段素材列表。另有 6 个旧 Hair 与 4 个旧 Outfit 仅作为 compatibility-only Recipe 兼容，不再出现在普通 UI 或随机搭配中；另外两套 reference Pack 仍保持自己的旧 Catalog。Q版新增的束发、低髻、劳作头巾、书生巾帽、掌柜包头，以及平民/劳作/商贩/书生/工匠服饰，不要求 reference Pack 同步补画。画风仍不是第五类捏脸参数；人物年龄与性别继续来自目标对象。
+这一版是真实部件组合与对象保存：只有 **脸型、头发、衣服、表情** 四类。当前运行时只保留 `chibi-cute-v1` 一套 Q版 SVG 美术包，玩家不再选择旧画风。Q版当前玩家可选素材为 **4 脸、30 个头部造型、24 套衣服、8 个表情**；child / adult / elder 使用各自年龄段素材列表。另有 6 个旧 Hair 与 4 个旧 Outfit 只作为 compatibility-only Recipe ID，不进入 UI 或 Random。`linework-v1`、`simple-flat-v1`、`soft-paint-v1` 旧 pack ID 仍可读取，但会迁移到 Q版当前素材；旧美术实现只保留在 Git 历史。
 
-编辑器左边选择玩家示例档案或当前城市任意居民，右边先选画风，再选择四类部件。切换画风保持同一组 face / hair / outfit / expression ID；Q版包会改变头身比例和贴纸语言，极简简笔包则使用更克制的头部比例、细线和平涂块面。三者都是独立 geometry，不是给原画加滤镜。点击 **应用** 才写入这个对象；未保存修改可撤销，切对象或关闭会提示。给甲改头像不会改变乙。关闭工坊后，实际居民信息面板显示刚应用的头像，游戏日期和故事不会重置。
+编辑器左边选择玩家示例档案或当前城市任意居民，右边直接选择四类部件。点击 **应用** 才写入这个对象；未保存修改可撤销，切对象或关闭会提示。给甲改头像不会改变乙。关闭工坊后，实际居民信息面板显示刚应用的头像，游戏日期和故事不会重置。
 
 两份玩家档案用于展示 21 岁女子、32 岁男子的独立保存；它们不是账号或玩家资料系统。居民列表来自当前真实快照。
 
@@ -20,7 +20,7 @@ http://localhost:5173/?view=avatar-editor
 
 所有保存都在当前浏览器 localStorage，以城市和目标 ID 隔离。清除站点数据会丢失记录，需导出配方备份。正式居民 Snapshot 和五字段 DNA 未改，未定制居民使用原正式头像；恢复原头像只移除指定对象的 Web 覆盖。
 
-详见 [头像工坊](Documentation/Avatar%20Workshop.md) 与 [Q版头像主路线生产与审查工作流](Documentation/Q版头像主路线生产与审查工作流.md)。当前后续美术主路线已转向 `chibi-cute-v1`；Phase 5A / 5B / 5C 已分别完成儿童、成年与老年居民素材批次，Phase 5D 三年龄综合 QA 也已完成；`linework-v1`、`simple-flat-v1` 暂保留为 reference，是否转 legacy 留到 Phase 6。`soft-paint-v1` 已因用户否定从当前工作树删除，只保留 Git 历史。Q版当前可作为 Unity 迁移前的 Web 美术基线继续使用，但 CI 绿色仍不能代替后续具体美术验收。
+详见 [头像工坊](Documentation/Avatar%20Workshop.md) 与 [Q版头像主路线生产与审查工作流](Documentation/Q版头像主路线生产与审查工作流.md)。Phase 6 已把 Q版 Head Frame / Hair Coverage 作为新基础契约：Hair 必须覆盖固定头型，Face 不驱动 Hair；同时旧画风运行时资源已清理，只保留 Recipe 迁移 alias。Q版继续作为 Unity 迁移前的 Web 美术基线，但 CI 绿色仍不能代替实际截图审查。
 
 ## 清理结果
 
@@ -79,6 +79,6 @@ npm run dev
 
 当前 Visual Review 保留居民故事与正式 72 组合检查，新增工坊的玩家/居民保存、草稿、恢复、导入、错误处理和年龄/部件检查。补充检查入口不遮挡现有界面、居民编辑按钮尺寸、异步导入与“应用后切对象”的保存归属。
 
-`resident-visual-review` Artifact 的 `avatar/` 包含实际编辑窗口、已应用居民面板与原尺寸样本；每个注册画风统一输出到 `avatar/packs/<pack-id>/`，跨画风固定配置对照放在 `avatar/style-comparisons/`。Review 会从运行时 Pack Registry 与每个 Pack 自己的 Catalog 读取实际选项并动态计算组合数；Registry 新增 Pack 但缺 Review Spec 会直接失败。`chibi-cute-v1` 当前六个 Frame 合计 11,136 个可选组合；reference Pack 维持各自 Catalog，组合数不再是跨 Pack 固定契约。
+`resident-visual-review` Artifact 的 `avatar/` 包含实际编辑窗口、已应用居民面板、96/64/48px 样本和 `avatar/packs/chibi-cute-v1/hair-coverage-*` 诊断图。Review 从运行时 Registry/Catalog 动态计算组合数，并检查 Head Frame、Hair Coverage、年龄素材过滤、兼容迁移和保存流程。`chibi-cute-v1` 当前六个 Frame 合计 11,136 个可选组合。
 
 3,456 个基础组合只是测试覆盖量；原图保留不缩放。CI PASS 不能代替实际视觉审查。

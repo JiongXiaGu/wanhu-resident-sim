@@ -1,7 +1,7 @@
 import type {Frame} from '../../model';
 import type {FaceId} from './catalog';
 
-export type ChibiFaceFrame={
+export type ChibiHeadFrame={
   id:Frame;
   left:number;
   right:number;
@@ -12,13 +12,18 @@ export type ChibiFaceFrame={
   earY:number;
 };
 
-const frames:Record<Frame,ChibiFaceFrame>={
+export type HairCoveragePoint={x:number;y:number;name:string};
+
+// Head Frame is the single skull/temple contract for a sex × age Frame.
+// Face variants may change only the lower face and features; Hair never reads FaceId.
+const frames:Record<Frame,ChibiHeadFrame>={
   'female.child':{id:'female.child',left:84,right:236,topY:64,templeY:114,sideY:160,earX:84,earY:160},
   'male.child':{id:'male.child',left:82,right:238,topY:64,templeY:113,sideY:160,earX:82,earY:160},
   'female.adult':{id:'female.adult',left:91,right:229,topY:58,templeY:108,sideY:164,earX:91,earY:165},
   'male.adult':{id:'male.adult',left:89,right:231,topY:58,templeY:107,sideY:164,earX:89,earY:165},
-  'female.elder':{id:'female.elder',left:92,right:228,topY:60,templeY:108,sideY:166,earX:92,earY:165},
-  'male.elder':{id:'male.elder',left:90,right:230,topY:60,templeY:107,sideY:166,earX:90,earY:165},
+  // Elder hair is intentionally softer/thinner, but the hidden skull crown must still sit beneath its outer envelope.
+  'female.elder':{id:'female.elder',left:92,right:228,topY:70,templeY:108,sideY:166,earX:92,earY:165},
+  'male.elder':{id:'male.elder',left:90,right:230,topY:70,templeY:107,sideY:166,earX:90,earY:165},
 };
 
 const lower:Record<Frame,Record<FaceId,string>>={
@@ -60,17 +65,33 @@ const lower:Record<Frame,Record<FaceId,string>>={
   },
 };
 
-export function faceFrameFor(frame:Frame):ChibiFaceFrame{
-  return frames[frame];
-}
+export function headFrameFor(frame:Frame):ChibiHeadFrame{return frames[frame];}
 
-export function faceFrameSignature(frame:Frame):string{
-  const guide=faceFrameFor(frame);
+export function headFrameSignature(frame:Frame):string{
+  const guide=headFrameFor(frame);
   return `${guide.id}:${guide.left}:${guide.right}:${guide.topY}:${guide.templeY}:${guide.sideY}:${guide.earX}:${guide.earY}`;
 }
 
-export function faceShell(frame:Frame,face:FaceId):string{
-  const guide=faceFrameFor(frame);
+export function headShell(frame:Frame,face:FaceId):string{
+  const guide=headFrameFor(frame);
   const upper=`M${guide.left} ${guide.templeY}Q${guide.left+3} ${guide.topY+3} 160 ${guide.topY}Q${guide.right-3} ${guide.topY+3} ${guide.right} ${guide.templeY}L${guide.right} ${guide.sideY}`;
   return upper+lower[frame][face];
+}
+
+// These points are QA probes only. They never move/scale Hair at runtime.
+export function hairCoveragePoints(frame:Frame):HairCoveragePoint[]{
+  const g=headFrameFor(frame);
+  return [
+    {name:'crown',x:160,y:g.topY+4},
+    {name:'crown-left',x:128,y:g.topY+15},
+    {name:'crown-right',x:192,y:g.topY+15},
+    {name:'temple-left',x:g.left+10,y:g.templeY+7},
+    {name:'temple-right',x:g.right-10,y:g.templeY+7},
+  ];
+}
+
+export function hairCoverageOverlay(frame:Frame):string{
+  const g=headFrameFor(frame),points=hairCoveragePoints(frame);
+  const upper=`M${g.left} ${g.templeY}Q${g.left+3} ${g.topY+3} 160 ${g.topY}Q${g.right-3} ${g.topY+3} ${g.right} ${g.templeY}`;
+  return `<g data-hair-coverage-guide="" fill="none" pointer-events="none"><path d="${upper}" stroke="#d34b4b" stroke-width="2" stroke-dasharray="5 4"/>${points.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="3" fill="#2f78c4" stroke="#fff" stroke-width="1"/>`).join('')}</g>`;
 }
