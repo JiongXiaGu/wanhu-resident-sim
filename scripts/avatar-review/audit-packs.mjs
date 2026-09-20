@@ -139,8 +139,8 @@ async function auditPack(page,outRoot,spec){
     require(meta,`Review spec references unregistered pack ${spec.id}`);
     const pick=(part,id)=>catalog[part].some(option=>option.id===id)?id:m.recipeForPack(spec.id)[part];
     const baseRecipe=m.recipeForPack(spec.id);
-    const parts=[],samples=[],boards=[],wardrobe=new Map(),headGeometry=new Map(),frameSignature=new Map();
-    let combinations=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,ageSexChecks=0,roleChecks=0,outfitStructureChecks=0;
+    const parts=[],samples=[],boards=[],wardrobe=new Map(),headGeometry=new Map(),frameSignature=new Map(),headShellSignatures=new Map();
+    let combinations=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,headShellChecks=0,ageSexChecks=0,roleChecks=0,outfitStructureChecks=0;
 
     for(const frame of m.frames){
       const base={...baseRecipe,hair:pick('hair',frame.startsWith('male')?'crop':'bob'),outfit:pick('outfit','shirt'),expression:pick('expression','calm')};
@@ -165,6 +165,24 @@ async function auditPack(page,outRoot,spec){
           if(mode==='integrated')require(hasHeadwear,`${spec.id}/${hair.id} declares integrated headwear but draws no Headwear layer`);
           else require(!hasHeadwear,`${spec.id}/${hair.id} draws Headwear content without integrated catalog metadata`);
           headwearChecks++;
+        }
+        if(spec.headShellContract&&spec.headShellFrames?.includes(frame)&&spec.headShellHairs?.includes(hair.id)){
+          host.innerHTML=r.renderAvatar(frame,{...base,hair:hair.id});
+          const shell=host.querySelector('[data-chibi-head-shell]'),band=host.querySelector('[data-chibi-headwear-band]'),frontHair=host.querySelector('[data-chibi-front-hair]'),faceShell=host.querySelector('[data-chibi-face-shell]');
+          require(shell&&band&&frontHair&&faceShell,`${spec.id}/${frame}/${hair.id} missing Head Shell review metadata`);
+          require(shell.getAttribute('data-head-shell-frame')===frame,`${spec.id}/${frame}/${hair.id} uses the wrong Head Shell frame`);
+          require(shell.getAttribute('data-head-shell-hair')===hair.id,`${spec.id}/${frame}/${hair.id} uses the wrong Head Shell hair id`);
+          const signature=shell.getAttribute('data-head-shell-signature');
+          require(signature,`${spec.id}/${frame}/${hair.id} missing Head Shell signature`);
+          headShellSignatures.set(`${frame}/${hair.id}`,signature);
+          const shellBox=shell.getBBox(),bandBox=band.getBBox(),frontBox=frontHair.getBBox(),faceBox=faceShell.getBBox();
+          const bandOverlap=Math.min(shellBox.x+shellBox.width,bandBox.x+bandBox.width)-Math.max(shellBox.x,bandBox.x);
+          require(bandOverlap>bandBox.width*.7,`${spec.id}/${frame}/${hair.id} cap band escaped the Head Shell width`);
+          require(bandBox.y<shellBox.y+shellBox.height&&bandBox.y+bandBox.height>shellBox.y,`${spec.id}/${frame}/${hair.id} cap band is vertically detached from the Head Shell`);
+          require(frontBox.y<=bandBox.y+bandBox.height+8,`${spec.id}/${frame}/${hair.id} front hair floats below the headwear band`);
+          require(shellBox.x<=faceBox.x+14&&shellBox.x+shellBox.width>=faceBox.x+faceBox.width-14,`${spec.id}/${frame}/${hair.id} Head Shell no longer covers the shared frame temples`);
+          require(Math.abs(shellBox.x+shellBox.width/2-160)<2.5,`${spec.id}/${frame}/${hair.id} Head Shell shifted away from the face center`);
+          headShellChecks++;
         }
       }
       for(const outfit of catalog.outfit){
@@ -287,6 +305,32 @@ async function auditPack(page,outRoot,spec){
     const expected=m.frames.length*catalog.face.length*catalog.expression.length*catalog.hair.length*catalog.outfit.length;
     require(combinations===expected,`${spec.id} expected ${expected} combinations, got ${combinations}`);
 
+    if(spec.headShellContract){
+      for(const hairId of spec.headShellHairs??[]){
+        for(const gender of ['female','male']){
+          const signatures=['child','adult','elder'].map(stage=>headShellSignatures.get(`${gender}.${stage}/${hairId}`));
+          require(signatures.every(Boolean),`${spec.id}/${gender}/${hairId} missing child/adult/elder Head Shell signatures`);
+          require(new Set(signatures).size===signatures.length,`${spec.id}/${gender}/${hairId} reuses one Head Shell across child/adult/elder`);
+        }
+      }
+      const headShellRecipe=(frame,hairId,face='round')=>({...baseRecipe,face:pick('face',face),hair:pick('hair',hairId),outfit:pick('outfit','commoner'),expression:pick('expression','calm')});
+      const scholarChild=[];
+      for(const frame of ['female.child','male.child'])for(const face of catalog.face)scholarChild.push({label:`${frame} / ${face.label}`,svg:r.renderAvatar(frame,headShellRecipe(frame,'scholar-cap',face.id))});
+      boards.push({name:'head-shell-scholar-child',title:`${meta.label} · Phase 4C · child · 书生巾帽 Head Shell × 4脸`,columns:4,cells:scholarChild});
+      const scholarAdult=[];
+      for(const frame of ['female.adult','male.adult'])for(const face of catalog.face)scholarAdult.push({label:`${frame} / ${face.label}`,svg:r.renderAvatar(frame,headShellRecipe(frame,'scholar-cap',face.id))});
+      boards.push({name:'head-shell-scholar-adult',title:`${meta.label} · Phase 4C · adult · 书生巾帽 Head Shell × 4脸`,columns:4,cells:scholarAdult});
+      for(const hairId of spec.headShellHairs??[]){
+        const option=catalog.hair.find(item=>item.id===hairId);require(option,`Head Shell hair ${hairId} missing from ${spec.id}`);
+        const cells=(spec.headShellFrames??[]).map(frame=>({label:frame,svg:r.renderAvatar(frame,headShellRecipe(frame,hairId))}));
+        boards.push({name:`head-shell-integrated-${hairId}`,title:`${meta.label} · Phase 4C · ${option.label} · 六 Frame 固定 Head Shell`,columns:3,cells});
+      }
+      for(const gender of ['female','male']){
+        const frame=`${gender}.child`;
+        boards.push({name:`head-shell-scholar-child-${gender}-native`,title:`${meta.label} · Phase 4C · ${frame} · 书生巾帽 96 / 64 / 48px`,columns:catalog.face.length,cells:catalog.face.map(face=>({label:face.label,svg:r.renderAvatar(frame,headShellRecipe(frame,'scholar-cap',face.id)),sizes:true}))});
+      }
+    }
+
     if(spec.ageSexContract){
       const preferred=(part,id)=>catalog[part].some(option=>option.id===id)?id:baseRecipe[part];
       const proof={
@@ -403,7 +447,7 @@ async function auditPack(page,outRoot,spec){
     }
 
     host.remove();
-    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,ageSexChecks,roleChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length]))};
+    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,headShellChecks,ageSexChecks,roleChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length]))};
   },spec);
 
   for(const part of data.parts){
@@ -439,6 +483,7 @@ async function auditPack(page,outRoot,spec){
     headwearChecks:data.headwearChecks,
     faceFrameChecks:data.faceFrameChecks,
     headGeometryChecks:data.headGeometryChecks,
+    headShellChecks:data.headShellChecks,
     ageSexChecks:data.ageSexChecks,
     roleChecks:data.roleChecks,
     outfitStructureChecks:data.outfitStructureChecks,
