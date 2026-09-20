@@ -1,3 +1,4 @@
+import {isAgeWardrobeSample} from './packs/chibi/rework-batch';
 import {frames,type Frame,type Part,type Target} from './model';
 
 const stageLabels={child:'儿童',adult:'成年',elder:'老年'} as const;
@@ -13,6 +14,9 @@ const foundationIds:Record<Part,readonly string[]>={
 };
 export const isFoundationSample=(part:Part,id:string):boolean=>foundationIds[part].includes(id);
 
+// 8A 历史图板保留原清单；真实工坊使用累计重画清单，不能把未重画成年素材标成已完成。
+export const isReworkedSample=(part:Part,id:string):boolean=>isFoundationSample(part,id)||isAgeWardrobeSample(part,id);
+
 export function StudioControls({frame,onFrame,onReset}:{frame:Frame;onFrame:(frame:Frame)=>void;onReset:()=>void}){
  const [sex,stage]=frame.split('.');
  return <section className="av-studio-controls" aria-label="自由创作框架">
@@ -21,6 +25,6 @@ export function StudioControls({frame,onFrame,onReset}:{frame:Frame;onFrame:(fra
   <h3>年龄</h3><div className="av-context-switch" role="group" aria-label="创作年龄">{(['child','adult','elder'] as const).map(value=><button key={value} type="button" data-studio-age={value} aria-pressed={stage===value} onClick={()=>onFrame(`${sex}.${value}` as Frame)}>{stageLabels[value]}</button>)}</div>
   <div className="av-studio-help"><b>六份样板，分别保存</b><p>切换框架会打开对应样板。未保存修改会先询问，不会把老人造型写到儿童身上。</p></div>
   <button type="button" data-foundation-template className="av-template" onClick={onReset}>载入日常样板</button>
-  <p className="av-studio-caption">样板是本轮候选画稿，可继续换脸、发型、衣服和表情。不是最终定稿。</p>
+  <p className="av-studio-caption">样板使用已重画的候选素材，可继续换脸、发型、衣服和表情。不是最终定稿。</p>
  </section>;
 }

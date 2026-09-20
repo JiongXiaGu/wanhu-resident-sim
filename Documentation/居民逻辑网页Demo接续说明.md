@@ -8,13 +8,15 @@
 
 ## 当前执行点
 
-Phase 8A：美术体系样板重建 + 自由创作桌面入口。基线为 `d6dc414df4d3e64948d77c2360553d0273ab292c`。用户指出 Phase 7 的脸、帽子、衣装依然不自然，之前从未认可它们为最终画法；不要把技术通过误读为审美定稿。
+Phase 8B1：儿童与老年发型/衣装重画。接手基线 `28ad42619edb7a6abb21ca7ef8d2dee30d2afda2`。用户已查看8A样板并要求继续；这不等于全部历史画稿获得认可。
 
-本轮重画六脸型族（保留原四 ID、新增 broad/tapered）、六个 Hair ID 和五个 Outfit 样板；衣领模板也修正连续性。仅一套 Q版 Pack，仍四分类。其余发型/衣装待 8B 分批重画，不声称已全量完成。先由用户验收8A样板，不自动继续批量生产或 Unity 迁移。
+本批不改六脸型/上头型，重画儿童7个+老年8个Hair ID、两年龄各6个Outfit ID。仍为6 Face / 30 Hair / 24 Outfit / 8 Expression；四Frame合计23份适用发型、24份衣装。成年其他素材留给8B2。不要重复8A或一口气跳到全量扩库。
+
+作者实现：child-hair.ts、elder-hair.ts、age-outfits.ts；hair.ts负责分发与成年未重画资源；sample-hair.ts保留8A成年样板。同ID只有一套画稿。rework-batch.ts为本批明确ID清单，不代替Catalog。
 
 主入口默认自由创作：男/女、儿童/成年/老年六框架可直接选，分别存入 `studio:<frame>`。指定对象模式仍显示原玩家档案与城市居民；Frame 锁定，不能修改居民年龄/性别。两种模式共用编辑器、Recipe 和Renderer。旧 player/resident 保存键不变。导入不自动保存，模板载入不自动应用。
 
-移动端不再截图。核心证据在 `avatar/phase8a/`：六脸型图板、帽发、服饰、三年龄综合图，以及自由创作与绑定居民桌面 UI。必须真实下载并打开，不能只看 automated-pass。
+移动端不再截图。核心新证据在 `avatar/phase8b/`：四Frame×Hair/Outfit八张图板、八张实际桌面UI、发型/衣装旧新对照与四框架总览；8A六框架保存和绑定居民回归仍保留。必须真实下载并打开，不能只看 automated-pass。
 
 ## 继续保持
 

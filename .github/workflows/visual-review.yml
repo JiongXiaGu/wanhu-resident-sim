@@ -74,6 +74,11 @@ jobs:
           node scripts/capture-avatar-art-polish.mjs
       - name: Review Phase 8A art foundation and six-frame studio
         run: node scripts/capture-avatar-foundation.mjs
+      - name: Review Phase 8B child and elder wardrobe
+        run: |
+          git fetch --no-tags --depth=1 origin 28ad42619edb7a6abb21ca7ef8d2dee30d2afda2
+          node scripts/avatar-review/export-age-baseline.mjs
+          node scripts/capture-avatar-age-wardrobe.mjs
       - name: Compress legacy review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots and editable components

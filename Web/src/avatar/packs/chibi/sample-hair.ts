@@ -4,7 +4,7 @@ import type {ChibiHairLayers} from './art-spec';
 import {OUTLINE,hairColor,hairLight,isFemale,l,p} from './drawing';
 
 // Phase 8A 样板：先画完整头部轮廓，再决定哪一层可见。只有固定 Frame，不接受 Face。
-// 其余 ID 在 hair.ts 保留为待重画的基线；同一 ID 不保留两套画稿。
+// 成年其余 ID 在 hair.ts 保留为待重画的基线；同一 ID 不保留两套画稿。
 export function sampleHair(frame:Frame,id:HairId):ChibiHairLayers|undefined{
  const c=hairColor(frame),h=hairLight(frame),female=isFemale(frame);
  const layers=(back:string,front:string,headwearFront='',headwearBack=''):ChibiHairLayers=>({back,front,headwearFront,headwearBack});
@@ -32,28 +32,6 @@ export function sampleHair(frame:Frame,id:HairId):ChibiHairLayers|undefined{
    +l('M110 77Q133 60 160 62','#e6cfa9',3,.45)
    +l('M110 89Q141 70 185 76','#e6cfa9',2.5,.45);
   return layers('',hair,wrap,tail);
- }
- if(id==='child-topknot'){
-  const knot=p('M141 60Q130 41 143 30Q161 19 179 32Q191 45 179 62Z',c,OUTLINE,4.5)
-   +l('M144 49Q160 39 177 49',h,2.5,.6);
-  const hair=p('M81 153Q64 112 89 81Q115 50 160 51Q205 50 231 81Q256 112 239 153L230 175L220 174L216 148Q204 131 191 124Q172 134 160 122Q147 134 129 124Q111 134 103 150L101 175L90 176Z',c,OUTLINE,4.5)
-   +l('M111 93Q132 70 159 69Q188 69 210 93',h,2.8,.5);
-  return layers(knot,hair);
- }
- if(id==='elder-soft-bun'){
-  const bun=p('M204 169Q234 158 249 180Q261 205 240 219Q215 235 201 209Q192 186 204 169Z',c,OUTLINE,4.5)
-   +l('M213 181Q235 174 240 191Q244 207 226 212M219 191Q231 185 232 198',h,3,.7);
-  const hair=p('M89 157Q73 118 96 85Q119 52 160 52Q201 51 224 85Q244 116 233 156L222 177Q211 176 209 164L207 144Q195 123 182 118Q169 116 160 101Q146 116 132 118Q114 127 108 146L106 176L94 175Z',c,OUTLINE,4.5)
-   +l('M160 60L160 98M143 72Q123 81 112 102M177 72Q197 81 208 102',h,3,.7);
-  return layers(bun,hair);
- }
- if(id==='elder-swept'){
-  const hair=p(female
-   ?'M90 156Q75 118 98 85Q120 52 160 52Q202 50 224 86Q244 118 231 158L220 177L210 169L207 142Q196 127 191 112Q163 131 132 122Q116 132 110 146L106 177L94 174Z'
-   :'M90 156Q75 117 99 85Q122 51 161 53Q202 52 224 87Q244 119 231 158L220 178L209 170L207 141Q201 122 183 109Q156 118 134 107Q118 119 112 143L108 177L96 174Z',c,OUTLINE,4.5)
-   +l('M113 94Q136 70 169 71Q191 72 207 91',h,3,.65)
-   +l('M122 103Q144 86 171 87',h,2.4,.6);
-  return layers('',hair);
  }
  return undefined;
 }

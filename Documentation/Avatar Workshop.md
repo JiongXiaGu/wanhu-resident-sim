@@ -12,9 +12,9 @@
 
 唯一运行时 Pack：`chibi-cute-v1`。当前 6 Face / 30 Hair / 24 Outfit / 8 Expression；每个 Frame 只显示适用素材。六脸型族拥有六 Frame 各自的下脸画稿，不是36个玩家选项。
 
-Phase 7 的技术成果保留，但用户未认可其最终画法。当前进入 [Phase 8 头像美术体系与创作工坊](Phase%208%20头像美术体系与创作工坊.md)：8A 重画样板、改善桌面编辑，随后才分批处理剩余素材。
+Phase 7 的技术成果保留，但用户未认可其最终画法。当前进入 [Phase 8 头像美术体系与创作工坊](Phase%208%20头像美术体系与创作工坊.md)：8A 样板和桌面自由创作已交付，当前8B1重画儿童/老年全部现有Hair和Outfit；成年剩余素材在8B2处理。
 
-UI 中“本轮样板”只表示本次候选，不代表用户已验收；过滤可只显示本轮样板。日常样板只载入草稿。随机本类仅修改当前分类，随机搭配只修改 Hair / Outfit。
+UI 中“已重画”表示8A与8B1累计重画候选，不代表用户已最终验收；“仅已重画”可以过滤尚未重画的成年素材。日常样板只载入草稿。随机本类仅修改当前分类，随机搭配只修改 Hair / Outfit。
 
 ## 不变的组合结构
 
@@ -60,7 +60,7 @@ wanhu.avatar.v1:city:<seed>:resident:<id>
 
 ## 源码职责
 
-model/store/render：Recipe、目标默认、保存和统一层序。Integration：App 内的目标与入口。AvatarEditor：草稿、目标切换、保存与部件浏览。studio.tsx：六框架上下文与样板标记。packs/chibi：Catalog 与静态画稿；sample-hair.ts 存放8A重画ID，其余 Hair 待后续分批处理，不能同时保留同 ID 两套画稿。
+model/store/render：Recipe、目标默认、保存和统一层序。Integration：App 内的目标与入口。AvatarEditor：草稿、目标切换、保存与部件浏览。studio.tsx：六框架上下文与样板标记。packs/chibi：Catalog 与静态画稿；sample-hair.ts 存放8A成年重画ID；child-hair.ts / elder-hair.ts 分别负责儿童/老年，age-outfits.ts负责两年龄的衣装画稿；hair.ts与outfits.ts只保留成年部分并分发。rework-batch.ts列出本批ID供UI与QA使用，同ID没有第二套画稿。
 
 ## Review
 
@@ -68,4 +68,6 @@ model/store/render：Recipe、目标默认、保存和统一层序。Integration
 
 移动端不再截图或列为美术必看项。诊断图只辅助审查，不能冒充玩家 UI；技术 PASS 不能替代用户美术认可。
 
-未做：全量 Hair/Outfit 重画、独立帽子分类、连续参数捏脸、自动 Hair fit、服务端同步、Unity Runtime/正式存档迁移。
+8B1 增加四框架全部素材点选、重画过滤、旧新同配方对照；自动验证成年41份Hair/Outfit固定配方渲染不变。旧图通过Git历史临时导出，只在Actions Artifact中保留，不进入Web Pack。
+
+未做：成年剩余 Hair/Outfit 重画、独立帽子分类、连续参数捏脸、自动 Hair fit、服务端同步、Unity Runtime/正式存档迁移。

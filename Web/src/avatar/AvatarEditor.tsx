@@ -4,7 +4,7 @@ import {fitRecipeToFrame,optionsFor,parts,labels,defaultFor,equalRecipe,parseRec
 import {applyRecipe,getRaw,parseEntry,removeRecipe,useSaved} from './store';
 import {AvatarImage,SavedAvatar} from './AvatarImage';
 import {downloadFile,downloadPng,renderAvatar} from './render';
-import {StudioControls,isFoundationSample} from './studio';
+import {StudioControls,isReworkedSample} from './studio';
 import './editor.css';
 
 type Pending={kind:'switch';key:string}|{kind:'close'}|{kind:'restore'};
@@ -81,7 +81,7 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
  }
  const studioTarget=targets.find(item=>item.kind==='studio'&&item.frame===target.frame)!;
  const available=optionsFor(draft.pack,part,target.frame);
- const visibleOptions=samplesOnly?available.filter(item=>isFoundationSample(part,item.id)):available;
+ const visibleOptions=samplesOnly?available.filter(item=>isReworkedSample(part,item.id)):available;
  function randomPart(){
   const candidates=visibleOptions.filter(item=>item.id!==draft[part]);
   if(candidates.length){const index=crypto.getRandomValues(new Uint32Array(1))[0]%candidates.length;choose(part,candidates[index].id);}
@@ -90,7 +90,7 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
   if(!samplesOnly){setDraft(old=>randomRecipe(crypto.getRandomValues(new Uint32Array(1))[0],old,target.frame));}
   else setDraft(old=>{
    const next={...old};
-   for(const field of ['hair','outfit'] as const){const pool=optionsFor(old.pack,field,target.frame).filter(item=>isFoundationSample(field,item.id));if(pool.length)next[field]=pool[crypto.getRandomValues(new Uint32Array(1))[0]%pool.length].id;}
+   for(const field of ['hair','outfit'] as const){const pool=optionsFor(old.pack,field,target.frame).filter(item=>isReworkedSample(field,item.id));if(pool.length)next[field]=pool[crypto.getRandomValues(new Uint32Array(1))[0]%pool.length].id;}
    return next;
   });
   setMessage('只随机更换头发和衣服，保留脸型与表情。');
@@ -121,9 +121,9 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
     </section>
     <section className="av-choices"><div className="av-section-heading"><h2>选择部件</h2><span>{packLabel(draft.pack)}</span></div>
      <div className="av-tabs" role="group" aria-label="头像部件">{parts.map(item=><button type="button" key={item} data-part-tab={item} aria-pressed={part===item} onClick={()=>setPart(item)}>{labels[item]}</button>)}</div>
-     <div className="av-options-toolbar"><button type="button" data-sample-only aria-pressed={samplesOnly} onClick={()=>setSamplesOnly(value=>!value)}>{samplesOnly?'仅本轮样板':'全部素材'}</button><span>{visibleOptions.length} 项</span><button type="button" data-random-part onClick={randomPart}>随机本类</button></div>
-     <div className="av-option-grid" role="group" aria-label={labels[part]}>{visibleOptions.map(item=><button type="button" key={item.id} data-option={item.id} data-option-part={part} className="av-option" aria-pressed={draft[part]===item.id} onClick={()=>choose(part,item.id)}><AvatarImage frame={target.frame} recipe={{...draft,[part]:item.id}} size={112}/><span>{item.label}</span><small>{item.note??'表情样板'}</small>{isFoundationSample(part,item.id)&&<em>本轮样板</em>}<i aria-hidden="true">{draft[part]===item.id?'✓':''}</i></button>)}</div>
-     <p className="av-choice-note">更换{labels[part]}时保留其他选择。「本轮样板」为 Phase 8A 重画候选，其余素材将在后续分批审查。</p>
+     <div className="av-options-toolbar"><button type="button" data-sample-only aria-pressed={samplesOnly} onClick={()=>setSamplesOnly(value=>!value)}>{samplesOnly?'仅已重画':'全部素材'}</button><span>{visibleOptions.length} 项</span><button type="button" data-random-part onClick={randomPart}>随机本类</button></div>
+     <div className="av-option-grid" role="group" aria-label={labels[part]}>{visibleOptions.map(item=><button type="button" key={item.id} data-option={item.id} data-option-part={part} className="av-option" aria-pressed={draft[part]===item.id} onClick={()=>choose(part,item.id)}><AvatarImage frame={target.frame} recipe={{...draft,[part]:item.id}} size={112}/><span>{item.label}</span><small>{item.note??'表情样板'}</small>{isReworkedSample(part,item.id)&&<em>已重画</em>}<i aria-hidden="true">{draft[part]===item.id?'✓':''}</i></button>)}</div>
+     <p className="av-choice-note">更换{labels[part]}时保留其他选择。「已重画」涵盖 8A 样板与儿童、老年批次，仍是候选画稿；未标记成年素材将继续重画。</p>
      <button className="av-random" type="button" data-random-outfit onClick={randomWardrobe}>随机搭配头发与衣服</button>
      <details className="av-tools"><summary>配方与部件审查</summary><div className="av-tools-actions"><button type="button" data-export="json" onClick={()=>downloadFile(new Blob([JSON.stringify(draft,null,2)],{type:'application/json'}),'wanhu-avatar.json')}>导出配方</button><button type="button" onClick={()=>fileInput.current?.click()}>导入配方</button><input ref={fileInput} data-import-recipe type="file" accept=".json,application/json" hidden onChange={event=>{void importFile(event.currentTarget.files?.[0]);}}/></div><p>导入只改当前预览，不携带居民编号，也不自动应用。</p><pre>{JSON.stringify(draft,null,2)}</pre></details>
     </section>
