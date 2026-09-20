@@ -1,3 +1,4 @@
+import {ageOutfit} from './age-outfits';
 import type {Frame} from '../../model';
 import type {OutfitId} from './catalog';
 import {outfitPart} from './art-spec';
@@ -7,12 +8,6 @@ import {OUTLINE,isChild,isElder,isFemale,p,l} from './drawing';
 // 身份首先由交领 / 圆领 / 袄领 / 围襟的大形区分，不再画两片现代翻领加中央“领带”。
 type Paint={base:string;trim:string;accent:string;cut:'cross'|'round'|'warm'|'apron'|'ruqun';edge?:boolean};
 const paint:Partial<Record<OutfitId,Paint>>={
- 'child-short-robe':{base:'#b9916e',trim:'#f2dfbe',accent:'#896747',cut:'cross'},
- 'child-apprentice':{base:'#7e9598',trim:'#f2e7d4',accent:'#516d73',cut:'cross',edge:true},
- 'child-play-jacket':{base:'#ba826b',trim:'#ecd6ba',accent:'#8a5d4b',cut:'round'},
- 'child-helper':{base:'#868970',trim:'#e4d9b9',accent:'#c4af85',cut:'apron'},
- 'child-winter':{base:'#81918a',trim:'#eadbc5',accent:'#596c64',cut:'warm'},
- 'child-fine-robe':{base:'#98859f',trim:'#f4e4d4',accent:'#715c7b',cut:'cross',edge:true},
  commoner:{base:'#b89773',trim:'#f1dfbe',accent:'#8f7354',cut:'cross'},
  laborer:{base:'#8b9278',trim:'#ded2af',accent:'#626b56',cut:'cross',edge:true},
  merchant:{base:'#987b64',trim:'#dfc69f',accent:'#654e3d',cut:'round',edge:true},
@@ -25,15 +20,10 @@ const paint:Partial<Record<OutfitId,Paint>>={
  'adult-winter-coat':{base:'#879394',trim:'#eaddc8',accent:'#57696e',cut:'warm'},
  'adult-service-robe':{base:'#7d8a9a',trim:'#b8c1bc',accent:'#4b596c',cut:'round',edge:true},
  'adult-shop-assistant':{base:'#9e8d7d',trim:'#e9ddc7',accent:'#6d6257',cut:'apron'},
- 'elder-long-robe':{base:'#99917a',trim:'#e8d9bc',accent:'#6b6854',cut:'cross',edge:true},
- 'elder-warm-coat':{base:'#9a8d8e',trim:'#e9ddc7',accent:'#6c626b',cut:'warm'},
- 'elder-simple-robe':{base:'#889590',trim:'#dfd4bb',accent:'#596e67',cut:'round'},
- 'elder-work-jacket':{base:'#8c9278',trim:'#dbcfb0',accent:'#616c56',cut:'cross'},
- 'elder-padded-robe':{base:'#92929b',trim:'#ede0c5',accent:'#616878',cut:'warm',edge:true},
- 'elder-fine-robe':{base:'#a58b7b',trim:'#f0e1c6',accent:'#796356',cut:'cross',edge:true},
 };
 
 export function outfitArt(frame:Frame,id:OutfitId):string{
+ if(id.startsWith('child-')||id.startsWith('elder-'))return ageOutfit(frame,id);
  const colors=paint[id];
  if(!colors)throw new Error(`Outfit ${id} is compatibility-only and must be fitted to the current Frame before rendering.`);
  const child=isChild(frame),elder=isElder(frame),female=isFemale(frame);

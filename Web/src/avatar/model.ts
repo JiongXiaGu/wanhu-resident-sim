@@ -112,11 +112,11 @@ const playerWardrobeByFrame:Record<Frame,{hair:string;outfit:string}>={
 
 // 自由创作使用六个独立样板目标；不把年龄/性别塞进 Recipe，也不改城市居民。
 export const foundationLooks:Record<Frame,{hair:string;outfit:string}>={
- 'female.child':{hair:'child-topknot',outfit:'child-short-robe'},
+ 'female.child':{hair:'child-double-bun',outfit:'child-play-jacket'},
  'male.child':{hair:'child-topknot',outfit:'child-short-robe'},
  'female.adult':{hair:'bound',outfit:'adult-female-ruqun'},
  'male.adult':{hair:'bound',outfit:'commoner'},
- 'female.elder':{hair:'elder-soft-bun',outfit:'elder-long-robe'},
+ 'female.elder':{hair:'elder-soft-bun',outfit:'elder-warm-coat'},
  'male.elder':{hair:'elder-swept',outfit:'elder-long-robe'},
 };
 export function foundationRecipe(frame:Frame):Recipe{
