@@ -41,12 +41,15 @@ Phase 8A — 美术体系样板重建 + 六框架自由创作
 
 1. 读取最新 main、AGENTS、README、接续说明、Avatar Workshop、本文件和对应阶段规范。
 2. 查实际源码与最新 Actions；建立具体问题和本批样板 ID 清单。
-3. 从确认 SHA 创建 tmp-*，集中修改；不一文件一提交、不先推 main。
-4. 聚合提交后跑 Build 与 Resident Visual Review。
-5. 下载对应 SHA 的 Artifact，核对 source-commit，实际打开新图板和桌面 UI。
-6. 有明显问题就修正并重跑；CI 绿色不等于美术完成。
-7. 重新读取 main，无并行冲突才推进已审查的提交；不用 force 覆盖。
-8. main 再跑两类检查、再下载复核。交付附真实截图，并区分实现、候选、未完成。
+3. 对纯 Face / Hair / Outfit / Expression 画稿迭代，先在确认 SHA 上集中修改，并直接调用真实 `renderAvatar()` / Pack SVG Renderer 生成静态图板；实际检查受影响的六 Frame、关键组合和 96/64/48px。这个高频短循环可以连续多轮，不必每轮等待 Actions。
+4. 方向稳定后从确认 SHA 建立/更新 tmp-* 聚合提交；不一文件一提交、不用空提交刷新检查。
+5. 正式批次跑 Build 与 Resident Visual Review。
+6. 下载对应 SHA 的 Artifact，核对 source-commit，实际打开真实桌面 UI、新图板和对应诊断。
+7. 有明显问题就修正并重跑；CI 绿色不等于美术完成，静态图板正常也不等于完整 UI / 存储 / 导入契约完成。
+8. 重新读取 main，无并行冲突才推进已审查的提交；不用 force 覆盖。
+9. main 再跑两类检查、再下载复核。交付必须区分“源码静态头像图板”与“真实浏览器 / Actions 截图”，并区分实现、候选、未完成。
+
+若本批修改了 Avatar Workshop 交互、保存/恢复、导入导出、Catalog / Registry / compatibility、Head Frame / Hair Coverage 契约、正式 portrait fallback 或居民内容管线，则跳过“只做静态图板即可”的放宽，直接按正式批次回归。
 
 ## 自动审查
 
@@ -67,6 +70,8 @@ Phase 8A — 美术体系样板重建 + 六框架自由创作
 
 只以实际输出判断：脸颊到下巴是否自然；眼眉嘴是否成立；帽身是否被前发切断；发髻是否漂浮；衣领是否连续；肩线是否完整；底部裁切是否出现含义不明的横块；老人儿童是否只靠颜色区分。
 
-每批至少打开本轮所有新图板、自由创作真实桌面 UI、绑定居民真实 UI、96/64/48px。移动端不再截图，不列为人工必查；基础窄屏 smoke 可保留。
+高频纯美术迭代至少打开本轮静态 Renderer 新图板和 96/64/48px，不要求每个中间状态都打开完整 Avatar Workshop。静态图板必须由当前代码真实 Pack / `renderAvatar()` 生成，不能用手工概念图替代，也不能用静态图板证明 LocalStorage、草稿切换、导入隔离或居民绑定通过。
+
+达到正式批次 / 阶段交付时，仍至少打开本轮所有 Actions 新图板、自由创作真实桌面 UI、绑定居民真实 UI、96/64/48px。移动端不再截图，不列为人工必查；基础窄屏 smoke 可保留。
 
 本轮截图列表、作者规则、已重画/未重画 ID 以 Phase 8 文档为准。用户认可的是具体画法，不是测试条数或素材数量。
