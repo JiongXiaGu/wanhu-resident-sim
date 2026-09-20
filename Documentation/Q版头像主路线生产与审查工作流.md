@@ -29,7 +29,7 @@
   - [x] Phase 4C：Frame-specific Asset Catalog（年龄专属 Hair / Outfit）
 - [ ] **Phase 5：大规模素材生产与批次 QA**
   - [x] Phase 5A：儿童专属素材批次
-  - [ ] Phase 5B：成年居民素材批次
+  - [x] Phase 5B：成年居民素材批次
   - [ ] Phase 5C：老年素材批次
   - [ ] Phase 5D：三年龄综合 QA
 - [ ] Phase 6：旧画风隐藏 / 兼容 / 退役决策
@@ -683,6 +683,20 @@ Phase 4C 不引入 Head Shell、hat-fit、anchor solver、逐 Face offset、mask
 
 Phase 5A 结束后进入 Phase 5B 成年居民素材批次；不回头要求儿童与成年共用同一美术资产。
 
+## 2026-09-20：Phase 5B 成年居民素材批次
+
+本轮完成：
+
+- adult Hair 扩展为真正的成年古代资产。female.adult 可用 10 个，male.adult 可用 11 个；在既有束发、低髻、劳作头巾、书生巾帽、掌柜包头基础上，新增高髻、侧编长辫、长发低束、短发束冠、半束长发、侧束髻、束辫、松束发与行旅包巾。
+- `low-bun` 收窄为成年女性素材；新增男性专属 `adult-short-bound / adult-half-up / adult-side-knot / adult-braided-tail`，避免成年男女只靠同一组 Hair 表达。
+- adult Outfit 扩展为男女各 10 套可用古代服饰：既有平民、劳作、商贩、书生、工匠之外，加入女性日常襦裙 / 女工短襦、男性短袍 / 长衫，以及冬日夹袄、城务公服、店伙短衫。
+- 旧现代 Hair `crop / bob / long / pony / wave / braid` 与 Outfit `tee / shirt / knit / jacket` 不再出现在 adult UI；它们暂时只留给 elder 过渡和历史 Recipe 解析。旧成人 Recipe 进入 adult Frame 时按 compatibilityKey 映射到新的古代素材。
+- 本轮新增一个 integrated Headwear：`adult-traveler-wrap / 行旅包巾`。它仍遵守固定作者 geometry、HeadwearBack / HeadwearFront 图层，不读取 Face ID。
+- Actions 新增 Phase 5B contract：adult UI 不得暴露旧现代素材；female.adult Hair ≥ 10、male.adult Hair ≥ 11、男女 Outfit ≥ 10；分别输出成年男女 Hair、Outfit、组合的 96 / 64 / 48px 图板。
+- 真实编辑器回归不再主动点击旧现代素材；旧 Recipe 导入则显式检查 Frame fallback，确保兼容逻辑仍有效。
+
+Phase 5B 完成后进入 Phase 5C 老年素材批次；旧基础 Hair / Outfit 最终是否完全退出 active Q版 UI，将在 elder 批次完成后统一决定。
+
 ---
 
 # 11. 每轮结束必须更新这里
@@ -690,8 +704,8 @@ Phase 5A 结束后进入 Phase 5B 成年居民素材批次；不回头要求儿�
 ## 当前执行点
 
 ```text
-Phase 5B — 成年居民素材批次
-状态：未开始（Phase 5A 儿童专属素材批次完成）
+Phase 5C — 老年素材批次
+状态：未开始（Phase 5B 成年居民素材批次完成）
 ```
 
 ## 下一次执行必须先回答

@@ -6,7 +6,7 @@
 
 同一个编辑器用于玩家示例档案和当前城市的全部真实居民。首页“头像工坊”打开玩家档案；居民身份栏“编辑头像”直接打开对应居民。`/?view=avatar-editor` 也可直接打开工坊，底层仍是同一个 App，不会重建游戏会话。
 
-`linework-v1`（日常线绘）、`chibi-cute-v1`（Q版可爱）与 `simple-flat-v1`（极简简笔）都是原创、真实分层的 SVG 画风包。自 2026-09-20 起，`chibi-cute-v1` 是后续素材扩充主路线；另外两套暂时作为 reference / compatibility 保留。三套已经完成 Pack-owned Catalog。`chibi-cute-v1` 当前为 4 Face / 20 Hair / 17 Outfit / 8 Expression；Phase 5A 已把 child 扩展为女童 6 / 男童 5 个专属 Hair 与 6 套专属 Outfit，并把旧通用 Hair / Outfit 从 child UI 移出；`linework-v1`、`simple-flat-v1` 保持各自旧 Catalog。UI、Recipe 校验、随机和 Actions 组合遍历都从当前 Pack 自己的 Catalog 读取。具体阶段、素材边界和人工美术审查以 [Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md) 为准。
+`linework-v1`（日常线绘）、`chibi-cute-v1`（Q版可爱）与 `simple-flat-v1`（极简简笔）都是原创、真实分层的 SVG 画风包。自 2026-09-20 起，`chibi-cute-v1` 是后续素材扩充主路线；另外两套暂时作为 reference / compatibility 保留。三套已经完成 Pack-owned Catalog。`chibi-cute-v1` 当前为 4 Face / 29 Hair / 24 Outfit / 8 Expression；Phase 5A 已把 child 变为儿童专属素材列表，Phase 5B 已把 adult 扩展为 female 10 / male 11 个成年 Hair 与男女各 10 套古代 Outfit，并把旧现代 Hair / Outfit 从 adult UI 移出；`linework-v1`、`simple-flat-v1` 保持各自旧 Catalog。UI、Recipe 校验、随机和 Actions 组合遍历都从当前 Pack 自己的 Catalog 读取。具体阶段、素材边界和人工美术审查以 [Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md) 为准。
 
 画风是待用户验收的候选，不声称复制用户参考图、某位 Neka 画手或商业游戏。Q版方向只借鉴“大头比例、极简五官、腮红、粗轮廓、贴纸感”等通用视觉特征；现代日常服饰与可组合性优先，不强行添加中国古代饰物。历史错误实验已从当前工作树删除，不再建立保留区；旧内容使用 Git 历史查阅。
 
@@ -147,7 +147,7 @@ Catalog option 还可以声明 `frames`。省略表示六个 Frame 通用；显�
 - 每个画风包按自己的 Catalog 动态执行六上下文 × Face × Hair × Outfit × Expression 全组合 SVG、层序与身份不变量；当前三套恰好仍各为 3,456 组合，但不再写死。\n- 跨 Pack 切换按 exact ID → compatibilityKey → target defaults 的确定性规则映射；当前共享旧 ID 的配置仍保持不变，同时三套最终 SVG 必须真正不同。
 - 眉眼口与前发遮挡顺序、嘴型中线、虹膜范围。
 - 六组脸型板、六组表情板、六组发型板、六组服装板；这些是诊断图板，不是固定整图资源或冒充玩家 UI。
-- Q版额外检查每个 Frame 的可用 Catalog、跨年龄 deterministic fallback，以及 child/adult/elder 专属 Hair / Outfit 的 96/64/48px 对照。Phase 5A 起，child UI 必须只出现 `child-*` Hair / Outfit；旧通用素材只作为历史 Recipe 的兼容来源，不能再占儿童选项位。
+- Q版额外检查每个 Frame 的可用 Catalog、跨年龄 deterministic fallback，以及 child/adult/elder 专属 Hair / Outfit 的 96/64/48px 对照。Phase 5A 起，child UI 必须只出现儿童作者 Hair / Outfit；Phase 5B 起，adult UI 也不得出现旧现代 `crop/bob/long/...` 与 `tee/shirt/knit/jacket`。这些旧 ID 只作为历史 Recipe 的兼容来源与 elder 过渡，不再占 child / adult 选项位。
 - 96/64/48 原尺寸，桌面及 390/320px；深浅衬底；儿童老人实际样本。
 
 `resident-visual-review` Artifact 的 `avatar/` 保留原始 PNG，不经过旧预览缩图。每个画风统一位于 `avatar/packs/<pack-id>/`，其中 `parts/` 是可组合 SVG 导出、`samples/` 是当次渲染器输出的组合示例、`review.json` 是该 Pack 自动检查记录；跨画风对照在 `avatar/style-comparisons/`。下载并实际查看窗口、真实居民面板、关键图板与小尺寸后才能合并 main；main 必须再次跑完和核对。

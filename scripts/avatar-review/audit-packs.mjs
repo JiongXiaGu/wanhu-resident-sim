@@ -152,7 +152,7 @@ async function auditPack(page,outRoot,spec){
     const pick=(part,id,frame)=>{const available=frame?m.optionsFor(spec.id,part,frame):catalog[part];return available.some(option=>option.id===id)?id:(frame?m.recipeForPack(spec.id,frame):m.recipeForPack(spec.id))[part];};
     const baseRecipe=m.recipeForPack(spec.id);
     const parts=[],samples=[],boards=[],wardrobe=new Map(),headGeometry=new Map(),frameSignature=new Map();
-    let combinations=0,expected=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,frameCatalogChecks=0,childBatchChecks=0,ageSexChecks=0,roleChecks=0,outfitStructureChecks=0;
+    let combinations=0,expected=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,frameCatalogChecks=0,childBatchChecks=0,adultBatchChecks=0,ageSexChecks=0,roleChecks=0,outfitStructureChecks=0;
 
     for(const frame of m.frames){
       const frameCatalog=Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame)]));
@@ -379,6 +379,34 @@ async function auditPack(page,outRoot,spec){
       }
     }
 
+    if(spec.adultBatchContract){
+      for(const frame of ['female.adult','male.adult']){
+        const hairOptions=m.optionsFor(spec.id,'hair',frame),outfitOptions=m.optionsFor(spec.id,'outfit',frame);
+        require(hairOptions.every(option=>option.frames?.includes(frame)),`${spec.id}/${frame} still exposes non-adult Hair in Phase 5B`);
+        require(outfitOptions.every(option=>option.frames?.includes(frame)),`${spec.id}/${frame} still exposes non-adult Outfit in Phase 5B`);
+        for(const id of spec.adultLegacyHair??[])require(!hairOptions.some(option=>option.id===id),`${spec.id}/${frame} still exposes legacy Hair ${id}`);
+        for(const id of spec.adultLegacyOutfits??[])require(!outfitOptions.some(option=>option.id===id),`${spec.id}/${frame} still exposes legacy Outfit ${id}`);
+
+        const hairIds=(spec.adultBatchHair??[]).filter(id=>hairOptions.some(option=>option.id===id));
+        const outfitIds=(spec.adultBatchOutfits??[]).filter(id=>outfitOptions.some(option=>option.id===id));
+        require(hairIds.length>=(frame==='female.adult'?10:11),`${spec.id}/${frame} adult Hair batch is too small`);
+        require(outfitIds.length>=10,`${spec.id}/${frame} adult Outfit batch is too small`);
+        const foundation={...m.recipeForPack(spec.id,frame),face:pick('face','round',frame),expression:pick('expression','calm',frame)};
+        const hairCells=hairIds.map(id=>{const option=catalog.hair.find(item=>item.id===id);return {label:option?.label??id,svg:r.renderAvatar(frame,{...foundation,hair:id,outfit:outfitIds[0]}),sizes:true};});
+        const outfitCells=outfitIds.map(id=>{const option=catalog.outfit.find(item=>item.id===id);return {label:option?.label??id,svg:r.renderAvatar(frame,{...foundation,hair:hairIds[0],outfit:id}),sizes:true};});
+        const comboCount=Math.min(8,hairIds.length,outfitIds.length);
+        const comboCells=Array.from({length:comboCount},(_,index)=>({
+          label:`${catalog.hair.find(item=>item.id===hairIds[index])?.label??hairIds[index]} / ${catalog.outfit.find(item=>item.id===outfitIds[index])?.label??outfitIds[index]}`,
+          svg:r.renderAvatar(frame,{...foundation,hair:hairIds[index],outfit:outfitIds[index]}),
+          sizes:true,
+        }));
+        boards.push({name:`phase5b-adult-hair-${frame.startsWith('female')?'female':'male'}`,title:`${meta.label} · Phase 5B · ${frame} · 成年专属 Hair`,columns:Math.min(5,hairCells.length),cells:hairCells});
+        boards.push({name:`phase5b-adult-outfit-${frame.startsWith('female')?'female':'male'}`,title:`${meta.label} · Phase 5B · ${frame} · 成年专属 Outfit`,columns:Math.min(5,outfitCells.length),cells:outfitCells});
+        boards.push({name:`phase5b-adult-combos-${frame.startsWith('female')?'female':'male'}`,title:`${meta.label} · Phase 5B · ${frame} · 成年组合 96 / 64 / 48px`,columns:4,cells:comboCells});
+        adultBatchChecks+=hairIds.length+outfitIds.length+comboCells.length+(spec.adultLegacyHair?.length??0)+(spec.adultLegacyOutfits?.length??0);
+      }
+    }
+
     if(spec.roleProof?.length){
       for(const gender of ['female','male']){
         const frame=`${gender}.adult`,roleSvgs=[],cells=[];
@@ -461,7 +489,7 @@ async function auditPack(page,outRoot,spec){
     }
 
     host.remove();
-    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,frameCatalogChecks,childBatchChecks,ageSexChecks,roleChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length])),frameCatalogCounts:Object.fromEntries(m.frames.map(frame=>[frame,Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame).length]))]))};
+    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,frameCatalogChecks,childBatchChecks,adultBatchChecks,ageSexChecks,roleChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length])),frameCatalogCounts:Object.fromEntries(m.frames.map(frame=>[frame,Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame).length]))]))};
   },spec);
 
   for(const part of data.parts){
@@ -501,6 +529,7 @@ async function auditPack(page,outRoot,spec){
     headGeometryChecks:data.headGeometryChecks,
     frameCatalogChecks:data.frameCatalogChecks,
     childBatchChecks:data.childBatchChecks,
+    adultBatchChecks:data.adultBatchChecks,
     ageSexChecks:data.ageSexChecks,
     roleChecks:data.roleChecks,
     outfitStructureChecks:data.outfitStructureChecks,

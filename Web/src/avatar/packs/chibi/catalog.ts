@@ -3,7 +3,6 @@ import {defineCatalog} from '../catalog';
 const CHILD=['female.child','male.child'] as const;
 const ADULT=['female.adult','male.adult'] as const;
 const ELDER=['female.elder','male.elder'] as const;
-const NON_CHILD=['female.adult','male.adult','female.elder','male.elder'] as const;
 
 export const chibiCatalog=defineCatalog({
   face:[
@@ -13,7 +12,7 @@ export const chibiCatalog=defineCatalog({
     {id:'long',label:'清秀',note:'修长脸形 · 平缓眉眼'},
   ],
   hair:[
-    // Phase 5A：child 只展示儿童作者资产；旧通用 Hair 仍保留给历史 Recipe 与 adult / elder 过渡。
+    // Phase 5A：child 只展示儿童作者资产。
     {id:'child-topknot',label:'童子束发',note:'儿童专属 · 紧凑束髻',headwear:'none',frames:CHILD,compatibilityKey:'crop'},
     {id:'child-double-bun',label:'童子双髻',note:'女童专属 · 双侧小髻',headwear:'none',frames:['female.child'],compatibilityKey:'bob'},
     {id:'child-tufted',label:'垂髫短发',note:'儿童专属 · 两侧垂髫',headwear:'none',frames:CHILD,compatibilityKey:'bob'},
@@ -22,21 +21,32 @@ export const chibiCatalog=defineCatalog({
     {id:'child-half-up',label:'学童半束',note:'男童专属 · 半束短发',headwear:'none',frames:['male.child'],compatibilityKey:'long'},
     {id:'child-short-fringe',label:'短刘海',note:'儿童专属 · 圆润短发',headwear:'none',frames:CHILD,compatibilityKey:'wave'},
 
+    // Phase 5B：adult 只展示成年古代作者资产；男女可以拥有自己的发型子集。
     {id:'bound',label:'日常束发',note:'成年专属 · 简化束髻',headwear:'none',frames:ADULT,compatibilityKey:'crop'},
-    {id:'low-bun',label:'低髻',note:'成年专属 · 低位发髻',headwear:'none',frames:ADULT,compatibilityKey:'bob'},
+    {id:'low-bun',label:'低髻',note:'成年女性 · 低位发髻',headwear:'none',frames:['female.adult'],compatibilityKey:'bob'},
     {id:'work-headscarf',label:'劳作头巾',note:'成年专属 · 劳作居民',headwear:'integrated',frames:ADULT,compatibilityKey:'crop'},
     {id:'scholar-cap',label:'书生巾帽',note:'成年专属 · 学徒书生',headwear:'integrated',frames:ADULT,compatibilityKey:'crop'},
     {id:'merchant-wrap',label:'掌柜包头',note:'成年专属 · 商贩掌柜',headwear:'integrated',frames:ADULT,compatibilityKey:'crop'},
+    {id:'adult-high-bun',label:'高髻',note:'成年女性 · 利落高髻',headwear:'none',frames:['female.adult'],compatibilityKey:'pony'},
+    {id:'adult-side-braid',label:'侧编长辫',note:'成年女性 · 侧边编发',headwear:'none',frames:['female.adult'],compatibilityKey:'braid'},
+    {id:'adult-long-tied',label:'长发低束',note:'成年女性 · 长发收束',headwear:'none',frames:['female.adult'],compatibilityKey:'long'},
+    {id:'adult-short-bound',label:'短发束冠',note:'成年男性 · 紧凑束发',headwear:'none',frames:['male.adult'],compatibilityKey:'bob'},
+    {id:'adult-half-up',label:'半束长发',note:'成年男性 · 半束垂发',headwear:'none',frames:['male.adult'],compatibilityKey:'long'},
+    {id:'adult-side-knot',label:'侧束髻',note:'成年男性 · 侧后束髻',headwear:'none',frames:['male.adult'],compatibilityKey:'pony'},
+    {id:'adult-braided-tail',label:'束辫',note:'成年男性 · 短束编辫',headwear:'none',frames:['male.adult'],compatibilityKey:'braid'},
+    {id:'adult-loose-tied',label:'松束发',note:'成年专属 · 日常低束',headwear:'none',frames:ADULT,compatibilityKey:'wave'},
+    {id:'adult-traveler-wrap',label:'行旅包巾',note:'成年专属 · 轻便包巾',headwear:'integrated',frames:ADULT,compatibilityKey:'crop'},
 
     {id:'elder-low-knot',label:'老者低束',note:'老年专属 · 低位收束',headwear:'none',frames:ELDER,compatibilityKey:'bob'},
     {id:'elder-swept',label:'老者拢发',note:'老年专属 · 贴头拢发',headwear:'none',frames:ELDER,compatibilityKey:'crop'},
 
-    {id:'crop',label:'利落短发',headwear:'none',frames:NON_CHILD},
-    {id:'bob',label:'齐颈短发',headwear:'none',frames:NON_CHILD},
-    {id:'long',label:'自然长发',headwear:'none',frames:NON_CHILD},
-    {id:'pony',label:'高马尾',headwear:'none',frames:NON_CHILD},
-    {id:'wave',label:'蓬松卷发',headwear:'none',frames:NON_CHILD},
-    {id:'braid',label:'侧编发',headwear:'none',frames:NON_CHILD},
+    // 旧基础 Hair 只留给 elder 过渡和历史 Recipe 解析；Phase 5C 再完成 elder 清理。
+    {id:'crop',label:'利落短发',headwear:'none',frames:ELDER},
+    {id:'bob',label:'齐颈短发',headwear:'none',frames:ELDER},
+    {id:'long',label:'自然长发',headwear:'none',frames:ELDER},
+    {id:'pony',label:'高马尾',headwear:'none',frames:ELDER},
+    {id:'wave',label:'蓬松卷发',headwear:'none',frames:ELDER},
+    {id:'braid',label:'侧编发',headwear:'none',frames:ELDER},
   ],
   outfit:[
     {id:'child-short-robe',label:'童子短衣',note:'儿童专属 · 短身交领',frames:CHILD,compatibilityKey:'tee'},
@@ -51,14 +61,22 @@ export const chibiCatalog=defineCatalog({
     {id:'merchant',label:'商贩襟衫',note:'成年专属 · 稳重对襟',frames:ADULT,compatibilityKey:'knit'},
     {id:'scholar',label:'书生长衫',note:'成年专属 · 洁净交领',frames:ADULT,compatibilityKey:'shirt'},
     {id:'artisan',label:'工匠围襟',note:'成年专属 · 耐用短衣',frames:ADULT,compatibilityKey:'jacket'},
+    {id:'adult-female-ruqun',label:'日常襦裙',note:'成年女性 · 简化襦裙式上身',frames:['female.adult'],compatibilityKey:'shirt'},
+    {id:'adult-female-work',label:'女工短襦',note:'成年女性 · 劳作短襦',frames:['female.adult'],compatibilityKey:'jacket'},
+    {id:'adult-male-short-robe',label:'男式短袍',note:'成年男性 · 利落短袍',frames:['male.adult'],compatibilityKey:'tee'},
+    {id:'adult-male-long-robe',label:'男式长衫',note:'成年男性 · 素色长衫',frames:['male.adult'],compatibilityKey:'shirt'},
+    {id:'adult-winter-coat',label:'冬日夹袄',note:'成年专属 · 厚领外搭',frames:ADULT,compatibilityKey:'knit'},
+    {id:'adult-service-robe',label:'城务公服',note:'成年专属 · 城市服务角色',frames:ADULT,compatibilityKey:'jacket'},
+    {id:'adult-shop-assistant',label:'店伙短衫',note:'成年专属 · 店铺帮工',frames:ADULT,compatibilityKey:'knit'},
 
     {id:'elder-long-robe',label:'老者常服',note:'老年专属 · 宽松长衫',frames:ELDER,compatibilityKey:'shirt'},
     {id:'elder-warm-coat',label:'老者夹衣',note:'老年专属 · 厚领外搭',frames:ELDER,compatibilityKey:'knit'},
 
-    {id:'tee',label:'简约上衣',frames:NON_CHILD},
-    {id:'shirt',label:'开领衬衫',frames:NON_CHILD},
-    {id:'knit',label:'针织开衫',frames:NON_CHILD},
-    {id:'jacket',label:'短外套',frames:NON_CHILD},
+    // 旧现代 Outfit 只留给 elder 过渡和历史 Recipe 解析。
+    {id:'tee',label:'简约上衣',frames:ELDER},
+    {id:'shirt',label:'开领衬衫',frames:ELDER},
+    {id:'knit',label:'针织开衫',frames:ELDER},
+    {id:'jacket',label:'短外套',frames:ELDER},
   ],
   expression:[
     {id:'calm',label:'平静'},

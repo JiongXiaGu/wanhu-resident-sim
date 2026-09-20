@@ -56,6 +56,19 @@ export const avatarReviewSpecs=[
     ],
     childLegacyHair:['crop','bob','long','pony','wave','braid'],
     childLegacyOutfits:['tee','shirt','knit','jacket'],
+    adultBatchContract:true,
+    adultBatchHair:[
+      'bound','low-bun','work-headscarf','scholar-cap','merchant-wrap',
+      'adult-high-bun','adult-side-braid','adult-long-tied','adult-short-bound',
+      'adult-half-up','adult-side-knot','adult-braided-tail','adult-loose-tied','adult-traveler-wrap',
+    ],
+    adultBatchOutfits:[
+      'commoner','laborer','merchant','scholar','artisan',
+      'adult-female-ruqun','adult-female-work','adult-male-short-robe','adult-male-long-robe',
+      'adult-winter-coat','adult-service-robe','adult-shop-assistant',
+    ],
+    adultLegacyHair:['crop','bob','long','pony','wave','braid'],
+    adultLegacyOutfits:['tee','shirt','knit','jacket'],
     ageSexContract:true,
     ageSexRecipe:{face:'round',hair:'crop',outfit:'tee',expression:'calm'},
     roleProof:[

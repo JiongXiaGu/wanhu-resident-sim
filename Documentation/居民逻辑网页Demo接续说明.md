@@ -14,7 +14,7 @@
 
 唯一玩家编辑流程是头像工坊 `/?view=avatar-editor`，也可从居民身份栏进入。只有脸型、头发、衣服、表情四类；不同脸共享配件，并保存到玩家示例档案或当前城市的指定居民。
 
-`Web/src/avatar/` 包含统一编辑器、按对象保存的 Web 覆盖记录和三套真实分层 SVG 素材包。当前 `chibi-cute-v1` 是后续主美术路线；`linework-v1`、`simple-flat-v1` 暂作 reference / compatibility。Pack-owned Catalog 已完成。Q版 Phase 3 / Batch A 当前已有 4 Face / 11 Hair / 9 Outfit / 8 Expression，包括劳作头巾、书生巾帽、掌柜包头和首批古代职业服饰；UI、校验、随机与 Actions 都按当前 Pack 自己的素材列表工作，旧 Pack 不同步补画。编辑仍只影响外观；必须保留居民姓名、年龄、家庭、职业与故事。
+`Web/src/avatar/` 包含统一编辑器、按对象保存的 Web 覆盖记录和三套真实分层 SVG 素材包。当前 `chibi-cute-v1` 是后续主美术路线；`linework-v1`、`simple-flat-v1` 暂作 reference / compatibility。Pack-owned Catalog 已完成。Q版当前已有 4 Face / 29 Hair / 24 Outfit / 8 Expression；Phase 5A 已完成儿童专属素材，Phase 5B 已完成成年男女古代素材并把旧现代 Hair / Outfit 从 adult UI 移出；UI、校验、随机与 Actions 都按当前 Pack 自己的素材列表工作，旧 Pack 不同步补画。编辑仍只影响外观；必须保留居民姓名、年龄、家庭、职业与故事。
 
 旧风格墙、完整位图图库以及多个分叉编辑实验已从工作树删除，Git 历史足以保留。不得重新创建历史实验目录或把固定整图当作可编辑素材。
 

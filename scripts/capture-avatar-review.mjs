@@ -51,11 +51,18 @@ try{
   ? {hair:'child-topknot',outfit:'child-short-robe'}
   : frame.endsWith('elder')
    ? {hair:'elder-swept',outfit:'elder-long-robe'}
-   : {hair:'work-headscarf',outfit:'commoner'};
+   : {hair:'adult-traveler-wrap',outfit:'adult-service-robe'};
+ const alternateHair=frame=>frame.endsWith('child')?'child-tufted':frame.endsWith('elder')?'bob':'adult-loose-tied';
+ const quotaHair=frame=>frame.endsWith('child')?'child-double-knots':frame.endsWith('elder')?'wave':'bound';
+ const externalLook=frame=>frame.endsWith('child')
+  ? {hair:'child-short-fringe',outfit:'child-winter'}
+  : frame.endsWith('elder')
+   ? {hair:'long',outfit:'elder-warm-coat'}
+   : {hair:'adult-loose-tied',outfit:'adult-winter-coat'};
  assert.equal(await key(),a.key);assert.equal(await stored(a.key),null);
 
  await select(players[0].key);assert.equal((await recipe()).pack,reviewPack,'New player draft must start from the active pack');
- await choose('face','round');await choose('hair','bob');await choose('outfit','knit');await choose('expression','smile');
+ await choose('face','round');await choose('hair','low-bun');await choose('outfit','adult-female-ruqun');await choose('expression','smile');
  await sizes();const beforeStyle=await recipe();let expectedStyle=beforeStyle;
  for(let index=0;index<registeredPacks.length;index++){
   const pack=registeredPacks[index];
@@ -72,7 +79,7 @@ try{
  await apply();const playerSaved=await stored(players[0].key);assert.equal(JSON.parse(playerSaved).pack,reviewPack);assert.equal(await stored(players[1].key),null);
 
  await select(players[1].key);assert.equal((await recipe()).pack,reviewPack,'Second player draft must start from the active pack');
- await choose('face','angular');await choose('hair','crop');await choose('outfit','shirt');await choose('expression','calm');
+ await choose('face','angular');await choose('hair','adult-short-bound');await choose('outfit','adult-male-short-robe');await choose('expression','calm');
  let maleExpected=await recipe();
  for(let index=0;index<registeredPacks.length;index++){
   const pack=registeredPacks[index];
@@ -92,7 +99,7 @@ try{
  await select(b.key);await choose('face','long');const bLook=frameLook(b.frame);await choose('hair',bLook.hair);await choose('outfit',bLook.outfit);await choose('expression','serious');await apply();const bSaved=await stored(b.key);
  assert.equal(await stored(a.key),aSaved);assert.notEqual(aSaved,bSaved);
  await select(a.key);assert.equal(await image(),aImage);
- await choose('hair','wave');assert.equal(await stored(a.key),aSaved);
+ await choose('hair',alternateHair(a.frame));assert.equal(await stored(a.key),aSaved);
  await page.locator('[data-target-key="'+b.key+'"]').click();await page.locator('[role="alertdialog"]').waitFor();
  await page.keyboard.press('Shift+Tab');assert(await page.locator('[data-pending-apply]').evaluate(n=>n===document.activeElement),'Unsaved confirmation focus must stay trapped');
  await page.keyboard.press('Escape');await page.locator('[role="alertdialog"]').waitFor({state:'detached'});assert.equal(await key(),a.key);
@@ -115,12 +122,13 @@ try{
  await page.locator('[data-import-recipe]').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:invalid});
  await page.waitForFunction(()=>document.querySelector('[data-editor-message]').textContent.includes('字段'));assert.equal(await stored(a.key),aSaved);assert.equal(await image(),aImage);
  const imported={...JSON.parse(aSaved),hair:'braid',outfit:'shirt',expression:'smile'};
+ const importedExpected=await page.evaluate(async({value,frame})=>{const model=await import('/src/avatar/model.ts');return model.fitRecipeToFrame(model.parseRecipe(value),frame);},{value:imported,frame:a.frame});
  await page.locator('[data-import-recipe]').setInputFiles({name:'good.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(imported))});
- await page.waitForFunction(()=>JSON.parse(document.querySelector('[data-avatar-editor]').dataset.recipe).hair==='braid');assert.equal(await stored(a.key),aSaved);
+ await page.waitForFunction(expected=>JSON.stringify(JSON.parse(document.querySelector('[data-avatar-editor]').dataset.recipe))===JSON.stringify(expected),importedExpected);assert.equal(await stored(a.key),aSaved);
  await page.locator('[data-cancel-draft]').click();
  // 同一浏览器上下文中的另一个真实标签页：更新同对象后不能静默覆盖。
  const second=await context.newPage();await second.goto(base,{waitUntil:'networkidle'});
- const external={...JSON.parse(aSaved),hair:'long',expression:'calm'};
+ const external={...JSON.parse(aSaved),...externalLook(a.frame),expression:'calm'};
  await second.evaluate(async({target,recipe})=>{const store=await import('/src/avatar/store.ts');store.applyRecipe(target,recipe,store.getRaw(target));},{target:a.key,recipe:external});
  await page.waitForFunction(()=>document.querySelector('[data-avatar-editor]').dataset.conflict==='true');
  await page.locator('[data-apply-avatar]').click();await page.waitForFunction(()=>document.querySelector('[data-editor-message]').textContent.includes('其他窗口更新'));
@@ -128,7 +136,7 @@ try{
  await page.locator('[data-reload-saved]').click();await ready();assert.deepEqual(await recipe(),external);
  await second.close();
  // 配额错误不能显示已应用。错误后保留草稿，已有存储不变。
- await choose('hair','bob');await page.evaluate(()=>{window.__avatarSetItem=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw new DOMException('测试：存储空间不足','QuotaExceededError');};});
+ await choose('hair',quotaHair(a.frame));await page.evaluate(()=>{window.__avatarSetItem=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw new DOMException('测试：存储空间不足','QuotaExceededError');};});
  await page.locator('[data-apply-avatar]').click();await page.waitForFunction(()=>document.querySelector('[data-editor-message]').textContent.includes('存储空间不足'));
  assert.deepEqual(JSON.parse(await stored(a.key)),external);
  await page.evaluate(()=>{Storage.prototype.setItem=window.__avatarSetItem;});await page.locator('[data-cancel-draft]').click();
@@ -158,12 +166,31 @@ try{
   await select(elder.key);await choosePack(reviewPack);await choose('face','oval');await choose('hair','elder-swept');await choose('outfit','elder-long-robe');await choose('expression','smile');await screenshot('09-elder-frame-assets');
   await page.locator('[data-part-tab="hair"]').click();await screenshot('09b-elder-hair-options');await page.locator('[data-part-tab="outfit"]').click();await screenshot('09c-elder-outfit-options');await page.locator('[data-cancel-draft]').click();await ready();
  }
+ const adultLegacyHair=['crop','bob','long','pony','wave','braid'],adultLegacyOutfits=['tee','shirt','knit','jacket'];
+ await select(players[0].key);await choosePack(reviewPack);await choose('hair','adult-high-bun');await choose('outfit','adult-female-ruqun');
+ await page.locator('[data-part-tab="hair"]').click();
+ const adultFemaleHair=await page.locator('[data-option-part="hair"]').evaluateAll(nodes=>nodes.map(node=>node.dataset.option));
+ assert(adultFemaleHair.length>=10&&adultLegacyHair.every(id=>!adultFemaleHair.includes(id)),'Female adult UI still exposes legacy Hair');
+ await screenshot('10a-adult-female-hair-options');
+ await page.locator('[data-part-tab="outfit"]').click();
+ const adultFemaleOutfit=await page.locator('[data-option-part="outfit"]').evaluateAll(nodes=>nodes.map(node=>node.dataset.option));
+ assert(adultFemaleOutfit.length>=10&&adultLegacyOutfits.every(id=>!adultFemaleOutfit.includes(id)),'Female adult UI still exposes legacy Outfit');
+ await screenshot('10b-adult-female-outfit-options');await page.locator('[data-cancel-draft]').click();await ready();
+ await select(players[1].key);await choosePack(reviewPack);await choose('hair','adult-braided-tail');await choose('outfit','adult-male-long-robe');
+ await page.locator('[data-part-tab="hair"]').click();
+ const adultMaleHair=await page.locator('[data-option-part="hair"]').evaluateAll(nodes=>nodes.map(node=>node.dataset.option));
+ assert(adultMaleHair.length>=11&&adultLegacyHair.every(id=>!adultMaleHair.includes(id)),'Male adult UI still exposes legacy Hair');
+ await screenshot('10c-adult-male-hair-options');
+ await page.locator('[data-part-tab="outfit"]').click();
+ const adultMaleOutfit=await page.locator('[data-option-part="outfit"]').evaluateAll(nodes=>nodes.map(node=>node.dataset.option));
+ assert(adultMaleOutfit.length>=10&&adultLegacyOutfits.every(id=>!adultMaleOutfit.includes(id)),'Male adult UI still exposes legacy Outfit');
+ await screenshot('10d-adult-male-outfit-options');await page.locator('[data-cancel-draft]').click();await ready();
  await select(players[0].key);await page.locator('[data-preview-light]').click();await screenshot('10-light-preview');
  await page.setViewportSize({width:390,height:844});await sizes();await screenshot('11-mobile');
  await page.setViewportSize({width:320,height:800});await sizes();
  await page.setViewportSize({width:1600,height:1100});
  const packAudit=await auditRegisteredAvatarPacks(page,out);
- checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; Q版 Phase 5A verifies that child UI contains only child-authored Hair/Outfit, legacy recipes fall back deterministically, and dedicated child assets remain fixed across faces inside one Frame`);
+ checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; Q版 Phase 5A keeps child UI child-only, and Phase 5B verifies adult UI contains only adult-authored ancient Hair/Outfit while legacy recipes still fall back deterministically`);
  assert.deepEqual(errors,[],'Browser errors');
  await writeFile(join(out,'review.json'),JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',avatarPacks:packAudit,residentCount:snapshot.residents.length,checks,artisticApproval:'Requires actual screenshot inspection; registry coverage and CI are not an art quality rating'},null,2));
  console.log(checks.join('\n'));
