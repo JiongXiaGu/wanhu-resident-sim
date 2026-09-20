@@ -27,14 +27,14 @@
   - [x] Phase 4A：Face Frame Pass（脸部框架回正）
   - [x] Phase 4B：child / adult / elder、男女与职业可读性
   - [x] Phase 4C：Frame-specific Asset Catalog（年龄专属 Hair / Outfit）
-- [ ] **Phase 5：大规模素材生产与批次 QA**
+- [x] **Phase 5：大规模素材生产与批次 QA**
   - [x] Phase 5A：儿童专属素材批次
   - [x] Phase 5B：成年居民素材批次
   - [x] Phase 5C：老年素材批次
-  - [ ] Phase 5D：三年龄综合 QA
+  - [x] Phase 5D：三年龄综合 QA
 - [ ] Phase 6：旧画风隐藏 / 兼容 / 退役决策
 
-**下一项唯一主任务：Phase 5。**
+**下一项唯一主任务：Phase 6。**
 
 ---
 
@@ -711,6 +711,20 @@ Phase 5B 完成后进入 Phase 5C 老年素材批次；旧基础 Hair / Outfit �
 
 Phase 5C 完成后，child / adult / elder 三个年龄段已经全部完成素材分离；下一步进入 Phase 5D 三年龄综合 QA，不再继续批量加资产，重点检查三年龄之间的整体美术一致性、兼容迁移与 UI 密度。
 
+## 2026-09-20：Phase 5D 三年龄综合 QA
+
+本轮不新增素材，只把 Phase 5A / 5B / 5C 的结果放到同一套验收里：
+
+- 新增 `phase5d-age-overview`：female/male × child/adult/elder 六个 Frame 同图检查，并在每个样本同时展示 96 / 64 / 48px。样本使用各年龄、各性别真实可选的 Hair / Outfit，不再用成人默认素材去代替儿童或老年造型。
+- 六个 Frame 的 Hair / Outfit 普通 UI 继续只读取当前 Frame Catalog，并增加每类不超过 12 个可选项的密度门槛；当前实际 Hair 为 6 / 10 / 6（female）与 5 / 11 / 6（male），Outfit 为 6 / 10 / 6。
+- 旧 compatibility-only Hair 6 个与 Outfit 4 个继续保留给历史 Recipe；Review 对这 10 个 ID × 六个 Frame 全部执行两次 deterministic fallback，对比结果一致、不能泄漏旧 ID，且最终必须落入目标 Frame 的 active Catalog。
+- 既有模型审查继续覆盖 Random 只能命中当前 Frame 可选项、跨 Pack exact → compatibilityKey → defaults 映射、六 Frame Face Frame、Hair/Headwear 跨 Face geometry、Outfit base/collar，以及 localStorage、导入导出、跨标签页冲突和对象隔离。
+- lifecycle 暂不在 Phase 5D 改动：`chibi-cute-v1=active`，`linework-v1/simple-flat-v1=reference`。是否把 reference Pack 转成 legacy、是否隐藏普通选择入口，留到 Phase 6 决定。
+- compatibility-only ID **继续保留**，不在 Phase 5D 删除；删除会破坏旧 Recipe 的可解释性，而它们已经不会进入 UI 或 Random。
+- Q版经过三年龄综合 QA 后，可作为 Unity 迁移前的 Web 美术基线；这只表示当前四字段组合、美术语言与六 Frame 结构已经形成稳定基线，不表示 Unity Runtime、正式存档或最终美术已经迁移/冻结。
+
+Phase 5 完成。下一步只进入 Phase 6 的旧画风隐藏 / 兼容 / 退役决策，不继续无目标扩素材。
+
 ---
 
 # 11. 每轮结束必须更新这里
@@ -718,8 +732,8 @@ Phase 5C 完成后，child / adult / elder 三个年龄段已经全部完成素�
 ## 当前执行点
 
 ```text
-Phase 5D — 三年龄综合 QA
-状态：未开始（Phase 5A / 5B / 5C 素材批次均已完成）
+Phase 6 — 旧画风隐藏 / 兼容 / 退役决策
+状态：未开始（Phase 5A / 5B / 5C / 5D 均已完成）
 ```
 
 ## 下一次执行必须先回答

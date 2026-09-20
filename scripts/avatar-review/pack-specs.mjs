@@ -79,6 +79,16 @@ export const avatarReviewSpecs=[
     ],
     compatibilityOnlyHair:['crop','bob','long','pony','wave','braid'],
     compatibilityOnlyOutfits:['tee','shirt','knit','jacket'],
+    integratedQaContract:true,
+    integratedQaMaxOptions:12,
+    integratedQaLooks:[
+      {frame:'female.child',label:'女童',hair:'child-double-bun',outfit:'child-fine-robe',expression:'smile'},
+      {frame:'male.child',label:'男童',hair:'child-half-up',outfit:'child-apprentice',expression:'calm'},
+      {frame:'female.adult',label:'成年女',hair:'adult-high-bun',outfit:'adult-female-ruqun',expression:'smile'},
+      {frame:'male.adult',label:'成年男',hair:'adult-short-bound',outfit:'adult-male-long-robe',expression:'serious'},
+      {frame:'female.elder',label:'老年女',hair:'elder-soft-bun',outfit:'elder-fine-robe',expression:'calm'},
+      {frame:'male.elder',label:'老年男',hair:'elder-side-knot',outfit:'elder-work-jacket',expression:'serious'},
+    ],
     ageSexContract:true,
     ageSexRecipe:{face:'round',hair:'bound',outfit:'commoner',expression:'calm'},
     roleProof:[

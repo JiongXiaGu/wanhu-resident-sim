@@ -20,7 +20,7 @@ http://localhost:5173/?view=avatar-editor
 
 所有保存都在当前浏览器 localStorage，以城市和目标 ID 隔离。清除站点数据会丢失记录，需导出配方备份。正式居民 Snapshot 和五字段 DNA 未改，未定制居民使用原正式头像；恢复原头像只移除指定对象的 Web 覆盖。
 
-详见 [头像工坊](Documentation/Avatar%20Workshop.md) 与 [Q版头像主路线生产与审查工作流](Documentation/Q版头像主路线生产与审查工作流.md)。当前后续美术主路线已转向 `chibi-cute-v1`；Phase 5A / 5B / 5C 已分别完成儿童、成年与老年居民素材批次，`linework-v1`、`simple-flat-v1` 暂保留用于对照与兼容，不再优先扩素材。`soft-paint-v1` 已因用户否定从当前工作树删除，只保留 Git 历史。当前美术仍需用户实际验收，不以组合数或 CI 成功宣称画风达标。
+详见 [头像工坊](Documentation/Avatar%20Workshop.md) 与 [Q版头像主路线生产与审查工作流](Documentation/Q版头像主路线生产与审查工作流.md)。当前后续美术主路线已转向 `chibi-cute-v1`；Phase 5A / 5B / 5C 已分别完成儿童、成年与老年居民素材批次，Phase 5D 三年龄综合 QA 也已完成；`linework-v1`、`simple-flat-v1` 暂保留为 reference，是否转 legacy 留到 Phase 6。`soft-paint-v1` 已因用户否定从当前工作树删除，只保留 Git 历史。Q版当前可作为 Unity 迁移前的 Web 美术基线继续使用，但 CI 绿色仍不能代替后续具体美术验收。
 
 ## 清理结果
 
@@ -79,6 +79,6 @@ npm run dev
 
 当前 Visual Review 保留居民故事与正式 72 组合检查，新增工坊的玩家/居民保存、草稿、恢复、导入、错误处理和年龄/部件检查。补充检查入口不遮挡现有界面、居民编辑按钮尺寸、异步导入与“应用后切对象”的保存归属。
 
-`resident-visual-review` Artifact 的 `avatar/` 包含实际编辑窗口、已应用居民面板与原尺寸样本；每个注册画风统一输出到 `avatar/packs/<pack-id>/`，跨画风固定配置对照放在 `avatar/style-comparisons/`。Review 会从运行时 Pack Registry 与每个 Pack 自己的 Catalog 读取实际选项并动态计算组合数；Registry 新增 Pack 但缺 Review Spec 会直接失败。当前三套恰好仍各有 3,456 个基础组合，但这个数字不再是永久契约。
+`resident-visual-review` Artifact 的 `avatar/` 包含实际编辑窗口、已应用居民面板与原尺寸样本；每个注册画风统一输出到 `avatar/packs/<pack-id>/`，跨画风固定配置对照放在 `avatar/style-comparisons/`。Review 会从运行时 Pack Registry 与每个 Pack 自己的 Catalog 读取实际选项并动态计算组合数；Registry 新增 Pack 但缺 Review Spec 会直接失败。`chibi-cute-v1` 当前六个 Frame 合计 11,136 个可选组合；reference Pack 维持各自 Catalog，组合数不再是跨 Pack 固定契约。
 
 3,456 个基础组合只是测试覆盖量；原图保留不缩放。CI PASS 不能代替实际视觉审查。

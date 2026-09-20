@@ -43,6 +43,8 @@ try{
  const registeredPacks=await page.evaluate(async()=>{const model=await import('/src/avatar/model.ts');return model.packOptions.map(pack=>({id:pack.id,label:pack.label,lifecycle:pack.lifecycle,counts:pack.counts}));});
  const packIds=registeredPacks.map(pack=>pack.id),activePacks=registeredPacks.filter(pack=>pack.lifecycle==='active'),reviewPack=activePacks[0]?.id;
  assert.equal(activePacks.length,1,'Exactly one selectable active avatar pack is required');assert(reviewPack,'An active avatar pack is required');
+ assert.equal(reviewPack,'chibi-cute-v1','Phase 5D requires Q版可爱 to remain the only active baseline');
+ assert.deepEqual(registeredPacks.filter(pack=>pack.lifecycle==='reference').map(pack=>pack.id).sort(),['linework-v1','simple-flat-v1'],'Phase 5D keeps the two older packs as reference until Phase 6');
  assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.pack)),packIds);
  assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.packLifecycle)),registeredPacks.map(pack=>pack.lifecycle));
  const semanticFields=['face','hair','outfit','expression'];
@@ -202,7 +204,7 @@ try{
  await page.setViewportSize({width:320,height:800});await sizes();
  await page.setViewportSize({width:1600,height:1100});
  const packAudit=await auditRegisteredAvatarPacks(page,out);
- checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; Q版 Phase 5A/5B/5C keep child, adult and elder UI age-authored only, while compatibility-only legacy IDs still parse and fall back deterministically`);
+ checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; Phase 5D keeps chibi-cute-v1 active, linework/simple-flat reference, all six Q版 Frames age-authored, and compatibility-only legacy IDs deterministic but invisible`);
  assert.deepEqual(errors,[],'Browser errors');
  await writeFile(join(out,'review.json'),JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',avatarPacks:packAudit,residentCount:snapshot.residents.length,checks,artisticApproval:'Requires actual screenshot inspection; registry coverage and CI are not an art quality rating'},null,2));
  console.log(checks.join('\n'));

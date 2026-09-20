@@ -152,7 +152,7 @@ async function auditPack(page,outRoot,spec){
     const pick=(part,id,frame)=>{const available=frame?m.optionsFor(spec.id,part,frame):catalog[part];return available.some(option=>option.id===id)?id:(frame?m.recipeForPack(spec.id,frame):m.recipeForPack(spec.id))[part];};
     const baseRecipe=m.recipeForPack(spec.id);
     const parts=[],samples=[],boards=[],wardrobe=new Map(),headGeometry=new Map(),frameSignature=new Map();
-    let combinations=0,expected=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,frameCatalogChecks=0,childBatchChecks=0,adultBatchChecks=0,elderBatchChecks=0,compatibilityOnlyChecks=0,ageSexChecks=0,roleChecks=0,outfitStructureChecks=0;
+    let combinations=0,expected=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,frameCatalogChecks=0,childBatchChecks=0,adultBatchChecks=0,elderBatchChecks=0,phase5dChecks=0,compatibilityOnlyChecks=0,ageSexChecks=0,roleChecks=0,outfitStructureChecks=0;
 
     for(const frame of m.frames){
       const frameCatalog=Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame)]));
@@ -445,6 +445,39 @@ async function auditPack(page,outRoot,spec){
       }
     }
 
+    if(spec.integratedQaContract){
+      const proofs=spec.integratedQaLooks??[],maxOptions=spec.integratedQaMaxOptions??12;
+      require(proofs.length===m.frames.length,`${spec.id} Phase 5D must provide one proof for every frame`);
+      require(new Set(proofs.map(item=>item.frame)).size===m.frames.length,`${spec.id} Phase 5D frame proofs contain duplicates`);
+      for(const frame of m.frames)require(proofs.some(item=>item.frame===frame),`${spec.id} Phase 5D is missing ${frame}`);
+
+      const cells=[];
+      for(const proof of proofs){
+        const hairOptions=m.optionsFor(spec.id,'hair',proof.frame),outfitOptions=m.optionsFor(spec.id,'outfit',proof.frame);
+        require(hairOptions.length<=maxOptions,`${spec.id}/${proof.frame} Hair UI exceeds Phase 5D density limit (${hairOptions.length} > ${maxOptions})`);
+        require(outfitOptions.length<=maxOptions,`${spec.id}/${proof.frame} Outfit UI exceeds Phase 5D density limit (${outfitOptions.length} > ${maxOptions})`);
+        require(hairOptions.some(option=>option.id===proof.hair),`${spec.id}/${proof.frame} Phase 5D hair ${proof.hair} is unavailable`);
+        require(outfitOptions.some(option=>option.id===proof.outfit),`${spec.id}/${proof.frame} Phase 5D outfit ${proof.outfit} is unavailable`);
+        const recipe={...m.recipeForPack(spec.id,proof.frame),face:pick('face',proof.face??'round',proof.frame),hair:proof.hair,outfit:proof.outfit,expression:pick('expression',proof.expression??'calm',proof.frame)};
+        cells.push({label:`${proof.label} · ${hairOptions.length} Hair / ${outfitOptions.length} Outfit`,svg:r.renderAvatar(proof.frame,recipe),sizes:true});
+        phase5dChecks+=4;
+      }
+
+      for(const [part,ids] of [['hair',spec.compatibilityOnlyHair??[]],['outfit',spec.compatibilityOnlyOutfits??[]]]){
+        for(const id of ids){
+          const legacy=m.parseRecipe({...baseRecipe,[part]:id});
+          for(const frame of m.frames){
+            const first=m.fitRecipeToFrame(legacy,frame),second=m.fitRecipeToFrame(legacy,frame),allowed=m.optionsFor(spec.id,part,frame);
+            require(first[part]===second[part],`${spec.id}/${frame}/${part}/${id} Phase 5D fallback is not deterministic`);
+            require(first[part]!==id,`${spec.id}/${frame}/${part}/${id} compatibility-only ID leaked through frame fallback`);
+            require(allowed.some(option=>option.id===first[part]),`${spec.id}/${frame}/${part}/${id} fallback escaped the active frame catalog`);
+            phase5dChecks+=3;
+          }
+        }
+      }
+      boards.push({name:'phase5d-age-overview',title:`${meta.label} · Phase 5D · 三年龄 × 男女综合 QA · 96 / 64 / 48px`,columns:3,cells});
+    }
+
     if(spec.roleProof?.length){
       for(const gender of ['female','male']){
         const frame=`${gender}.adult`,roleSvgs=[],cells=[];
@@ -527,7 +560,7 @@ async function auditPack(page,outRoot,spec){
     }
 
     host.remove();
-    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,frameCatalogChecks,childBatchChecks,adultBatchChecks,elderBatchChecks,compatibilityOnlyChecks,ageSexChecks,roleChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part).length])),compatibilityOnlyCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].filter(option=>option.selectable===false).length])),frameCatalogCounts:Object.fromEntries(m.frames.map(frame=>[frame,Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame).length]))]))};
+    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,frameCatalogChecks,childBatchChecks,adultBatchChecks,elderBatchChecks,phase5dChecks,compatibilityOnlyChecks,ageSexChecks,roleChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part).length])),compatibilityOnlyCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].filter(option=>option.selectable===false).length])),frameCatalogCounts:Object.fromEntries(m.frames.map(frame=>[frame,Object.fromEntries(m.parts.map(part=>[part,m.optionsFor(spec.id,part,frame).length]))]))};
   },spec);
 
   for(const part of data.parts){
@@ -571,6 +604,7 @@ async function auditPack(page,outRoot,spec){
     childBatchChecks:data.childBatchChecks,
     adultBatchChecks:data.adultBatchChecks,
     elderBatchChecks:data.elderBatchChecks,
+    phase5dChecks:data.phase5dChecks,
     compatibilityOnlyChecks:data.compatibilityOnlyChecks,
     ageSexChecks:data.ageSexChecks,
     roleChecks:data.roleChecks,
