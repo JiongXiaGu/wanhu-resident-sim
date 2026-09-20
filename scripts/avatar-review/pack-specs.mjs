@@ -47,6 +47,15 @@ export const avatarReviewSpecs=[
       {frame:'female.elder',label:'老年女',hair:'elder-low-knot',outfit:'elder-long-robe'},
       {frame:'male.elder',label:'老年男',hair:'elder-swept',outfit:'elder-warm-coat'},
     ],
+    childBatchContract:true,
+    childBatchHair:[
+      'child-topknot','child-double-bun','child-tufted','child-double-knots','child-side-braid','child-half-up','child-short-fringe',
+    ],
+    childBatchOutfits:[
+      'child-short-robe','child-apprentice','child-play-jacket','child-helper','child-winter','child-fine-robe',
+    ],
+    childLegacyHair:['crop','bob','long','pony','wave','braid'],
+    childLegacyOutfits:['tee','shirt','knit','jacket'],
     ageSexContract:true,
     ageSexRecipe:{face:'round',hair:'crop',outfit:'tee',expression:'calm'},
     roleProof:[

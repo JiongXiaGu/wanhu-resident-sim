@@ -143,8 +143,16 @@ try{
  await page.locator('[data-open-avatar-workshop]').click();await editor.waitFor();
  const child=allTargets.find(t=>t.frame.endsWith('child')),elder=allTargets.find(t=>t.frame.endsWith('elder'));
  if(child){
-  await select(child.key);await choosePack(reviewPack);await choose('face','round');await choose('hair','child-topknot');await choose('outfit','child-short-robe');await choose('expression','calm');await screenshot('08-child-frame-assets');
-  await page.locator('[data-part-tab="hair"]').click();await screenshot('08b-child-hair-options');await page.locator('[data-part-tab="outfit"]').click();await screenshot('08c-child-outfit-options');await page.locator('[data-cancel-draft]').click();await ready();
+  await select(child.key);await choosePack(reviewPack);await choose('face','round');await choose('hair','child-short-fringe');await choose('outfit','child-winter');await choose('expression','calm');await screenshot('08-child-phase5a');
+  await page.locator('[data-part-tab="hair"]').click();
+  const childHairIds=await page.locator('[data-option-part="hair"]').evaluateAll(nodes=>nodes.map(node=>node.dataset.option));
+  assert(childHairIds.length>=5&&childHairIds.every(id=>id?.startsWith('child-')),'Child UI still exposes non-child Hair');
+  await screenshot('08b-child-hair-options');
+  await page.locator('[data-part-tab="outfit"]').click();
+  const childOutfitIds=await page.locator('[data-option-part="outfit"]').evaluateAll(nodes=>nodes.map(node=>node.dataset.option));
+  assert(childOutfitIds.length>=6&&childOutfitIds.every(id=>id?.startsWith('child-')),'Child UI still exposes non-child Outfit');
+  await screenshot('08c-child-outfit-options');
+  await page.locator('[data-cancel-draft]').click();await ready();
  }
  if(elder){
   await select(elder.key);await choosePack(reviewPack);await choose('face','oval');await choose('hair','elder-swept');await choose('outfit','elder-long-robe');await choose('expression','smile');await screenshot('09-elder-frame-assets');
@@ -155,7 +163,7 @@ try{
  await page.setViewportSize({width:320,height:800});await sizes();
  await page.setViewportSize({width:1600,height:1100});
  const packAudit=await auditRegisteredAvatarPacks(page,out);
- checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; Q版 Phase 4C verifies frame-scoped Hair/Outfit catalogs, deterministic frame fallback and dedicated child/adult/elder asset proofs while Hair remains fixed across faces inside one Frame`);
+ checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; Q版 Phase 5A verifies that child UI contains only child-authored Hair/Outfit, legacy recipes fall back deterministically, and dedicated child assets remain fixed across faces inside one Frame`);
  assert.deepEqual(errors,[],'Browser errors');
  await writeFile(join(out,'review.json'),JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',avatarPacks:packAudit,residentCount:snapshot.residents.length,checks,artisticApproval:'Requires actual screenshot inspection; registry coverage and CI are not an art quality rating'},null,2));
  console.log(checks.join('\n'));

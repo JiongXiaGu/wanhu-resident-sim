@@ -28,6 +28,10 @@
   - [x] Phase 4B：child / adult / elder、男女与职业可读性
   - [x] Phase 4C：Frame-specific Asset Catalog（年龄专属 Hair / Outfit）
 - [ ] **Phase 5：大规模素材生产与批次 QA**
+  - [x] Phase 5A：儿童专属素材批次
+  - [ ] Phase 5B：成年居民素材批次
+  - [ ] Phase 5C：老年素材批次
+  - [ ] Phase 5D：三年龄综合 QA
 - [ ] Phase 6：旧画风隐藏 / 兼容 / 退役决策
 
 **下一项唯一主任务：Phase 5。**
@@ -666,6 +670,19 @@ Phase 4B 不新增第五分类，也不新增 face-dependent Hair。
 
 Phase 4C 不引入 Head Shell、hat-fit、anchor solver、逐 Face offset、mask / clipPath，也不增加第五个玩家分类。通过后进入 Phase 5，后续批量素材生产应优先按 child / adult / elder 分批，而不是先画一件再强行兼容六个 Frame。
 
+## 2026-09-20：Phase 5A 儿童专属素材批次
+
+本轮完成：
+
+- child Hair 扩展为真正的儿童作者资产：`child-topknot`、`child-double-bun`、`child-tufted`、`child-double-knots`、`child-side-braid`、`child-half-up`、`child-short-fringe`；女童可用 6 个，男童可用 5 个。
+- child Outfit 扩展为 6 套：`child-short-robe`、`child-apprentice`、`child-play-jacket`、`child-helper`、`child-winter`、`child-fine-robe`。
+- 旧基础 Hair `crop / bob / long / pony / wave / braid` 与旧现代 Outfit `tee / shirt / knit / jacket` 不再出现在 child UI；历史 Recipe 仍可解析，进入 child Frame 时通过 compatibilityKey / Frame fallback 映射到儿童素材。
+- 本批不制作儿童 integrated Headwear，避免再次把帽饰适配复杂度引入儿童阶段。
+- Actions 新增 Phase 5A contract：child UI / Frame Catalog 不能暴露非 child Hair / Outfit；女童 Hair 至少 6、男童 Hair 至少 5、Outfit 至少 6；分别输出 Hair、Outfit、组合的 96 / 64 / 48px 图板。
+- 实际编辑器截图改用 `child-short-fringe + child-winter`，并直接断言 child Hair / Outfit 选项全部为 `child-*`。
+
+Phase 5A 结束后进入 Phase 5B 成年居民素材批次；不回头要求儿童与成年共用同一美术资产。
+
 ---
 
 # 11. 每轮结束必须更新这里
@@ -673,8 +690,8 @@ Phase 4C 不引入 Head Shell、hat-fit、anchor solver、逐 Face offset、mask
 ## 当前执行点
 
 ```text
-Phase 5 — 大规模素材生产与批次 QA
-状态：未开始（Phase 4C Frame-specific Asset Catalog 完成后，从分年龄素材批次开始）
+Phase 5B — 成年居民素材批次
+状态：未开始（Phase 5A 儿童专属素材批次完成）
 ```
 
 ## 下一次执行必须先回答

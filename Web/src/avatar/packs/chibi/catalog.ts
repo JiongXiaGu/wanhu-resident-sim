@@ -3,6 +3,7 @@ import {defineCatalog} from '../catalog';
 const CHILD=['female.child','male.child'] as const;
 const ADULT=['female.adult','male.adult'] as const;
 const ELDER=['female.elder','male.elder'] as const;
+const NON_CHILD=['female.adult','male.adult','female.elder','male.elder'] as const;
 
 export const chibiCatalog=defineCatalog({
   face:[
@@ -12,9 +13,14 @@ export const chibiCatalog=defineCatalog({
     {id:'long',label:'清秀',note:'修长脸形 · 平缓眉眼'},
   ],
   hair:[
-    // Frame 专属素材排在前面；旧基础发型留在后方作为历史 Recipe 与过渡兼容。
+    // Phase 5A：child 只展示儿童作者资产；旧通用 Hair 仍保留给历史 Recipe 与 adult / elder 过渡。
     {id:'child-topknot',label:'童子束发',note:'儿童专属 · 紧凑束髻',headwear:'none',frames:CHILD,compatibilityKey:'crop'},
     {id:'child-double-bun',label:'童子双髻',note:'女童专属 · 双侧小髻',headwear:'none',frames:['female.child'],compatibilityKey:'bob'},
+    {id:'child-tufted',label:'垂髫短发',note:'儿童专属 · 两侧垂髫',headwear:'none',frames:CHILD,compatibilityKey:'bob'},
+    {id:'child-double-knots',label:'总角双束',note:'儿童专属 · 左右双束',headwear:'none',frames:CHILD,compatibilityKey:'pony'},
+    {id:'child-side-braid',label:'垂髫小辫',note:'女童专属 · 侧边小辫',headwear:'none',frames:['female.child'],compatibilityKey:'braid'},
+    {id:'child-half-up',label:'学童半束',note:'男童专属 · 半束短发',headwear:'none',frames:['male.child'],compatibilityKey:'long'},
+    {id:'child-short-fringe',label:'短刘海',note:'儿童专属 · 圆润短发',headwear:'none',frames:CHILD,compatibilityKey:'wave'},
 
     {id:'bound',label:'日常束发',note:'成年专属 · 简化束髻',headwear:'none',frames:ADULT,compatibilityKey:'crop'},
     {id:'low-bun',label:'低髻',note:'成年专属 · 低位发髻',headwear:'none',frames:ADULT,compatibilityKey:'bob'},
@@ -25,16 +31,20 @@ export const chibiCatalog=defineCatalog({
     {id:'elder-low-knot',label:'老者低束',note:'老年专属 · 低位收束',headwear:'none',frames:ELDER,compatibilityKey:'bob'},
     {id:'elder-swept',label:'老者拢发',note:'老年专属 · 贴头拢发',headwear:'none',frames:ELDER,compatibilityKey:'crop'},
 
-    {id:'crop',label:'利落短发',headwear:'none'},
-    {id:'bob',label:'齐颈短发',headwear:'none'},
-    {id:'long',label:'自然长发',headwear:'none'},
-    {id:'pony',label:'高马尾',headwear:'none'},
-    {id:'wave',label:'蓬松卷发',headwear:'none'},
-    {id:'braid',label:'侧编发',headwear:'none'},
+    {id:'crop',label:'利落短发',headwear:'none',frames:NON_CHILD},
+    {id:'bob',label:'齐颈短发',headwear:'none',frames:NON_CHILD},
+    {id:'long',label:'自然长发',headwear:'none',frames:NON_CHILD},
+    {id:'pony',label:'高马尾',headwear:'none',frames:NON_CHILD},
+    {id:'wave',label:'蓬松卷发',headwear:'none',frames:NON_CHILD},
+    {id:'braid',label:'侧编发',headwear:'none',frames:NON_CHILD},
   ],
   outfit:[
     {id:'child-short-robe',label:'童子短衣',note:'儿童专属 · 短身交领',frames:CHILD,compatibilityKey:'tee'},
     {id:'child-apprentice',label:'学童衣',note:'儿童专属 · 学徒短衫',frames:CHILD,compatibilityKey:'shirt'},
+    {id:'child-play-jacket',label:'日常小褂',note:'儿童专属 · 宽松日常',frames:CHILD,compatibilityKey:'tee'},
+    {id:'child-helper',label:'帮工短衣',note:'儿童专属 · 利落短褐',frames:CHILD,compatibilityKey:'jacket'},
+    {id:'child-winter',label:'冬日夹袄',note:'儿童专属 · 厚领夹衣',frames:CHILD,compatibilityKey:'knit'},
+    {id:'child-fine-robe',label:'锦边童衣',note:'儿童专属 · 整洁外出服',frames:CHILD,compatibilityKey:'shirt'},
 
     {id:'commoner',label:'平民短衣',note:'成年专属 · 交领短衣',frames:ADULT,compatibilityKey:'tee'},
     {id:'laborer',label:'劳作短褐',note:'成年专属 · 束袖工作装',frames:ADULT,compatibilityKey:'jacket'},
@@ -45,10 +55,10 @@ export const chibiCatalog=defineCatalog({
     {id:'elder-long-robe',label:'老者常服',note:'老年专属 · 宽松长衫',frames:ELDER,compatibilityKey:'shirt'},
     {id:'elder-warm-coat',label:'老者夹衣',note:'老年专属 · 厚领外搭',frames:ELDER,compatibilityKey:'knit'},
 
-    {id:'tee',label:'简约上衣'},
-    {id:'shirt',label:'开领衬衫'},
-    {id:'knit',label:'针织开衫'},
-    {id:'jacket',label:'短外套'},
+    {id:'tee',label:'简约上衣',frames:NON_CHILD},
+    {id:'shirt',label:'开领衬衫',frames:NON_CHILD},
+    {id:'knit',label:'针织开衫',frames:NON_CHILD},
+    {id:'jacket',label:'短外套',frames:NON_CHILD},
   ],
   expression:[
     {id:'calm',label:'平静'},
