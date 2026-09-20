@@ -12,7 +12,7 @@
 
 主入口自由创作可以直接选男/女、儿童/成年/老年；这是六份独立样板目标，不是第五种素材分类或修改居民身份。保存到 studio:<frame>，原 player/resident 键保持。绑定居民模式锁定年龄/性别。切框架也必须遵守草稿确认、延迟导入隔离、独立保存/刷新。
 
-移动端不再截图或列为人工必查；基础窄屏溢出 smoke 可以保留。本轮全部新图板与真实桌面 UI 必须下载打开。样板标记只表示候选，不代表用户已定稿。
+移动端不再截图或列为人工必查；基础窄屏溢出 smoke 可以保留。头像画稿的高频美术迭代优先直接使用当前 SHA 的真实 Avatar Renderer（`renderAvatar()` / Pack SVG 图层）生成静态诊断图板，并实际检查 320 / 96 / 64 / 48px；不要求每个中间美术提交都等待 Resident Visual Review。静态图板必须标明它不是完整 Avatar Workshop / Resident UI 截图。候选批次稳定后，正式交付仍需运行并查看对应真实桌面 UI 与完整契约 Review。样板标记只表示候选，不代表用户已定稿。
 
 ## 当前头像方向
 
@@ -54,10 +54,16 @@
 
 ## Git 与审查
 
-最新 main → tmp-* → 集中修改 → 一个聚合 commit → Build + Resident Visual Review → 下载 Artifact 并实际打开截图 → 必要时聚合修正 → 重读 main → 合入 main → main 再审查。
+分两级执行，不再把 GitHub Actions 当作每一轮头像画稿调整的截图服务器。
 
-不得一文件一 commit、空提交刷新、force 覆盖新 main 或依赖 Vercel。GitHub 工具可用时实际调用，不无依据声称无权限。任务交付要包含实际提交状态与关键截图，不只列后续计划。
+**头像静态美术短循环**：最新 main / 当前任务 SHA → 集中修改 Face / Hair / Outfit / Expression SVG 源码 → 直接调用真实 Pack / `renderAvatar()` 生成静态图板 → 实际查看六 Frame、相关 Face/Hair/Outfit 组合及 96/64/48px → 继续聚合修正。只要没有修改编辑器交互、存储、导入、Catalog/Registry 契约、正式 portrait fallback 或居民玩法，这个中间循环可以不等待 Actions。
+
+**正式批次 / 结构改动**：候选美术稳定，或任务涉及 Avatar Workshop 交互、LocalStorage、导入导出、Catalog / Registry / compatibility fallback、Hair Coverage / Head Frame 契约、正式 ResidentPortrait、居民生活/故事内容管线时，按原流程使用 tmp-* 聚合提交 → Build + Resident Visual Review → 下载 Artifact 并实际打开真实桌面 UI / 诊断图 → 必要时修正 → 重读 main → 合入 main → main 再审查。阶段收尾也必须走这一层。
+
+源码静态头像图板是当前代码真实 SVG Renderer 的输出，可用于判断脸型、发型/帽子、腮红、衣领、年龄/性别差异和小尺寸可读性；但不能据此声称草稿切换、对象绑定、存储隔离、延迟导入、完整浏览器 UI 或居民连续性已经验证。
+
+不得一文件一 commit、空提交刷新、force 覆盖新 main 或依赖 Vercel。GitHub 工具可用时实际调用，不无依据声称无权限。任务交付要包含实际提交状态、使用的 Review 类型和关键截图，不只列后续计划。
 
 保持 capture-resident-review 和正式 capture-portrait-review 的有效断言。删除实验只删对应失效测试；新增工坊须测：四类真实操作、同一 Frame + Hair/Headwear 在全部 Face 下 geometry 完全一致、六 Frame Head Frame 顶线/接缝一致、全部 active Hair 通过 Hair Coverage probes、Frame Catalog 过滤与 deterministic fallback、Phase 5A child UI 不得暴露旧通用 Hair/Outfit、女童/男童儿童专属 Hair / Outfit 96/64/48px、Phase 5B adult UI 不得暴露旧现代 Hair/Outfit、成年男女 Hair / Outfit / 组合 96/64/48px、Phase 5C elder UI 只含 elder-* 素材且 compatibility-only 旧 ID 六 Frame 均不可见、老年男女 Hair / Outfit / 组合 96/64/48px、Phase 5D 六 Frame 综合图板、旧 Recipe 全 Frame deterministic fallback 与 Hair/Outfit UI 密度上限、成年职业可读性、Headwear none/integrated 与前后层契约、Q版 Outfit base/collar 结构、甲乙独立保存、取消/恢复/刷新、真实居民 UI、存储/导入错误。
 
-CI PASS ≠ 美术 PASS。必须下载并看实际渲染，头发穿插、眼白溢出、嘴歪、衣领断开或 UI 遮挡时继续修复。最终如实区分已实现功能、艺术候选和未验证 Unity 迁移。
+CI PASS ≠ 美术 PASS。静态 Renderer 图板也 ≠ 完整 UI / 交互 PASS。头像高频美术阶段必须实际查看生成图板；正式批次还必须下载并看 Actions 的真实桌面 UI / 诊断产物。头发穿插、眼白溢出、嘴歪、衣领断开或 UI 遮挡时继续修复。最终如实区分已实现功能、艺术候选、静态图板已审范围、完整浏览器已审范围和未验证 Unity 迁移。
