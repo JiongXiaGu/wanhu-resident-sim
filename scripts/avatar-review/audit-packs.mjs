@@ -282,6 +282,33 @@ async function auditPack(page,outRoot,spec){
       }
     }
 
+    if(spec.featuredHair?.length||spec.featuredOutfits?.length||spec.featuredExpressions?.length){
+      for(const gender of ['female','male']){
+        const frame=`${gender}.adult`,foundation={...baseRecipe,face:pick('face','round'),hair:pick('hair','bound'),outfit:pick('outfit','commoner'),expression:pick('expression','calm')};
+        if(spec.featuredHair?.length){
+          const cells=spec.featuredHair.map(id=>{
+            const option=catalog.hair.find(item=>item.id===id);require(option,`Featured hair ${id} missing from ${spec.id}`);
+            return {label:option.label,svg:r.renderAvatar(frame,{...foundation,hair:id}),sizes:true};
+          });
+          boards.push({name:`batch-a-hair-${frame}`,title:`${meta.label} · Batch A · ${frame} · 新头部造型`,columns:Math.min(5,cells.length),cells});
+        }
+        if(spec.featuredOutfits?.length){
+          const cells=spec.featuredOutfits.map(id=>{
+            const option=catalog.outfit.find(item=>item.id===id);require(option,`Featured outfit ${id} missing from ${spec.id}`);
+            return {label:option.label,svg:r.renderAvatar(frame,{...foundation,outfit:id}),sizes:true};
+          });
+          boards.push({name:`batch-a-outfit-${frame}`,title:`${meta.label} · Batch A · ${frame} · 新古代服饰`,columns:Math.min(5,cells.length),cells});
+        }
+        if(spec.featuredExpressions?.length){
+          const cells=spec.featuredExpressions.map(id=>{
+            const option=catalog.expression.find(item=>item.id===id);require(option,`Featured expression ${id} missing from ${spec.id}`);
+            return {label:option.label,svg:r.renderAvatar(frame,{...foundation,expression:id}),sizes:true};
+          });
+          boards.push({name:`batch-a-expression-${frame}`,title:`${meta.label} · Batch A · ${frame} · 新表情`,columns:cells.length,cells});
+        }
+      }
+    }
+
     host.remove();
     return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length]))};
   },spec);
