@@ -38,9 +38,6 @@ export const avatarReviewSpecs=[
     faceFrameContract:true,
     faceFrameFrames:['female.child','male.child','female.adult','male.adult','female.elder','male.elder'],
     faceFrameHats:['work-headscarf','scholar-cap','merchant-wrap'],
-    headShellContract:true,
-    headShellHairs:['scholar-cap','merchant-wrap','work-headscarf'],
-    headShellFrames:['female.child','male.child','female.adult','male.adult','female.elder','male.elder'],
     ageSexContract:true,
     ageSexRecipe:{face:'round',hair:'bound',outfit:'commoner',expression:'calm'},
     roleProof:[

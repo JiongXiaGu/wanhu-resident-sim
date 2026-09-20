@@ -49,8 +49,6 @@ HeadwearFront
 
 Q版六个 Frame 都遵守 Face Frame：female/male × child/adult/elder 各自固定额头顶线、太阳穴接缝和耳位。round / oval / angular / long 的差异主要发生在面颊、下颌、下巴和五官。Hair / Headwear 从不接收 Face ID；同一个 Hair 在同一 Frame 的四张脸上必须返回完全相同的 BackHair / HeadwearBack / FrontHair / HeadwearFront。child 通过更圆短的下脸、更大的眼睛和较窄肩颈表现年龄；elder 通过眼下 / 口周年龄线、较弱腮红和较缓肩颈表达，不把“灰发”当作唯一年龄信息。
 
-integrated Hair 另有 Frame-based Head Shell。`scholar-cap`、`merchant-wrap`、`work-headscarf` 不再共用一套成人顶部坐标，而由 `head-shell.ts` 仅根据 `frame + hairId` 返回 HeadShellBase / HeadwearBack / HeadwearFront / FrontHair / SideLocks / BackHair。Face 不负责把帽子“顶起来”，Head Shell 自己建立完整头顶部；child / adult / elder 的头壳必须各自成立，禁止逐 Face scale / translate、hat-fit、anchor solver、mask 或 clipPath。
-
 ## 保存、预览与取消
 
 配方只有四个外观字段与版本元数据：
@@ -111,8 +109,7 @@ Web/src/avatar/
       drawing.ts / faces.ts / hair.ts / outfits.ts
     chibi/
       art-spec.ts          Q版 V2 Hair / Headwear / Outfit 内部作者契约
-      face-frame.ts        六 Frame 统一上半脸框架；Face 适配固定 Hair
-      head-shell.ts        integrated Hair 的六 Frame 固定头顶壳体；不接收 Face ID
+      face-frame.ts        成年男女统一上半脸框架；Face 适配固定 Hair
       catalog.ts
       index.ts
       drawing.ts / faces.ts / hair.ts / outfits.ts
@@ -148,7 +145,6 @@ AI 辅助美术生产发生在开发阶段：按照统一画布和包内画法�
 - 每个画风包按自己的 Catalog 动态执行六上下文 × Face × Hair × Outfit × Expression 全组合 SVG、层序与身份不变量；当前三套恰好仍各为 3,456 组合，但不再写死。\n- 跨 Pack 切换按 exact ID → compatibilityKey → target defaults 的确定性规则映射；当前共享旧 ID 的配置仍保持不变，同时三套最终 SVG 必须真正不同。
 - 眉眼口与前发遮挡顺序、嘴型中线、虹膜范围。
 - 六组脸型板、六组表情板、六组发型板、六组服装板；这些是诊断图板，不是固定整图资源或冒充玩家 UI。
-- Q版 integrated Hair 额外输出 Head Shell child/adult、三种 integrated Hair 六 Frame 对照，并检查 child scholar 的 96/64/48px；同一 Frame + Hair 的四张 Face 必须共享完全一致的头部 geometry。
 - 96/64/48 原尺寸，桌面及 390/320px；深浅衬底；儿童老人实际样本。
 
 `resident-visual-review` Artifact 的 `avatar/` 保留原始 PNG，不经过旧预览缩图。每个画风统一位于 `avatar/packs/<pack-id>/`，其中 `parts/` 是可组合 SVG 导出、`samples/` 是当次渲染器输出的组合示例、`review.json` 是该 Pack 自动检查记录；跨画风对照在 `avatar/style-comparisons/`。下载并实际查看窗口、真实居民面板、关键图板与小尺寸后才能合并 main；main 必须再次跑完和核对。

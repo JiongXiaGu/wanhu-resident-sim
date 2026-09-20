@@ -47,7 +47,6 @@ try{
  assert.deepEqual(await page.locator('[data-pack]').evaluateAll(nodes=>nodes.map(n=>n.dataset.packLifecycle)),registeredPacks.map(pack=>pack.lifecycle));
  const semanticFields=['face','hair','outfit','expression'];
  const a=allTargets.find(t=>t.id===residentA),b=allTargets.find(t=>t.kind==='resident'&&t.key!==a.key),players=allTargets.filter(t=>t.kind==='player');
- async function captureHeadShell(frame,name){const target=allTargets.find(t=>t.frame===frame);assert(target,`Missing real avatar target for ${frame}`);await select(target.key);await choosePack(reviewPack);await choose('face','round');await choose('hair','scholar-cap');await choose('outfit','scholar');await choose('expression','calm');await screenshot(name);if(await editor.getAttribute('data-dirty')==='true'){await page.locator('[data-cancel-draft]').click();await ready();}}
  assert.equal(await key(),a.key);assert.equal(await stored(a.key),null);
 
  await select(players[0].key);assert.equal((await recipe()).pack,reviewPack,'New player draft must start from the active pack');
@@ -144,16 +143,12 @@ try{
  if(elder){
   await select(elder.key);await choosePack(reviewPack);await choose('face','oval');await choose('hair','merchant-wrap');await choose('outfit','merchant');await choose('expression','smile');await screenshot('09-elder-resident');await page.locator('[data-cancel-draft]').click();await ready();
  }
- await captureHeadShell('female.child','10-child-female-scholar-head-shell');
- await captureHeadShell('male.child','11-child-male-scholar-head-shell');
- await captureHeadShell('female.adult','12-adult-female-scholar-head-shell');
- await captureHeadShell('male.adult','13-adult-male-scholar-head-shell');
- await select(players[0].key);await page.locator('[data-preview-light]').click();await screenshot('14-light-preview');
- await page.setViewportSize({width:390,height:844});await sizes();await screenshot('15-mobile');
+ await select(players[0].key);await page.locator('[data-preview-light]').click();await screenshot('10-light-preview');
+ await page.setViewportSize({width:390,height:844});await sizes();await screenshot('11-mobile');
  await page.setViewportSize({width:320,height:800});await sizes();
  await page.setViewportSize({width:1600,height:1100});
  const packAudit=await auditRegisteredAvatarPacks(page,out);
- checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; Q版 Phase 4C additionally verifies Frame-based integrated Head Shells, fixed geometry across faces and child/adult/elder-specific head-top structures`);
+ checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; Q版 Phase 4B additionally verifies all six Face Frames, age/sex silhouettes and ancient role readability while Hair/Headwear stays fixed across faces`);
  assert.deepEqual(errors,[],'Browser errors');
  await writeFile(join(out,'review.json'),JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',avatarPacks:packAudit,residentCount:snapshot.residents.length,checks,artisticApproval:'Requires actual screenshot inspection; registry coverage and CI are not an art quality rating'},null,2));
  console.log(checks.join('\n'));

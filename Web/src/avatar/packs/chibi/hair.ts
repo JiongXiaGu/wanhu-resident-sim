@@ -1,15 +1,10 @@
 import type {Frame} from '../../model';
 import type {HairId} from './catalog';
 import type {ChibiHairLayers} from './art-spec';
-import {OUTLINE,hairColor,hairDark,hairLight,l,p} from './drawing';
-import {getIntegratedHeadShell,isIntegratedHeadShellHair} from './head-shell';
+import {OUTLINE,hairColor,hairDark,hairLight,isChild,l,p} from './drawing';
 
 export function hairArt(frame:Frame,id:HairId):ChibiHairLayers{
- const base=hairColor(frame),dark=hairDark(frame),light=hairLight(frame);
- if(isIntegratedHeadShellHair(id)){
-  const shell=getIntegratedHeadShell(frame,id,{base,dark,light});
-  return {back:shell.headShellBase+shell.backHair,headwearBack:shell.headwearBack,front:shell.frontHair+shell.sideLocks,headwearFront:shell.headwearFront};
- }
+ const base=hairColor(frame),dark=hairDark(frame),light=hairLight(frame),child=isChild(frame);
  const back:Record<HairId,string>={
   crop:p('M83 151Q65 111 84 80Q108 40 160 39Q215 40 237 82Q254 113 237 154L224 181L96 181Z',base,OUTLINE,5),
   bob:p('M77 135Q63 90 94 61Q121 36 160 38Q205 35 233 67Q258 96 245 141L251 209Q252 239 229 252L205 242L191 218H129L113 241L88 251Q67 235 70 203Z',base,OUTLINE,5)+p('M75 177Q80 216 96 238L111 218L105 176Z',dark,'none',0,.55)+p('M245 176Q242 215 225 238L210 218L216 176Z',dark,'none',0,.55),
@@ -20,9 +15,9 @@ export function hairArt(frame:Frame,id:HairId):ChibiHairLayers{
 
   bound:p('M84 150Q69 106 91 75Q116 42 158 43Q204 39 230 74Q247 99 238 142L225 174H95Z',base,OUTLINE,5)+p('M133 49Q137 26 160 24Q183 26 187 49Q182 63 160 65Q138 63 133 49Z',base,OUTLINE,5)+p('M143 44Q160 32 177 44Q168 40 151 48Z',light,'none',0,.45),
   'low-bun':p('M81 142Q65 95 94 64Q121 37 160 39Q205 35 233 67Q250 88 246 123L236 167L225 194H95L80 169Z',base,OUTLINE,5)+p('M203 153Q235 145 247 166Q256 186 239 201Q223 215 199 204Q184 193 190 176Q192 161 203 153Z',base,OUTLINE,5)+p('M207 164Q229 160 237 174Q242 186 230 193Q214 198 202 190Q196 178 207 164Z',dark,'none',0,.42),
-  'work-headscarf':'',
-  'scholar-cap':'',
-  'merchant-wrap':'',
+  'work-headscarf':p('M87 151Q73 111 94 82Q117 53 159 52Q201 49 225 78Q244 101 236 143L224 172H97Z',base,OUTLINE,5),
+  'scholar-cap':p('M91 151Q78 113 99 86Q121 58 159 57Q199 54 222 81Q239 103 233 141L221 169H101Z',base,OUTLINE,5),
+  'merchant-wrap':p('M88 151Q73 109 95 79Q118 49 160 48Q202 46 226 76Q244 100 236 143L224 172H98Z',base,OUTLINE,5)
  };
 
  const front:Record<HairId,string>={
@@ -35,23 +30,27 @@ export function hairArt(frame:Frame,id:HairId):ChibiHairLayers{
 
   bound:p('M86 148Q74 111 94 83Q119 52 158 52Q199 48 226 78Q243 101 236 137L226 160L219 132Q201 124 193 104Q179 120 164 126Q172 106 161 91Q149 115 126 130Q134 108 119 102Q106 121 94 134L94 162L84 158Z',base,OUTLINE,5)+p('M103 86Q126 61 160 60Q197 57 219 82Q192 70 163 72Q136 71 112 91Z',light,'none',0,.44)+l('M150 48L160 38L171 48',dark,4,.8),
   'low-bun':p('M80 148Q65 102 93 70Q119 43 160 44Q203 39 232 72Q249 96 242 139L229 171L223 141Q205 128 195 105Q184 124 168 131Q177 107 165 94Q150 119 130 133Q136 110 121 103Q108 126 91 137L90 174L80 161Z',base,OUTLINE,5)+p('M101 83Q126 55 161 54Q199 51 224 81Q194 68 163 70Q132 69 108 89Z',light,'none',0,.44)+l('M184 129Q204 137 215 154',light,4,.45),
-  'work-headscarf':'',
-  'scholar-cap':'',
-  'merchant-wrap':'',
+  'work-headscarf':p('M88 148Q76 112 96 86Q119 58 159 57Q200 54 223 82Q239 103 232 136L222 158L216 132Q198 124 190 105Q177 120 162 127Q168 108 158 95Q145 116 124 130Q132 110 118 104Q105 122 95 134L95 161L86 157Z',base,OUTLINE,5)+p('M107 88Q129 65 159 65Q191 62 214 85Q187 75 160 76Q134 75 113 94Z',light,'none',0,.36),
+  'scholar-cap':p('M94 151Q82 116 101 91Q123 66 159 65Q196 62 218 88Q234 106 228 138L219 159L213 134Q197 126 188 110Q175 124 161 130Q168 112 158 99Q145 119 126 132Q132 113 119 107Q107 124 99 136L99 162L91 159Z',base,OUTLINE,5),
+  'merchant-wrap':p('M89 148Q76 110 97 83Q120 55 160 54Q200 52 224 80Q240 102 233 137L222 159L216 132Q198 124 190 105Q177 121 163 127Q170 108 159 95Q146 117 125 131Q132 110 118 104Q105 123 95 135L95 162L86 158Z',base,OUTLINE,5)+p('M107 86Q132 61 160 62Q190 59 215 84Q187 74 160 75Q134 74 112 92Z',light,'none',0,.38)
  };
 
  const headwearBack:Record<HairId,string>={
   crop:'',bob:'',long:'',pony:'',wave:'',braid:'',bound:'','low-bun':'',
-  'work-headscarf':'',
-  'scholar-cap':'',
-  'merchant-wrap':'',
+  'work-headscarf':p('M86 82Q99 55 129 48Q162 36 194 49Q220 55 235 80L227 104Q202 90 160 89Q118 90 93 105Z','#9b7f5d',OUTLINE,4)+p('M226 87Q251 83 260 101Q264 117 249 130Q237 139 225 128L231 113Q218 103 226 87Z','#7f684e',OUTLINE,4),
+  'scholar-cap':p('M109 78Q117 55 132 47L132 30Q160 20 188 30L188 47Q204 55 212 78L207 102H113Z','#59636a',OUTLINE,4)+p('M132 31Q160 23 188 31L185 48Q160 42 135 48Z','#454d53',OUTLINE,3),
+  'merchant-wrap':p('M91 79Q111 51 160 48Q209 50 230 80L221 105Q196 91 160 91Q123 91 99 105Z','#a77455',OUTLINE,4)+p('M224 82Q247 76 257 92Q263 105 252 117Q242 126 229 119L235 105Q222 98 224 82Z','#8c5e44',OUTLINE,4)
  };
  const headwearFront:Record<HairId,string>={
   crop:'',bob:'',long:'',pony:'',wave:'',braid:'',bound:'','low-bun':'',
-  'work-headscarf':'',
-  'scholar-cap':'',
-  'merchant-wrap':'',
+  'work-headscarf':p('M91 82Q126 67 160 68Q195 67 230 82L226 105Q195 96 160 97Q124 96 94 106Z','#b5966b',OUTLINE,4)+l('M105 88Q134 80 160 81Q189 79 216 88','#d7bd8b',3,.65)+p('M224 97L244 108L235 120L219 108Z','#8c7255',OUTLINE,3),
+  'scholar-cap':p('M108 70Q132 61 160 61Q188 61 212 70L216 91Q189 84 160 85Q131 84 104 92Z','#727c7d',OUTLINE,4)+p('M96 88Q127 80 160 81Q193 80 224 88L222 103Q190 96 160 97Q129 96 98 103Z','#4d565a',OUTLINE,4)+l('M127 69L127 88M193 69L193 88','#9da7a4',2.6,.55),
+  'merchant-wrap':p('M95 80Q127 67 160 68Q194 67 225 80L229 101Q195 94 160 95Q125 94 91 102Z','#c18c63',OUTLINE,4)+l('M106 88Q133 80 160 81Q189 80 215 88','#e0b28b',3,.65)+p('M219 92Q231 98 238 109L228 118L216 103Z','#99694a',OUTLINE,3)
  };
 
+ // 小孩整体缩一点头饰视觉体积，但保持同一作者坐标契约，不做自动求解。
+ if(child&&headwearFront[id]){
+  // 当前 SVG 直接使用同坐标，child 脸更圆；通过较短前发留出帽檐空间。
+ }
  return {back:back[id],headwearBack:headwearBack[id],front:front[id],headwearFront:headwearFront[id]};
 }

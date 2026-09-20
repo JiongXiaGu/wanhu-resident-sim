@@ -26,7 +26,6 @@
 - [x] Phase 4：年龄 / 性别扩展与职业可读性
   - [x] Phase 4A：Face Frame Pass（脸部框架回正）
   - [x] Phase 4B：child / adult / elder、男女与职业可读性
-  - [x] Phase 4C：Head Shell Pass（integrated Hair 按 Frame 建立固定头顶壳体）
 - [ ] **Phase 5：大规模素材生产与批次 QA**
 - [ ] Phase 6：旧画风隐藏 / 兼容 / 退役决策
 
@@ -118,8 +117,6 @@ Phase 4A 确认：**Face 负责适配统一头部框架，Hair / Headwear 不跟
 - 同一 Frame + Hair 下，BackHair / FrontHair / HeadwearBack / HeadwearFront 必须在四张 Face 中保持完全一致。
 
 Phase 4B 已把 Face Frame 扩展到全部六个 Frame：female/male × child/adult/elder。每个 Frame 都有稳定的额头顶线、太阳穴接缝和耳位；Hair / Headwear 仍不读取 Face ID。
-
-Phase 4C 进一步区分 Face Frame 与 Head Shell：Face Frame 负责脸内部及下半脸差异；`scholar-cap`、`merchant-wrap`、`work-headscarf` 等 integrated Hair 使用独立 `head-shell.ts`，只接受 `frame + hairId`，按六个 Frame 提供固定头颅壳体、帽体前后层、前额刘海、侧发与必要后发。禁止 `hair <- face`、逐脸帽子偏移、anchor solver、mask / clipPath 自动遮挡。
 
 ## Hair / 头部造型
 
@@ -647,21 +644,7 @@ Phase 4A 通过后，Phase 4B 才处理 child / adult / elder、男女成熟度�
 - 新增职业跨年龄 proof：书生/学徒与掌柜分别检查 child / adult / elder，确保职业语义在不同年龄仍可读。
 - Hair / Headwear 仍严格要求同一 Frame + Hair 在四张 Face 下 geometry 完全一致。
 
-Phase 4B 不新增第五分类，也不新增 face-dependent Hair。
-
-## 2026-09-20：Phase 4C Head Shell Pass
-
-本轮完成：
-
-- 新增 `Web/src/avatar/packs/chibi/head-shell.ts`，把 integrated Hair 的头顶部 geometry 从 `hair.ts` 抽离为按 Frame 固定的 Head Shell。
-- `getIntegratedHeadShell(frame, hairId)` 不接收 Face ID；同一 Frame + Hair 在四张 Face 下继续保持完全相同的 BackHair / HeadwearBack / FrontHair / HeadwearFront。
-- female/male × child/adult/elder 六个 Frame 均有独立 Head Shell guide；child 的书生巾帽采用更圆、更低重心、更窄帽体与更短前发，不再是 adult 坐标直接复用。
-- Head Shell 内部明确 HeadShellBase、HeadwearBack、HeadwearFront、FrontHair、SideLocks、BackHair；仍映射到既有四个 Hair/Headwear Renderer layer，不新增玩家可见第五分类。
-- Actions 新增 Head Shell contract：检查 integrated Hair 的 Frame / Hair metadata、帽底圈与头壳接触、前发不悬空、头壳覆盖共享太阳穴区，以及同一 Hair 的 child/adult/elder signature 必须不同。
-- 新增 `head-shell-scholar-child`、`head-shell-scholar-adult`、三种 integrated Hair 六 Frame 对照，以及 child scholar 96 / 64 / 48px 专项图板。
-- `capture-avatar-review.mjs` 新增 female/male child 与 adult 的真实编辑器书生巾帽截图。
-
-Phase 4C 不改变 Face Frame，不引入 face-dependent Hair、自动 fit、逐脸 offset、anchor solver、mask 或 clipPath。完成该修正后，主路线进入 Phase 5 大规模素材生产与批次 QA。
+Phase 4B 不新增第五分类，也不新增 face-dependent Hair；通过后进入 Phase 5 大规模素材生产与批次 QA。
 
 ---
 
@@ -671,7 +654,7 @@ Phase 4C 不改变 Face Frame，不引入 face-dependent Hair、自动 fit、逐
 
 ```text
 Phase 5 — 大规模素材生产与批次 QA
-状态：未开始（Phase 4C Head Shell Pass 已完成；下一轮从批量素材生产开始）
+状态：未开始
 ```
 
 ## 下一次执行必须先回答
