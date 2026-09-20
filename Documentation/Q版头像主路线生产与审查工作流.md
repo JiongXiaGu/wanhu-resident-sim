@@ -24,7 +24,7 @@
 - [x] Phase 2：建立 Q版 V2 美术规范与头部 / 衣装内部图层规范
 - [x] Phase 3：第一批古代居民核心素材
 - [ ] **Phase 4：年龄 / 性别扩展与职业可读性**
-  - [x] Phase 4A：Hat Fit Pass（帽饰 / 帽下头发适配）
+  - [x] Phase 4A：Face Frame Pass（脸部框架回正）
   - [ ] Phase 4B：child / adult / elder、男女与职业可读性
 - [ ] Phase 5：大规模素材生产与批次 QA
 - [ ] Phase 6：旧画风隐藏 / 兼容 / 退役决策
@@ -102,6 +102,21 @@ Phase 1 完成后，才进入 Phase 2。
 - elder 不是“成人 + 灰发”。
 
 第一轮仍可维持 4 个 Face，再根据实际审查看是否扩到 6 个。
+
+### Face Frame 原则
+
+Phase 4A 确认：**Face 负责适配统一头部框架，Hair / Headwear 不跟 Face 变化。**
+
+成年 female / male 各自拥有一个稳定上半脸框架：
+
+- 额头最高线固定。
+- 左右太阳穴 / 帽沿接触区固定。
+- 耳朵挂接高度固定。
+- 四张 Face 的差异主要放在面颊、下颌、下巴、眼距、眼型和眉形。
+- round / oval / angular / long 不能通过挤压头发或帽子来表达差异。
+- 同一 Frame + Hair 下，BackHair / FrontHair / HeadwearBack / HeadwearFront 必须在四张 Face 中保持完全一致。
+
+当前 Face Frame Pass 先覆盖 `female.adult / male.adult`；child / elder 在 Phase 4B 单独处理。
 
 ## Hair / 头部造型
 
@@ -259,6 +274,8 @@ Phase 2 固定：
 - Expression 始终在 FrontHair / HeadwearFront 下方，不允许情绪符号穿过帽檐。
 - 参考画风暂时输出空 Headwear layer，保证同一 Renderer contract。
 - 当前旧 Q版 6 个 Hair 全部标记 `headwear: none`；Phase 3 新增真正帽饰后才出现 `integrated`。
+- integrated Headwear 仍是固定作者 geometry，不读取 Face ID，不做横向缩放 / Y 位移 / anchor solver。
+- 帽类可以拥有自己固定的“帽下头发”，但同一个 Hair ID 在四张 Face 间必须保持相同。
 
 ## 古代感
 
@@ -427,6 +444,8 @@ Q版专项自动检查：
 - 成人头身比例仍在 Q版范围。
 - Simple Flat / Linework 不得被 import 成 Q版实际 geometry。
 - Headwear 内部图层存在时，必须位于正确前后关系。
+- 同一 Frame + Hair 的四个头部层在所有 Face 下必须字节一致；Face 不允许驱动 Hair / Headwear geometry。
+- adult Face 必须声明统一 Face Frame signature，并保持相同额头顶线 / 太阳穴框架。
 - Catalog 新增素材不能让旧 Recipe 失效。
 
 ---
@@ -594,25 +613,22 @@ Phase 2 只建立生产契约，不新增古代帽子或古代服饰；真正美
 
 通过本批后，Phase 4 转向 child / adult / elder 与男女职业可读性，不继续无节制堆成年素材。
 
-## 2026-09-20：Phase 4A Hat Fit Pass
+## 2026-09-20：Phase 4A Face Frame Pass
 
-触发原因：
+上一轮尝试让 integrated Headwear 根据不同 Face 做缩放 / 位移适配，人工视觉审查证明方向错误：帽子和头发随脸变化后复杂度上升，而且同一发型的稳定性被破坏。因此该实现已从当前树撤销，不作为后续基础。
 
-Batch A 人工截图暴露出书生巾帽、劳作头巾、掌柜包头仍像“固定帽子扣在固定头发上”，帽沿和额头 / 脸宽没有形成统一适配；男女帽下发际线也过于相同。
+本轮正式规则：
 
-本轮规则：
+- Hair / Headwear 是稳定资产，不接受 Face ID。
+- 删除 head-fit 运行时适配与逐脸帽饰 wrapper。
+- `female.adult` 与 `male.adult` 各自建立统一上半脸 Face Frame。
+- 四个 Face 共用同一额头顶线、太阳穴 / 帽沿接触区和耳位；差异集中在脸的下半部与五官。
+- Actions 明确检查每个 Frame × Hair 的四层头部 geometry 在四张 Face 下完全相同。
+- Actions 输出固定书生巾帽 / 劳作头巾 / 掌柜包头 × 4 Face 图板，以及书生巾帽四脸 96 / 64 / 48px 图板。
+- 实际编辑器分别截图 female / male 书生巾帽。
+- 不新增自动 fit、每帽每脸 offset、mask 或 clipPath 修正。
 
-- 不新增 Hat 第五分类，也不增加自动 anchor solver。
-- 新增统一 `head-fit.ts`，所有 integrated Headwear 共用一套 Face fit profile。
-- profile 只描述少量稳定属性：`faceWidth / topCurve / templeSpread / scaleX / translateY`。
-- round / oval / angular / long 使用四套统一 profile；male 与 child 只有极小的统一修正，不为每顶帽子建立逐脸 offset。
-- 实际 Headwear geometry 仍是一份共享作者源；不同 Face 只通过统一 wrapper 轻微横向缩放 / 上下调整。
-- 帽下 FrontHair 按 female / male Frame 分别作者绘制，避免“普通短发上面直接扣帽子”；同一性别四张脸仍共享同一帽下 Hair geometry。
-- Actions 必须验证：帽子中心没有明显偏离脸中心、帽宽处于脸宽合理范围、帽体不会落到脸中下部、同一帽子四张脸的内部 geometry 完全相同。
-- Visual Review 必须额外输出 female / male 的 4脸 × 3 integrated hats，以及书生巾帽四脸 96 / 64 / 48px 专项板。
-- 真实编辑器必须各截图一张成年女性 / 成年男性书生巾帽。
-
-Phase 4A 通过后，Phase 4B 再处理年龄、性别和职业可读性；不继续用帽子问题阻塞后续年龄设计。
+Phase 4A 通过后，Phase 4B 才处理 child / adult / elder、男女成熟度与职业可读性。
 
 ---
 

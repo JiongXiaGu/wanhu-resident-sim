@@ -8,7 +8,7 @@
 
 ## 当前头像方向
 
-只有一套玩家可用的头像工坊：脸型、头发、衣服、表情四类离散选项。不同脸必须共享同一配件作者源；integrated Headwear 允许通过统一 head-fit profile 做轻量脸宽 / 额头高度适配，但禁止逐帽子逐脸 offset。表情不改变身份。玩家示例档案和任意真实居民使用同一编辑流程，按城市/居民稳定 ID 独立保存。
+只有一套玩家可用的头像工坊：脸型、头发、衣服、表情四类离散选项。不同脸必须共享固定的 Hair / Headwear 作者 geometry；Face 通过统一 Face Frame 适配发型，而不是让发型跟脸变。表情不改变身份。玩家示例档案和任意真实居民使用同一编辑流程，按城市/居民稳定 ID 独立保存。
 
 不再制作“完整人物图画廊，然后以后再拆模块”的交付。当前 `chibi-cute-v1` 是主美术路线；Phase 3 / Batch A 已加入首批古代头部造型、服饰与 shy / serious 表情。`linework-v1` 与 `simple-flat-v1` 暂保留为 reference / compatibility，不再优先扩素材。Q版必须在头身比例、五官、轮廓线和发型体积上保持独立视觉语言，并逐步转向泛中国古代模拟经营居民。当前仍只有 Face / Hair / Outfit / Expression 四个玩家可见类别：帽子第一阶段归入 Hair / 头部造型内部，腮红和情绪符号归入 Expression。主路线与阶段顺序以 `Documentation/Q版头像主路线生产与审查工作流.md` 为准；CI PASS 不等于美术定稿。
 
@@ -38,7 +38,7 @@
 
 ## 代码与资源
 
-保持职责分离，必要处中文注释，不为美术问题新增自动对齐、逐脸偏移或复杂兼容引擎。四个 UI 选项可以拥有多个实际绘制层；统一 Renderer 顺序为 BackHair → HeadwearBack → Neck → Outfit → FaceBase → Expression → FrontHair → HeadwearFront。Headwear 仍属于 Hair，不增加 Recipe 字段；表情必须位于 FrontHair / HeadwearFront 下方。Q版 Outfit 内部使用 base / collar / overlay / detail 作者标记，base 与 collar 必须存在。脸型对应的眼形保留身份，不把同一组通用五官当作多个完整脸。
+保持职责分离，必要处中文注释，不为美术问题新增自动对齐、逐脸偏移或复杂兼容引擎。禁止 Hair / Headwear 接收 Face ID 或做 face-dependent scale / offset；成年 Face 的上半脸通过 face-frame.ts 统一额头、太阳穴与耳位，脸型差异放到下脸和五官。四个 UI 选项可以拥有多个实际绘制层；统一 Renderer 顺序为 BackHair → HeadwearBack → Neck → Outfit → FaceBase → Expression → FrontHair → HeadwearFront。Headwear 仍属于 Hair，不增加 Recipe 字段；表情必须位于 FrontHair / HeadwearFront 下方。Q版 Outfit 内部使用 base / collar / overlay / detail 作者标记，base 与 collar 必须存在。脸型对应的眼形保留身份，不把同一组通用五官当作多个完整脸。
 
 草稿与已应用记录分离。切对象/关闭提示未保存修改；导入只改预览；严格验证版本与选项；写入失败不能假装成功。每对象独立 key，同对象外部更新要提示冲突。不要无授权删除浏览器内其他用户数据或改写旧存储键。
 
@@ -50,6 +50,6 @@
 
 不得一文件一 commit、空提交刷新、force 覆盖新 main 或依赖 Vercel。GitHub 工具可用时实际调用，不无依据声称无权限。任务交付要包含实际提交状态与关键截图，不只列后续计划。
 
-保持 capture-resident-review 和正式 capture-portrait-review 的有效断言。删除实验只删对应失效测试；新增工坊须测：四类真实操作、不同脸共享配件作者源、Headwear none/integrated 与前后层契约、integrated Headwear 的 4 Face fit / 男女帽下发 / 96/64/48px、Q版 Outfit base/collar 结构、甲乙独立保存、取消/恢复/刷新、真实居民 UI、存储/导入错误、年龄版本。
+保持 capture-resident-review 和正式 capture-portrait-review 的有效断言。删除实验只删对应失效测试；新增工坊须测：四类真实操作、同一 Hair/Headwear 在四脸下 geometry 完全一致、成年 Face Frame 顶线/接缝一致、Headwear none/integrated 与前后层契约、Q版 Outfit base/collar 结构、甲乙独立保存、取消/恢复/刷新、真实居民 UI、存储/导入错误、年龄版本及 96/64/48px。
 
 CI PASS ≠ 美术 PASS。必须下载并看实际渲染，头发穿插、眼白溢出、嘴歪、衣领断开或 UI 遮挡时继续修复。最终如实区分已实现功能、艺术候选和未验证 Unity 迁移。

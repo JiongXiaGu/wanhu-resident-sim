@@ -1,5 +1,6 @@
 import type {Frame} from '../../model';
 import type {ExpressionId,FaceId} from './catalog';
+import {adultFaceFrameFor,adultFaceFrameSignature,adultFaceShell} from './face-frame';
 import {CHEEK,EYE,OUTLINE,SKIN,SKIN_SHADOW,e,isChild,isElder,isFemale,l,mirror,p} from './drawing';
 
 const shapes:Record<'female'|'male'|'child'|'elder',Record<FaceId,string>>={
@@ -31,9 +32,12 @@ const shapes:Record<'female'|'male'|'child'|'elder',Record<FaceId,string>>={
 
 export function faceBase(frame:Frame,face:FaceId):string{
  const group=isChild(frame)?'child':isElder(frame)?'elder':isFemale(frame)?'female':'male';
- const earY=isChild(frame)?160:165;
- const ear=mirror(e(91,earY,12,16,SKIN,OUTLINE,4)+p(`M87 ${earY-3}Q94 ${earY-8} 96 ${earY+2}Q92 ${earY+7} 87 ${earY+5}Z`,SKIN_SHADOW,'none',0,.75));
- let art=ear+p(shapes[group][face],'url(#cb-skin)',OUTLINE,4.5);
+ const guide=adultFaceFrameFor(frame),signature=adultFaceFrameSignature(frame),adultShell=adultFaceShell(frame,face);
+ const earX=guide?.earX??91,earY=guide?.earY??(isChild(frame)?160:165);
+ const ear=mirror(e(earX,earY,12,16,SKIN,OUTLINE,4)+p(`M${earX-4} ${earY-3}Q${earX+3} ${earY-8} ${earX+5} ${earY+2}Q${earX+1} ${earY+7} ${earX-4} ${earY+5}Z`,SKIN_SHADOW,'none',0,.75));
+ const shell=adultShell??shapes[group][face];
+ const shellMeta=guide?` data-face-frame="${guide.id}" data-frame-signature="${signature}" data-frame-left="${guide.left}" data-frame-right="${guide.right}" data-frame-top-y="${guide.topY}" data-frame-temple-y="${guide.templeY}" data-frame-side-y="${guide.sideY}"`:'';
+ let art=ear+`<g data-chibi-face-shell="" data-face-id="${face}"${shellMeta}>${p(shell,'url(#cb-skin)',OUTLINE,4.5)}</g>`;
  const cheekY=isChild(frame)?190:195;
  art+=mirror(e(118,cheekY,19,12,CHEEK,'none',0,.78));
  if(isElder(frame)){

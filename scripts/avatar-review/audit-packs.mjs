@@ -139,8 +139,8 @@ async function auditPack(page,outRoot,spec){
     require(meta,`Review spec references unregistered pack ${spec.id}`);
     const pick=(part,id)=>catalog[part].some(option=>option.id===id)?id:m.recipeForPack(spec.id)[part];
     const baseRecipe=m.recipeForPack(spec.id);
-    const parts=[],samples=[],boards=[],wardrobe=new Map(),headwearGeometry=new Map();
-    let combinations=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,headFitChecks=0,outfitStructureChecks=0;
+    const parts=[],samples=[],boards=[],wardrobe=new Map(),headGeometry=new Map(),frameSignature=new Map();
+    let combinations=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,outfitStructureChecks=0;
 
     for(const frame of m.frames){
       const base={...baseRecipe,hair:pick('hair',frame.startsWith('male')?'crop':'bob'),outfit:pick('outfit','shirt'),expression:pick('expression','calm')};
@@ -190,23 +190,25 @@ async function auditPack(page,outRoot,spec){
         faces.push({label:face.label,svg:referenceSvg,sizes:true});
         samples.push({name:`${frame}-${face.id}`,frame,recipe:reference,svg:referenceSvg});
 
-        if(spec.headFitContract){
-          for(const hair of catalog.hair.filter(item=>item.headwear==='integrated')){
-            const fitted=r.renderAvatar(frame,{...reference,hair:hair.id});
-            host.innerHTML=fitted;
-            const faceNode=host.querySelector('[data-layer="FaceBase"]');
-            const backFit=host.querySelector('[data-layer="HeadwearBack"] [data-chibi-head-fit]');
-            const frontFit=host.querySelector('[data-layer="HeadwearFront"] [data-chibi-head-fit]');
-            require(faceNode&&backFit&&frontFit,`${spec.id}/${hair.id}/${frame}/${face.id} missing standardized head fit wrapper`);
-            require(frontFit.getAttribute('data-chibi-head-fit')===`${frame}:${face.id}`,`${spec.id}/${hair.id} used the wrong face fit profile`);
-            const faceBox=faceNode.getBBox(),hatBox=frontFit.getBBox();
-            const faceCenter=faceBox.x+faceBox.width/2,hatCenter=hatBox.x+hatBox.width/2;
-            require(Math.abs(faceCenter-hatCenter)<8,`${spec.id}/${hair.id}/${face.id} headwear center drifted from the face`);
-            require(hatBox.width>faceBox.width*.55&&hatBox.width<faceBox.width*1.18,`${spec.id}/${hair.id}/${face.id} headwear width no longer fits the face class`);
-            require(hatBox.y+hatBox.height<faceBox.y+faceBox.height*.58,`${spec.id}/${hair.id}/${face.id} headwear dropped too far into the face`);
-            const geometryKey=`${frame}/${hair.id}`,geometry=`${backFit.innerHTML}|${frontFit.innerHTML}`;
-            if(headwearGeometry.has(geometryKey))require(headwearGeometry.get(geometryKey)===geometry,`${spec.id}/${hair.id} uses per-face hat geometry instead of the shared fit profile`);else headwearGeometry.set(geometryKey,geometry);
-            headFitChecks++;
+        if(spec.faceFrameContract&&spec.faceFrameFrames?.includes(frame)){
+          host.innerHTML=referenceSvg;
+          const shell=host.querySelector('[data-chibi-face-shell]');
+          require(shell,`${spec.id}/${frame}/${face.id} missing Face Frame shell metadata`);
+          require(shell.getAttribute('data-face-frame')===frame,`${spec.id}/${frame}/${face.id} uses the wrong Face Frame`);
+          const signature=shell.getAttribute('data-frame-signature');
+          require(signature,`${spec.id}/${frame}/${face.id} missing Face Frame signature`);
+          if(frameSignature.has(frame))require(frameSignature.get(frame)===signature,`${spec.id}/${frame} face options no longer share the same upper frame`);else frameSignature.set(frame,signature);
+          const topY=Number(shell.getAttribute('data-frame-top-y')),shellBox=shell.getBBox();
+          require(Math.abs(shellBox.y-topY)<1.5,`${spec.id}/${frame}/${face.id} escaped the common forehead top line`);
+          faceFrameChecks++;
+        }
+
+        if(spec.faceFrameContract){
+          for(const hair of catalog.hair){
+            const headLayers=r.renderLayers(frame,{...reference,hair:hair.id}).filter(layer=>['BackHair','HeadwearBack','FrontHair','HeadwearFront'].includes(layer.id));
+            const geometry=JSON.stringify(headLayers),key=`${frame}/${hair.id}`;
+            if(headGeometry.has(key))require(headGeometry.get(key)===geometry,`${spec.id}/${frame}/${hair.id} changed Hair/Headwear geometry with face=${face.id}`);else headGeometry.set(key,geometry);
+            headGeometryChecks++;
           }
         }
 
@@ -256,7 +258,7 @@ async function auditPack(page,outRoot,spec){
             const recipe=m.parseRecipe({...look,hair:hair.id,outfit:outfit.id}),comboLayers=r.renderLayers(frame,recipe),svg=r.renderAvatar(frame,recipe);
             require(comboLayers.find(x=>x.id==='FaceBase').svg===faceSvg,`${spec.id} wardrobe changed face`);
             require(comboLayers.find(x=>x.id==='Expression').svg===expressionSvg,`${spec.id} wardrobe changed expression`);
-            const key=`${frame}/${hair.id}/${outfit.id}`,shared=JSON.stringify(comboLayers.filter(x=>!['FaceBase','Expression',...(spec.headFitContract?['HeadwearBack','HeadwearFront']:[])].includes(x.id)));
+            const key=`${frame}/${hair.id}/${outfit.id}`,shared=JSON.stringify(comboLayers.filter(x=>!['FaceBase','Expression'].includes(x.id)));
             if(wardrobe.has(key))require(wardrobe.get(key)===shared,`${spec.id} face changed shared wardrobe`);else wardrobe.set(key,shared);
             require(comboLayers.map(x=>x.id).join(',')===expectedLayerOrder.join(','),`${spec.id} layer order changed`);
             require(!/<image\\b|<script\\b|<foreignObject\\b|<mask\\b|<clipPath\\b/.test(svg),`${spec.id} used forbidden complete-image or auto-fit constructs`);
@@ -305,13 +307,15 @@ async function auditPack(page,outRoot,spec){
     if(spec.featuredHair?.length||spec.featuredOutfits?.length||spec.featuredExpressions?.length){
       for(const gender of ['female','male']){
         const frame=`${gender}.adult`,foundation={...baseRecipe,face:pick('face','round'),hair:pick('hair','bound'),outfit:pick('outfit','commoner'),expression:pick('expression','calm')};
-        if(spec.headFitContract){
-          const integrated=catalog.hair.filter(item=>item.headwear==='integrated');
-          const fitCells=[];
-          for(const hair of integrated)for(const face of catalog.face)fitCells.push({label:`${face.label} / ${hair.label}`,svg:r.renderAvatar(frame,{...foundation,face:face.id,hair:hair.id})});
-          boards.push({name:`head-fit-${frame}`,title:`${meta.label} · ${frame} · 4脸 × ${integrated.length}帽类适配`,columns:integrated.length,cells:fitCells});
-          const scholar=catalog.hair.find(item=>item.id==='scholar-cap');
-          if(scholar)boards.push({name:`head-fit-scholar-${frame}`,title:`${meta.label} · ${frame} · 书生巾帽 Face Fit · 96 / 64 / 48px`,columns:catalog.face.length,cells:catalog.face.map(face=>({label:face.label,svg:r.renderAvatar(frame,{...foundation,face:face.id,hair:scholar.id}),sizes:true}))});
+        if(spec.faceFrameContract&&spec.faceFrameHats?.length){
+          const fixedCells=[];
+          for(const face of catalog.face)for(const hairId of spec.faceFrameHats){
+            const option=catalog.hair.find(item=>item.id===hairId);require(option,`Face Frame hair ${hairId} missing from ${spec.id}`);
+            fixedCells.push({label:`${face.label} / ${option.label}`,svg:r.renderAvatar(frame,{...foundation,face:face.id,hair:hairId})});
+          }
+          boards.push({name:`face-frame-hats-${frame}`,title:`${meta.label} · ${frame} · 固定 Hair/Headwear × 4脸`,columns:spec.faceFrameHats.length,cells:fixedCells});
+          const scholar=spec.faceFrameHats.includes('scholar-cap')&&catalog.hair.find(item=>item.id==='scholar-cap');
+          if(scholar)boards.push({name:`face-frame-scholar-${frame}`,title:`${meta.label} · ${frame} · 固定书生巾帽 · 4脸 · 96/64/48px`,columns:catalog.face.length,cells:catalog.face.map(face=>({label:face.label,svg:r.renderAvatar(frame,{...foundation,face:face.id,hair:scholar.id}),sizes:true}))});
         }
         if(spec.featuredHair?.length){
           const cells=spec.featuredHair.map(id=>{
@@ -338,7 +342,7 @@ async function auditPack(page,outRoot,spec){
     }
 
     host.remove();
-    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,headFitChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length]))};
+    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length]))};
   },spec);
 
   for(const part of data.parts){
@@ -372,7 +376,8 @@ async function auditPack(page,outRoot,spec){
     eyeChecks:data.eyeChecks,
     markerChecks:data.markerChecks,
     headwearChecks:data.headwearChecks,
-    headFitChecks:data.headFitChecks,
+    faceFrameChecks:data.faceFrameChecks,
+    headGeometryChecks:data.headGeometryChecks,
     outfitStructureChecks:data.outfitStructureChecks,
     exportedParts:data.parts.length,
     samples:data.samples.length,

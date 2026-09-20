@@ -47,9 +47,7 @@ HeadwearFront
 
 换发型、衣服时 FaceBase / Expression 不变；换表情时 FaceBase 与衣装不变；换脸型时头发、衣服、颈部不变，Expression 使用新脸型对应的眉眼口设计。
 
-### Headwear Fit
-
-普通 Hair 仍完全跨 Face 共用 geometry。对于 `headwear: integrated` 的头部造型，BackHair / FrontHair 仍按同一 Frame 共用；只有 HeadwearBack / HeadwearFront 可通过 `head-fit.ts` 的统一 profile 随 Face 做轻量适配。profile 只有 faceWidth、topCurve、templeSpread、横向 scale 与少量 Y 位移，不允许每个帽子建立自己的逐脸 offset。female / male 可以有不同的帽下 FrontHair 作者造型，但同一性别四张脸继续共享这份帽下头发。
+Q版成年 Face 进一步遵守 Face Frame：female.adult / male.adult 各自固定额头顶线、太阳穴接缝和耳位。round / oval / angular / long 的差异主要发生在面颊、下颌、下巴和五官。Hair / Headwear 从不接收 Face ID；同一个 Hair 在同一 Frame 的四张脸上必须返回完全相同的 BackHair / HeadwearBack / FrontHair / HeadwearFront。
 
 ## 保存、预览与取消
 
@@ -111,7 +109,7 @@ Web/src/avatar/
       drawing.ts / faces.ts / hair.ts / outfits.ts
     chibi/
       art-spec.ts          Q版 V2 Hair / Headwear / Outfit 内部作者契约
-      head-fit.ts          integrated Headwear 共用的低复杂度 Face fit profile
+      face-frame.ts        成年男女统一上半脸框架；Face 适配固定 Hair
       catalog.ts
       index.ts
       drawing.ts / faces.ts / hair.ts / outfits.ts
