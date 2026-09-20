@@ -43,13 +43,14 @@ try{
  }
  const data=await page.evaluate(async({baseline,looks})=>{
   const m=await import('/src/avatar/model.ts'),r=await import('/src/avatar/render.ts');
-  const {ageWardrobeBatch}=await import('/src/avatar/packs/chibi/rework-batch.ts');
+  const {ageWardrobeBatch,adultWardrobeBatch}=await import('/src/avatar/packs/chibi/rework-batch.ts');
   const boards=[],inventory=[],changes=[];let unchangedAdultRenders=0,cutChecks=0,crownEdgeSamples=0;
   const host=document.createElement('div');host.style.cssText='position:absolute;left:-9000px';document.body.append(host);
   const recipeFor=frame=>({...m.recipeForPack('chibi-cute-v1',frame),face:'oval',expression:'smile',hair:frame.endsWith('child')?'child-topknot':'elder-swept',outfit:frame.endsWith('child')?'child-short-robe':'elder-long-robe'});
   try{
-   // 成年画稿本轮不动：旧新用相同 Recipe，比较实际八层 SVG 而不是源码行数。
-   for(const row of baseline.rows.filter(x=>x.frame.endsWith('adult'))){if(r.renderAvatar(row.frame,row.recipe)!==row.svg)throw new Error(`Unexpected adult artwork change ${row.part}/${row.id}`);unchangedAdultRenders++;}
+   // 8B2 已接手明确清单；8A 成年样板仍保持实际八层 SVG 逐字节不变。
+   // 新增成年重画与三款童老修正由 8B2 相对 8B1 的全部 88 配方对照兜底。
+   for(const row of baseline.rows.filter(x=>x.frame.endsWith('adult')&&!adultWardrobeBatch[x.part].includes(x.id))){if(r.renderAvatar(row.frame,row.recipe)!==row.svg)throw new Error(`Unexpected adult artwork change ${row.part}/${row.id}`);unchangedAdultRenders++;}
    for(const frame of ageWardrobeBatch.frames){
     const recipe=recipeFor(frame);
     for(const part of ['hair','outfit']){

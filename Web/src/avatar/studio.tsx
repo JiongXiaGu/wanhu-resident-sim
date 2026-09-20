@@ -1,4 +1,4 @@
-import {isAgeWardrobeSample} from './packs/chibi/rework-batch';
+import {isAgeWardrobeSample,isAdultWardrobeSample} from './packs/chibi/rework-batch';
 import {frames,type Frame,type Part,type Target} from './model';
 
 const stageLabels={child:'儿童',adult:'成年',elder:'老年'} as const;
@@ -14,8 +14,8 @@ const foundationIds:Record<Part,readonly string[]>={
 };
 export const isFoundationSample=(part:Part,id:string):boolean=>foundationIds[part].includes(id);
 
-// 8A 历史图板保留原清单；真实工坊使用累计重画清单，不能把未重画成年素材标成已完成。
-export const isReworkedSample=(part:Part,id:string):boolean=>isFoundationSample(part,id)||isAgeWardrobeSample(part,id);
+// 8A 历史图板保留原清单；工坊累计包含 8B1 / 8B2，标记仍表示候选而非定稿。
+export const isReworkedSample=(part:Part,id:string):boolean=>isFoundationSample(part,id)||isAgeWardrobeSample(part,id)||isAdultWardrobeSample(part,id);
 
 export function StudioControls({frame,onFrame,onReset}:{frame:Frame;onFrame:(frame:Frame)=>void;onReset:()=>void}){
  const [sex,stage]=frame.split('.');

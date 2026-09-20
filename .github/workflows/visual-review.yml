@@ -79,6 +79,11 @@ jobs:
           git fetch --no-tags --depth=1 origin 28ad42619edb7a6abb21ca7ef8d2dee30d2afda2
           node scripts/avatar-review/export-age-baseline.mjs
           node scripts/capture-avatar-age-wardrobe.mjs
+      - name: Review Phase 8B2 adult wardrobe and collar repairs
+        run: |
+          git fetch --no-tags --depth=1 origin 59028b3afd4b24c1cc57edbe68ce13b2bd5314f9
+          node scripts/avatar-review/export-age-baseline.mjs 59028b3afd4b24c1cc57edbe68ce13b2bd5314f9 review-screenshots/avatar/phase8b2
+          node scripts/capture-avatar-adult-wardrobe.mjs
       - name: Compress legacy review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots and editable components

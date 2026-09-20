@@ -7,8 +7,9 @@ import {createRequire} from 'node:module';
 import ts from 'typescript';
 
 // 只用于 Actions 的旧新对照。旧画稿从 Git 历史取出到临时目录，绝不进入 Web 运行时。
-const baseline='28ad42619edb7a6abb21ca7ef8d2dee30d2afda2';
-const out='review-screenshots/avatar/phase8b';
+const baseline=process.argv[2]??'28ad42619edb7a6abb21ca7ef8d2dee30d2afda2';
+const out=process.argv[3]??'review-screenshots/avatar/phase8b';
+if(!/^[a-f0-9]{40}$/.test(baseline))throw new Error('Baseline must be a complete commit SHA');
 const sha=execFileSync('git',['rev-parse',`${baseline}^{commit}`],{encoding:'utf8'}).trim();
 if(sha!==baseline)throw new Error('Unexpected Phase 8B baseline');
 const temp=mkdtempSync(join(tmpdir(),'wanhu-avatar-baseline-'));

@@ -14,11 +14,11 @@ http://localhost:5173/?view=avatar-editor
 
 自由样板、玩家、居民分别存入浏览器 localStorage；保存此样板/应用才写入。切框架或对象前有草稿会询问。导入只改预览，恢复只移除当前目标覆盖。清除站点数据会丢失本地记录，配方可导出备份。
 
-## 当前美术：Phase 8B1 儿童与老年候选
+## 当前美术：Phase 8B2 成年与衣领候选
 
 唯一运行时 Pack 为 `chibi-cute-v1`，四类玩家选项不变。当前6 Face / 30 Hair / 24 Outfit / 8 Expression；不同年龄/性别显示适用素材。六个 Face ID 在六 Frame 中各有静态下脸画稿，不等于36个可选脸型。
 
-Phase 7 之后用户明确反馈了脸型、帽身、衣装与底部裁切问题，之前画法**不是最终认可的美术**。8A 样板与创作入口已经交付，用户已允许继续。8B1 重画儿童、老年现有 15 个 Hair ID / 12 个 Outfit ID，区别双髻/发环/侧辫/疏发，以及交领/团领/对襟/罩衣/夹棉，不靠改色凑数。成年其余 Hair/Outfit 留给 8B2，仍不是全部美术最终定稿。
+8B1 的儿童、老年候选基础保留；8B2 重画剩余成年 12 Hair / 9 Outfit ID（各 15 份适用画稿），并一起修正日常小褂、老者罩衣、掌柜长衫的肩领与门襟（6 份男女画稿）。8A 成年 11 份样板输出保持不变。“已重画”包含累计候选，不表示用户已认可整套画法。
 
 仍保留 Head Frame / Hair Coverage；Hair 不读取 Face。旧 `linework-v1/simple-flat-v1/soft-paint-v1` 只有 Recipe 迁移 alias，十个旧 Hair/Outfit ID 只用于解析，不进入 UI/Random。
 
@@ -49,4 +49,4 @@ npm run dev
 
 `resident-visual-review` 保留真实桌面 UI、完整 Catalog 契约、腮红与 Hair Coverage、96/64/48px、六框架自由创作保存测试。8A图板在 `avatar/phase8a/`；8B1的八张发型/衣装图板、八张桌面UI、固定其余部件的旧新对照在 `avatar/phase8b/`，源码与SHA一起保存。移动端不再截图；CI PASS不是最终美术定稿，静态SVG图板PASS也不是完整UI/交互PASS。
 
-接手先读AGENTS、接续说明和主路线当前执行点；不要用旧聊天或历史多Pack计划覆盖最新仓库。8B1验收后继续8B2成年剩余素材；主题新增另作8D，不提前做Unity迁移。
+8B2 的成年四张图板、衣领专项、单部件前后对照、八张真实桌面截图与报告位于 `avatar/phase8b2/`。详见 [8B2 审查说明](Documentation/Phase%208B2%20成年衣装与衣领审查.md)。接手先读 AGENTS、接续说明和当前阶段；8C 只登记年龄/性别入口与创作对象清晰度优化，未在本批改 UI。主题扩库和 Unity 迁移未实施。

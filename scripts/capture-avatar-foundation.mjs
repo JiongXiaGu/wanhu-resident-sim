@@ -60,10 +60,12 @@ try{
  await page.locator('[data-random-part]').click();const changed=(await state()).recipe;assert.notEqual(changed.face,old.face);
  for(const part of ['hair','outfit','expression'])assert.equal(changed[part],old[part]);
  await page.locator('[data-cancel-draft]').click();await page.locator('[data-sample-only]').click();
- await page.locator('[data-part-tab="hair"]').click();assert.equal(await page.locator('[data-option]').count(),3);
+ await page.locator('[data-part-tab="hair"]').click();
+ const reworked=await page.evaluate(async()=>{const m=await import('/src/avatar/model.ts'),s=await import('/src/avatar/studio.tsx');return Object.fromEntries(['hair','outfit'].map(part=>[part,m.optionsFor('chibi-cute-v1',part,'female.adult').filter(o=>s.isReworkedSample(part,o.id)).map(o=>o.id)]));});
+ assert.deepEqual(await page.locator('[data-option]').evaluateAll(ns=>ns.map(n=>n.dataset.option)),reworked.hair);
  await choose('hair','scholar-cap');await shot('studio-headwear');await page.locator('[data-cancel-draft]').click();
  await page.locator('[data-random-outfit]').click();const random=(await state()).recipe;
- assert(['bound','scholar-cap','work-headscarf'].includes(random.hair));assert(['commoner','artisan','adult-female-ruqun'].includes(random.outfit));
+ assert(reworked.hair.includes(random.hair));assert(reworked.outfit.includes(random.outfit));
  if((await state()).dirty==='true')await page.locator('[data-cancel-draft]').click();
  await choose('outfit','artisan');await shot('studio-outfits');await page.locator('[data-cancel-draft]').click();await page.locator('[data-sample-only]').click();
  // 迟到的导入不能污染切换后的年龄框架。

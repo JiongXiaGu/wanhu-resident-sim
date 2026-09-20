@@ -8,15 +8,17 @@
 
 ## 当前执行点
 
-Phase 8B1：儿童与老年发型/衣装重画。接手基线 `28ad42619edb7a6abb21ca7ef8d2dee30d2afda2`。用户已查看8A样板并要求继续；这不等于全部历史画稿获得认可。
+Phase 8B2：接手基线 `59028b3afd4b24c1cc57edbe68ce13b2bd5314f9`。先读 `Phase 8B2 成年衣装与衣领审查.md`，不要重复 8B1 或把候选视为美术定稿。
 
-本批不改六脸型/上头型，重画儿童7个+老年8个Hair ID、两年龄各6个Outfit ID。仍为6 Face / 30 Hair / 24 Outfit / 8 Expression；四Frame合计23份适用发型、24份衣装。成年其他素材留给8B2。不要重复8A或一口气跳到全量扩库。
+本批重画剩余成年 12 Hair / 9 Outfit ID，分别 15 份适用画稿；同时修儿童小褂、老者罩衣、掌柜长衫三款六份画稿。无新增 ID。88 份固定配方中计划变化 36 份，其余 52 份不变；保留 8A 成年 11 份样板。
 
-作者实现：child-hair.ts、elder-hair.ts、age-outfits.ts；hair.ts负责分发与成年未重画资源；sample-hair.ts保留8A成年样板。同ID只有一套画稿。rework-batch.ts为本批明确ID清单，不代替Catalog。
+`adult-hair.ts` / `adult-outfits.ts` 负责成年；`sample-hair.ts` / `sample-outfits.ts` 保留 8A 成年样板；child-hair / elder-hair / age-outfits 负责童老；hair/outfits 仅分发。rework-batch 明确列出累计候选，Catalog 仍为权威。同 ID 没有第二套运行时画稿。
 
 主入口默认自由创作：男/女、儿童/成年/老年六框架可直接选，分别存入 `studio:<frame>`。指定对象模式仍显示原玩家档案与城市居民；Frame 锁定，不能修改居民年龄/性别。两种模式共用编辑器、Recipe 和Renderer。旧 player/resident 保存键不变。导入不自动保存，模板载入不自动应用。
 
-移动端不再截图。核心新证据在 `avatar/phase8b/`：四Frame×Hair/Outfit八张图板、八张实际桌面UI、发型/衣装旧新对照与四框架总览；8A六框架保存和绑定居民回归仍保留。必须真实下载并打开，不能只看 automated-pass。
+移动端不截图。8B2 证据在 `avatar/phase8b2/`，包含四张成年素材图板、衣领专项、单部件旧新对照、成年组合、四张成年工坊、三款修正工坊和绑定居民截图。仍保留 8A 六框架保存/导入和 8B1 童老回归；8B1 成年不变检查仅保留 8A 样板，其余由 8B2 相对接手基线的全量比较接替，不能删除旧断言后不补兜底。
+
+下一阶段 8C 仅登记：年龄/性别靠近预览、六样板入口、当前对象与自由/绑定模式区分。已有功能不等于 UI 已直观，本批未重排页面。主题扩库和 Unity 迁移均未做。
 
 ## 继续保持
 

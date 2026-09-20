@@ -51,7 +51,7 @@ export function ageOutfit(frame:Frame,id:OutfitId):string{
  const c=paints[id];
  if(!c||(isChild(frame)!==id.startsWith('child-')))throw new Error(`Unavailable age Outfit ${frame}/${id}`);
  const child=isChild(frame),female=isFemale(frame),y=child?0:5;
- const profile=c.cut==='padded'?2:['open','vest','square'].includes(c.cut)?1:0;
+ const profile=c.cut==='padded'?2:c.cut==='open'&&child?0:['open','vest','square'].includes(c.cut)?1:0;
  const body=bodies[frame as AgeFrame][profile];
  let base=p(body,c.base,OUTLINE,4.5),collar='',overlay='',detail='';
  // 普通交领：右片先画、左片覆盖，斜襟贯通底边；不画胸口以下的裙腰和腰带。
@@ -72,13 +72,21 @@ export function ageOutfit(frame:Frame,id:OutfitId):string{
    detail=l(`M184 ${264+y}Q191 ${278+y} 196 299L202 326`,c.ink,2.3,.9)+ties(191,284+y,c.ink);
    break;
   case 'open':
-   // 对襟外衣：内衫与两片相连的衣身都有明确面积，中心不是悬空条块。
-   overlay=p(`M143 ${239+y}Q160 ${253+y} 177 ${239+y}L183 326H137Z`,c.lining,OUTLINE,2.6);
-   collar=p(`M139 ${237+y}L130 ${251+y}Q139 ${268+y} 142 ${288+y}L142 326H155L153 ${280+y}Q150 ${256+y} 139 ${237+y}Z`,c.edge,OUTLINE,2.7)
-    +p(`M181 ${237+y}L190 ${251+y}Q181 ${268+y} 178 ${288+y}L178 326H165L167 ${280+y}Q170 ${256+y} 181 ${237+y}Z`,c.edge,OUTLINE,2.7);
-   // 先让内衫居于衣领下方，两个 author slot 不改变 Renderer 层序。
-   base+=overlay;overlay='';
-   detail=ties(160,287+y,c.edge)+ties(160,308+y,c.edge);
+   if(child){
+    // 8B2：窄肩小褂 + 内衫，交领收在中央，外缘从肩头圆顺地转入前片。
+    base+=p('M137 239Q160 252 183 239L181 326H139Z',c.lining,OUTLINE,2.5);
+    collar=p('M180 238L185 250L162 273L152 263Z','#f1e5ca',OUTLINE,2.5)
+     +p('M140 238L135 250Q152 268 179 285L186 276Q159 258 140 238Z','#f1e5ca',OUTLINE,2.5);
+    overlay=p('M131 247Q141 261 148 281L149 326H138L137 284Q132 264 122 252Z',c.edge,OUTLINE,2.6)
+     +p('M189 247Q179 261 172 281L171 326H182L183 284Q188 264 198 252Z',c.edge,OUTLINE,2.6);
+    detail=l('M147 298Q150 294 156 297L171 298M147 318Q150 314 156 317L171 318',c.edge,2.5);
+   }else{
+    // 宽缘对襟：左右衣片在中缝闭合，浅色内衫只留在领口，不形成细长领带。
+    base+=p('M142 244Q160 257 178 244L163 279H157Z',c.lining,OUTLINE,2.5);
+    collar=p('M137 243Q142 261 148 276L147 326H159V280Q154 258 145 244Z',c.edge,OUTLINE,2.7)
+     +p('M183 243Q178 261 172 276L173 326H161V280Q166 258 175 244Z',c.edge,OUTLINE,2.7);
+    detail=l('M150 290Q151 285 156 287L168 290Q173 291 173 287Q172 284 169 287L154 290M150 313Q151 308 156 310L168 313Q173 314 173 310Q172 307 169 310L154 313',c.lining,2.8);
+   }
    break;
   case 'work':
    collar=cross(c.edge,true);
@@ -102,13 +110,15 @@ export function ageOutfit(frame:Frame,id:OutfitId):string{
    detail=ties(206,297,c.edge)+l('M110 298Q103 306 110 311Q117 306 110 298M210 300Q203 308 210 313Q217 308 210 300',c.lining,2,.85);
    break;
   case 'vest':
-   // 无袖罩衣盖在交领内衫上；两侧一直延伸出底边，不是肩上漂浮的布片。
+   // 8B2：交领止于罩衣之下，不再贯穿袖片；无中央悬空系结。
    base=p(body,c.lining,OUTLINE,4.5);
-   collar=cross('#ebe1c9',true);
-   overlay=p(`M124 ${253+y}Q113 ${264+y} 104 ${273+y}L104 326H147L143 ${276+y}Z`,c.base,OUTLINE,3)
-    +p(`M196 ${253+y}Q207 ${264+y} 216 ${273+y}L216 326H173L177 ${276+y}Z`,c.base,OUTLINE,3);
-   detail=l(`M126 ${261+y}Q139 ${290+y} 139 326M194 ${261+y}Q181 ${290+y} 181 326`,c.edge,5)
-    +ties(160,302,c.edge);
+   collar=p('M181 242L189 254L167 280L155 267Z','#ebe1c9',OUTLINE,2.7)
+    +p('M139 242L132 254Q149 275 181 293L189 282Q157 262 139 242Z','#ebe1c9',OUTLINE,2.7);
+   overlay=p('M125 256Q109 262 98 276L92 326H146L143 287Q136 267 125 256Z',c.base,OUTLINE,3)
+    +p('M195 256Q211 262 222 276L228 326H174L177 287Q184 267 195 256Z',c.base,OUTLINE,3)
+    +p('M125 256Q139 269 151 287L153 326H143L141 289Q134 271 119 260Z',c.edge,OUTLINE,2.4)
+    +p('M195 256Q181 269 169 287L167 326H177L179 289Q186 271 201 260Z',c.edge,OUTLINE,2.4);
+   detail=l('M108 286L107 316M212 286L213 316',c.edge,2,.45);
    break;
  }
  // 只保留肩内少量折线，缩小时不依赖高频装饰识别。

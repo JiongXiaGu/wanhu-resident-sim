@@ -4,7 +4,7 @@ import type {ChibiHairLayers} from './art-spec';
 import {OUTLINE,hairColor,hairLight,isFemale,l,p} from './drawing';
 
 // Phase 8A 样板：先画完整头部轮廓，再决定哪一层可见。只有固定 Frame，不接受 Face。
-// 成年其余 ID 在 hair.ts 保留为待重画的基线；同一 ID 不保留两套画稿。
+// 成年其余 ID 位于 adult-hair.ts；这里保留 8A 已交付样板，同一 ID 不保留两套画稿。
 export function sampleHair(frame:Frame,id:HairId):ChibiHairLayers|undefined{
  const c=hairColor(frame),h=hairLight(frame),female=isFemale(frame);
  const layers=(back:string,front:string,headwearFront='',headwearBack=''):ChibiHairLayers=>({back,front,headwearFront,headwearBack});

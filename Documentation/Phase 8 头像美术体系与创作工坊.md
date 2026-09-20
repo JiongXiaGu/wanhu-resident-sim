@@ -2,7 +2,9 @@
 
 ## 当前执行点
 
-**8B1儿童与老年实现及候选美术审查已完成，待用户验收；下一批为8B2成年剩余素材。**
+**当前 Phase 8B2：剩余成年画稿与三款童老衣领 / 门襟合批修正，待用户美术验收。**
+
+当前数量、源码分工、专项证据和 8C 后续任务以 [8B2 审查说明](Phase%208B2%20成年衣装与衣领审查.md) 为准。下文 8A / 8B1 内容保留为阶段来源，不能据此要求成年继续停留在旧稿。
 
 8A基线为 `d6dc414df4d3e64948d77c2360553d0273ab292c`，8A交付为 `28ad42619edb7a6abb21ca7ef8d2dee30d2afda2`。用户在查看8A截图后明确允许继续。此前Phase7的脸、帽身、衣装与底部裁切没有得到最终美术认可；允许继续不等于认可每件历史画稿。
 
@@ -13,8 +15,8 @@
 | 阶段 | 范围 | 放行要求 |
 | --- | --- | --- |
 | 8A已交付 | 六脸型族、少量帽发/衣装样板、六框架自由创作 | 同SHA两项CI，下载人工看图；用户已允许继续 |
-| 8B1当前 | 儿童7+老年8个Hair ID；两年龄各6个Outfit ID | 逐批重画、旧新部件对照，修正后下载复核 |
-| 8B2下一批 | 成年其余帽巾、发型与衣装 | 先清楚区分已重画和未重画，不能跳过旧资源问题 |
+| 8B1已交付 | 儿童7+老年8个Hair ID；两年龄各6个Outfit ID | 逐批重画、旧新部件对照，修正后下载复核 |
+| 8B2当前 | 成年剩余12 Hair / 9 Outfit ID + 三款童老衣装修正 | 同SHA Build/Review、下载并打开诊断图与真实桌面UI |
 | 8C | 根据使用反馈深化预览、素材浏览和模板操作 | 不以UI调整为由修改居民身份/Recipe边界 |
 | 8D | 学童、劳作、行旅、商铺、常服等主题新增 | 先认可具体轮廓，再扩量；不靠换色凑数量 |
 
@@ -40,7 +42,7 @@ Catalog目前仍为6 Face / 30 Hair / 24 Outfit / 8 Expression。六个Face ID�
 | 工匠服孤立襟角、吊带拼接 | 取消围襟吊带，改短褐；斜襟贯通底边 |
 | 无法直接制作老人儿童 | 同一个编辑器增加六框架独立自由样板，不依赖城市中恰好有对应年龄居民 |
 
-8A重画Hair样板为bound/scholar-cap/work-headscarf/child-topknot/elder-soft-bun/elder-swept，Outfit样板为commoner/artisan/adult-female-ruqun/child-short-robe/elder-long-robe。8B1进一步统一其中儿童/老年部分。成年剩余素材仍待8B2，不因为共享模板受影响就算全部审美通过。
+8A重画Hair样板为bound/scholar-cap/work-headscarf/child-topknot/elder-soft-bun/elder-swept，Outfit样板为commoner/artisan/adult-female-ruqun/child-short-robe/elder-long-robe。8B1进一步统一其中儿童/老年部分。成年剩余素材现由8B2接手；8A样板保留，不因为共享模板受影响就算全部审美通过。
 
 ## 作者画法
 
@@ -70,13 +72,13 @@ Catalog目前仍为6 Face / 30 Hair / 24 Outfit / 8 Expression。六个Face ID�
 
 保存键为 `wanhu.avatar.v1:city:<seed>:studio:<frame>`；原player:female/male与resident:<id>不改，不批量迁移。指定对象Frame锁定，不改居民年龄/性别。自由创作不重建App或改城市状态。
 
-日常样板只载入草稿。8B1未保存女童起点改双髻/对襟小褂，老年女性改低髻/罩衣；已保存配方不改。随机本类只改当前类别；随机搭配只改Hair/Outfit并保留Face/Expression。“仅已重画”约束过滤和随机，标记是8A与8B1累计候选，不是最终认可。
+日常样板只载入草稿。8B1未保存女童起点改双髻/对襟小褂，老年女性改低髻/罩衣；已保存配方不改。随机本类只改当前类别；随机搭配只改Hair/Outfit并保留Face/Expression。“仅已重画”约束过滤和随机，标记是8A、8B1与8B2累计候选，不是最终认可。
 
 JSON只含版本、Pack和四项选择，不携带年龄/性别/居民ID。导入前先选Frame，按exact → compatibilityKey → 默认/首项确定性回退；导入不自动保存。PNG/SVG导出当前所见Frame。每目标独立保存、刷新恢复、外部更新冲突、写失败提示继续有效。
 
 ## 源码分工
 
-`child-hair.ts`、`elder-hair.ts`、`age-outfits.ts`分别负责儿童发型、老年发型和两年龄衣装。旧同ID画稿已经从hair.ts/sample-hair.ts/outfits.ts删除。sample-hair仅保留8A成年样板，hair/outfits负责分发与成年剩余素材。`rework-batch.ts`是本批精确ID清单，Catalog仍是可用性和兼容权威。
+`adult-hair.ts` / `adult-outfits.ts` 负责成年当前画稿，`sample-hair.ts` / `sample-outfits.ts` 只保留 8A 成年样板。`child-hair.ts` / `elder-hair.ts` / `age-outfits.ts` 负责童老。`hair.ts` / `outfits.ts` 仅分发。`rework-batch.ts` 明确列出 8B1 / 8B2 清单，Catalog 仍是可用性和兼容权威。工坊标记为累计候选，不是美术认可。
 
 不建立archive资源目录、不注册隐藏第二Pack。对照需要的旧资产从Git历史临时取出，只进入Actions Artifact。
 
@@ -84,7 +86,7 @@ JSON只含版本、Pack和四项选择，不携带年龄/性别/居民ID。导�
 
 Build与Resident Visual Review必须同时通过。保留原居民/正式fallback、全部16,704组合、288腮红组合/负对照、Hair跨Face和220 Coverage点、六样板保存/导入/冲突与真实UI。
 
-8B1增加47份素材真实点选、8组重画过滤、24份衣装作者层/版型、41份成年固定Recipe渲染不变，以及1886个额角弧线位置的描边余量抽样。抽样不是完整像素证明，不代替人工看图。
+8B1增加47份素材真实点选、8组重画过滤、24份衣装作者层/版型、保留8A成年11份固定Recipe不变；8B2另补88份相对8B1的变更范围断言，以及1886个额角弧线位置的描边余量抽样。抽样不是完整像素证明，不代替人工看图。
 
 旧新对照只替换8A的Hair四层或Outfit层，其余图层固定为当前画稿；不能两边同时换发型和衣服。图板统一用audit-packs中的renderBoards，不复制通用矩阵遍历。
 
@@ -97,7 +99,7 @@ Build与Resident Visual Review必须同时通过。保留原居民/正式fallbac
 
 先在tmp-*聚合提交并审查，发现错画继续修；重读main后才推进已审查提交，main再跑两项workflow和下载复核。交付说明main SHA、PASS/FAIL、实际下载看图与否，并区分实现/候选/未完成；移动端不截图，不用测试数宣称最终美术认可。
 
-## 审查记录
+## 8A / 8B1 历史审查记录
 
 8A交付 `28ad42619edb7a6abb21ca7ef8d2dee30d2afda2` 的main Build `35530581596`、Visual Review `35530581576`通过；Artifact `10611455446`已下载复核。其首轮隐式浏览器上下文问题已修复，具体历史见Git中8A记录。
 
