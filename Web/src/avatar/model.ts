@@ -1,3 +1,8 @@
+import {isPackId,normalizePackId,packLabel,packOptions,type PackId} from './packs/registry';
+
+export {packLabel,packOptions};
+export type {PackId};
+
 // 头像工坊只保存四个外观选择；pack 是绘制方式，不新增第五类捏脸参数。
 export const options = {
   face: [{ id: 'oval', label: '柔和', note: '椭圆轮廓 · 舒展眉眼' }, { id: 'round', label: '圆润', note: '饱满面颊 · 圆眼' }, { id: 'angular', label: '英气', note: '明确下颌 · 细长眼' }, { id: 'long', label: '清秀', note: '修长脸形 · 平缓眉眼' }],
@@ -6,13 +11,6 @@ export const options = {
   expression: [{ id: 'calm', label: '平静' }, { id: 'smile', label: '微笑' }, { id: 'joy', label: '开心' }, { id: 'angry', label: '不满' }, { id: 'sad', label: '难过' }, { id: 'surprise', label: '惊讶' }],
 } as const;
 
-export const packOptions = [
-  { id:'linework-v1', label:'日常线绘', note:'清晰描边 · 色块简洁' },
-  { id:'chibi-cute-v1', label:'Q版可爱', note:'大头比例 · 豆豆眼 · 贴纸感' },
-  { id:'simple-flat-v1', label:'极简简笔', note:'极简线稿 · 平面色块 · 图标式头像' },
-] as const;
-
-export type PackId = typeof packOptions[number]['id'];
 export type Part = keyof typeof options;
 export type Choices = { [K in Part]: typeof options[K][number]['id'] };
 export type Recipe = { schema: 'wanhu.avatar'; version: 1; pack: PackId } & Choices;
@@ -23,20 +21,12 @@ export const parts: Part[] = ['face', 'hair', 'outfit', 'expression'];
 export const frames: Frame[] = ['female.child','female.adult','female.elder','male.child','male.adult','male.elder'];
 export const labels: Record<Part,string> = { face:'脸型', hair:'头发', outfit:'衣服', expression:'表情' };
 export const defaultRecipe: Recipe = { schema:'wanhu.avatar',version:1,pack:'linework-v1',face:'oval',hair:'long',outfit:'knit',expression:'smile' };
-export const isPackId=(value:unknown):value is PackId=>packOptions.some(pack=>pack.id===value);
-export const packLabel=(id:PackId):string=>packOptions.find(pack=>pack.id===id)?.label??id;
-
-// 被否定的 soft-paint-v1 不再留美术文件；旧本地配方只在读取时映射到新的 Q 版包，
-// 原 localStorage 不会被偷偷重写，只有玩家再次点击“应用”才会保存新 pack ID。
-function normalizePack(value:unknown):unknown {
-  return value === 'soft-paint-v1' ? 'chibi-cute-v1' : value;
-}
-
+// 被否定的 soft-paint-v1 不再留美术文件；兼容别名集中由 pack registry 管理。
 export function parseRecipe(value: unknown): Recipe {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('需要完整的头像配方。');
   const v = value as Record<string, unknown>;
   const fields = ['schema','version','pack',...parts];
-  const pack = normalizePack(v.pack);
+  const pack = normalizePackId(v.pack);
   if (v.schema !== 'wanhu.avatar' || v.version !== 1 || !isPackId(pack)) throw new Error('此配方不属于当前头像工坊或画风版本不受支持。');
   if (Object.keys(v).length !== fields.length || Object.keys(v).some(key => !fields.includes(key))) throw new Error('配方字段不完整或含有未知字段。');
   for (const part of parts) if (!options[part].some(option => option.id === v[part])) throw new Error(`${labels[part]}选项无效。`);

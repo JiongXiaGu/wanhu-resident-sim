@@ -88,22 +88,34 @@ wanhu.avatar.v1:city:<citySeed>:player:male
 
 ```text
 Web/src/avatar/
-  model.ts                选项白名单、配方、目标、随机
+  model.ts                配方、目标、随机与旧 pack 兼容读取
   store.ts                按对象保存、订阅、冲突检查
-  render.ts               AvatarPack、图层次序、SVG/PNG 导出
+  render.ts               通用 SVG/PNG 渲染，不再逐画风 import 美术模块
   AvatarImage.tsx         显示当前配方
   AvatarEditor.tsx        唯一四选项编辑窗口
   Integration.tsx         当前 App / 居民对象绑定
   editor.css / entry.css  仅工坊样式
-  packs/linework/         日常线绘：清晰描边、简洁色块
-    drawing.ts / faces.ts / hair.ts / outfits.ts
-  packs/chibi/            Q版可爱：大头比例、豆豆眼、粗轮廓、贴纸感
-    drawing.ts / faces.ts / hair.ts / outfits.ts
-  packs/simple-flat/       极简简笔：正常简化比例、细深灰线、平面色块
-    drawing.ts / faces.ts / hair.ts / outfits.ts
+  packs/
+    types.ts              统一 Layer / AvatarPack 契约
+    registry.ts           唯一画风注册表、顺序、名称与旧 ID alias
+    linework/
+      index.ts            该画风唯一公开入口
+      drawing.ts / faces.ts / hair.ts / outfits.ts
+    chibi/
+      index.ts
+      drawing.ts / faces.ts / hair.ts / outfits.ts
+    simple-flat/
+      index.ts
+      drawing.ts / faces.ts / hair.ts / outfits.ts
 ```
 
 AI 辅助美术生产发生在开发阶段：按照统一画布和包内画法编写/补充源部件，构建时批量组合、验证、导出。游戏生成居民时不调用 AI，也不需要外部图像服务。
+
+### 新画风扩展点
+
+新增画风时不再修改 `render.ts` 或 `AvatarEditor.tsx`。画风目录只公开一个 `index.ts`，在里面组装 BackHair / Neck / Outfit / FaceBase / Expression / FrontHair；然后只在 `packs/registry.ts` 注册一次。画风标题、说明和编辑器排序都由这个注册表派生，避免 `model.ts`、`render.ts` 与 UI 三处重复登记。
+
+`pack id` 属于持久化配方契约，发布后不要改名；目录名只是源码组织。废弃画风的兼容映射集中放在 registry 的 legacy alias，不在 `model.ts` 继续堆特殊分支。
 
 `audit-avatar-art.mjs` 继续验证日常线绘包；`audit-avatar-chibi.mjs` 验证 Q版；`audit-avatar-simple-flat.mjs` 独立验证极简简笔的共享部件、图层、SVG 合法性、眼睛/嘴型、源文件不导入其他包 geometry 与全组合检查，并输出男女成人三画风同配置、Face / Hair / Outfit / Expression 矩阵、年龄证明和 96/64/48px 图板。每个包每个 Frame 有颈部 1、FaceBase 4、前后发 12、衣服 4、脸型对应表情 24；这些是作者源规则的确定性展开，不代表把完整人物图切成了若干文件。
 
