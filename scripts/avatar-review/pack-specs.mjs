@@ -60,7 +60,7 @@ export const avatarReviewSpecs=[
     adultBatchHair:[
       'bound','low-bun','work-headscarf','scholar-cap','merchant-wrap',
       'adult-high-bun','adult-side-braid','adult-long-tied','adult-short-bound',
-      'adult-half-up','adult-side-knot','adult-braided-tail','adult-loose-tied','adult-traveler-wrap',
+      'adult-half-up','adult-side-knot','adult-braided-tail','adult-brushed-back','adult-loose-tied','adult-traveler-wrap',
     ],
     adultBatchOutfits:[
       'commoner','laborer','merchant','scholar','artisan',

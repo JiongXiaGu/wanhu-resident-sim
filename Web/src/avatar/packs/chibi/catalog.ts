@@ -34,6 +34,7 @@ export const chibiCatalog=defineCatalog({
     {id:'adult-half-up',label:'半束长发',note:'成年男性 · 半束垂发',headwear:'none',frames:['male.adult'],compatibilityKey:'long'},
     {id:'adult-side-knot',label:'侧束髻',note:'成年男性 · 侧后束髻',headwear:'none',frames:['male.adult'],compatibilityKey:'pony'},
     {id:'adult-braided-tail',label:'束辫',note:'成年男性 · 短束编辫',headwear:'none',frames:['male.adult'],compatibilityKey:'braid'},
+    {id:'adult-brushed-back',label:'后拢短发',note:'成年男性 · 额前后拢',headwear:'none',frames:['male.adult'],compatibilityKey:'wave'},
     {id:'adult-loose-tied',label:'松束发',note:'成年专属 · 日常低束',headwear:'none',frames:ADULT,compatibilityKey:'wave'},
     {id:'adult-traveler-wrap',label:'行旅包巾',note:'成年专属 · 轻便包巾',headwear:'integrated',frames:ADULT,compatibilityKey:'crop'},
 

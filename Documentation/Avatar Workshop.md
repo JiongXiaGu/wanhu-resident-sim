@@ -6,7 +6,7 @@
 
 同一个编辑器用于玩家示例档案和当前城市的全部真实居民。首页“头像工坊”打开玩家档案；居民身份栏“编辑头像”直接打开对应居民。`/?view=avatar-editor` 也可直接打开工坊，底层仍是同一个 App，不会重建游戏会话。
 
-`linework-v1`（日常线绘）、`chibi-cute-v1`（Q版可爱）与 `simple-flat-v1`（极简简笔）都是原创、真实分层的 SVG 画风包。自 2026-09-20 起，`chibi-cute-v1` 是后续素材扩充主路线；另外两套暂时作为 reference / compatibility 保留。三套已经完成 Pack-owned Catalog。`chibi-cute-v1` 当前为 4 Face / 29 Hair / 24 Outfit / 8 Expression；Phase 5A 已把 child 变为儿童专属素材列表，Phase 5B 已把 adult 扩展为 female 10 / male 11 个成年 Hair 与男女各 10 套古代 Outfit，并把旧现代 Hair / Outfit 从 adult UI 移出；`linework-v1`、`simple-flat-v1` 保持各自旧 Catalog。UI、Recipe 校验、随机和 Actions 组合遍历都从当前 Pack 自己的 Catalog 读取。具体阶段、素材边界和人工美术审查以 [Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md) 为准。
+`linework-v1`（日常线绘）、`chibi-cute-v1`（Q版可爱）与 `simple-flat-v1`（极简简笔）都是原创、真实分层的 SVG 画风包。自 2026-09-20 起，`chibi-cute-v1` 是后续素材扩充主路线；另外两套暂时作为 reference / compatibility 保留。三套已经完成 Pack-owned Catalog。`chibi-cute-v1` 当前为 4 Face / 30 Hair / 24 Outfit / 8 Expression；Phase 5A 已把 child 变为儿童专属素材列表，Phase 5B 已把 adult 扩展为 female 10 / male 11 个成年 Hair 与男女各 10 套古代 Outfit，并把旧现代 Hair / Outfit 从 adult UI 移出；`linework-v1`、`simple-flat-v1` 保持各自旧 Catalog。UI、Recipe 校验、随机和 Actions 组合遍历都从当前 Pack 自己的 Catalog 读取。具体阶段、素材边界和人工美术审查以 [Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md) 为准。
 
 画风是待用户验收的候选，不声称复制用户参考图、某位 Neka 画手或商业游戏。Q版方向只借鉴“大头比例、极简五官、腮红、粗轮廓、贴纸感”等通用视觉特征；现代日常服饰与可组合性优先，不强行添加中国古代饰物。历史错误实验已从当前工作树删除，不再建立保留区；旧内容使用 Git 历史查阅。
 
