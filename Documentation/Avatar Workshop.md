@@ -6,7 +6,7 @@
 
 同一个编辑器用于玩家示例档案和当前城市的全部真实居民。首页“头像工坊”打开玩家档案；居民身份栏“编辑头像”直接打开对应居民。`/?view=avatar-editor` 也可直接打开工坊，底层仍是同一个 App，不会重建游戏会话。
 
-`linework-v1`（日常线绘）、`chibi-cute-v1`（Q版可爱）与 `simple-flat-v1`（极简简笔）都是原创、真实分层的 SVG 画风包。自 2026-09-20 起，`chibi-cute-v1` 是后续素材扩充主路线；另外两套暂时作为 reference / compatibility 保留。三套已经完成 Pack-owned Catalog：当前虽然仍恰好共享 4 / 6 / 4 / 6 旧核心 ID，但 UI、Recipe 校验、随机、Actions 组合遍历都从当前 Pack 自己的 Catalog 读取，Q版后续可以独立增加素材。具体阶段、素材边界和人工美术审查以 [Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md) 为准。
+`linework-v1`（日常线绘）、`chibi-cute-v1`（Q版可爱）与 `simple-flat-v1`（极简简笔）都是原创、真实分层的 SVG 画风包。自 2026-09-20 起，`chibi-cute-v1` 是后续素材扩充主路线；另外两套暂时作为 reference / compatibility 保留。三套已经完成 Pack-owned Catalog。`chibi-cute-v1` 当前为 4 Face / 11 Hair / 9 Outfit / 8 Expression，并已加入第一批古代居民素材；`linework-v1`、`simple-flat-v1` 保持各自旧 Catalog。UI、Recipe 校验、随机和 Actions 组合遍历都从当前 Pack 自己的 Catalog 读取。具体阶段、素材边界和人工美术审查以 [Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md) 为准。
 
 画风是待用户验收的候选，不声称复制用户参考图、某位 Neka 画手或商业游戏。Q版方向只借鉴“大头比例、极简五官、腮红、粗轮廓、贴纸感”等通用视觉特征；现代日常服饰与可组合性优先，不强行添加中国古代饰物。历史错误实验已从当前工作树删除，不再建立保留区；旧内容使用 Git 历史查阅。
 
@@ -130,7 +130,7 @@ AI 辅助美术生产发生在开发阶段：按照统一画布和包内画法�
 
 素材审查统一由 `scripts/avatar-review/audit-packs.mjs` 执行；`pack-specs.mjs` 只描述每套画风真正不同的检查参数，例如矩阵范围、表情标记、眼睛约束、原尺寸/年龄证明，以及 Q版与极简简笔之间的比例差异。脚本会从运行时 Pack Registry 读取实际注册顺序，并要求 Registry 与 Review Spec 一一对应；因此新增画风只需新增美术包、在 `packs/registry.ts` 注册一次，再补一份小型 Spec，不再复制三四百行 Audit。每个包每个 Frame 仍有颈部 1、FaceBase 4、前后发 12、衣服 4、脸型对应表情 24；这些是作者源规则的确定性展开，不代表把完整人物图切成了若干文件。
 
-`soft-paint-v1` 因用户否定已从当前工作树删除，旧本地配方读取时只映射同一四项语义到 `chibi-cute-v1`，不会自动重写 localStorage。未来新增画风包继续复用同一编辑和保存边界，不再新增独立实验页；新包必须先证明不同脸共享头发、衣服和表情，不能把完整生成图登记为可换部件。
+`soft-paint-v1` 因用户否定已从当前工作树删除，旧本地配方读取时只映射同一四项语义到 `chibi-cute-v1`，不会自动重写 localStorage。Q版新增古代素材通过 compatibilityKey 显式回退到 reference Pack 的旧语义，不要求 reference Pack 补画。未来新增画风包继续复用同一编辑和保存边界，不再新增独立实验页；新包必须先证明不同脸共享头发、衣服和表情，不能把完整生成图登记为可换部件。
 
 ## GitHub Actions Review
 

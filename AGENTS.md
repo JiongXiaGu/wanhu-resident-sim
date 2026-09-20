@@ -10,7 +10,7 @@
 
 只有一套玩家可用的头像工坊：脸型、头发、衣服、表情四类离散选项。不同脸必须共享配件；表情不改变身份。玩家示例档案和任意真实居民使用同一编辑流程，按城市/居民稳定 ID 独立保存。
 
-不再制作“完整人物图画廊，然后以后再拆模块”的交付。当前 `chibi-cute-v1` 是下一阶段主美术路线；`linework-v1` 与 `simple-flat-v1` 暂保留为 reference / compatibility，不再优先扩素材。Q版必须在头身比例、五官、轮廓线和发型体积上保持独立视觉语言，并逐步转向泛中国古代模拟经营居民。当前仍只有 Face / Hair / Outfit / Expression 四个玩家可见类别：帽子第一阶段归入 Hair / 头部造型内部，腮红和情绪符号归入 Expression。主路线与阶段顺序以 `Documentation/Q版头像主路线生产与审查工作流.md` 为准；CI PASS 不等于美术定稿。
+不再制作“完整人物图画廊，然后以后再拆模块”的交付。当前 `chibi-cute-v1` 是主美术路线；Phase 3 / Batch A 已加入首批古代头部造型、服饰与 shy / serious 表情。`linework-v1` 与 `simple-flat-v1` 暂保留为 reference / compatibility，不再优先扩素材。Q版必须在头身比例、五官、轮廓线和发型体积上保持独立视觉语言，并逐步转向泛中国古代模拟经营居民。当前仍只有 Face / Hair / Outfit / Expression 四个玩家可见类别：帽子第一阶段归入 Hair / 头部造型内部，腮红和情绪符号归入 Expression。主路线与阶段顺序以 `Documentation/Q版头像主路线生产与审查工作流.md` 为准；CI PASS 不等于美术定稿。
 
 旧错误实验、整图图库、被否定的 `soft-paint-v1` 与其专属审查已从当前树删除，不建立历史保留文件夹。需要旧版时查 Git 历史。未来画风作为同一编辑器的可组合素材包验证，不再分叉独立编辑网站。
 

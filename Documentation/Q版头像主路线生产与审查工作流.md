@@ -22,12 +22,12 @@
 - [x] Phase 0C：确定 Q版可爱为下一阶段主路线
 - [x] Phase 1：让 Pack 拥有自己的素材 Catalog，解除“所有画风必须共享同一套选项”的限制
 - [x] Phase 2：建立 Q版 V2 美术规范与头部 / 衣装内部图层规范
-- [ ] **Phase 3：第一批古代居民核心素材**
-- [ ] Phase 4：年龄 / 性别扩展与职业可读性
+- [x] Phase 3：第一批古代居民核心素材
+- [ ] **Phase 4：年龄 / 性别扩展与职业可读性**
 - [ ] Phase 5：大规模素材生产与批次 QA
 - [ ] Phase 6：旧画风隐藏 / 兼容 / 退役决策
 
-**下一项唯一主任务：Phase 3 / Batch A。**
+**下一项唯一主任务：Phase 4。**
 
 ---
 
@@ -329,6 +329,50 @@ Frame       female.adult / male.adult 优先
 
 Batch A 美术通过之前，不进入 Batch B。
 
+## 2026-09-20：Phase 3 / Batch A 完成候选
+
+本批实际把 Q版 active Pack 扩到：
+
+```text
+Face        4
+Hair        11
+Outfit      9
+Expression  8
+```
+
+新增头部造型：
+
+```text
+bound            日常束发
+low-bun          低髻
+work-headscarf   劳作头巾
+scholar-cap      书生巾帽
+merchant-wrap    掌柜包头
+```
+
+其中后三个使用 `headwear: integrated`，实际 geometry 进入 HeadwearBack / HeadwearFront；前两个为 `headwear: none`。
+
+新增古代服饰：
+
+```text
+commoner   平民短衣
+laborer    劳作短褐
+merchant   商贩襟衫
+scholar    书生长衫
+artisan    工匠围襟
+```
+
+新增表情：
+
+```text
+shy       害羞
+serious   认真
+```
+
+旧现代 demo ID 暂不删除，继续用于旧 Recipe 兼容；新素材通过 compatibilityKey 映射到 reference Pack 的旧语义。Actions 新增 Batch A 成年男女专项图板，真实居民应用也改为使用新头巾 / 古代服饰 / 新表情。
+
+只有 Build + Resident Visual Review、Artifact 人工美术审查和 main 复核全部通过后，本节才视为正式完成。
+
 ---
 
 # 5. 每一批的执行顺序
@@ -536,6 +580,18 @@ Q版专项自动检查：
 
 Phase 2 只建立生产契约，不新增古代帽子或古代服饰；真正美术从 Phase 3 / Batch A 开始。
 
+## 2026-09-20：Phase 3 / Batch A 第一批素材
+
+决定：
+
+- 保留旧 6 Hair / 4 Outfit / 6 Expression，避免破坏既有 Recipe。
+- 在 Q版 Pack 内独立增加 5 个古代头部造型、5 套古代服饰、2 个表情。
+- 第一轮帽饰只做劳作头巾、书生巾帽、掌柜包头三种，用来验证 HeadwearBack / Front 契约。
+- 不给 reference Pack 补画这些新素材，只通过 compatibilityKey 明确回退。
+- 实际居民验收必须至少应用一次 `work-headscarf + commoner + shy`，另一居民使用 `scholar-cap + scholar + serious`。
+
+通过本批后，Phase 4 转向 child / adult / elder 与男女职业可读性，不继续无节制堆成年素材。
+
 ---
 
 # 11. 每轮结束必须更新这里
@@ -543,7 +599,7 @@ Phase 2 只建立生产契约，不新增古代帽子或古代服饰；真正美
 ## 当前执行点
 
 ```text
-Phase 3 — Batch A：成年男女核心古代居民素材
+Phase 4 — 年龄 / 性别扩展与职业可读性
 状态：未开始
 ```
 

@@ -54,19 +54,25 @@ export function expressionArt(frame:Frame,face:FaceId,expression:ExpressionId):s
  const spec=eyeSpec[face],child=isChild(frame),elder=isElder(frame),female=isFemale(frame);
  const cy=child?164:169,dx=spec.dx,ry=child?spec.ry+1:elder?Math.max(7,spec.ry-2):spec.ry;
  const leftX=160-dx,rightX=160+dx;
- let eyes='',brows='';
+ let eyes='',brows='',marks='';
  if(expression==='joy'){
   eyes=l(`M${leftX-10} ${cy+2}Q${leftX} ${cy-8} ${leftX+10} ${cy+2}`,EYE,4.5)+l(`M${rightX-10} ${cy+2}Q${rightX} ${cy-8} ${rightX+10} ${cy+2}`,EYE,4.5);
  }else if(expression==='surprise'){
   eyes=e(leftX,cy,8,10,'#fffdf8',EYE,4)+e(rightX,cy,8,10,'#fffdf8',EYE,4)+e(leftX,cy+1,3.5,5,EYE,'none',0)+e(rightX,cy+1,3.5,5,EYE,'none',0);
+ }else if(expression==='shy'){
+  eyes=l(`M${leftX-8} ${cy+2}Q${leftX} ${cy+7} ${leftX+8} ${cy+2}`,EYE,4)+l(`M${rightX-8} ${cy+2}Q${rightX} ${cy+7} ${rightX+8} ${cy+2}`,EYE,4);
+  const blushY=child?190:197;
+  marks=mirror(e(116,blushY,23,12,'#ef7f88','none',0,.66)+l(`M100 ${blushY-2}L110 ${blushY-8}M108 ${blushY+5}L119 ${blushY-2}`,'#fff0e9',2.3,.65));
  }else{
-  const eyeW=face==='angular'?7:8.5;
-  eyes=e(leftX,cy,eyeW,ry,EYE,'none',0)+e(rightX,cy,eyeW,ry,EYE,'none',0);
+  const eyeW=face==='angular'?7:8.5,eyeRy=expression==='serious'?Math.max(5,ry-2):ry;
+  eyes=e(leftX,cy,eyeW,eyeRy,EYE,'none',0)+e(rightX,cy,eyeW,eyeRy,EYE,'none',0);
   if(female&&!elder) eyes+=e(leftX-2,cy-3,2,2,'#fffaf2','none',0,.85)+e(rightX-2,cy-3,2,2,'#fffaf2','none',0,.85);
  }
  if(expression==='angry') brows=l(`M${leftX-12} ${cy-23}L${leftX+9} ${cy-16}`,OUTLINE,4)+l(`M${rightX+12} ${cy-23}L${rightX-9} ${cy-16}`,OUTLINE,4);
  else if(expression==='sad') brows=l(`M${leftX-11} ${cy-18}Q${leftX} ${cy-25} ${leftX+10} ${cy-20}`,OUTLINE,3.8)+l(`M${rightX-10} ${cy-20}Q${rightX} ${cy-25} ${rightX+11} ${cy-18}`,OUTLINE,3.8);
  else if(expression==='surprise') brows=l(`M${leftX-11} ${cy-24}Q${leftX} ${cy-31} ${leftX+11} ${cy-24}`,OUTLINE,3.8)+l(`M${rightX-11} ${cy-24}Q${rightX} ${cy-31} ${rightX+11} ${cy-24}`,OUTLINE,3.8);
+ else if(expression==='serious') brows=l(`M${leftX-12} ${cy-21}L${leftX+12} ${cy-21}`,OUTLINE,4.1)+l(`M${rightX-12} ${cy-21}L${rightX+12} ${cy-21}`,OUTLINE,4.1);
+ else if(expression==='shy') brows=l(`M${leftX-11} ${cy-21}Q${leftX} ${cy-25} ${leftX+10} ${cy-19}`,OUTLINE,3.5)+l(`M${rightX-10} ${cy-19}Q${rightX} ${cy-25} ${rightX+11} ${cy-21}`,OUTLINE,3.5);
  else brows=l(`M${leftX-11} ${cy-20}Q${leftX} ${cy-24} ${leftX+11} ${cy-20}`,OUTLINE,3.6)+l(`M${rightX-11} ${cy-20}Q${rightX} ${cy-24} ${rightX+11} ${cy-20}`,OUTLINE,3.6);
  const my=child?208:214;
  let mouth='';
@@ -76,5 +82,7 @@ export function expressionArt(frame:Frame,face:FaceId,expression:ExpressionId):s
  if(expression==='angry') mouth=l(`M151 ${my+4}Q160 ${my-3} 169 ${my+4}`,OUTLINE,4);
  if(expression==='sad') mouth=l(`M151 ${my+6}Q160 ${my-5} 169 ${my+6}`,OUTLINE,4);
  if(expression==='surprise') mouth=e(160,my+4,6,8,'#75424b',OUTLINE,3.5);
- return `<g data-expression-style="chibi">${brows}${eyes}<g data-mouth="">${mouth}</g></g>`;
+ if(expression==='shy') mouth=l(`M154 ${my}Q160 ${my+6} 166 ${my}`,'#9d5860',3.8);
+ if(expression==='serious') mouth=l(`M152 ${my+2}L168 ${my+2}`,OUTLINE,4.1);
+ return `<g data-expression-style="chibi">${brows}${eyes}<g data-mouth="">${mouth}</g>${marks}</g>`;
 }

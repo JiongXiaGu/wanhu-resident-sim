@@ -81,10 +81,10 @@ try{
  await page.locator('[data-part-tab="outfit"]').click();await screenshot('05-outfit-options');
  checks.push('Only four editable categories; UI option grids come from the current Pack Catalog; pack switches follow deterministic exact/compatibility mapping; two player profiles save independently; actual resident roster is loaded from the current city snapshot');
 
- await select(a.key);await choosePack(reviewPack);await choose('face','round');await choose('hair','pony');await choose('outfit','jacket');await choose('expression','joy');
+ await select(a.key);await choosePack(reviewPack);await choose('face','round');await choose('hair','work-headscarf');await choose('outfit','commoner');await choose('expression','shy');
  assert.equal(await stored(a.key),null,'Preview must not persist before apply');
  await apply();const aSaved=await stored(a.key),aImage=await image();await screenshot('06-resident-applied');
- await select(b.key);await choose('face','long');await choose('hair','crop');await choose('outfit','tee');await choose('expression','sad');await apply();const bSaved=await stored(b.key);
+ await select(b.key);await choose('face','long');await choose('hair','scholar-cap');await choose('outfit','scholar');await choose('expression','serious');await apply();const bSaved=await stored(b.key);
  assert.equal(await stored(a.key),aSaved);assert.notEqual(aSaved,bSaved);
  await select(a.key);assert.equal(await image(),aImage);
  await choose('hair','wave');assert.equal(await stored(a.key),aSaved);
@@ -100,7 +100,7 @@ try{
  assert(await page.evaluate(()=>window.__avatarTestGame===document.querySelector('.sim-game')),'Editing must not remount the simulation');
  assert.equal(+await page.locator('.sim-game').getAttribute('data-game-day'),originalDay+10);
  await screenshot('07-real-resident-panel',page.locator('.resident-panel'));
- checks.push('Resident A and B remain isolated; cancel/discard never persist; saved art appears in the game panel without resetting day, identity or story state');
+ checks.push('Resident A and B use real Batch A ancient chibi assets and remain isolated; cancel/discard never persist; saved art appears in the game panel without resetting day, identity or story state');
 
  await page.locator('[data-edit-resident-avatar]').click();await ready();assert.equal(await image(),aImage);
  const json=await download('json'),svg=await download('svg'),png=await download('png');

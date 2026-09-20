@@ -54,7 +54,7 @@ async function auditModelContract(page){
   return page.evaluate(async()=>{
     const m=await import('/src/avatar/model.ts'),r=await import('/src/avatar/render.ts');
     const require=(value,message)=>{if(!value)throw new Error(message);};
-    let randomRows=0,randomIdentityChecks=0,invalidRecipeChecks=0,switchChecks=0;
+    let randomRows=0,randomIdentityChecks=0,invalidRecipeChecks=0,switchChecks=0,compatibilityChecks=0;
     const coverage={};
 
     for(const meta of r.packCatalog){
@@ -96,7 +96,19 @@ async function auditModelContract(page){
       }
     }
 
-    const chibi=m.recipeForPack('chibi-cute-v1');
+    const chibi=m.recipeForPack('chibi-cute-v1'),chibiCatalog=m.catalogFor('chibi-cute-v1');
+    for(const part of m.parts){
+      for(const option of chibiCatalog[part].filter(option=>option.compatibilityKey&&option.compatibilityKey!==option.id)){
+        const source=m.parseRecipe({...chibi,[part]:option.id});
+        for(const target of r.packCatalog.filter(pack=>pack.id!=='chibi-cute-v1')){
+          const mapped=m.withPack(source,target.id),targetCatalog=m.catalogFor(target.id);
+          const expected=targetCatalog[part].find(item=>item.id===option.compatibilityKey)?.id??m.recipeForPack(target.id)[part];
+          require(mapped[part]===expected,`${part}/${option.id} did not follow compatibilityKey when mapping to ${target.id}`);
+          compatibilityChecks++;
+        }
+      }
+    }
+
     const legacy=m.parseRecipe({...chibi,pack:'soft-paint-v1'});
     require(legacy.pack==='chibi-cute-v1','Legacy soft-paint alias no longer maps to chibi-cute-v1');
     for(const part of m.parts)require(legacy[part]===chibi[part],'Legacy alias rewrote semantic choices');
@@ -107,7 +119,7 @@ async function auditModelContract(page){
       invalidRecipeChecks++;
     }
 
-    return {randomRows,randomIdentityChecks,invalidRecipeChecks,switchChecks,coverage,activePackId:m.activePackId};
+    return {randomRows,randomIdentityChecks,invalidRecipeChecks,switchChecks,compatibilityChecks,coverage,activePackId:m.activePackId};
   });
 }
 

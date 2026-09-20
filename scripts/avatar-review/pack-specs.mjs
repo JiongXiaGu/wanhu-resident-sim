@@ -15,6 +15,9 @@ export const avatarReviewSpecs=[
     extraForbiddenSvg:[],
     headwearContract:false,
     outfitContract:false,
+    featuredHair:[],
+    featuredOutfits:[],
+    featuredExpressions:[],
   },
   {
     id:'chibi-cute-v1',
@@ -32,6 +35,9 @@ export const avatarReviewSpecs=[
     extraForbiddenSvg:['soft-paint','sp-hair','sp-skin'],
     headwearContract:true,
     outfitContract:true,
+    featuredHair:['bound','low-bun','work-headscarf','scholar-cap','merchant-wrap'],
+    featuredOutfits:['commoner','laborer','merchant','scholar','artisan'],
+    featuredExpressions:['shy','serious'],
   },
   {
     id:'simple-flat-v1',
@@ -49,6 +55,9 @@ export const avatarReviewSpecs=[
     extraForbiddenSvg:['data-expression-style="chibi"','cb-','sp-hair','sp-skin'],
     headwearContract:false,
     outfitContract:false,
+    featuredHair:[],
+    featuredOutfits:[],
+    featuredExpressions:[],
   },
 ];
 
