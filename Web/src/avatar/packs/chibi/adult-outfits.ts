@@ -72,7 +72,7 @@ export function adultOutfit(frame:Frame,id:OutfitId):string{
   case 'jacket':
    // 内衫只在开口中形成一个连续面积；外短褂肩线与主衣片相接。
    base+=p('M137 239Q160 253 183 239L184 326H136Z',c.lining,OUTLINE,2.4);
-   collar=p('M180 238L185 251L161 275L151 265Z','#ece1c8',OUTLINE,2.6)
+   collar=p('M180 238L185 251L166 270L157 261Z','#ece1c8',OUTLINE,2.6)
     +p('M140 238L135 250Q154 269 182 287L189 276Q160 259 140 238Z','#ece1c8',OUTLINE,2.6);
    overlay=p('M129 248Q139 261 146 283L146 326H134L134 286Q130 265 120 253Z',c.edge,OUTLINE,2.6)
     +p('M191 248Q181 261 174 283L174 326H186L186 286Q190 265 200 253Z',c.edge,OUTLINE,2.6);
