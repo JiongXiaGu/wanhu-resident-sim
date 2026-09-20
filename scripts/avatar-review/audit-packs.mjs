@@ -205,7 +205,7 @@ async function auditPack(page,outRoot,spec){
             require(comboLayers.find(x=>x.id==='Expression').svg===expressionSvg,`${spec.id} wardrobe changed expression`);
             const key=`${frame}/${hair.id}/${outfit.id}`,shared=JSON.stringify(comboLayers.filter(x=>!['FaceBase','Expression'].includes(x.id)));
             if(wardrobe.has(key))require(wardrobe.get(key)===shared,`${spec.id} face changed shared wardrobe`);else wardrobe.set(key,shared);
-            require(comboLayers.map(x=>x.id).join(',')===layerOrder.join(','),`${spec.id} layer order changed`);
+            require(comboLayers.map(x=>x.id).join(',')==='BackHair,Neck,Outfit,FaceBase,Expression,FrontHair',`${spec.id} layer order changed`);
             require(!/<image\\b|<script\\b|<foreignObject\\b|<mask\\b|<clipPath\\b/.test(svg),`${spec.id} used forbidden complete-image or auto-fit constructs`);
             for(const token of spec.extraForbiddenSvg)require(!svg.includes(token),`${spec.id} contains forbidden artwork marker: ${token}`);
             require(!parser.parseFromString(svg,'image/svg+xml').querySelector('parsererror'),`${spec.id} emitted invalid SVG`);
