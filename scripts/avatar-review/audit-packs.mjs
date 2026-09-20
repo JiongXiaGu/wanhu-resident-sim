@@ -314,7 +314,7 @@ async function auditPack(page,outRoot,spec){
           columns:Math.min(6,frameCatalog.hair.length),
           cells:frameCatalog.hair.map(hair=>({
             label:`${hair.label}${hair.scalpExposure==='intentional'?' · 稀疏头皮':''}`,
-            svg:r.renderAvatar(frame,{...foundation,hair:hair.id})+head.hairCoverageOverlay(frame),
+            svg:r.renderAvatar(frame,{...foundation,hair:hair.id}).replace('</svg>',head.hairCoverageOverlay(frame)+'</svg>'),
             sizes:true,
           })),
         });
