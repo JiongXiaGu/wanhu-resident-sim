@@ -4,7 +4,7 @@
 
 ## 接手顺序
 
-先读取最新 main、README、AGENTS，再读本文件、人生经历与生活界面玩法规则V1、居民面板与生活事件V2、居民生活记录与故事连续性、Portrait System、Avatar Workshop、开发与部署工作流。随后检查实际源码、最新 Build 和 Resident Visual Review，不用聊天记忆替代仓库证据。
+先读取最新 main、README、AGENTS，再读本文件、人生经历与生活界面玩法规则V1、居民面板与生活事件V2、居民生活记录与故事连续性、Portrait System、Avatar Workshop、Q版头像主路线生产与审查工作流、开发与部署工作流。头像相关任务必须确认主路线文档里的“当前执行点”，随后检查实际源码、最新 Build 和 Resident Visual Review，不用聊天记忆替代仓库证据。
 
 ## 当前定位
 
@@ -14,7 +14,7 @@
 
 唯一玩家编辑流程是头像工坊 `/?view=avatar-editor`，也可从居民身份栏进入。只有脸型、头发、衣服、表情四类；不同脸共享配件，并保存到玩家示例档案或当前城市的指定居民。
 
-`Web/src/avatar/` 包含统一编辑器、按对象保存的 Web 覆盖记录和三套真实分层 SVG 素材包：`linework-v1`、`chibi-cute-v1`、`simple-flat-v1`。第三套是现代极简简笔方向，使用正常简化比例、细轮廓和平面色块；三套共享 face / hair / outfit / expression 语义 ID，但不共享整套美术 geometry。编辑只影响外观；必须保留居民姓名、年龄、家庭、职业与故事。工坊是当前 App 内的模态窗口，不通过跳转重建模拟。
+`Web/src/avatar/` 包含统一编辑器、按对象保存的 Web 覆盖记录和三套真实分层 SVG 素材包。当前 `chibi-cute-v1` 是后续主美术路线；`linework-v1`、`simple-flat-v1` 暂作 reference / compatibility。下一架构阶段不是直接堆素材，而是先完成 Pack-owned Catalog，解除 Q版扩素材时对旧 Pack 的全局 options 耦合。编辑仍只影响外观；必须保留居民姓名、年龄、家庭、职业与故事。
 
 旧风格墙、完整位图图库以及多个分叉编辑实验已从工作树删除，Git 历史足以保留。不得重新创建历史实验目录或把固定整图当作可编辑素材。
 

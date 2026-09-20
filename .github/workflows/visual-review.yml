@@ -10,6 +10,7 @@ on:
       - 'scripts/**'
       - 'package.json'
       - '.github/workflows/visual-review.yml'
+      - 'Documentation/Q版头像主路线生产与审查工作流.md'
   workflow_dispatch:
 
 concurrency:

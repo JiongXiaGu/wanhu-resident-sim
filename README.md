@@ -20,7 +20,7 @@ http://localhost:5173/?view=avatar-editor
 
 所有保存都在当前浏览器 localStorage，以城市和目标 ID 隔离。清除站点数据会丢失记录，需导出配方备份。正式居民 Snapshot 和五字段 DNA 未改，未定制居民使用原正式头像；恢复原头像只移除指定对象的 Web 覆盖。
 
-详见 [头像工坊](Documentation/Avatar%20Workshop.md)。`soft-paint-v1` 已因用户否定从当前工作树删除，只保留 Git 历史；当前美术仍需用户实际验收，不以组合数或 CI 成功宣称画风达标。
+详见 [头像工坊](Documentation/Avatar%20Workshop.md) 与 [Q版头像主路线生产与审查工作流](Documentation/Q版头像主路线生产与审查工作流.md)。当前后续美术主路线已转向 `chibi-cute-v1`；`linework-v1`、`simple-flat-v1` 暂保留用于对照与兼容，不再优先扩素材。`soft-paint-v1` 已因用户否定从当前工作树删除，只保留 Git 历史。当前美术仍需用户实际验收，不以组合数或 CI 成功宣称画风达标。
 
 ## 清理结果
 
@@ -71,7 +71,7 @@ npm run dev
 
 ## 新对话接手
 
-先读最新 main、AGENTS、`Documentation/居民逻辑网页Demo接续说明.md`、玩法/生活/历史规范、`Portrait System.md`、`Avatar Workshop.md` 和 `开发与部署工作流.md`。源码与最新 Actions 是当前事实，不沿用旧聊天里的错误方案。
+先读最新 main、AGENTS、`Documentation/居民逻辑网页Demo接续说明.md`、玩法/生活/历史规范、`Portrait System.md`、`Avatar Workshop.md`、`Q版头像主路线生产与审查工作流.md` 和 `开发与部署工作流.md`。头像任务先看主路线文档的“当前执行点”；源码与最新 Actions 是当前事实，不沿用旧聊天里的错误方案。
 
 ## GitHub Actions
 
