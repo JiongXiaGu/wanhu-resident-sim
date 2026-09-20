@@ -9,6 +9,7 @@ export const options = {
 export const packOptions = [
   { id:'linework-v1', label:'日常线绘', note:'清晰描边 · 色块简洁' },
   { id:'chibi-cute-v1', label:'Q版可爱', note:'大头比例 · 豆豆眼 · 贴纸感' },
+  { id:'simple-flat-v1', label:'极简简笔', note:'极简线稿 · 平面色块 · 图标式头像' },
 ] as const;
 
 export type PackId = typeof packOptions[number]['id'];

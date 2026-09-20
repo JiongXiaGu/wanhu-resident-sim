@@ -6,6 +6,9 @@ import { faceBase as chibiFace, expressionArt as chibiExpression, neckArt as chi
 import { hairArt as chibiHair } from './packs/chibi/hair';
 import { outfitArt as chibiOutfit } from './packs/chibi/outfits';
 import { chibiDefs } from './packs/chibi/drawing';
+import { faceBase as simpleFace, expressionArt as simpleExpression, neckArt as simpleNeck } from './packs/simple-flat/faces';
+import { hairArt as simpleHair } from './packs/simple-flat/hair';
+import { outfitArt as simpleOutfit } from './packs/simple-flat/outfits';
 
 export type Layer = { id:'BackHair'|'Neck'|'Outfit'|'FaceBase'|'Expression'|'FrontHair'; svg:string };
 export type AvatarPack = {
@@ -39,7 +42,17 @@ export const chibiCutePack:AvatarPack={
  }
 };
 
-export const avatarPacks:Record<PackId,AvatarPack>={'linework-v1':lineworkPack,'chibi-cute-v1':chibiCutePack};
+export const simpleFlatPack:AvatarPack={
+ id:'simple-flat-v1',title:'极简简笔',note:'极简线稿 · 平面色块 · 图标式头像',viewBox:'0 0 320 320',frames,options,defs:()=>'',layers(frame,recipe){
+  const hair=simpleHair(frame,recipe.hair);
+  return [
+   {id:'BackHair',svg:hair.back},{id:'Neck',svg:simpleNeck(frame)},{id:'Outfit',svg:simpleOutfit(frame,recipe.outfit)},
+   {id:'FaceBase',svg:simpleFace(frame,recipe.face)},{id:'Expression',svg:simpleExpression(frame,recipe.face,recipe.expression)},{id:'FrontHair',svg:hair.front},
+  ];
+ }
+};
+
+export const avatarPacks:Record<PackId,AvatarPack>={'linework-v1':lineworkPack,'chibi-cute-v1':chibiCutePack,'simple-flat-v1':simpleFlatPack};
 export const packCatalog=packOptions.map(meta=>({...meta,viewBox:avatarPacks[meta.id].viewBox}));
 export const getPack=(id:PackId):AvatarPack=>avatarPacks[id];
 
