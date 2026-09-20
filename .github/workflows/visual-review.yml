@@ -30,7 +30,7 @@ jobs:
       - name: Retain editable source with review artifacts
         run: |
           mkdir -p review-screenshots/avatar
-          git archive --format=zip --output=review-screenshots/avatar/source-and-contract.zip HEAD Web/src/avatar Web/src/App.tsx Web/src/resident/ResidentAvatar.tsx Web/src/main.tsx scripts Documentation/Avatar\ Workshop.md
+          git archive --format=zip --output=review-screenshots/avatar/source-and-contract.zip HEAD Web/src/avatar Web/src/App.tsx Web/src/resident/ResidentAvatar.tsx Web/src/main.tsx scripts Documentation AGENTS.md README.md .github/workflows/visual-review.yml
       - name: Install CJK fonts
         run: |
           sudo apt-get update -qq
@@ -68,6 +68,7 @@ jobs:
         run: |
           node scripts/capture-avatar-review.mjs
           node scripts/review-avatar-integration.mjs
+          node scripts/capture-avatar-art-polish.mjs
       - name: Compress legacy review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots and editable components

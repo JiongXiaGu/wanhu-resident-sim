@@ -26,3 +26,11 @@ export const CHIBI_ART_GUIDE={
   maxPrimaryColorBlocks:4,
   smallSizeProof:[96,64,48] as const,
 } as const;
+
+// 仅供作者与 QA 使用的共同安全区；不是运行时裁切框。
+// 全部 Face / Expression 的腮红填充和描边还必须离实际脸轮廓至少 2 个画布单位。
+export const CHIBI_BLUSH_SAFE_ZONE={
+ left:{x:112,y:184,width:32,height:18},
+ right:{x:176,y:184,width:32,height:18},
+ clearance:2,
+} as const;

@@ -20,7 +20,7 @@ export const hairDark=(frame:Frame)=>isElder(frame)?'#77737d':'#2c1c19';
 
 export function chibiDefs():string{
  return `<defs>
-  <linearGradient id="cb-skin" x1=".15" y1=".05" x2=".82" y2=".95"><stop stop-color="#fff9f2"/><stop offset=".62" stop-color="#fff1e6"/><stop offset="1" stop-color="#efb7af"/></linearGradient>
+  <linearGradient id="cb-skin" x1=".15" y1=".05" x2=".82" y2=".95"><stop stop-color="#fff9f2"/><stop offset=".62" stop-color="#fff1e6"/><stop offset="1" stop-color="#efc9b5"/></linearGradient>
   <linearGradient id="cb-tee" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d7c7e7"/><stop offset="1" stop-color="#b09fc6"/></linearGradient>
   <linearGradient id="cb-shirt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dcebf1"/><stop offset="1" stop-color="#9bb8c7"/></linearGradient>
   <linearGradient id="cb-knit" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f2d7b6"/><stop offset="1" stop-color="#d0aa82"/></linearGradient>

@@ -204,6 +204,14 @@ avatar/packs/chibi-cute-v1/hair-coverage-male.elder.png
 
 CI PASS 不能代替人工视觉审查。尤其要看头顶是否露出 Head Frame、太阳穴断开、发髻漂浮、48px 轮廓、衣领断裂与移动端遮挡。
 
+## Phase 7：美术精修
+
+当前阶段为美术精修，而非 Unity 迁移。资产数量、四类编辑项、六 Frame、单 Pack 与兼容规则均不变。详见 [Phase 7 头像美术精修与验收](Phase%207%20头像美术精修与验收.md)。
+
+FaceBase 不再常驻腮红；Expression 在固定共同安全区内绘制唯一一对色块，并由真实脸轮廓检查保证余量。Hair 只按 Frame 重画发际/髻形，不读取 Face ID。Outfit 的连续斜襟、圆领、夹袄与围襟均仍属于原四个作者层。
+
+Resident Visual Review 增加独立轻量 `capture-avatar-art-polish.mjs`：192 个腮红组合、3 个越界负对照、统一发色衣色的男女/年龄图及腮红安全区图。后两图必须实际下载打开，不能只读报告中的 automated-pass。
+
 ## 未实现
 
 当前不包含连续参数捏脸、独立 Headwear 分类、自动 Hair fit、服务端同步、Unity Runtime 导入或正式存档迁移。Q版是 Web 美术基线，不等于最终 Unity 实现。
