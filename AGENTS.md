@@ -38,7 +38,7 @@
 
 ## 代码与资源
 
-保持职责分离，必要处中文注释，不为美术问题新增自动对齐、逐脸偏移或复杂兼容引擎。禁止 Hair / Headwear 接收 Face ID 或做 face-dependent scale / offset；成年 Face 的上半脸通过 face-frame.ts 统一额头、太阳穴与耳位，脸型差异放到下脸和五官。四个 UI 选项可以拥有多个实际绘制层；统一 Renderer 顺序为 BackHair → HeadwearBack → Neck → Outfit → FaceBase → Expression → FrontHair → HeadwearFront。Headwear 仍属于 Hair，不增加 Recipe 字段；表情必须位于 FrontHair / HeadwearFront 下方。Q版 Outfit 内部使用 base / collar / overlay / detail 作者标记，base 与 collar 必须存在。脸型对应的眼形保留身份，不把同一组通用五官当作多个完整脸。
+保持职责分离，必要处中文注释，不为美术问题新增自动对齐、逐脸偏移或复杂兼容引擎。禁止 Hair / Headwear 接收 Face ID 或做 face-dependent scale / offset；六个 Frame 的上半脸都通过 face-frame.ts 统一各自的额头、太阳穴与耳位，脸型差异放到下脸和五官。年龄 / 性别差异优先由 Face、Expression、Neck 与 Outfit 肩颈轮廓表达，不通过改变同一 Frame 内的 Hair。四个 UI 选项可以拥有多个实际绘制层；统一 Renderer 顺序为 BackHair → HeadwearBack → Neck → Outfit → FaceBase → Expression → FrontHair → HeadwearFront。Headwear 仍属于 Hair，不增加 Recipe 字段；表情必须位于 FrontHair / HeadwearFront 下方。Q版 Outfit 内部使用 base / collar / overlay / detail 作者标记，base 与 collar 必须存在。脸型对应的眼形保留身份，不把同一组通用五官当作多个完整脸。
 
 草稿与已应用记录分离。切对象/关闭提示未保存修改；导入只改预览；严格验证版本与选项；写入失败不能假装成功。每对象独立 key，同对象外部更新要提示冲突。不要无授权删除浏览器内其他用户数据或改写旧存储键。
 
@@ -50,6 +50,6 @@
 
 不得一文件一 commit、空提交刷新、force 覆盖新 main 或依赖 Vercel。GitHub 工具可用时实际调用，不无依据声称无权限。任务交付要包含实际提交状态与关键截图，不只列后续计划。
 
-保持 capture-resident-review 和正式 capture-portrait-review 的有效断言。删除实验只删对应失效测试；新增工坊须测：四类真实操作、同一 Hair/Headwear 在四脸下 geometry 完全一致、成年 Face Frame 顶线/接缝一致、Headwear none/integrated 与前后层契约、Q版 Outfit base/collar 结构、甲乙独立保存、取消/恢复/刷新、真实居民 UI、存储/导入错误、年龄版本及 96/64/48px。
+保持 capture-resident-review 和正式 capture-portrait-review 的有效断言。删除实验只删对应失效测试；新增工坊须测：四类真实操作、同一 Hair/Headwear 在四脸下 geometry 完全一致、六 Frame Face Frame 顶线/接缝一致、child/adult/elder 与男女肩颈可读性、至少五类古代职业 96/64/48px、职业跨年龄、Headwear none/integrated 与前后层契约、Q版 Outfit base/collar 结构、甲乙独立保存、取消/恢复/刷新、真实居民 UI、存储/导入错误。
 
 CI PASS ≠ 美术 PASS。必须下载并看实际渲染，头发穿插、眼白溢出、嘴歪、衣领断开或 UI 遮挡时继续修复。最终如实区分已实现功能、艺术候选和未验证 Unity 迁移。

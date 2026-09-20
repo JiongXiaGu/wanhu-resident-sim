@@ -137,14 +137,18 @@ try{
 
  await page.locator('[data-open-avatar-workshop]').click();await editor.waitFor();
  const child=allTargets.find(t=>t.frame.endsWith('child')),elder=allTargets.find(t=>t.frame.endsWith('elder'));
- if(child){await select(child.key);await screenshot('08-child-resident');}
- if(elder){await select(elder.key);await screenshot('09-elder-resident');}
+ if(child){
+  await select(child.key);await choosePack(reviewPack);await choose('face','round');await choose('hair','bound');await choose('outfit','commoner');await choose('expression','calm');await screenshot('08-child-resident');await page.locator('[data-cancel-draft]').click();await ready();
+ }
+ if(elder){
+  await select(elder.key);await choosePack(reviewPack);await choose('face','oval');await choose('hair','merchant-wrap');await choose('outfit','merchant');await choose('expression','smile');await screenshot('09-elder-resident');await page.locator('[data-cancel-draft]').click();await ready();
+ }
  await select(players[0].key);await page.locator('[data-preview-light]').click();await screenshot('10-light-preview');
  await page.setViewportSize({width:390,height:844});await sizes();await screenshot('11-mobile');
  await page.setViewportSize({width:320,height:800});await sizes();
  await page.setViewportSize({width:1600,height:1100});
  const packAudit=await auditRegisteredAvatarPacks(page,out);
- checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; each Pack owns its Catalog and dynamic combination count; six age/gender contexts, shared parts, native previews and diagnostic boards remain covered`);
+ checks.push(`${packIds.length} selectable style packs plus lifecycle metadata are exercised automatically; Q版 Phase 4B additionally verifies all six Face Frames, age/sex silhouettes and ancient role readability while Hair/Headwear stays fixed across faces`);
  assert.deepEqual(errors,[],'Browser errors');
  await writeFile(join(out,'review.json'),JSON.stringify({commit:process.env.GITHUB_SHA??'local',status:'automated-pass',avatarPacks:packAudit,residentCount:snapshot.residents.length,checks,artisticApproval:'Requires actual screenshot inspection; registry coverage and CI are not an art quality rating'},null,2));
  console.log(checks.join('\n'));

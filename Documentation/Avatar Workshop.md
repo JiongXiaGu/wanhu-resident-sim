@@ -47,7 +47,7 @@ HeadwearFront
 
 换发型、衣服时 FaceBase / Expression 不变；换表情时 FaceBase 与衣装不变；换脸型时头发、衣服、颈部不变，Expression 使用新脸型对应的眉眼口设计。
 
-Q版成年 Face 进一步遵守 Face Frame：female.adult / male.adult 各自固定额头顶线、太阳穴接缝和耳位。round / oval / angular / long 的差异主要发生在面颊、下颌、下巴和五官。Hair / Headwear 从不接收 Face ID；同一个 Hair 在同一 Frame 的四张脸上必须返回完全相同的 BackHair / HeadwearBack / FrontHair / HeadwearFront。
+Q版六个 Frame 都遵守 Face Frame：female/male × child/adult/elder 各自固定额头顶线、太阳穴接缝和耳位。round / oval / angular / long 的差异主要发生在面颊、下颌、下巴和五官。Hair / Headwear 从不接收 Face ID；同一个 Hair 在同一 Frame 的四张脸上必须返回完全相同的 BackHair / HeadwearBack / FrontHair / HeadwearFront。child 通过更圆短的下脸、更大的眼睛和较窄肩颈表现年龄；elder 通过眼下 / 口周年龄线、较弱腮红和较缓肩颈表达，不把“灰发”当作唯一年龄信息。
 
 ## 保存、预览与取消
 

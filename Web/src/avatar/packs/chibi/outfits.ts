@@ -1,11 +1,21 @@
 import type {Frame} from '../../model';
 import type {OutfitId} from './catalog';
 import {outfitPart} from './art-spec';
-import {OUTLINE,isChild,p,l} from './drawing';
+import {OUTLINE,isChild,isElder,isFemale,p,l} from './drawing';
 
 export function outfitArt(frame:Frame,id:OutfitId):string{
- const child=isChild(frame),top=child?244:250;
- const body=child?'M136 241L118 250Q88 254 70 272L48 320H272L250 272Q232 254 184 241Q160 258 136 241Z':'M134 247L108 257Q72 262 51 286L36 320H284L269 286Q246 263 187 247Q160 266 134 247Z';
+ const child=isChild(frame),elder=isElder(frame),female=isFemale(frame),top=child?244:elder?249:250;
+ const body=child
+  ? (female
+    ? 'M138 241L120 250Q91 254 73 272L52 320H268L247 272Q229 254 182 241Q160 256 138 241Z'
+    : 'M136 241L116 250Q84 254 65 272L42 320H278L255 272Q236 254 184 241Q160 257 136 241Z')
+  : elder
+   ? (female
+     ? 'M137 246L112 256Q80 262 61 284L45 320H275L259 284Q238 262 183 246Q160 261 137 246Z'
+     : 'M134 246L104 256Q68 262 47 286L31 320H289L273 286Q250 262 186 246Q160 263 134 246Z')
+   : (female
+     ? 'M136 247L110 257Q76 262 55 285L39 320H281L265 285Q243 263 184 247Q160 263 136 247Z'
+     : 'M132 246L98 255Q58 261 34 287L18 320H302L286 287Q260 261 188 246Q160 266 132 246Z');
 
  if(id==='tee'){
   return outfitPart('base',p(body,'url(#cb-tee)',OUTLINE,5))+

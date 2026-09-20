@@ -140,7 +140,7 @@ async function auditPack(page,outRoot,spec){
     const pick=(part,id)=>catalog[part].some(option=>option.id===id)?id:m.recipeForPack(spec.id)[part];
     const baseRecipe=m.recipeForPack(spec.id);
     const parts=[],samples=[],boards=[],wardrobe=new Map(),headGeometry=new Map(),frameSignature=new Map();
-    let combinations=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,outfitStructureChecks=0;
+    let combinations=0,mouthChecks=0,eyeChecks=0,markerChecks=0,headwearChecks=0,faceFrameChecks=0,headGeometryChecks=0,ageSexChecks=0,roleChecks=0,outfitStructureChecks=0;
 
     for(const frame of m.frames){
       const base={...baseRecipe,hair:pick('hair',frame.startsWith('male')?'crop':'bob'),outfit:pick('outfit','shirt'),expression:pick('expression','calm')};
@@ -287,6 +287,67 @@ async function auditPack(page,outRoot,spec){
     const expected=m.frames.length*catalog.face.length*catalog.expression.length*catalog.hair.length*catalog.outfit.length;
     require(combinations===expected,`${spec.id} expected ${expected} combinations, got ${combinations}`);
 
+    if(spec.ageSexContract){
+      const preferred=(part,id)=>catalog[part].some(option=>option.id===id)?id:baseRecipe[part];
+      const proof={
+        face:preferred('face',spec.ageSexRecipe?.face??'round'),
+        hair:preferred('hair',spec.ageSexRecipe?.hair??'bound'),
+        outfit:preferred('outfit',spec.ageSexRecipe?.outfit??'commoner'),
+        expression:preferred('expression',spec.ageSexRecipe?.expression??'calm'),
+      };
+      const metrics={},cells=[];
+      for(const gender of ['female','male'])for(const stage of ['child','adult','elder']){
+        const frame=`${gender}.${stage}`,recipe={...baseRecipe,...proof},svg=r.renderAvatar(frame,recipe);
+        host.innerHTML=svg;
+        const faceNode=host.querySelector('[data-layer="FaceBase"] [data-chibi-face-shell]'),outfitNode=host.querySelector('[data-layer="Outfit"]'),neckNode=host.querySelector('[data-layer="Neck"]');
+        require(faceNode&&outfitNode&&neckNode,`${spec.id}/${frame} missing age/sex proof layers`);
+        require(faceNode.getAttribute('data-age-stage')===stage,`${spec.id}/${frame} has wrong age marker`);
+        require(faceNode.getAttribute('data-sex')===gender,`${spec.id}/${frame} has wrong sex marker`);
+        if(stage==='elder')require(host.querySelector('[data-age-cue="elder"]'),`${spec.id}/${frame} lacks non-hair elder cues`);
+        if(stage==='child')require(host.querySelector('[data-age-cue="child"]'),`${spec.id}/${frame} lacks child cues`);
+        const faceBox=faceNode.getBBox(),outfitBox=outfitNode.getBBox(),neckBox=neckNode.getBBox();
+        metrics[frame]={faceHeight:faceBox.height,outfitWidth:outfitBox.width,neckWidth:neckBox.width};
+        cells.push({label:`${gender} · ${stage}`,svg,sizes:true});
+        ageSexChecks++;
+      }
+      require(metrics['female.child'].faceHeight<metrics['female.adult'].faceHeight,`${spec.id} female child still uses adult face height`);
+      require(metrics['male.child'].faceHeight<metrics['male.adult'].faceHeight,`${spec.id} male child still uses adult face height`);
+      require(metrics['female.child'].outfitWidth<metrics['female.adult'].outfitWidth,`${spec.id} female child shoulders are not smaller than adult`);
+      require(metrics['male.child'].outfitWidth<metrics['male.adult'].outfitWidth,`${spec.id} male child shoulders are not smaller than adult`);
+      require(metrics['female.elder'].outfitWidth<metrics['female.adult'].outfitWidth,`${spec.id} female elder shoulder silhouette does not differ from adult`);
+      require(metrics['male.elder'].outfitWidth<metrics['male.adult'].outfitWidth,`${spec.id} male elder shoulder silhouette does not differ from adult`);
+      require(metrics['male.adult'].outfitWidth>metrics['female.adult'].outfitWidth+12,`${spec.id} adult male/female shoulder silhouettes are not distinct enough`);
+      require(metrics['male.adult'].neckWidth>metrics['female.adult'].neckWidth+4,`${spec.id} adult male/female neck silhouettes are not distinct enough`);
+      boards.push({name:'age-sex-proof',title:`${meta.label} · Phase 4B · 年龄 × 性别可读性`,columns:3,cells});
+    }
+
+    if(spec.roleProof?.length){
+      for(const gender of ['female','male']){
+        const frame=`${gender}.adult`,roleSvgs=[],cells=[];
+        for(const role of spec.roleProof){
+          const recipe={...baseRecipe,face:pick('face','round'),hair:pick('hair',role.hair),outfit:pick('outfit',role.outfit),expression:pick('expression',role.expression)};
+          const svg=r.renderAvatar(frame,recipe);
+          roleSvgs.push(svg);cells.push({label:role.label,svg,sizes:true});roleChecks++;
+        }
+        require(new Set(roleSvgs).size===roleSvgs.length,`${spec.id}/${frame} role proofs are not visually distinct SVG outputs`);
+        boards.push({name:`role-proof-${frame}`,title:`${meta.label} · Phase 4B · ${frame} · 职业可读性`,columns:Math.min(5,cells.length),cells});
+      }
+
+      if(spec.roleAgeProof?.length){
+        for(const gender of ['female','male']){
+          const cells=[];
+          for(const roleId of spec.roleAgeProof){
+            const role=spec.roleProof.find(item=>item.id===roleId);require(role,`Role age proof ${roleId} missing from roleProof`);
+            for(const stage of ['child','adult','elder']){
+              const frame=`${gender}.${stage}`,recipe={...baseRecipe,face:pick('face','round'),hair:pick('hair',role.hair),outfit:pick('outfit',role.outfit),expression:pick('expression',role.expression)};
+              cells.push({label:`${role.label} · ${stage}`,svg:r.renderAvatar(frame,recipe),sizes:true});roleChecks++;
+            }
+          }
+          boards.push({name:`role-age-proof-${gender}`,title:`${meta.label} · Phase 4B · ${gender} · 职业跨年龄`,columns:3,cells});
+        }
+      }
+    }
+
     if(spec.ageProof){
       for(const gender of ['female','male']){
         const cells=['child','adult','elder'].map(stage=>{
@@ -342,7 +403,7 @@ async function auditPack(page,outRoot,spec){
     }
 
     host.remove();
-    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length]))};
+    return {combinations,expected,mouthChecks,eyeChecks,markerChecks,headwearChecks,faceFrameChecks,headGeometryChecks,ageSexChecks,roleChecks,outfitStructureChecks,parts,samples,boards,catalogCounts:Object.fromEntries(m.parts.map(part=>[part,catalog[part].length]))};
   },spec);
 
   for(const part of data.parts){
@@ -378,6 +439,8 @@ async function auditPack(page,outRoot,spec){
     headwearChecks:data.headwearChecks,
     faceFrameChecks:data.faceFrameChecks,
     headGeometryChecks:data.headGeometryChecks,
+    ageSexChecks:data.ageSexChecks,
+    roleChecks:data.roleChecks,
     outfitStructureChecks:data.outfitStructureChecks,
     exportedParts:data.parts.length,
     samples:data.samples.length,

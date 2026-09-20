@@ -23,13 +23,13 @@
 - [x] Phase 1：让 Pack 拥有自己的素材 Catalog，解除“所有画风必须共享同一套选项”的限制
 - [x] Phase 2：建立 Q版 V2 美术规范与头部 / 衣装内部图层规范
 - [x] Phase 3：第一批古代居民核心素材
-- [ ] **Phase 4：年龄 / 性别扩展与职业可读性**
+- [x] Phase 4：年龄 / 性别扩展与职业可读性
   - [x] Phase 4A：Face Frame Pass（脸部框架回正）
-  - [ ] Phase 4B：child / adult / elder、男女与职业可读性
-- [ ] Phase 5：大规模素材生产与批次 QA
+  - [x] Phase 4B：child / adult / elder、男女与职业可读性
+- [ ] **Phase 5：大规模素材生产与批次 QA**
 - [ ] Phase 6：旧画风隐藏 / 兼容 / 退役决策
 
-**下一项唯一主任务：Phase 4B。**
+**下一项唯一主任务：Phase 5。**
 
 ---
 
@@ -116,7 +116,7 @@ Phase 4A 确认：**Face 负责适配统一头部框架，Hair / Headwear 不跟
 - round / oval / angular / long 不能通过挤压头发或帽子来表达差异。
 - 同一 Frame + Hair 下，BackHair / FrontHair / HeadwearBack / HeadwearFront 必须在四张 Face 中保持完全一致。
 
-当前 Face Frame Pass 先覆盖 `female.adult / male.adult`；child / elder 在 Phase 4B 单独处理。
+Phase 4B 已把 Face Frame 扩展到全部六个 Frame：female/male × child/adult/elder。每个 Frame 都有稳定的额头顶线、太阳穴接缝和耳位；Hair / Headwear 仍不读取 Face ID。
 
 ## Hair / 头部造型
 
@@ -630,6 +630,22 @@ Phase 2 只建立生产契约，不新增古代帽子或古代服饰；真正美
 
 Phase 4A 通过后，Phase 4B 才处理 child / adult / elder、男女成熟度与职业可读性。
 
+## 2026-09-20：Phase 4B 年龄 / 性别 / 职业可读性
+
+本轮完成：
+
+- Face Frame 从成年男女扩展到六个 Frame，child / elder 也遵守“Face 适配固定 Hair / Headwear”的原则。
+- child 使用更短、更圆的下脸与更大的眼睛，肩颈更窄；不是缩小成人。
+- adult male 的下颌、眼睛、眉线、颈部和肩宽与 adult female 明确分开，不只靠头发区分。
+- elder 增加眼下纹、口周纹、眉线下垂、较弱腮红和更窄 / 更缓的肩颈轮廓，不再只依赖灰发。
+- Outfit 的身体主轮廓按 female/male × child/adult/elder 调整肩宽，但同一 Outfit ID 的衣领与职业语义保持一致。
+- 新增自动 age/sex proof：同一 `round + bound + commoner + calm` 组合检查六个 Frame，验证 child 比 adult 更小、elder 肩形不同、成年男女肩颈有可读差异。
+- 新增职业 proof：平民、劳作、掌柜、书生/学徒、工匠在成年男女各一套 96 / 64 / 48px 图板。
+- 新增职业跨年龄 proof：书生/学徒与掌柜分别检查 child / adult / elder，确保职业语义在不同年龄仍可读。
+- Hair / Headwear 仍严格要求同一 Frame + Hair 在四张 Face 下 geometry 完全一致。
+
+Phase 4B 不新增第五分类，也不新增 face-dependent Hair；通过后进入 Phase 5 大规模素材生产与批次 QA。
+
 ---
 
 # 11. 每轮结束必须更新这里
@@ -637,7 +653,7 @@ Phase 4A 通过后，Phase 4B 才处理 child / adult / elder、男女成熟度�
 ## 当前执行点
 
 ```text
-Phase 4B — child / adult / elder、男女与职业可读性
+Phase 5 — 大规模素材生产与批次 QA
 状态：未开始
 ```
 
