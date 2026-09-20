@@ -41,10 +41,12 @@ npm run dev
 
 生活模式展示当前Activity、LifeEvent和少量Routine；人生模式是一条年龄升序时间轴，一件事一个Chapter，展开memoryText。LifeTag和原型Effect保留过去影响后来的真实链。外观编辑不改居民身份、家庭、职业、故事或游戏日期。
 
-## GitHub Actions 与交付
+## Visual Review、GitHub Actions 与交付
 
-不依赖Vercel。tmp-* 聚合修改后运行 Build 和 Resident Visual Review，下载Artifact人工看图后再推进main，main再复查。
+不依赖 Vercel。头像静态美术的高频迭代不再要求每轮等待 GitHub Actions：Face / Hair / Outfit / Expression 的 SVG 源码可以直接通过当前 Pack 的真实 `renderAvatar()` 输出诊断图板，检查六 Frame、关键组合以及 96/64/48px。此类图板属于“源码静态头像 Review”，可用于判断脸型、发型/帽子、腮红、衣领、年龄/性别差异和小尺寸可读性，但不能代替 Avatar Workshop / Resident UI 的真实浏览器交互。
 
-`resident-visual-review` 包含真实桌面UI、完整Catalog契约、腮红与Hair Coverage、96/64/48px、六框架自由创作保存测试。Phase8A图板在 `avatar/phase8a/`，源码与SHA一起保存。移动端不再截图；CI PASS不是最终美术定稿。
+候选美术稳定后，或涉及编辑器交互、LocalStorage、导入导出、Catalog / Registry、compatibility fallback、Hair Coverage / Head Frame、正式 portrait fallback、居民生活/故事数据时，仍按 tmp-* 聚合修改后运行 Build 和 Resident Visual Review，下载 Artifact 人工看图后再推进 main，main 再复查。
+
+`resident-visual-review` 保留真实桌面 UI、完整 Catalog 契约、腮红与 Hair Coverage、96/64/48px、六框架自由创作保存测试。Phase8A 图板在 `avatar/phase8a/`，源码与 SHA 一起保存。移动端不再截图；CI PASS 不是最终美术定稿，静态 SVG 图板 PASS 也不是完整 UI / 交互 PASS。
 
 接手先读AGENTS、接续说明和主路线当前执行点；不要用旧聊天或历史多Pack计划覆盖最新仓库。后续先验收8A样板，再逐批扩充，暂不做Unity迁移。
