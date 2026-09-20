@@ -12,14 +12,7 @@ export const chibiCatalog=defineCatalog({
     {id:'long',label:'清秀',note:'修长脸形 · 平缓眉眼'},
   ],
   hair:[
-    // 旧基础发型继续跨 Frame 可用，保障历史 Recipe；新增古代素材不再强制跨年龄共享。
-    {id:'crop',label:'利落短发',headwear:'none'},
-    {id:'bob',label:'齐颈短发',headwear:'none'},
-    {id:'long',label:'自然长发',headwear:'none'},
-    {id:'pony',label:'高马尾',headwear:'none'},
-    {id:'wave',label:'蓬松卷发',headwear:'none'},
-    {id:'braid',label:'侧编发',headwear:'none'},
-
+    // Frame 专属素材排在前面；旧基础发型留在后方作为历史 Recipe 与过渡兼容。
     {id:'child-topknot',label:'童子束发',note:'儿童专属 · 紧凑束髻',headwear:'none',frames:CHILD,compatibilityKey:'crop'},
     {id:'child-double-bun',label:'童子双髻',note:'女童专属 · 双侧小髻',headwear:'none',frames:['female.child'],compatibilityKey:'bob'},
 
@@ -31,13 +24,15 @@ export const chibiCatalog=defineCatalog({
 
     {id:'elder-low-knot',label:'老者低束',note:'老年专属 · 低位收束',headwear:'none',frames:ELDER,compatibilityKey:'bob'},
     {id:'elder-swept',label:'老者拢发',note:'老年专属 · 贴头拢发',headwear:'none',frames:ELDER,compatibilityKey:'crop'},
+
+    {id:'crop',label:'利落短发',headwear:'none'},
+    {id:'bob',label:'齐颈短发',headwear:'none'},
+    {id:'long',label:'自然长发',headwear:'none'},
+    {id:'pony',label:'高马尾',headwear:'none'},
+    {id:'wave',label:'蓬松卷发',headwear:'none'},
+    {id:'braid',label:'侧编发',headwear:'none'},
   ],
   outfit:[
-    {id:'tee',label:'简约上衣'},
-    {id:'shirt',label:'开领衬衫'},
-    {id:'knit',label:'针织开衫'},
-    {id:'jacket',label:'短外套'},
-
     {id:'child-short-robe',label:'童子短衣',note:'儿童专属 · 短身交领',frames:CHILD,compatibilityKey:'tee'},
     {id:'child-apprentice',label:'学童衣',note:'儿童专属 · 学徒短衫',frames:CHILD,compatibilityKey:'shirt'},
 
@@ -49,6 +44,11 @@ export const chibiCatalog=defineCatalog({
 
     {id:'elder-long-robe',label:'老者常服',note:'老年专属 · 宽松长衫',frames:ELDER,compatibilityKey:'shirt'},
     {id:'elder-warm-coat',label:'老者夹衣',note:'老年专属 · 厚领外搭',frames:ELDER,compatibilityKey:'knit'},
+
+    {id:'tee',label:'简约上衣'},
+    {id:'shirt',label:'开领衬衫'},
+    {id:'knit',label:'针织开衫'},
+    {id:'jacket',label:'短外套'},
   ],
   expression:[
     {id:'calm',label:'平静'},
