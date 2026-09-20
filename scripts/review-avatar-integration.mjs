@@ -32,7 +32,9 @@ try {
  assert.equal(await editor.getAttribute('data-recipe'),beforeB,'Late import changed new target');
  // 确认“应用后继续”真实保存甲、再切乙，而不是保存到新目标。
  await page.locator(`[data-target-key="${a}"]`).click();await page.waitForFunction(k=>document.querySelector('[data-avatar-editor]').dataset.target===k,a);
- const current=JSON.parse(await editor.getAttribute('data-recipe')),hair=current.hair==='crop'?'bob':'crop';
+ const current=JSON.parse(await editor.getAttribute('data-recipe')),frame=await editor.getAttribute('data-frame');
+ const hair=await page.evaluate(async({pack,frame,currentHair})=>{const model=await import('/src/avatar/model.ts');return model.optionsFor(pack,'hair',frame).map(item=>item.id).find(id=>id!==currentHair);},{pack:current.pack,frame,currentHair:current.hair});
+ assert(hair,'Target frame needs at least two Hair options for apply-then-switch review');
  await page.locator('[data-part-tab="hair"]').click();await page.locator(`[data-option="${hair}"]`).click();
  const expected=await editor.getAttribute('data-recipe');
  await page.locator(`[data-target-key="${b}"]`).click();await page.locator('[data-pending-apply]').click();await page.waitForFunction(k=>document.querySelector('[data-avatar-editor]').dataset.target===k,b);
