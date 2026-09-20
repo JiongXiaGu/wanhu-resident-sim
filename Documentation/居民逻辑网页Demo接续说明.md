@@ -20,6 +20,12 @@
 
 `Web/src/resident/portrait/` 及 `Content/Portrait/` 的正式五字段 DNA、六个 Frame 保持冻结。未定制居民继续使用原 Renderer；只有已应用对象展示新覆盖图。`/?view=portraits` 保留为该契约的开发验收页，不是面向玩家的第二套编辑系统。
 
+## 当前美术执行点：Phase 7
+
+7A / 7B 已形成美术精修候选并完成临时分支 Actions 与关键截图人工审查，等待用户最终美术验收。继续工作前读取 [Phase 7 头像美术精修与验收](Phase%207%20头像美术精修与验收.md)，并重新核对 main 与同 SHA 的 Actions。不要重复 Phase 5C / Phase 6，不要因为旧阶段文档提到多 Pack 就恢复旧资源。
+
+本轮腮红归于唯一 Expression 组；Hair 只按 Frame 重画，不读取 Face；衣领、肩线与老年造型只属于现有资产作者层。新增 `capture-avatar-art-polish.mjs` 输出 192 个腮红组合的检查、统一色彩形体对照和安全区图，不能只生成不打开。素材总数与兼容 ID 保持不变。后续优先根据用户截图反馈微调美术，不自动扩素材或迁 Unity。
+
 ## 居民玩法不变量
 
 生活模式只回答当前事实：身份、世界关联、Activity、正在经历/最近 LifeEvent、少量 Routine。没有综合近况 Summary。

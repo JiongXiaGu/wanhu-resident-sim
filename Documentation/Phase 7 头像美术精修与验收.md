@@ -47,9 +47,37 @@ avatar/packs/chibi-cute-v1/phase7-art-polish-review.json
 
 必须下载并打开真实 UI `09b-elder-hair-options`、`09c-elder-outfit-options`、`10a-adult-female-hair-options`、`10c-adult-male-hair-options`、`11-mobile`，以及三年龄综合图和本轮两张新增诊断图。优先检查头顶、鬓角、眼下、衣领连续性、肩线和 96 / 64 / 48px 轮廓。
 
-## 当前执行记录
+## 已完成的远端与人工审查
 
-代码候选已完成本地 TypeScript 检查、220 个 Hair 覆盖点检查（前发/帽前层自身即覆盖全部点）与多张实际 SVG 组合图人工查看。当前处于临时分支 Actions 与 Artifact 人工复核阶段；本地检查不能替代远端 PASS，不代表用户已确认最终画风。
+首轮候选 `86a51b3204de979a82ca05a55169dd0c31a0b926`：Build `35524723837` PASS；Resident Visual Review `35524723840` PASS。已下载 Artifact `10609239616`（resident-visual-review），并对照 source-and-contract.zip，11 个修改文件与本地作者源文件完全一致。
+
+远端报告记录：11,136 个有效组合、220 个 Hair Coverage probes、176 项 Hair 跨 Face geometry、70 项 compatibility-only 检查通过；新增 192 个腮红组合及 3 个负对照通过。原对象保存、取消、导出导入、恢复、刷新、跨标签页冲突及实际居民集成检查继续通过。
+
+已逐张打开：
+
+```text
+avatar/09b-elder-hair-options.png
+avatar/09c-elder-outfit-options.png
+avatar/10a-adult-female-hair-options.png
+avatar/10c-adult-male-hair-options.png
+avatar/11-mobile.png
+avatar/07-real-resident-panel.png
+avatar/packs/chibi-cute-v1/phase5d-age-overview.png
+avatar/packs/chibi-cute-v1/phase7-shape-comparison.png
+avatar/packs/chibi-cute-v1/phase7-blush-safe-zones.png
+```
+
+| 标准 | 人工观察与边界 |
+| --- | --- |
+| A 腮红 | shy 最大腮红图与真实 UI 未见明显出界；不依赖裁切。自动检查覆盖全部 192 个组合 |
+| B 男女 | 统一发色衣色后，96 / 64px 样本仍由眉眼、发际、下颌与肩线区分，不仅是换发色 |
+| C 老年 | 退后发际、盘髻、眼下面颊年龄线与缓肩构成老年特征；不是成人改灰发 |
+| D 衣装 | 已查看样本的领口到斜襟连续，肩线完整；没有原来的悬空尖领 / 中央领带观感 |
+| E 结构 | 原六 Frame / Hair Coverage / 跨 Face 不变 / 兼容 / 保存与新腮红检查均通过 |
+
+48px 保留主轮廓和年龄气质，但不要求细纹仍逐条可辨。男性较平的眼形、老年细纹强度和服装审美仍是候选，最终喜好由用户确认。移动端沿用可滚动分区，初始视口不同时显示全部编辑项；本轮不重排 UI。不宣称人工逐张检查了全部 11,136 组合。
+
+7A / 7B 已完成候选。文档补齐后的最终提交及推进 main 后仍须复跑同 SHA 的两个 workflow，并下载关键截图抽查；发布状态以对应 commit 的 Actions 为准，不用上述首轮候选 run 冒充最终 main 验收。
 
 ## 未包含
 

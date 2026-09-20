@@ -22,6 +22,10 @@ http://localhost:5173/?view=avatar-editor
 
 详见 [头像工坊](Documentation/Avatar%20Workshop.md) 与 [Q版头像主路线生产与审查工作流](Documentation/Q版头像主路线生产与审查工作流.md)。Phase 6 已把 Q版 Head Frame / Hair Coverage 作为新基础契约：Hair 必须覆盖固定头型，Face 不驱动 Hair；同时旧画风运行时资源已清理，只保留 Recipe 迁移 alias。Q版继续作为 Unity 迁移前的 Web 美术基线，但 CI 绿色仍不能代替实际截图审查。
 
+## Phase 7：美术精修候选
+
+已在 Phase 6 结构上收拢腮红、加强男女与老年造型、重画交领和肩线。没有增加可选素材、玩家分类或逐脸 Hair 适配。新增真实轮廓腮红检查与统一色彩的性别 / 年龄诊断图；阶段盘点和人工审查见 [Phase 7 头像美术精修与验收](Documentation/Phase%207%20头像美术精修与验收.md)。当前是可验收的候选美术，不等于用户最终认可，也未启动 Unity 迁移。
+
 ## 清理结果
 
 已移除被否定的旧头像实验页面、固定整图图库、专属样式和专属截图脚本，相关错误实验文档也不再留在当前树；Git 历史保留旧版本。不会再把“先选完整画稿，之后再想办法做成 DIY”当成当前交付。
