@@ -36,8 +36,10 @@ function pool(part:Part,frame:Frame,theme:Theme):readonly CatalogOption[]{
  const all=optionsFor(activePackId,part,frame);
  const exact=all.filter(option=>option.theme===theme);
  if(theme==='common'){
-  const common=all.filter(option=>option.theme==='common'||option.theme===undefined);
+  const common=all.filter(option=>option.theme==='common');
   if(common.length)return common;
+  const unthemed=all.filter(option=>option.theme===undefined);
+  if(unthemed.length)return unthemed;
  }
  return exact.length?exact:all;
 }
