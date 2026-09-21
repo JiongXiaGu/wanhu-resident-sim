@@ -84,6 +84,11 @@ jobs:
           git fetch --no-tags --depth=1 origin 59028b3afd4b24c1cc57edbe68ce13b2bd5314f9
           node scripts/avatar-review/export-age-baseline.mjs 59028b3afd4b24c1cc57edbe68ce13b2bd5314f9 review-screenshots/avatar/phase8b2
           node scripts/capture-avatar-adult-wardrobe.mjs
+      - name: Review Phase 8D1 assets, descriptions and search
+        run: |
+          git fetch --no-tags --depth=1 origin 7ba57695c392f14d598e818beadecff877dd52f9
+          node scripts/avatar-review/export-age-baseline.mjs 7ba57695c392f14d598e818beadecff877dd52f9 review-screenshots/avatar/phase8d1
+          node scripts/capture-avatar-theme-assets.mjs
       - name: Compress legacy review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots and editable components

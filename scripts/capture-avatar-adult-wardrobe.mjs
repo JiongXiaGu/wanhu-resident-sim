@@ -26,7 +26,8 @@ try{
   await frame(f);await choose('face','oval');await choose('expression','smile');await choose('hair',look.hair);await choose('outfit',look.outfit);await save();
   for(const part of ['hair','outfit']){
    await page.locator(`[data-part-tab="${part}"]`).click();
-   const ids=await page.locator('[data-option]').evaluateAll(ns=>ns.map(n=>n.dataset.option));
+   // 8B2 保留其历史明确清单；8D1 新素材由独立增量审查覆盖。
+   const ids=await page.evaluate(async({f,part})=>{const m=await import('/src/avatar/model.ts'),s=await import('/src/avatar/studio.tsx');return m.optionsFor('chibi-cute-v1',part,f).filter(o=>s.isReworkedSample(part,o.id)).map(o=>o.id);},{f,part});
    await page.locator('[data-sample-only]').click();
    assert.deepEqual(await page.locator('[data-option]').evaluateAll(ns=>ns.map(n=>n.dataset.option)),ids,'All current adult options have now been redrawn; future IDs are not implicitly included');filterChecks++;
    for(const id of ids){await choose(part,id);uiSelections++;}
@@ -49,12 +50,13 @@ try{
  const data=await page.evaluate(async({baseline,looks})=>{
   const m=await import('/src/avatar/model.ts'),r=await import('/src/avatar/render.ts');
   const {adultWardrobeBatch:batch,collarRepairIds}=await import('/src/avatar/packs/chibi/rework-batch.ts');
+  const {isReworkedSample}=await import('/src/avatar/studio.tsx');
   const require=(ok,message)=>{if(!ok)throw new Error(message);};
   const recipeFor=f=>({...m.recipeForPack('chibi-cute-v1',f),face:'oval',expression:'smile',hair:f.endsWith('child')?'child-topknot':f.endsWith('elder')?'elder-swept':'bound',outfit:f.endsWith('child')?'child-short-robe':f.endsWith('elder')?'elder-long-robe':'commoner'});
   const slots=part=>part==='hair'?['BackHair','HeadwearBack','FrontHair','HeadwearFront']:['Outfit'];
   const parse=svg=>new DOMParser().parseFromString(svg,'image/svg+xml');
   const boards=[],inventory=[],changed=[],unchanged=[];let crownEdgeSamples=0,cutChecks=0;
-  const expectedRows=m.frames.reduce((n,f)=>n+['hair','outfit'].reduce((sum,part)=>sum+m.optionsFor('chibi-cute-v1',part,f).length,0),0);
+  const expectedRows=m.frames.reduce((n,f)=>n+['hair','outfit'].reduce((sum,part)=>sum+m.optionsFor('chibi-cute-v1',part,f).filter(o=>isReworkedSample(part,o.id)).length,0),0);
   require(baseline.rows.length===expectedRows,'Catalog count changed without a new reviewed baseline');
   for(const row of baseline.rows){
    require(m.optionsFor('chibi-cute-v1',row.part,row.frame).some(o=>o.id===row.id),'Baseline option no longer exists');
@@ -70,7 +72,7 @@ try{
   const host=document.createElement('div');host.style.cssText='position:absolute;left:-9000px';document.body.append(host);
   try{
    for(const f of batch.frames)for(const part of ['hair','outfit']){
-    const cells=[],cuts=new Set();const options=m.optionsFor('chibi-cute-v1',part,f);
+    const cells=[],cuts=new Set();const options=m.optionsFor('chibi-cute-v1',part,f).filter(o=>isReworkedSample(part,o.id));
     for(const option of options){
      const svg=r.renderAvatar(f,{...recipeFor(f),[part]:option.id});
      cells.push({label:`${option.label} / ${option.id}${batch[part].includes(option.id)?' · 8B2':' · 保留8A'}`,svg,sizes:true});

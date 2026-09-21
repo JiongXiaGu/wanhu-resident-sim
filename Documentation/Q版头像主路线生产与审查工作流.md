@@ -2,88 +2,65 @@
 
 ## 当前执行点
 
-```text
-Phase 8B2 — 剩余成年画稿与三款童老衣领 / 门襟
-状态：本批实现与候选画稿，最终结果以对应 SHA 的 Actions / Artifact 为准；待用户美术验收
-接手基线：59028b3afd4b24c1cc57edbe68ce13b2bd5314f9
-```
+**Phase 8D1-A / 8D1-B：常服、劳作、商铺、行旅合批扩充，并补齐资产描述与轻量检索。**
 
-详见 [Phase 8B2 成年衣装与衣领审查](Phase%208B2%20成年衣装与衣领审查.md)。本批 12 Hair / 9 Outfit 成年 ID + 三款童老衣装，不新增 ID；8C 只登记交互优化，不在本批实施。
+用户认为 8B2 基础画法基本可行，已批准扩库。接手 main 为 `7ba57695c392f14d598e818beadecff877dd52f9`。详见 [Phase 8D1 主题资产与文字检索](Phase%208D1%20主题资产与文字检索.md)。新增 16 Hair / 16 Outfit ID，共 44 份适用成年画稿。当前 6 Face / 46 Hair / 40 Outfit / 8 Expression；100 个可选资产都有中文描述与关键词。
 
-用户在 Phase 7 后明确指出脸、帽子、衣服仍存在问题；先前 CI PASS 和助手审查不是用户认可最终画法。现在按 [Phase 8 头像美术体系与创作工坊](Phase%208%20头像美术体系与创作工坊.md) 执行。此前长篇阶段记录以 Git 历史和相应阶段文档为准，不再将旧多 Pack 实验指令混入当前工作流。
+8C 大交互调整暂缓，8D2 儿童/老年扩库未开始。不要把本批检索补充变成整个工坊重排，也不要恢复多 Pack 或提前迁 Unity。技术通过不等于新款美术最终认可。
 
 ## 结构不变量
 
-运行时只有 `chibi-cute-v1`，玩家素材仍只有 Face / Hair / Outfit / Expression。帽巾属于 Hair，腮红属于 Expression。六 Frame：female/male × child/adult/elder。
+运行时只有 `chibi-cute-v1`，玩家只编辑 Face / Hair / Outfit / Expression。帽巾属于 Hair，腮红属于 Expression。六 Frame 为 female/male × child/adult/elder。
 
-每个 Frame 有唯一固定 Head Frame。Face 只改变下脸与五官。Hair 不读取 Face ID；严禁逐脸 offset / scale、anchor solver、mask / clipPath 自动适配。Hair Coverage probes 只做审查，不驱动运行时变形。
+每 Frame 一个固定 Head Frame；Face 只改下脸与五官；Hair 不读 Face。禁止逐脸 offset/scale、anchor solver、mask/clipPath 自动适配。Hair Coverage probes 只做审查，不驱动变形。
 
-八层顺序：BackHair → HeadwearBack → Neck → Outfit → FaceBase → Expression → FrontHair → HeadwearFront。Outfit 内部仍是 base / collar / overlay / detail，base 和 collar 必须存在。
+八层顺序为 BackHair → HeadwearBack → Neck → Outfit → FaceBase → Expression → FrontHair → HeadwearFront。Outfit 内部 base / collar / overlay / detail，base 和 collar 必须存在。
 
-旧 `crop/bob/long/pony/wave/braid`、`tee/shirt/knit/jacket` 仍为 compatibility-only；parseRecipe 可接受，UI/Random 不可见。旧 linework/simple-flat/soft-paint pack ID 仅作导入 alias，不恢复资源与选择器。
+旧 modern Hair/Outfit 十个 ID 是 compatibility-only，旧三个 Pack ID 只作迁移 alias，不进入 UI/检索/Random，不恢复旧资源目录。正式 ResidentPortraitDNA、fallback、居民身份/故事/日期保持冻结。自由样板年龄/性别是编辑上下文，不是居民字段。
 
-正式 ResidentPortraitDNA、正式 fallback、居民身份/故事、游戏日期保持冻结。自由创作的年龄/性别是样板上下文，不是写入居民的新字段。
+Catalog 为文字、可用性和兼容权威。描述、关键词、主题和搜索词不写入 Recipe 或保存键。主题不能变成职业锁定。只要 Frame 适用，玩家可以跨主题混搭。
 
-## 阶段表
+## 阶段关系
 
-| 阶段 | 已形成的基础 / 当前边界 |
+| 阶段 | 当前边界 |
 | --- | --- |
-| Phase 0–3 | Registry、Pack-owned Catalog、八层 Renderer 与首批古代素材 |
-| Phase 4–5 | 固定上头型、年龄专属 Hair/Outfit、六 Frame QA、兼容 ID 隔离 |
-| Phase 6 | Hair Coverage 与旧运行时 Pack 退役；结构继续保留 |
-| Phase 7 | 腮红安全区、男女/老年/衣领精修；技术通过，但用户未接受为最终画法 |
-| Phase 8A 已交付 | 六脸型族、少量帽发/衣装重画样板、自由创作入口、桌面审查 |
-| Phase 8B1 已交付 | 儿童7+老年8个Hair ID、两年龄各6个Outfit ID；固定配方旧新对照 |
-| Phase 8B2 当前 | 剩余成年 12 Hair / 9 Outfit ID；三款童老衣领 / 门襟合批修正 |
-| Phase 8C 待批准 | 年龄/性别靠近预览、六样板入口、当前对象与自由/绑定区分 |
-| Phase 8D 待批准 | 按生活主题扩充，不靠改色凑数 |
+| Phase 0–6 | 单 Pack、固定头型、独立年龄素材、Coverage 和旧资源退役基础保留 |
+| Phase 7 | 技术成果保留；当时美术未获最终认可，不能回退为模板 |
+| Phase 8A | 六脸型族、成年样板、六框架自由创作入口已交付 |
+| Phase 8B1 | 儿童/老年旧 Hair 与 Outfit 重画已交付 |
+| Phase 8B2 | 成年剩余画稿及三款童老衣领已交付，用户认为基本可行 |
+| Phase 8D1 当前 | 四生活主题 32 新 ID、100 份描述与检索，正式批次回归 |
+| Phase 8C 暂缓 | 年龄/性别靠近预览、样板入口和当前对象清晰度 |
+| Phase 8D2 未实施 | 儿童/老年主题扩库，需另定样板范围 |
 
-当前可选 6 Face / 30 Hair / 24 Outfit / 8 Expression。六脸型族共 36 份静态下脸画稿；不将绘制份数当作玩家可选 ID 数量。本批不增加Hair/Outfit ID；工坊“已重画”是累计候选标记，不是最终认可。下一轮先检查Phase8文档中的待验收范围，不自动开始 Unity 迁移。
+历史具体问题与旧新对照留在 8B1、8B2 阶段文档和 Git 历史；不把旧多 Pack 或已否定实验指令混入当前任务。每个新 ID 先说明轮廓差异与小尺寸识别依据，不靠改色凑数。
 
-## 每批工作顺序
+## 每批顺序
 
-1. 读取最新 main、AGENTS、README、接续说明、Avatar Workshop、本文件和对应阶段规范。
-2. 查实际源码与最新 Actions；建立具体问题和本批样板 ID 清单。
-3. 对纯 Face / Hair / Outfit / Expression 画稿迭代，先在确认 SHA 上集中修改，并直接调用真实 `renderAvatar()` / Pack SVG Renderer 生成静态图板；实际检查受影响的六 Frame、关键组合和 96/64/48px。这个高频短循环可以连续多轮，不必每轮等待 Actions。
-4. 方向稳定后从确认 SHA 建立/更新 tmp-* 聚合提交；不一文件一提交、不用空提交刷新检查。
-5. 正式批次跑 Build 与 Resident Visual Review。
-6. 下载对应 SHA 的 Artifact，核对 source-commit，实际打开真实桌面 UI、新图板和对应诊断。
-7. 有明显问题就修正并重跑；CI 绿色不等于美术完成，静态图板正常也不等于完整 UI / 存储 / 导入契约完成。
-8. 重新读取 main，无并行冲突才推进已审查的提交；不用 force 覆盖。
-9. main 再跑两类检查、再下载复核。交付必须区分“源码静态头像图板”与“真实浏览器 / Actions 截图”，并区分实现、候选、未完成。
+1. 读取最新 main、AGENTS、README、接续说明、Avatar Workshop、本文件和阶段规范，确认 SHA。
+2. 查源码和同 SHA Actions，列出本批明确 ID、Frame 与问题，不用聊天记忆覆盖远端。
+3. 纯画稿可以先用当前真实 `renderAvatar()` / Pack SVG 生成静态图板，实际查看相关 Frame、组合及 320 / 96 / 64 / 48px；高频中间轮次不必等 Actions。
+4. 候选稳定后集中代码/画稿/文档至 tmp-* 聚合提交，不一文件一提交、不用空提交刷检查。
+5. 正式批次运行 Build 与 Resident Visual Review，下载对应 SHA Artifact，核对 source-commit 与源码，实际打开新图板和真实桌面 UI。
+6. 有可见错误继续修并重跑。重新读取 main，无并行冲突才以非 force 推进已审查提交；有新 main 则先整合再审查。
+7. main 再跑两类检查，再下载复核。交付写 SHA、两项结果、实际看图范围，区分实现、候选美术和未实施范围。
 
-若本批修改了 Avatar Workshop 交互、保存/恢复、导入导出、Catalog / Registry / compatibility、Head Frame / Hair Coverage 契约、正式 portrait fallback 或居民内容管线，则跳过“只做静态图板即可”的放宽，直接按正式批次回归。
+编辑器、存储、导入、Catalog/Registry/兼容、Head Frame/Coverage、正式 portrait、居民内容管线或 Review 脚本变化必须走完整回归，不能只提交静态图。用户自行拉 main，不交付压缩包；这不取消执行者下载并人工查看 Artifact 的责任。
 
 ## 自动审查
 
-原居民连续性、正式 fallback、对象保存/取消/恢复/冲突、PNG/SVG/JSON 导入导出保持。工坊同时检查：
+继续验证 Catalog 全组合、Hair 跨所有 Face 字节不变、Head Frame signature、Coverage、Headwear 前后层与 Outfit 作者层、腮红安全区和负对照、旧 Recipe 确定性回退、真实居民连续性、正式 fallback。
 
-- 单 Pack Registry/Catalog 与素材可用 Frame 一致，Random 不泄漏兼容 ID；
-- 全部 active 组合能渲染，新 Face 自动进入全表情检查；
-- 同一 Frame + Hair 跨所有 Face 四个头部层字节一致；
-- Head Frame signature 一致，Hair Coverage 点完整；
-- Headwear none/integrated、前后层与 Outfit base/collar；
-- 腮红固定安全区 + 真实脸填充余量、三个负对照；
-- 六份自由样板独立保存与刷新、切换草稿确认、延迟导入隔离；
-- 指定对象 Frame 锁定，自由创作不能改居民身份或旧存储键；
-- 8B1的47次素材点选、8组累计重画过滤、24份衣装作者层/版型检查、保留 8A 成年11份固定配方SVG相同；8B2另检查88份配方中36份计划变化、52份不变；儿童/老年额角弧线抽样与2画布单位余量。
+继续验证六份自由样板独立保存/刷新、草稿切换确认、延迟导入隔离、玩家/居民旧键、取消/恢复/冲突、导入导出和写失败不假成功。不得以搜索或扩库为由跳过任何对象/身份边界。
 
-组合数从 Catalog 动态计算，不写死四脸/192 腮红组合。新专项图板使用共用 renderBoards，不复制矩阵遍历器。
+8D1 增量验证 100 份描述、44 次新素材点选、名称/描述/标签/ID 搜索、组合筛选空状态、受限随机、成年独立保存、新 ID JSON 往返与真实居民应用。保留 8B2 基线 88 份固定配方逐字节不变；新增几何不与同 Frame 其他选项完全相同，不能只换色。
 
-## 人工美术审查
+旧阶段点选和冻结断言使用明确历史 ID 清单，新 ID 用增量审查覆盖，不用删除有效断言的方式通过 CI。组合数按实际 Catalog 动态计算，不把旧总数写死。通用密度上限为 22，8D1 另检查童老仍不超过 12 项边界，成年扩量有搜索和滚动 UI 实查。
 
-只以实际输出判断：脸颊到下巴是否自然；眼眉嘴是否成立；帽身是否被前发切断；发髻是否漂浮；衣领是否连续；肩线是否完整；底部裁切是否出现含义不明的横块；老人儿童是否只靠颜色区分。
+## 人工看什么
 
-高频纯美术迭代至少打开本轮静态 Renderer 新图板和 96/64/48px，不要求每个中间状态都打开完整 Avatar Workshop。静态图板必须由当前代码真实 Pack / `renderAvatar()` 生成，不能用手工概念图替代，也不能用静态图板证明 LocalStorage、草稿切换、导入隔离或居民绑定通过。
+实际输出里，先看头型是否露出、帽身是否被前发切断、髻体是否像多一只耳朵、领口是否连续、内外衣是否成片、中线是否拥挤、底部是否出现腰封式横块。再看不同款式是否有新的轮廓信息，不能以标签不同代替画面不同。
 
-达到正式批次 / 阶段交付时，仍至少打开本轮所有 Actions 新图板、自由创作真实桌面 UI、绑定居民真实 UI、96/64/48px。移动端不再截图，不列为人工必查；基础窄屏 smoke 可保留。
+静态 Renderer 图板不是完整工坊截图，不能证明导入/保存/居民绑定。正式阶段必须打开本批全部诊断、关键真实桌面工坊、绑定居民和原尺寸 96/64/48px。移动端不再截图或列为美术必查，基础窄屏 smoke 保留。
 
-本轮截图列表、作者规则、已重画/未重画 ID 以 Phase 8 文档为准。用户认可的是具体画法，不是测试条数或素材数量。
-
-## 8B1 历史审查记录
-
-见 [Phase 8B1 童老衣装审查](Phase%208B1%20童老衣装审查.md)。首轮绿色检查后仍发现额角描边外露与侧髻耳状问题，已修正静态画稿并补充仅用于 QA 的弧线抽样；旧新对照改为只交换被比较的部件。候选复核、合入 main 后的两类 Actions 与 source-commit 必须一致，不用首轮结果冒充最终结果。
-
-修正提交 `1916d91e5cc12dc21e2c86de3f4f05d28b22268c` 的 Build `35534392521`、Resident Visual Review `35534392522` 均 PASS。Artifact `10611768493` 已下载，source-commit正确，22份修改/新增文件与工作树逐字节一致；1886个弧线位置的描边余量检查通过。已重新打开修正后的四张发型图板、两张单部件对照与关键桌面UI，未见首轮额角外露。文档收尾提交与main仍按同SHA检查/下载复核流程交付，不使用本段候选run替代main结果。
-
-合入前发现 main 的并行文档提交 `4f2f642f38f316772ded73842f43dea80b8be81f`，保留其静态 Renderer 美术短循环、证据类型区分及纯文档无需额外回归规则，合并本批8B1阶段记录。未覆盖该并行工作，合并提交保留两条父链。
+8D1 图板和截图在 `avatar/phase8d1/`，包括四主题、组合总览、六脸型及九张真实 UI。弧线抽样与几何签名只提供有限 QA，不能替代人工审美，也不能把 CI PASS 写成用户认可。

@@ -1,3 +1,4 @@
+import {themeHair} from './theme-hair';
 import {adultHair} from './adult-hair';
 import {childHair} from './child-hair';
 import {elderHair} from './elder-hair';
@@ -9,5 +10,5 @@ import type {ChibiHairLayers} from './art-spec';
 export function hairArt(frame:Frame,id:HairId):ChibiHairLayers{
  if(id.startsWith('child-'))return childHair(frame,id);
  if(id.startsWith('elder-'))return elderHair(frame,id);
- return adultHair(frame,id);
+ return themeHair(frame,id)??adultHair(frame,id);
 }

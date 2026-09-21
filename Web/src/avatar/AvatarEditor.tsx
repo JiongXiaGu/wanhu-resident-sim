@@ -5,7 +5,9 @@ import {applyRecipe,getRaw,parseEntry,removeRecipe,useSaved} from './store';
 import {AvatarImage,SavedAvatar} from './AvatarImage';
 import {downloadFile,downloadPng,renderAvatar} from './render';
 import {StudioControls,isReworkedSample} from './studio';
+import {filterAssetOptions} from './asset-search';
 import './editor.css';
+import './asset-search.css';
 
 type Pending={kind:'switch';key:string}|{kind:'close'}|{kind:'restore'};
 export default function AvatarEditor({targets,initialKey,onClose}:{targets:Target[];initialKey:string;onClose:(residentId?:number)=>void}) {
@@ -15,6 +17,7 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
  const studio=target.kind==='studio';
  const lastBound=useRef(target.kind==='studio'?targets.find(item=>item.kind==='player')!.key:target.key);
  const [samplesOnly,setSamplesOnly]=useState(false);
+ const [assetQuery,setAssetQuery]=useState('');
  const [draft,setDraft]=useState<Recipe>(()=>fitRecipeToFrame(saved.recipe??defaultFor(target),target.frame));
  const [baseline,setBaseline]=useState<Recipe>(()=>fitRecipeToFrame(saved.recipe??defaultFor(target),target.frame));
  const [baselineRaw,setBaselineRaw]=useState<string|null>(saved.raw);
@@ -60,7 +63,7 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
    try{raw=getRaw(next.key);}catch{warning='无法读取本地保存；当前只可预览或导出。';}
    const entry=parseEntry(raw),nextRecipe=fitRecipeToFrame(entry.recipe??defaultFor(next),next.frame);
    // 同一事件中批量提交目标、草稿与基线。不能等 useEffect 再把上一人的脸换掉。
-   setKey(next.key);setDraft(nextRecipe);setBaseline(nextRecipe);setBaselineRaw(raw);setMessage(warning||entry.error);
+   setKey(next.key);setAssetQuery('');setDraft(nextRecipe);setBaseline(nextRecipe);setBaselineRaw(raw);setMessage(warning||entry.error);
    return;
   }
   if(action.kind==='close'){onClose(target.residentId);return;}
@@ -81,7 +84,9 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
  }
  const studioTarget=targets.find(item=>item.kind==='studio'&&item.frame===target.frame)!;
  const available=optionsFor(draft.pack,part,target.frame);
- const visibleOptions=samplesOnly?available.filter(item=>isReworkedSample(part,item.id)):available;
+ const filteredOptions=samplesOnly?available.filter(item=>isReworkedSample(part,item.id)):available;
+ const visibleOptions=filterAssetOptions(filteredOptions,assetQuery);
+ const selectedOption=available.find(item=>item.id===draft[part]);
  function randomPart(){
   const candidates=visibleOptions.filter(item=>item.id!==draft[part]);
   if(candidates.length){const index=crypto.getRandomValues(new Uint32Array(1))[0]%candidates.length;choose(part,candidates[index].id);}
@@ -120,10 +125,13 @@ export default function AvatarEditor({targets,initialKey,onClose}:{targets:Targe
      <div className="av-export"><button type="button" data-export="png" disabled={busy} onClick={png}>导出 PNG</button><button type="button" data-export="svg" onClick={()=>downloadFile(new Blob([renderAvatar(target.frame,draft)],{type:'image/svg+xml'}),'wanhu-avatar.svg')}>导出 SVG</button></div>
     </section>
     <section className="av-choices"><div className="av-section-heading"><h2>选择部件</h2><span>{packLabel(draft.pack)}</span></div>
-     <div className="av-tabs" role="group" aria-label="头像部件">{parts.map(item=><button type="button" key={item} data-part-tab={item} aria-pressed={part===item} onClick={()=>setPart(item)}>{labels[item]}</button>)}</div>
-     <div className="av-options-toolbar"><button type="button" data-sample-only aria-pressed={samplesOnly} onClick={()=>setSamplesOnly(value=>!value)}>{samplesOnly?'仅已重画':'全部素材'}</button><span>{visibleOptions.length} 项</span><button type="button" data-random-part onClick={randomPart}>随机本类</button></div>
-     <div className="av-option-grid" role="group" aria-label={labels[part]}>{visibleOptions.map(item=><button type="button" key={item.id} data-option={item.id} data-option-part={part} className="av-option" aria-pressed={draft[part]===item.id} onClick={()=>choose(part,item.id)}><AvatarImage frame={target.frame} recipe={{...draft,[part]:item.id}} size={112}/><span>{item.label}</span><small>{item.note??'表情样板'}</small>{isReworkedSample(part,item.id)&&<em>已重画</em>}<i aria-hidden="true">{draft[part]===item.id?'✓':''}</i></button>)}</div>
-     <p className="av-choice-note">更换{labels[part]}时保留其他选择。「已重画」涵盖 8A 样板及儿童、成年、老年重画批次，仍是候选画稿，不代表最终定稿。</p>
+     <div className="av-tabs" role="group" aria-label="头像部件">{parts.map(item=><button type="button" key={item} data-part-tab={item} aria-pressed={part===item} onClick={()=>{setPart(item);setAssetQuery('');}}>{labels[item]}</button>)}</div>
+     <div className="av-options-toolbar"><button type="button" data-sample-only aria-pressed={samplesOnly} onClick={()=>setSamplesOnly(value=>!value)}>{samplesOnly?'仅已重画':'全部素材'}</button><span data-asset-result-count aria-live="polite">{visibleOptions.length} 项</span><button type="button" data-random-part disabled={!visibleOptions.some(item=>item.id!==draft[part])} onClick={randomPart}>随机本类</button></div>
+     <div className="av-asset-search"><input className="av-search" data-asset-search type="search" aria-label="搜索当前分类素材" placeholder="名称、描述、关键词或素材 ID" value={assetQuery} onChange={event=>setAssetQuery(event.currentTarget.value)}/>{assetQuery&&<button type="button" data-clear-asset-search aria-label="清除素材搜索" onClick={()=>setAssetQuery('')}>清除</button>}</div>
+     <div className="av-asset-description" data-asset-description><strong>{selectedOption?.label}</strong><p>{selectedOption?.description}</p><small>{selectedOption?.id}</small></div>
+     {visibleOptions.length===0&&<div className="av-empty" data-asset-empty><p>当前分类和筛选下没有匹配素材，头像选择没有改变。</p><button type="button" data-reset-asset-filters onClick={()=>{setAssetQuery('');setSamplesOnly(false);}}>清除搜索与筛选</button></div>}
+     <div className="av-option-grid" role="group" aria-label={labels[part]}>{visibleOptions.map(item=><button type="button" key={item.id} data-option={item.id} data-option-part={part} className="av-option" title={item.description} aria-pressed={draft[part]===item.id} onClick={()=>choose(part,item.id)}><AvatarImage frame={target.frame} recipe={{...draft,[part]:item.id}} size={112}/><span>{item.label}</span><small>{item.note??'表情样板'}</small>{item.tags?.includes('8D1')?<em>本批新增</em>:isReworkedSample(part,item.id)&&<em>已重画</em>}<i aria-hidden="true">{draft[part]===item.id?'✓':''}</i></button>)}</div>
+     <p className="av-choice-note">更换{labels[part]}时保留其他选择。搜索仅筛选当前分类，可搜「8D1」「常服」「劳作」「商铺」「行旅」查看新增。随机本类遵守搜索；下方随机搭配不受搜索影响。新增与已重画标记均不表示最终定稿。</p>
      <button className="av-random" type="button" data-random-outfit onClick={randomWardrobe}>随机搭配头发与衣服</button>
      <details className="av-tools"><summary>配方与部件审查</summary><div className="av-tools-actions"><button type="button" data-export="json" onClick={()=>downloadFile(new Blob([JSON.stringify(draft,null,2)],{type:'application/json'}),'wanhu-avatar.json')}>导出配方</button><button type="button" onClick={()=>fileInput.current?.click()}>导入配方</button><input ref={fileInput} data-import-recipe type="file" accept=".json,application/json" hidden onChange={event=>{void importFile(event.currentTarget.files?.[0]);}}/></div><p>导入只改当前预览，不携带居民编号，也不自动应用。</p><pre>{JSON.stringify(draft,null,2)}</pre></details>
     </section>

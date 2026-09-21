@@ -11,6 +11,9 @@ export type CatalogOption={
   id:string;
   label:string;
   note?:string;
+  // 作者文字只用于展示与检索，不进入四项 Recipe / 正式居民数据。
+  description?:string;
+  tags?:readonly string[];
   // 省略表示六个 Frame 都可用；声明后只在对应年龄 / 性别上下文出现。
   frames?:readonly CatalogFrame[];
   // false 表示仅保留旧 Recipe / 跨 Pack 兼容，不再出现在任何玩家可选列表。

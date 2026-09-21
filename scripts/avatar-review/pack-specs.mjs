@@ -60,7 +60,8 @@ export const avatarReviewSpecs=[
     compatibilityOnlyHair:['crop','bob','long','pony','wave','braid'],
     compatibilityOnlyOutfits:['tee','shirt','knit','jacket'],
     integratedQaContract:true,
-    integratedQaMaxOptions:12,
+    // 8D1 成年列表配合搜索扩至 22；童老 12 项边界由增量审查继续验证。
+    integratedQaMaxOptions:22,
     integratedQaLooks:[
       {frame:'female.child',label:'女童',hair:'child-double-bun',outfit:'child-fine-robe',expression:'smile'},
       {frame:'male.child',label:'男童',hair:'child-half-up',outfit:'child-apprentice',expression:'calm'},
