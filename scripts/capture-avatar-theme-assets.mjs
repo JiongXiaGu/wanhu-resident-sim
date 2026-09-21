@@ -26,7 +26,7 @@ try{
  const identity=await page.locator('.resident-identity').textContent(),day=await page.locator('.sim-game').getAttribute('data-game-day');
  const inventory=await page.evaluate(async()=>{
   const m=await import('/src/avatar/model.ts');
-  return Object.fromEntries(['female.adult','male.adult'].map(f=>[f,Object.fromEntries(['hair','outfit'].map(part=>[part,m.optionsFor('chibi-cute-v1',part,f).filter(o=>o.theme)]))]));
+  return Object.fromEntries(['female.adult','male.adult'].map(f=>[f,Object.fromEntries(['hair','outfit'].map(part=>[part,m.optionsFor('chibi-cute-v1',part,f).filter(o=>o.keywords?.includes('8D1'))]))]));
  });
  let selections=0,searchChecks=0;
  const snapshots={};
@@ -143,7 +143,7 @@ try{
    return [...xml.querySelectorAll('path,ellipse,circle,rect')].map(n=>[n.tagName,...['d','cx','cy','rx','ry','r','x','y','width','height'].map(a=>n.getAttribute(a))]);
   });
   for(const f of m.frames)for(const part of ['hair','outfit'])for(const option of m.optionsFor('chibi-cute-v1',part,f)){
-   if(oldIds.has(`${f}/${part}/${option.id}`))continue;
+   if(oldIds.has(`${f}/${part}/${option.id}`)||!lists[part].some(o=>o.id===option.id))continue; // 后续批次由自己的增量清单与通用矩阵审查。
    require(f.endsWith('adult')&&lists[part].some(o=>o.id===option.id),`Unexpected added asset ${f}/${part}/${option.id}`);
    const recipe={...fixed(f),[part]:option.id},svg=r.renderAvatar(f,recipe),signature=JSON.stringify(geometry(f,part,option.id));
    require(m.parseRecipe(recipe)[part]===option.id,'Recipe round-trip changed new ID');
@@ -185,7 +185,7 @@ try{
  await renderBoards(page,out,data.boards,{background:'#eee8da',subtitle:'当前提交真实 Renderer 诊断，不是工坊 UI；所有适用 Frame 与原尺寸 96 / 64 / 48px。'});
  const {boards,descriptions,newRows,...result}=data;
  // Catalog 为文字权威；文档逐项清单仅为只读镜像，CI 检查同一行而非散落关键词。
- for(const option of descriptions.filter(o=>o.theme)){
+ for(const option of descriptions.filter(o=>o.keywords?.includes('8D1'))){
   const row=assetDocument.split('\n').find(line=>line.startsWith(`| \`${option.id}\``));
   assert(row,`Missing asset documentation ${option.id}`);
   for(const value of [option.label,option.description,option.theme,option.silhouette,option.closestAssetId,option.distinction,...option.frames,...option.keywords,...Object.values(option.readability)])assert(row.includes(value),`Stale documentation ${option.id}: ${value}`);

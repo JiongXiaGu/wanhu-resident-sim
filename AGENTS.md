@@ -6,11 +6,13 @@
 
 本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
 
-## 当前执行点：Phase 8D1-A / 8D1-B
+## 当前执行点：Phase 8D2 童老扩库
 
-用户在 8B2 后认为基础画法基本可行，并批准常服、劳作、商铺、行旅四主题合批扩充。先读 `Documentation/Phase 8D1 主题头像资产扩充.md`。新增 16 Hair / 16 Outfit ID，成年适用画稿为 20 / 24 份；儿童与老年不复用成年画稿。总 Catalog 为 6 Face / 46 Hair / 40 Outfit / 8 Expression。100 个可选资产都必须有中文描述与关键词，Catalog 是展示与检索的唯一文字权威，不复制一份运行时索引。新增项强制 description / theme / keywords / frames / silhouette / closestAssetId / distinction / readability，文档清单是 CI 校验的只读镜像。主题不从 ID 前缀猜测。正式 Artifact 的 avatar/phase8d/ 还须查看未筛选列表首尾与 native/ 原尺寸图。
+用户已认可 8D1 四主题候选可继续推进，本批承接 `70ca1ccd9cc5fa75491267ce29d20043df942994`，先读 `Documentation/Phase 8D2 童老头像资产扩充.md`。儿童和老人各新增 6 Hair / 6 Outfit ID，共 12 Hair + 12 Outfit、32 个适用 Frame / 资产组合。当前可选 Catalog 为 6 Face / 58 Hair / 52 Outfit / 8 Expression，124 个选项均有中文描述与关键词。成年和原童老画稿不改，132 份旧固定配方渲染必须逐字节不变。
 
-描述只表达画面、轮廓差异和适用边界；主题不锁职业。四类选项、Recipe、保存键、正式 portrait 不变。工坊仅补当前分类搜索和所选素材描述；“本批新增”区别于历史“已重画”。8C 大交互调整继续暂缓，8D2 童老扩充未开始。用户自行从 main 拉取体验，不交付压缩包；执行者仍必须下载并实际查看同 SHA 的 Actions Artifact。
+age-theme-catalog.ts 是本批完整 metadata 的权威；child/elder-theme-hair、child/elder-theme-outfits 分别拥有独立年龄画稿，不能缩放或灰染成年资产替代。新项继续强制 description / theme / keywords / frames / silhouette / closestAssetId / distinction / readability，文档是 CI 校验的只读镜像，不引入第二检索索引。主题不锁职业，帽巾仍在 Hair。
+
+四类选项、Recipe、保存键与正式 portrait 不变。工坊只改当前批次标记和搜索提示：8D2 标“本批新增”，8D1 标“8D1”，旧“仅已重画”不包含扩库项。8C 大交互调整继续暂缓。正式 Artifact 的 avatar/phase8d2/ 必须查看 11 张静态图板、28 张真实桌面截图和 native/ 原尺寸图；完整旧回归不能删。用户自行从 main 拉取体验，不交付压缩包；执行者仍需下载并实际查看同 SHA Artifact。
 
 主入口自由创作可以直接选男/女、儿童/成年/老年；这是六份独立样板目标，不是第五种素材分类或修改居民身份。保存到 studio:<frame>，原 player/resident 键保持。绑定居民模式锁定年龄/性别。切框架也必须遵守草稿确认、延迟导入隔离、独立保存/刷新。
 

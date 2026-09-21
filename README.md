@@ -19,17 +19,17 @@ http://localhost:5173/?view=avatar-editor
 
 头像工坊默认进入自由创作，先选男/女、儿童/成年/老年，再选脸型、头发、衣服、表情。六份样板分别保存。指定对象模式可以编辑玩家示例或当前城市居民；从居民身份栏进入直接绑定该居民，年龄/性别不由工坊修改。
 
-## 当前美术：Phase 8D1-A / 8D1-B
+## 当前美术：Phase 8D2 童老头像扩充
 
-在用户认可 8B2 基础画法基本可行后，合批新增常服、劳作、商铺、行旅四主题：**16 Hair + 16 Outfit ID**，按适用成年男女共 44 份画稿。儿童、老年继续使用独立资源，本批未扩充。唯一运行时 Pack 仍为 `chibi-cute-v1`。
+用户认可 8D1 后，本批新增儿童 6 Hair / 6 Outfit、老人 6 Hair / 6 Outfit，共 **12 Hair + 12 Outfit ID**、32 个适用 Frame / 资产组合。童老使用独立 SVG 母版，已认可的成年与旧童老画稿保持不变。唯一运行时 Pack 仍为 `chibi-cute-v1`。
 
-全库为 **6 Face / 46 Hair / 40 Outfit / 8 Expression**。100 个可选资产均有中文描述与关键词；不是 100 份完整人物整图。六个 Face ID 在六 Frame 各有下脸画稿，不能算作 36 个玩家可选脸型。
+全库当前 **6 Face / 58 Hair / 52 Outfit / 8 Expression**，共 124 个可选资产，均有中文描述和关键词；不是 124 份完整人物整图。新素材保留显式主题、Frame、轮廓、旧款差异和 96/64/48px 识别重点，Catalog 是唯一文字权威。
 
-部件栏搜索支持名称、描述、关键词、显式主题、Frame 与 ID。每个新资产记录核心轮廓、相似旧款差异和 96/64/48px 识别重点，全部保存在正式 Catalog。选择成年及头发/衣服后，搜 `8D1` 查看本批新增，搜 `8D1 行旅` 组合筛选，也可搜 `斗笠`、`披肩` 等形状关键词。搜索只作用当前分类/Frame；“随机本类”遵守搜索，“随机搭配”不受搜索影响。新卡片标“本批新增”，旧稿仍可用“仅已重画”过滤；两种标记都不是最终定稿徽章。
+进入自由创作选择儿童或老人，再选头发/衣服，保持“全部素材”，搜索 `8D2` 查看新增；搜索 `8D1` 查看上批成年主题。支持名称、描述、关键词、主题、Frame 和 ID；搜索只作用当前分类/Frame。“随机本类”遵守搜索，“随机搭配”不受搜索影响。新卡片标“本批新增”，上批标“8D1”；历史“仅已重画”不包含这两批扩库项，空结果可重置。
 
-主题不是职业限制，适用 Frame 内可以自由混搭。Hair 不读取 Face，Head Frame / Coverage 保留。旧三个 Pack ID 仅作迁移 alias，十个 compatibility-only Hair/Outfit 只用于旧 Recipe 解析，不进入 UI、搜索或 Random。
+主题不是职业限制，适用 Frame 内自由混搭。Hair 不读取 Face，Head Frame / Coverage 保留；旧三个 Pack ID 仅作迁移 alias，十个 compatibility-only Hair/Outfit 只供旧 Recipe，不进入 UI、搜索或 Random。
 
-详见 [头像工坊](Documentation/Avatar%20Workshop.md)、[当前主路线](Documentation/Q版头像主路线生产与审查工作流.md)、[8D1 主题头像资产扩充](Documentation/Phase%208D1%20主题头像资产扩充.md)。
+详见 [头像工坊](Documentation/Avatar%20Workshop.md)、[当前主路线](Documentation/Q版头像主路线生产与审查工作流.md)、[8D2 童老头像资产扩充](Documentation/Phase%208D2%20童老头像资产扩充.md)。
 
 ## 保存与项目边界
 
@@ -43,10 +43,8 @@ http://localhost:5173/?view=avatar-editor
 
 ## Review 与交付
 
-不依赖 Vercel。纯 SVG 画稿可先用当前真实 Renderer 生成静态诊断，实际查看 320 / 96 / 64 / 48px；静态图不能证明 UI、存储、导入或居民绑定通过。
+不依赖 Vercel。纯 SVG 画稿先通过当前真实 Renderer 静态短循环，实际看 320/96/64/48px；静态图不能证明 UI、保存、导入或居民绑定。
 
-正式批次仍走 tmp-* 聚合修改 → Build + Resident Visual Review → 下载同 SHA Artifact 并人工看图 → 重读 main → 非 force 推进 → main 再回归。8D1 的四主题、六脸型、组合诊断、八张真实工坊和绑定居民截图在 `avatar/phase8d/`，另有八张未筛选列表首尾截图和 132 张原尺寸小图；完整源码及 SHA 随 Artifact 保存。
+正式批次 tmp-* 聚合 → Build + Resident Visual Review → 下载同 SHA Artifact 并看图 → 重读 main → 非 force 推进 → main 再回归。8D2 的 11 张诊断、28 张真实工坊/全列表首尾/绑定截图和 96 张原尺寸图在 avatar/phase8d2/，源码与 SHA 随 Artifact 保存。原全组合、Coverage、保存导入、居民连续性及正式 fallback 保留，132 份旧固定配方逐字节不变。
 
-8D1 新增描述/搜索/新配方回归，原居民连续性、正式 fallback、六框架保存/导入/冲突、全组合、腮红及 Hair Coverage 继续保留。旧 8B2 的 88 份固定配方必须逐字节不变。CI PASS 不等于新美术最终认可。
-
-用户自行从 main 拉取网页测试，不交付压缩包；执行者仍须下载并实际查看正式 Artifact。8C 大交互调整暂缓，8D2 儿童老年扩库、职业自动配装与 Unity 迁移未实施。接手先读 AGENTS、接续说明和主路线当前执行点，不用聊天记忆覆盖远端。
+用户从 main 拉取测试，不交付压缩包；执行者仍需下载并实际看 Artifact。8C 大交互、自动配装和 Unity 迁移未实施。CI PASS 不等于新美术最终认可，接手以远端当前代码和文档为准。

@@ -10,21 +10,21 @@
 
 ## 当前资产与文字
 
-唯一运行时 Pack：`chibi-cute-v1`。用户认为 8B2 基础画法基本可行，批准 8D1-A / B 四主题合批扩充。当前 **6 Face / 46 Hair / 40 Outfit / 8 Expression**，按年龄性别显示适用素材。六 Face ID 在六 Frame 各有下脸画稿，不是 36 个玩家选项。
+唯一运行时 Pack 为 `chibi-cute-v1`。用户认可 8D1 后进入 8D2 童老扩库，当前 **6 Face / 58 Hair / 52 Outfit / 8 Expression**，共 124 个玩家可选资产。六 Face ID 在六 Frame 各有画稿，不是 36 个玩家选项。
 
-8D1 新增常服/劳作/商铺/行旅各 4 Hair 和 4 Outfit ID，32 个新 ID 对应 44 份适用成年画稿。童老未扩量，不把成年画稿缩放给其他年龄。具体边界和审查见 [Phase 8D1 主题头像资产扩充](Phase%208D1%20主题头像资产扩充.md)。
+8D2 新增儿童 6 Hair / 6 Outfit、老人 6 Hair / 6 Outfit，24 个新 ID 对应 32 个适用 Frame / 资产组合。童老按年龄独立绘制，不使用成年缩放；本批不重画旧素材。具体清单和审查见 [Phase 8D2 童老头像资产扩充](Phase%208D2%20童老头像资产扩充.md)。
 
-100 个可选资产均有中文 `description` 和 `keywords`；Catalog 是文字、适用性与兼容信息权威。短注在卡片中显示，完整说明随选中部件显示，卡片悬停也能查看。本批 theme 采用 common/labor/merchant/traveler 显式枚举，并记录 silhouette、closestAssetId、distinction、readability；ThemeCatalogOption 要求字段完整。主题是美术/检索信息，不限制职业或跨主题搭配。
+全部可选资产有中文 description 与 keywords，Catalog 是文字、适用性和兼容权威。8D1 / 8D2 新项继续使用 ThemeCatalogOption：显式 theme、frames、silhouette、closestAssetId、distinction、readability。主题只是美术/检索信息，不限制职业。完整说明显示在所选部件下，卡片悬停也可查看。
 
 ## 检索与草稿
 
-部件栏搜索匹配当前分类、当前 Frame 和当前重画筛选内的 ID、名称、短注、完整描述、关键词、主题、轮廓和 Frame（含女性/男性/年龄中文别名）。空格分词为 AND，NFKC 归一化，大小写不敏感。可搜 `8D1` 看本批，搜 `8D1 行旅` 看本批行旅，或输入 `斗笠`、`披肩`、完整 ID。
+部件栏搜索匹配当前分类、当前 Frame 和当前重画筛选内的 ID、名称、短注、完整描述、关键词、主题、轮廓和 Frame（含女性/男性/年龄中文别名）。空格分词为 AND，NFKC 归一化，大小写不敏感。可搜 `8D2` 看童老本批、`8D1` 看成年上批，搜 `8D2 行旅` 看本批行旅，或输入 `斗笠`、`披肩`、完整 ID。
 
 检索只改变候选显示，不改配方或保存、不制造脏草稿。切分类清空搜索；确认切换对象后清空，取消草稿确认则保留原上下文。无结果有清除搜索/筛选按钮，不能自动替换头像。
 
 随机本类遵守搜索和筛选，只改当前类别；没有其他候选则禁用。随机搭配只改 Hair / Outfit，保留 Face / Expression，不受文本搜索影响，但遵守原重画筛选。界面明确区分两者。
 
-新资产显示“本批新增”；历史 `isReworkedSample` 标记仍为“已重画”。“仅已重画”有意不包含 8D1，组合检索为空可以重置。两种标记都是候选说明，不是最终认可。日常样板和导入只载入草稿，不自动应用。
+8D2 新资产显示“本批新增”，8D1 显示“8D1”；历史 `isReworkedSample` 标记仍为“已重画”。“仅已重画”有意不包含 8D1 / 8D2，组合检索为空可以重置。两种标记都是候选说明，不是最终认可。日常样板和导入只载入草稿，不自动应用。
 
 ## 不变的组合结构
 
@@ -66,8 +66,8 @@ wanhu.avatar.v1:city:<seed>:resident:<id>
 
 model/store/render 保管配方、默认、保存与统一层序；Integration 保管 App 当前会话目标与入口；AvatarEditor 保管草稿、切换、保存、展示。studio.tsx 保管六框架样板与历史重画标记。asset-search.ts 只处理 Catalog 文本匹配，asset-search.css 只补当前部件栏样式。
 
-packs/chibi/catalog.ts 保管原有描述和选项；theme-catalog.ts 保管 8D1 新选项，汇合为同一个 Catalog。child-hair / elder-hair / age-outfits 保管童老；adult-hair / adult-outfits 保管 8B2 成年；sample-hair / sample-outfits 保管 8A 保留样板；theme-hair / theme-outfits 保管本批新稿。每个 ID 只有一份当前画稿，hair/outfits 只分发，不恢复历史第二套 Pack。
+packs/chibi/catalog.ts 保管原有描述和选项；theme-catalog.ts 保管 8D1 新选项，汇合为同一个 Catalog。child-hair / elder-hair / age-outfits 保管童老；adult-hair / adult-outfits 保管 8B2 成年；sample-hair / sample-outfits 保管 8A 保留样板；theme-hair / theme-outfits 保管 8D1 成年稿，age-theme-catalog 与 child/elder-theme-hair、child/elder-theme-outfits 保管 8D2 童老稿。每个 ID 只有一份当前画稿，hair/outfits 只分发，不恢复历史第二套 Pack。
 
-正式批次跑 Build + Resident Visual Review，下载同 SHA Artifact 并打开真实桌面 UI / 诊断。原全部组合、Hair 跨 Face、Coverage、腮红、六框架保存、草稿确认、导入隔离、对象绑定和居民逻辑继续验证。8D1 追加新资产点选、描述检索、新 ID JSON 往返与 88 份旧固定配方不变。静态图不能替代完整 UI / 存储通过。
+正式批次跑 Build + Resident Visual Review，下载同 SHA Artifact 并打开真实桌面 UI / 诊断。原全部组合、Hair 跨 Face、Coverage、腮红、六框架保存、草稿确认、导入隔离、对象绑定和居民逻辑继续验证。8D1 保留其增量审查；8D2 追加童老新素材点选、描述检索、四 Frame JSON 往返与绑定，以及 132 份旧固定配方不变。静态图不能替代完整 UI / 存储通过。
 
-用户从 main 拉取测试，不交付压缩包；执行者内部仍下载 Artifact。8C 大交互优化暂缓，8D2 童老扩库、独立帽子、连续参数、自动 Hair fit、服务端同步和 Unity 迁移未实施。
+用户从 main 拉取测试，不交付压缩包；执行者内部仍下载 Artifact。8C 大交互优化暂缓，独立帽子、连续参数、自动 Hair fit、服务端同步和 Unity 迁移未实施。

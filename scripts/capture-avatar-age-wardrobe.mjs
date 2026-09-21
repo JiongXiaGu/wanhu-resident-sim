@@ -34,9 +34,11 @@ try{
   for(const part of ['hair','outfit']){
    await page.locator(`[data-part-tab="${part}"]`).click();
    const all=await page.locator('[data-option]').evaluateAll(ns=>ns.map(n=>n.dataset.option));
+   const historical=baseline.rows.filter(row=>row.frame===frame&&row.part===part).map(row=>row.id);
+   assert(historical.every(id=>all.includes(id)),'A historical child/elder asset disappeared');
    await page.locator('[data-sample-only]').click();
-   assert.deepEqual(await page.locator('[data-option]').evaluateAll(ns=>ns.map(n=>n.dataset.option)),all,'Every child/elder option belongs to this reworked batch');filterChecks++;
-   for(const id of all){await choose(part,id);selections++;}
+   assert.deepEqual(await page.locator('[data-option]').evaluateAll(ns=>ns.map(n=>n.dataset.option)),historical,'Historical rework filter must exclude later additions');filterChecks++;
+   for(const id of historical){await choose(part,id);selections++;}
    await choose(part,look[part]);await shot(`studio-${frame}-${part}`);await save();
    await page.locator('[data-sample-only]').click();
   }
@@ -54,7 +56,7 @@ try{
    for(const frame of ageWardrobeBatch.frames){
     const recipe=recipeFor(frame);
     for(const part of ['hair','outfit']){
-     const options=m.optionsFor(recipe.pack,part,frame),cells=[];const cuts=new Set();
+     const options=m.optionsFor(recipe.pack,part,frame).filter(option=>ageWardrobeBatch[part].includes(option.id)),cells=[];const cuts=new Set();
      for(const option of options){
       if(!ageWardrobeBatch[part].includes(option.id))throw new Error(`Unreviewed age asset ${frame}/${option.id}`);
       const current={...recipe,[part]:option.id},svg=r.renderAvatar(frame,current);

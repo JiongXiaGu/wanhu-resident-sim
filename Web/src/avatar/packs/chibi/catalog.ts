@@ -1,5 +1,6 @@
 import {defineCatalog} from '../catalog';
 import {themeHairOptions,themeOutfitOptions} from './theme-catalog';
+import {ageThemeHairOptions,ageThemeOutfitOptions} from './age-theme-catalog';
 import {compatibilityHairOptions,compatibilityOutfitOptions} from '../compatibility';
 
 const CHILD=['female.child','male.child'] as const;
@@ -53,6 +54,7 @@ export const chibiCatalog=defineCatalog({
     {id:'elder-thin-fringe',label:'疏发',note:'老年专属 · 稀疏额发',headwear:'none',scalpExposure:'intentional',frames:ELDER,compatibilityKey:'wave',description:"退后的内部发际呈现疏发与少量额发，外缘仍有头发包络。允许露内部头皮，不允许固定头框从外侧冒出。",keywords:["头部造型", "老年", "疏发"]},
 
     ...themeHairOptions,
+    ...ageThemeHairOptions,
     ...compatibilityHairOptions,
   ],
   outfit:[
@@ -84,6 +86,7 @@ export const chibiCatalog=defineCatalog({
     {id:'elder-fine-robe',label:'掌柜长衫',note:'老年专属 · 宽缘对襟',frames:ELDER,compatibilityKey:'merchant',description:"两片前衣的宽缘持续到底，内衫只露领口，两处系结分开安排。掌柜感来自平整边面，不在中线堆细节。",keywords:["衣装", "老年", "掌柜长衫"]},
 
     ...themeOutfitOptions,
+    ...ageThemeOutfitOptions,
     ...compatibilityOutfitOptions,
   ],
   expression:[
