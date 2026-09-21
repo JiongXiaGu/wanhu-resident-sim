@@ -6,13 +6,13 @@
 
 本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
 
-## 当前执行点：Phase 8D2 童老扩库
+## 当前执行点：Resident Panel Portrait-first
 
-用户已认可 8D1 四主题候选可继续推进，本批承接 `70ca1ccd9cc5fa75491267ce29d20043df942994`，先读 `Documentation/Phase 8D2 童老头像资产扩充.md`。儿童和老人各新增 6 Hair / 6 Outfit ID，共 12 Hair + 12 Outfit、32 个适用 Frame / 资产组合。当前可选 Catalog 为 6 Face / 58 Hair / 52 Outfit / 8 Expression，124 个选项均有中文描述与关键词。成年和原童老画稿不改，132 份旧固定配方渲染必须逐字节不变。
+头像美术暂时停在 Phase 8D2；用户已认可当前素材阶段，当前任务转为居民信息面板布局优化。先读 `Documentation/Resident Panel Portrait-first布局.md`。参考 `wanhu-ui-prototype` 最新 Left Context Surface 的中性 Smoked Graphite + Aged Brass，但只迁移视觉/布局原则，不耦合另一个仓库组件。
 
-age-theme-catalog.ts 是本批完整 metadata 的权威；child/elder-theme-hair、child/elder-theme-outfits 分别拥有独立年龄画稿，不能缩放或灰染成年资产替代。新项继续强制 description / theme / keywords / frames / silhouette / closestAssetId / distinction / readability，文档是 CI 校验的只读镜像，不引入第二检索索引。主题不锁职业，帽巾仍在 Hair。
+居民面板宽度 420px，Header / Body / Footer 职责明确：Header 是 112px 头像 Hero、姓名、年龄职业、地区家庭、关注和编辑头像；世界关联是住所/工作/家庭三列轻量信息；Body 先显示“此刻”，当前 LifeEvent 取消大卡片套卡片并用熟铜竖线组织；Recent 是轻量生活流水；Footer 只做人物关系 / 人生经历。Header/Footer 固定，中间滚动。绿色来自世界透色，Surface 本体使用中性 Tint。
 
-四类选项、Recipe、保存键与正式 portrait 不变。工坊只改当前批次标记和搜索提示：8D2 标“本批新增”，8D1 标“8D1”，旧“仅已重画”不包含扩库项。8C 大交互调整继续暂缓。正式 Artifact 的 avatar/phase8d2/ 必须查看 11 张静态图板、28 张真实桌面截图和 native/ 原尺寸图；完整旧回归不能删。用户自行从 main 拉取体验，不交付压缩包；执行者仍需下载并实际查看同 SHA Artifact。
+只改居民面板 UI，不改 Activity / LifeEvent / Routine / History 内容契约，不新增人工 Summary，不改家庭结构效果、居民绑定、正式 portrait、Avatar Workshop、保存键或 Content。Phase 8D2 资产和 Review 继续保留，不趁机开始更多美术扩库。正式交付仍需 Build + Resident Visual Review，并实际查看 `01-player-resident.png`、`01a-resident-header-closeup.png`、`01b-resident-panel-portrait-first.png`、事件续篇与人生经历截图。
 
 主入口自由创作可以直接选男/女、儿童/成年/老年；这是六份独立样板目标，不是第五种素材分类或修改居民身份。保存到 studio:<frame>，原 player/resident 键保持。绑定居民模式锁定年龄/性别。切框架也必须遵守草稿确认、延迟导入隔离、独立保存/刷新。
 

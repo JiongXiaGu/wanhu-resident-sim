@@ -34,6 +34,15 @@ const livePortrait = page.locator('.resident-avatar .portrait-renderer');
 if ((await livePortrait.count()) !== 1) throw new Error('Live ResidentAvatar must use the unified PortraitRenderer.');
 if ((await livePortrait.getAttribute('data-render-contract')) !== '9.0') throw new Error('Live ResidentAvatar must use portrait contract 9.0.');
 
+const portraitBox = await page.locator('.resident-avatar').boundingBox();
+const heroBox = await page.locator('.resident-profile-hero').boundingBox();
+const panelBox = await page.locator('.resident-panel').boundingBox();
+if (!portraitBox || portraitBox.width < 96 || portraitBox.height < 96) throw new Error('Portrait-first Resident Panel must expose a large portrait.');
+if (!heroBox || heroBox.height < 136) throw new Error('Resident identity hero must reserve real visual space for the portrait.');
+if (!panelBox || panelBox.width < 410 || panelBox.width > 430) throw new Error('Resident Panel V3 should stay in the 420px Context Surface width band.');
+if ((await page.locator('.resident-follow-toggle').count()) !== 1) throw new Error('Follow action must live in the identity hero.');
+if ((await page.locator('.resident-world-link').count()) !== 3) throw new Error('Resident world summary must expose residence, work and family as three lightweight columns.');
+
 if ((await page.locator('.resident-summary').count()) !== 0) {
   throw new Error('Resident Panel should not render a standalone recent-summary row.');
 }
@@ -42,6 +51,7 @@ await page.getByRole('button', { name: '隐藏', exact: true }).click();
 await page.waitForSelector('.dev-reopen');
 await page.screenshot({ path: `${outDir}/01-player-resident.png` });
 await page.locator('.resident-panel__header').screenshot({ path: `${outDir}/01a-resident-header-closeup.png` });
+await page.locator('.resident-panel').screenshot({ path: `${outDir}/01b-resident-panel-portrait-first.png` });
 
 await page.getByRole('button', { name: 'DEV', exact: true }).click();
 await page.getByRole('button', { name: '推进故事', exact: true }).click();
@@ -89,7 +99,7 @@ await page.getByRole('button', { name: '推进故事', exact: true }).click();
 await page.waitForTimeout(80);
 if (!(await page.locator('.resident-identity').innerText()).includes('已婚')) throw new Error('Marriage story should update family state.');
 
-await page.locator('.resident-world-links').getByRole('button', { name: /家人/ }).click();
+await page.getByRole('button', { name: /人物关系/ }).click();
 await page.waitForSelector('.resident-family-drawer');
 if (!(await page.locator('.resident-family-drawer').innerText()).includes('配偶')) throw new Error('Marriage should create a visible spouse relationship.');
 

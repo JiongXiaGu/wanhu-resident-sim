@@ -31,6 +31,12 @@ http://localhost:5173/?view=avatar-editor
 
 详见 [头像工坊](Documentation/Avatar%20Workshop.md)、[当前主路线](Documentation/Q版头像主路线生产与审查工作流.md)、[8D2 童老头像资产扩充](Documentation/Phase%208D2%20童老头像资产扩充.md)。
 
+## 当前界面：Resident Panel Portrait-first
+
+居民信息面板进入布局重构阶段：左下角采用与 `wanhu-ui-prototype` Context Surface 一致的中性烟墨材质语言，头像扩大为人物 Hero 的第一视觉焦点；住所/工作/家庭改为轻量三列，“此刻”提升优先级，LifeEvent 取消大卡片套卡片，关注移入人物区，Footer 只保留人物关系与人生经历。详细契约见 [Resident Panel Portrait-first 布局](Documentation/Resident%20Panel%20Portrait-first布局.md)。
+
+本轮只改 UI 信息架构与视觉，不改变居民模拟、LifeEvent、人生经历、正式 portrait 或头像工坊数据契约。
+
 ## 保存与项目边界
 
 自由样板、玩家、居民分别存入浏览器 localStorage，保存/应用才写入。切框架或对象前有草稿会询问；导入只改预览；恢复只移除当前目标覆盖。清除站点数据会丢失本地记录，可自行导出配方备份。描述、关键词和搜索词不进入 Recipe 或保存键。

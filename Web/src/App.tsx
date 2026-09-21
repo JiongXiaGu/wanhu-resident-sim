@@ -308,31 +308,54 @@ export default function App() {
 
       {panelOpen && (
         <aside className={`resident-panel resident-panel--v2 ${historyExpanded ? 'is-history-mode' : ''}`} aria-label={`${selectedResident.displayName}的居民信息`}>
-          <header className="resident-panel__header">
-            <div className="resident-avatar">
-              <ResidentAvatar
-                seed={selectedResident.seed}
-                citySeed={residentSnapshot.citySeed}
-                residentStableId={selectedResident.id}
-                gender={selectedResident.gender}
-                lifeStage={selectedResident.lifeStage}
-                wealthTier={selectedHousehold?.wealthTier ?? 'plain'}
-                portrait={selectedResident.portrait}
-                label={`${selectedResident.displayName}的头像`}
-              />
+          <header className="resident-panel__header resident-profile-hero">
+            <div className="resident-portrait-stack">
+              <div className="resident-avatar">
+                <ResidentAvatar
+                  seed={selectedResident.seed}
+                  citySeed={residentSnapshot.citySeed}
+                  residentStableId={selectedResident.id}
+                  gender={selectedResident.gender}
+                  lifeStage={selectedResident.lifeStage}
+                  wealthTier={selectedHousehold?.wealthTier ?? 'plain'}
+                  portrait={selectedResident.portrait}
+                  label={`${selectedResident.displayName}的头像`}
+                />
+              </div>
+              <button className="avatar-hero-edit" type="button" data-edit-resident-avatar={selectedResident.id} onClick={() => openAvatarEditor(selectedResident.id)}>编辑头像</button>
             </div>
             <div className="resident-identity">
-              <div><b>{selectedResident.displayName}</b><span>{selectedAge}岁 · {occupation?.name ?? '居民'}</span></div>
+              <span className="resident-identity__eyebrow">RESIDENT / 居民档案</span>
+              <div className="resident-identity__title">
+                <b>{selectedResident.displayName}</b>
+                <span>{selectedAge}岁 · {occupation?.name ?? '居民'}</span>
+              </div>
               <small>{selectedDistrict} · {selectedFamily}</small>
-              <button className="avatar-inline-edit" type="button" data-edit-resident-avatar={selectedResident.id} onClick={() => openAvatarEditor(selectedResident.id)}>编辑头像</button>
+              <button
+                className={`resident-follow-toggle ${followed[selectedResident.id] ? 'is-followed' : ''}`}
+                type="button"
+                aria-pressed={Boolean(followed[selectedResident.id])}
+                onClick={() => setFollowed((current) => ({ ...current, [selectedResident.id]: !current[selectedResident.id] }))}
+              >
+                {followed[selectedResident.id] ? '★ 已关注' : '☆ 关注'}
+              </button>
             </div>
             <button className="resident-panel__close" type="button" onClick={() => setPanelOpen(false)} aria-label="关闭居民面板">×</button>
           </header>
 
-          <div className="resident-world-links" aria-label="居民世界关联">
-            <button type="button" onClick={() => focusLocation(`${selectedDistrict} · 住处 ${selectedHousehold?.homeId ?? ''}`)}>⌂ <span>住处</span></button>
-            <button type="button" disabled={!selectedResident.workplaceId} onClick={() => focusLocation(`${occupation?.name ?? '工作地'} · ${selectedResident.workplaceId}`)}>⚒ <span>工作地</span></button>
-            <button type="button" disabled={!householdMembers.length} className={familyOpen ? 'is-active' : ''} onClick={toggleFamily}>♡ <span>家人 {householdMembers.length}</span></button>
+          <div className="resident-world-links" aria-label="居民世界信息">
+            <button className="resident-world-link" type="button" onClick={() => focusLocation(`${selectedDistrict} · 住处 ${selectedHousehold?.homeId ?? ''}`)}>
+              <span>⌂ 住所</span>
+              <b>{selectedDistrict}</b>
+            </button>
+            <button className="resident-world-link" type="button" disabled={!selectedResident.workplaceId} onClick={() => focusLocation(`${occupation?.name ?? '工作地'} · ${selectedResident.workplaceId}`)}>
+              <span>⚒ 工作地</span>
+              <b>{selectedResident.workplaceId ? occupation?.name ?? '营生' : '无固定工作'}</b>
+            </button>
+            <div className="resident-world-link resident-world-link--static" data-resident-family-summary>
+              <span>♡ 家庭</span>
+              <b>{selectedFamily}</b>
+            </div>
           </div>
 
           {familyOpen && (
@@ -410,8 +433,11 @@ export default function App() {
             ) : (
               <>
                 <section className="resident-activity">
-                  <span>此刻</span>
-                  <p>{lifeView.activity}</p>
+                  <div className="resident-section-label">此刻</div>
+                  <div className="resident-activity__current">
+                    <i aria-hidden="true" />
+                    <p>{lifeView.activity}</p>
+                  </div>
                 </section>
 
                 {lifeView.showCurrentEvent && (
@@ -456,11 +482,17 @@ export default function App() {
           </div>
 
           <footer className="resident-panel__footer resident-panel__footer--v2">
-            <button type="button" className={followed[selectedResident.id] ? 'is-followed' : ''} onClick={() => setFollowed((current) => ({ ...current, [selectedResident.id]: !current[selectedResident.id] }))}>
-              {followed[selectedResident.id] ? '★ 已关注' : '☆ 关注'}
+            <button
+              type="button"
+              className={`resident-relation-button ${familyOpen ? 'is-active' : ''}`}
+              disabled={!householdMembers.length}
+              onClick={toggleFamily}
+            >
+              <span>♡ 人物关系</span>
+              <small>{householdMembers.length > 0 ? `${householdMembers.length} 位` : '暂无'}</small>
             </button>
-            <button type="button" onClick={historyExpanded ? closeHistory : openHistory}>
-              {historyExpanded ? '返回生活' : `人生经历 ${lifeCount}章`}<span>{historyExpanded ? '‹' : '›'}</span>
+            <button type="button" className={historyExpanded ? 'is-active' : ''} onClick={historyExpanded ? closeHistory : openHistory}>
+              <span>{historyExpanded ? '返回生活' : `人生经历 ${lifeCount}章`}</span><b>{historyExpanded ? '‹' : '›'}</b>
             </button>
           </footer>
         </aside>
@@ -478,7 +510,7 @@ export default function App() {
 
       {showDev && (
         <aside className="dev-panel">
-          <header><b>RESIDENT PANEL V2</b><button type="button" onClick={() => setShowDev(false)}>隐藏</button></header>
+          <header><b>RESIDENT PANEL / PORTRAIT-FIRST</b><button type="button" onClick={() => setShowDev(false)}>隐藏</button></header>
           <div className="dev-panel__row"><span>居民</span><b>{selectedResident.displayName} · {selectedIndex + 1}/{residents.length}</b></div>
           <div className="dev-panel__row"><span>LifeEvent</span><b>{lifeView.event.id}</b></div>
           <div className="dev-panel__row"><span>阶段</span><b>{currentStage + 1}/3 · {lifeView.event.source?.label ?? '个人生活'}</b></div>
