@@ -70,14 +70,16 @@ export function themeOutfit(frame:Frame,id:string):string|null{
   case 'collarless':
    base=path(body,c.lining,4.5);
    collar=path('M136 239Q160 254 184 239L187 253Q160 271 133 253Z','#d4ceb1',2.7);
-   overlay=path('M121 250Q111 261 108 281L108 326H140V285L145 265Z',c.base,3.2)
-    +path('M199 250Q209 261 212 281L212 326H180V285L175 265Z',c.base,3.2);
-   detail=seam('M125 281V326M195 281V326',2);break;
+   // 外褂必须从肩头铺满前身；不能只剩两条悬在内衫上的窄带。
+   overlay=path(sex==='female'?'M126 247Q119 253 106 257Q76 267 57 291L38 326H139V286L146 267Z':'M125 247Q112 253 96 256Q59 266 38 290L18 326H138V286L146 267Z',c.base,3.2)
+    +path(sex==='female'?'M194 247Q201 253 214 257Q244 267 263 291L282 326H181V286L174 267Z':'M195 247Q208 253 224 256Q261 266 282 290L302 326H182V286L174 267Z',c.base,3.2);
+   detail=seam('M134 267L129 285V326M186 267L191 285V326',2);break;
   case 'double-edge':
    base+=inner();
-   collar=path('M134 238L128 253L142 283V326H159V279Q154 253 144 239Z',c.edge,3)
-    +path('M186 238L192 253L178 283V326H161V279Q166 253 176 239Z',c.edge,3);
-   overlay=l('M138 250L151 281V326M182 250L169 281V326',c.lining,3);
+   // 两侧宽缘保持面积与间距，系结连接前片，不拥挤成中线装饰。
+   collar=path('M132 238L121 254L132 285V326H154V279Q151 257 143 239Z',c.edge,3)
+    +path('M188 238L199 254L188 285V326H166V279Q169 257 177 239Z',c.edge,3);
+   overlay=l('M134 250L143 282V326M186 250L177 282V326',c.lining,3);
    detail=tie(290)+tie(314);break;
   case 'short-vest':
    base=path(body,c.lining,4.5);collar=path('M135 238Q160 255 185 238L191 253Q180 275 160 277Q140 275 129 253Z','#e6d8b9',2.8);

@@ -4,7 +4,7 @@
 
 ## 接手顺序
 
-读取最新 main 与 SHA、AGENTS、README、本文件、玩法/生活/历史规范、Portrait System、Avatar Workshop、Q版头像主路线生产与审查工作流、开发与部署工作流。头像任务追加当前阶段规范；现为 [Phase 8D1 主题资产与文字检索](Phase%208D1%20主题资产与文字检索.md)。先读当前执行点，再检查源码与同 SHA Actions，不用聊天记忆覆盖仓库。
+读取最新 main 与 SHA、AGENTS、README、本文件、玩法/生活/历史规范、Portrait System、Avatar Workshop、Q版头像主路线生产与审查工作流、开发与部署工作流。头像任务追加当前阶段规范；现为 [Phase 8D1 主题头像资产扩充](Phase%208D1%20主题头像资产扩充.md)。先读当前执行点，再检查源码与同 SHA Actions，不用聊天记忆覆盖仓库。
 
 ## 当前执行点
 
@@ -12,7 +12,7 @@
 
 四主题常服/劳作/商铺/行旅各新增 4 Hair / 4 Outfit ID，总计 32 新 ID、44 份适用成年画稿。当前全库 6 Face / 46 Hair / 40 Outfit / 8 Expression，100 个可选资产均有中文描述及关键词。儿童老年画稿和原有 88 份固定配方渲染不变。
 
-`theme-catalog.ts` 是本批名称、描述、关键词、Frame 和兼容键的唯一入口；原文字在 `catalog.ts`。`theme-hair.ts` / `theme-outfits.ts` 只负责静态成年画稿，原分发文件先处理儿童/老年。`asset-search.ts` 只筛选调用方传入的当前分类候选。不要再复制搜索索引或把描述写进 Recipe。
+`theme-catalog.ts` 是本批名称、description、theme、keywords、frames、silhouette、closestAssetId、distinction、readability 和兼容键的唯一入口；原文字在 `catalog.ts`。`theme-hair.ts` / `theme-outfits.ts` 只负责静态成年画稿，原分发文件先处理儿童/老年。`asset-search.ts` 只筛选调用方传入的当前分类候选。不要再复制搜索索引或把描述写进 Recipe。
 
 工坊保留三栏和四类选项，只增轻量搜索/所选说明。搜 `8D1` 或 `8D1 行旅` 查本批；新卡片“本批新增”与旧“已重画”区分。“仅已重画”有意不包含新稿；空结果有重置入口。随机本类遵守搜索，随机搭配不受搜索影响。
 
@@ -30,7 +30,7 @@ Content → Contract/Catalog Audit → Compiler → generated。生成物不手�
 
 ## 回归和下一步
 
-本批新增 `capture-avatar-theme-assets.mjs`，沿用 renderBoards；四主题、组合、六脸型诊断和九张真实 UI 在 `avatar/phase8d1/`。描述导出和机器报告也在那里。8B2 历史断言改为其明确清单，新资产独立增量验证；通用全组合/腮红/Coverage/保存/导入/居民回归不删。
+本批新增 `capture-avatar-theme-assets.mjs`，沿用 renderBoards；四主题、组合、六脸型诊断和17 张真实 UI（八张主题工坊、八张全量列表首尾、一张居民绑定） 在 `avatar/phase8d/`。描述导出、机器报告和 native/ 下 132 张原尺寸小图也在那里。无领外褂已从窄条改为完整前片，双缘襟衫改为宽缘中缝；继续验收时重点看这两款，而不是重做旧 8B2。8B2 历史断言改为其明确清单，新资产独立增量验证；通用全组合/腮红/Coverage/保存/导入/居民回归不删。
 
 正式交付必须：最新 main → tmp-* 聚合修改 → Build + Resident Visual Review → 下载核 SHA 并实际看图 → 必要时修正 → 重读 main → 推进已审查提交 → main 再回归。用户不收压缩包，不代表执行者跳过 Artifact 下载。交付写 main SHA、两项结果、实际看图范围，区分实现/候选/未完成。
 

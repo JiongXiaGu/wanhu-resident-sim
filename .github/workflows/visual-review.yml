@@ -87,7 +87,7 @@ jobs:
       - name: Review Phase 8D1 assets, descriptions and search
         run: |
           git fetch --no-tags --depth=1 origin 7ba57695c392f14d598e818beadecff877dd52f9
-          node scripts/avatar-review/export-age-baseline.mjs 7ba57695c392f14d598e818beadecff877dd52f9 review-screenshots/avatar/phase8d1
+          node scripts/avatar-review/export-age-baseline.mjs 7ba57695c392f14d598e818beadecff877dd52f9 review-screenshots/avatar/phase8d
           node scripts/capture-avatar-theme-assets.mjs
       - name: Compress legacy review previews
         run: node scripts/compress-review-screenshots.mjs

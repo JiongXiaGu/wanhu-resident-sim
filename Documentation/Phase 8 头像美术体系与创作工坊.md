@@ -2,7 +2,7 @@
 
 ## 当前执行点
 
-用户认为 Phase 8B2 的基础画法基本可行，批准 **8D1-A / B 四生活主题合批扩充**。本阶段具体资产、文字契约、源码与截图要求见 [Phase 8D1 主题资产与文字检索](Phase%208D1%20主题资产与文字检索.md)。8C 大交互优化暂缓，童老扩库留给之后的 8D2。
+用户认为 Phase 8B2 的基础画法基本可行，批准 **8D1-A / B 四生活主题合批扩充**。本阶段具体资产、文字契约、源码与截图要求见 [Phase 8D1 主题头像资产扩充](Phase%208D1%20主题头像资产扩充.md)。8C 大交互优化暂缓，童老扩库留给之后的 8D2。
 
 8D1 新增 16 Hair / 16 Outfit ID，对应 44 份适用成年男女画稿。当前 6 Face / 46 Hair / 40 Outfit / 8 Expression；100 个可选资产都有描述和关键词。Face、Expression、Head Frame、童老画稿不改。具体阶段历史见 [8B1 童老衣装审查](Phase%208B1%20童老衣装审查.md) 与 [8B2 成年衣装与衣领审查](Phase%208B2%20成年衣装与衣领审查.md)。
 
@@ -40,7 +40,7 @@ Recipe 只有版本、Pack 和四类 ID，不含 Frame、目标、描述、主�
 
 ## 生产与审查
 
-原画稿按 child/elder/adult 文件分工，8A 保留样板和 8B2 旧稿不复制为第二资源包。8D1 在 theme-hair/theme-outfits 增量绘制，theme-catalog 注册元数据。Catalog 为文字和适用性权威，不另外维护一套搜索索引或重复目录。
+原画稿按 child/elder/adult 文件分工，8A 保留样板和 8B2 旧稿不复制为第二资源包。8D1 在 theme-hair/theme-outfits 增量绘制，theme-catalog 注册元数据。Catalog 为文字和适用性权威，theme/keywords/轮廓/旧款差异/三尺寸识别点直接随资产维护，不另外维护运行时搜索索引；文档逐项清单以 CI 检查同步。无领外褂用完整前片，双缘襟衫用连续宽缘，不能回到吊带和挤窄门襟。
 
 先聚合修改，通过真实 Renderer 静态图短循环检查 320/96/64/48px，再正式运行 Build 与 Resident Visual Review，下载同 SHA Artifact、核对源码、打开全部新增诊断和真实桌面 UI。复核 main 没有并行冲突后非 force 推进，再看 main 的回归证据。不得用旧 run 或静态图冒充最新 UI 通过。
 

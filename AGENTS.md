@@ -8,7 +8,7 @@
 
 ## 当前执行点：Phase 8D1-A / 8D1-B
 
-用户在 8B2 后认为基础画法基本可行，并批准常服、劳作、商铺、行旅四主题合批扩充。先读 `Documentation/Phase 8D1 主题资产与文字检索.md`。新增 16 Hair / 16 Outfit ID，成年适用画稿为 20 / 24 份；儿童与老年不复用成年画稿。总 Catalog 为 6 Face / 46 Hair / 40 Outfit / 8 Expression。100 个可选资产都必须有中文描述与关键词，Catalog 是展示与检索的唯一文字权威，不复制一份运行时索引。
+用户在 8B2 后认为基础画法基本可行，并批准常服、劳作、商铺、行旅四主题合批扩充。先读 `Documentation/Phase 8D1 主题头像资产扩充.md`。新增 16 Hair / 16 Outfit ID，成年适用画稿为 20 / 24 份；儿童与老年不复用成年画稿。总 Catalog 为 6 Face / 46 Hair / 40 Outfit / 8 Expression。100 个可选资产都必须有中文描述与关键词，Catalog 是展示与检索的唯一文字权威，不复制一份运行时索引。新增项强制 description / theme / keywords / frames / silhouette / closestAssetId / distinction / readability，文档清单是 CI 校验的只读镜像。主题不从 ID 前缀猜测。正式 Artifact 的 avatar/phase8d/ 还须查看未筛选列表首尾与 native/ 原尺寸图。
 
 描述只表达画面、轮廓差异和适用边界；主题不锁职业。四类选项、Recipe、保存键、正式 portrait 不变。工坊仅补当前分类搜索和所选素材描述；“本批新增”区别于历史“已重画”。8C 大交互调整继续暂缓，8D2 童老扩充未开始。用户自行从 main 拉取体验，不交付压缩包；执行者仍必须下载并实际查看同 SHA 的 Actions Artifact。
 

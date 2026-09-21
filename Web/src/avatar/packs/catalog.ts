@@ -7,13 +7,22 @@ export const catalogFrames=[
 ] as const;
 export type CatalogFrame=typeof catalogFrames[number];
 
+export const assetThemes=['common','labor','merchant','traveler'] as const;
+export type AssetTheme=typeof assetThemes[number];
+
 export type CatalogOption={
   id:string;
   label:string;
   note?:string;
   // 作者文字只用于展示与检索，不进入四项 Recipe / 正式居民数据。
   description?:string;
-  tags?:readonly string[];
+  keywords?:readonly string[];
+  // 主题仅描述美术，不推断职业、默认权重或 Recipe 行为。
+  theme?:AssetTheme;
+  silhouette?:string;
+  closestAssetId?:string;
+  distinction?:string;
+  readability?:Readonly<Record<48|64|96,string>>;
   // 省略表示六个 Frame 都可用；声明后只在对应年龄 / 性别上下文出现。
   frames?:readonly CatalogFrame[];
   // false 表示仅保留旧 Recipe / 跨 Pack 兼容，不再出现在任何玩家可选列表。
@@ -24,6 +33,18 @@ export type CatalogOption={
   headwear?:'none'|'integrated';
   // 仅 Hair 使用：允许内部发际区域表现稀疏头皮；不允许 Hair 外轮廓露出 Head Frame。
   scalpExposure?:'none'|'intentional';
+};
+
+// 新主题资产必须在作者源数据中写全；旧 compatibility-only 选项不伪造画稿说明。
+export type ThemeCatalogOption=CatalogOption&{
+  description:string;
+  keywords:readonly [string,...string[]];
+  theme:AssetTheme;
+  frames:readonly CatalogFrame[];
+  silhouette:string;
+  closestAssetId:string;
+  distinction:string;
+  readability:Readonly<Record<48|64|96,string>>;
 };
 
 export type AvatarCatalog={
