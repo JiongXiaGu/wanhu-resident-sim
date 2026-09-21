@@ -12,6 +12,7 @@ const definitions = await readJson('definitions.json');
 const storyBuckets = await readJson('story-buckets.json');
 const occupationGroups = await readJson('occupation-groups.json');
 const portraitCatalog = await readJson('portrait-catalog.json');
+const residentProfileCatalog = await readJson('resident-profile-catalog.json');
 const stableIdRegistry = await readJson('stable-id-registry.json');
 
 if (definitions.schema !== 'wanhu.resident-definitions.v3') {
@@ -25,6 +26,9 @@ if (occupationGroups.schema !== 'wanhu.occupation-groups.v1') {
 }
 if (portraitCatalog.schema !== 'wanhu.portrait-catalog.v2') {
   throw new Error(`Unsupported portrait catalog schema: ${portraitCatalog.schema}`);
+}
+if (residentProfileCatalog.schema !== 'wanhu.resident-profile-catalog.v1') {
+  throw new Error(`Unsupported resident profile catalog schema: ${residentProfileCatalog.schema}`);
 }
 if (stableIdRegistry.schema !== 'wanhu.stable-id-registry.v1') {
   throw new Error(`Unsupported Stable ID registry schema: ${stableIdRegistry.schema}`);
@@ -42,6 +46,7 @@ const output = {
   schema: 'wanhu.resident-definitions.v6',
   occupationGroups: occupationGroups.items,
   portraitCatalog,
+  residentProfileCatalog,
   storyBuckets,
   contentMeta: {
     stableIdCount: stableIdRegistry.items.length,
@@ -49,8 +54,11 @@ const output = {
     portraitFaceFamilyCount: portraitCatalog.faceFamilies.length,
     portraitHairStyleCount: portraitCatalog.hairStyles.length,
     portraitOutfitStyleCount: portraitCatalog.outfitStyles.length,
+    residentTemperamentCount: residentProfileCatalog.temperaments.length,
+    residentLifeFocusCount: residentProfileCatalog.lifeFocuses.length,
+    residentPresentationStyleCount: residentProfileCatalog.presentationStyles.length,
   },
 };
 
 await writeFile(join(generatedDir, 'definitions.json'), `${JSON.stringify(output, null, 2)}\n`, 'utf8');
-console.log(`Assembled Web resident definitions v6 with ${storyBuckets.buckets.length} Story Buckets, ${portraitCatalog.faceFamilies.length} FaceFamilies and ${portraitCatalog.hairStyles.length} HairStyles.`);
+console.log(`Assembled Web resident definitions v6 with ${storyBuckets.buckets.length} Story Buckets, ${residentProfileCatalog.temperaments.length + residentProfileCatalog.lifeFocuses.length + residentProfileCatalog.presentationStyles.length} resident profile traits, ${portraitCatalog.faceFamilies.length} FaceFamilies and ${portraitCatalog.hairStyles.length} HairStyles.`);

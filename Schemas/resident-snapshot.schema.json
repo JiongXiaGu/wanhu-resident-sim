@@ -1,84 +1,197 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wanhu.local/schemas/resident-snapshot.schema.json",
-  "title": "Wanhu Resident Snapshot V3",
+  "title": "Wanhu Resident Snapshot V5",
   "$defs": {
-    "stableId": { "type": "string", "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$" },
-    "lifeTagId": { "type": "string", "pattern": "^lifetag\\.[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)*$" },
-    "appearanceId": { "type": "string", "pattern": "^appearance\\.[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)*$" },
-    "appearance": {
+    "stableId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$"
+    },
+    "profile": {
       "type": "object",
-      "required": ["faceId", "hairId", "browId", "facialHairId", "headwearId", "outfitId", "skinPaletteId", "hairPaletteId", "clothingPaletteId"],
+      "required": [
+        "temperamentId",
+        "lifeFocusId",
+        "presentationStyleId"
+      ],
       "additionalProperties": false,
       "properties": {
-        "faceId": { "$ref": "#/$defs/appearanceId" },
-        "hairId": { "$ref": "#/$defs/appearanceId" },
-        "browId": { "$ref": "#/$defs/appearanceId" },
-        "facialHairId": { "$ref": "#/$defs/appearanceId" },
-        "headwearId": { "$ref": "#/$defs/appearanceId" },
-        "outfitId": { "$ref": "#/$defs/appearanceId" },
-        "skinPaletteId": { "$ref": "#/$defs/appearanceId" },
-        "hairPaletteId": { "$ref": "#/$defs/appearanceId" },
-        "clothingPaletteId": { "$ref": "#/$defs/appearanceId" }
+        "temperamentId": {
+          "$ref": "#/$defs/stableId"
+        },
+        "lifeFocusId": {
+          "$ref": "#/$defs/stableId"
+        },
+        "presentationStyleId": {
+          "$ref": "#/$defs/stableId"
+        }
+      }
+    },
+    "portrait": {
+      "type": "object",
+      "required": [
+        "faceFamilyId",
+        "hairStyleId",
+        "outfitStyleId",
+        "skinPaletteId",
+        "baseHairColorId"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "faceFamilyId": {
+          "type": "string"
+        },
+        "hairStyleId": {
+          "type": "string"
+        },
+        "outfitStyleId": {
+          "type": "string"
+        },
+        "skinPaletteId": {
+          "type": "string"
+        },
+        "baseHairColorId": {
+          "type": "string"
+        }
       }
     }
   },
   "type": "object",
-  "required": ["schema", "citySeed", "currentDay", "residents", "households"],
+  "required": [
+    "schema",
+    "citySeed",
+    "currentDay",
+    "residents",
+    "households"
+  ],
   "properties": {
-    "schema": { "const": "wanhu.resident-snapshot.v3" },
-    "citySeed": { "type": "integer" },
-    "currentDay": { "type": "integer" },
+    "schema": {
+      "const": "wanhu.resident-snapshot.v5"
+    },
+    "citySeed": {
+      "type": "integer"
+    },
+    "currentDay": {
+      "type": "integer"
+    },
     "residents": {
       "type": "array",
       "items": {
         "type": "object",
         "required": [
-          "id", "seed", "displayName", "surname", "surnameId", "givenNameId", "birthDay", "gender", "portraitSeed", "appearance",
-          "districtId", "occupationId", "householdId", "fatherId", "motherId",
-          "spouseId", "childCount", "nextUpdateDay", "lifeStage", "stateBits",
-          "lifeTags", "recentLifeLog", "majorLifeHistory"
+          "id",
+          "seed",
+          "displayName",
+          "surname",
+          "surnameId",
+          "givenNameId",
+          "birthDay",
+          "gender",
+          "portrait",
+          "profile",
+          "districtId",
+          "occupationId",
+          "householdId",
+          "fatherId",
+          "motherId",
+          "spouseId",
+          "childCount",
+          "nextUpdateDay",
+          "lifeStage",
+          "stateBits",
+          "lifeTags",
+          "recentLifeLog",
+          "majorLifeHistory"
         ],
         "properties": {
-          "id": { "type": "integer" },
-          "seed": { "type": "integer" },
-          "displayName": { "type": "string", "minLength": 1 },
-          "surname": { "type": "string", "minLength": 1 },
-          "surnameId": { "$ref": "#/$defs/stableId" },
-          "givenNameId": { "$ref": "#/$defs/stableId" },
-          "birthDay": { "type": "integer" },
-          "gender": { "enum": ["male", "female"] },
-          "portraitSeed": { "type": "integer" },
-          "appearance": { "$ref": "#/$defs/appearance" },
-          "districtId": { "type": "string" },
-          "occupationId": { "$ref": "#/$defs/stableId" },
-          "workplaceId": { "type": "integer" },
-          "employmentStartDay": { "type": "integer" },
-          "householdId": { "type": "integer" },
-          "fatherId": { "type": "integer" },
-          "motherId": { "type": "integer" },
-          "spouseId": { "type": "integer" },
-          "childCount": { "type": "integer", "minimum": 0 },
-          "nextUpdateDay": { "type": "integer" },
-          "lifeStage": { "type": "string" },
-          "stateBits": { "type": "integer" },
-          "activeStoryId": { "type": ["string", "null"] },
-          "lifeTags": { "type": "array", "items": { "$ref": "#/$defs/lifeTagId" }, "uniqueItems": true },
-          "recentLifeLog": { "type": "array" },
-          "majorLifeHistory": {
+          "id": {
+            "type": "integer"
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "surnameId": {
+            "$ref": "#/$defs/stableId"
+          },
+          "givenNameId": {
+            "$ref": "#/$defs/stableId"
+          },
+          "birthDay": {
+            "type": "integer"
+          },
+          "gender": {
+            "enum": [
+              "male",
+              "female"
+            ]
+          },
+          "portrait": {
+            "$ref": "#/$defs/portrait"
+          },
+          "profile": {
+            "$ref": "#/$defs/profile"
+          },
+          "districtId": {
+            "type": "string"
+          },
+          "occupationId": {
+            "$ref": "#/$defs/stableId"
+          },
+          "workplaceId": {
+            "type": "integer"
+          },
+          "employmentStartDay": {
+            "type": "integer"
+          },
+          "householdId": {
+            "type": "integer"
+          },
+          "fatherId": {
+            "type": "integer"
+          },
+          "motherId": {
+            "type": "integer"
+          },
+          "spouseId": {
+            "type": "integer"
+          },
+          "childCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "nextUpdateDay": {
+            "type": "integer"
+          },
+          "lifeStage": {
+            "type": "string"
+          },
+          "stateBits": {
+            "type": "integer"
+          },
+          "activeStoryId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "lifeTags": {
             "type": "array",
             "items": {
-              "type": "object",
-              "required": ["id", "day", "type", "title"],
-              "properties": {
-                "id": { "type": "string", "minLength": 1 },
-                "day": { "type": "integer" },
-                "type": { "type": "string", "minLength": 1 },
-                "title": { "type": "string", "minLength": 1 },
-                "sourceEventId": { "$ref": "#/$defs/stableId" }
-              },
-              "additionalProperties": false
-            }
+              "$ref": "#/$defs/stableId"
+            },
+            "uniqueItems": true
+          },
+          "recentLifeLog": {
+            "type": "array"
+          },
+          "majorLifeHistory": {
+            "type": "array"
           }
         },
         "additionalProperties": false
@@ -88,14 +201,37 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "homeId", "districtId", "memberIds", "wealthTier", "presentationStyle"],
+        "required": [
+          "id",
+          "homeId",
+          "districtId",
+          "memberIds",
+          "wealthTier"
+        ],
         "properties": {
-          "id": { "type": "integer" },
-          "homeId": { "type": "integer" },
-          "districtId": { "type": "string" },
-          "memberIds": { "type": "array", "items": { "type": "integer" } },
-          "wealthTier": { "enum": ["poor", "plain", "comfortable", "wealthy"] },
-          "presentationStyle": { "enum": ["practical", "tidy", "refined"] }
+          "id": {
+            "type": "integer"
+          },
+          "homeId": {
+            "type": "integer"
+          },
+          "districtId": {
+            "type": "string"
+          },
+          "memberIds": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "wealthTier": {
+            "enum": [
+              "poor",
+              "plain",
+              "comfortable",
+              "wealthy"
+            ]
+          }
         },
         "additionalProperties": false
       }

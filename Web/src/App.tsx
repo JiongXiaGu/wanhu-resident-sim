@@ -4,6 +4,7 @@ import {
   districtName,
   familySummary,
   occupationFor,
+  residentProfileLabels,
   type HouseholdRecord,
   type ResidentDefinitions,
   type ResidentRecord,
@@ -256,6 +257,7 @@ export default function App() {
   const selectedAge = ageAtDay(selectedResident, gameDay, definitions.generation.daysPerYear);
   const selectedFamily = familySummary(selectedResident, selectedHousehold);
   const selectedDistrict = districtName(definitions, selectedResident.districtId);
+  const selectedProfileLabels = residentProfileLabels(definitions, selectedResident);
   const selectedIndex = residents.findIndex((item) => item.id === selectedResident.id);
   const currentEventEntry = lifeView.eventEntries.at(-1)!;
   const previousEventEntry = lifeView.priorEventEntries[0];
@@ -268,7 +270,7 @@ export default function App() {
 
   return (
     <main className="sim-game" data-dev={showDev ? 'true' : 'false'} data-city-seed={residentSnapshot.citySeed} data-game-day={gameDay}>
-      <AvatarIntegration snapshot={residentSnapshot} currentDay={gameDay} daysPerYear={definitions.generation.daysPerYear} onSelectResident={selectResident} />
+      <AvatarIntegration snapshot={residentSnapshot} definitions={definitions} currentDay={gameDay} daysPerYear={definitions.generation.daysPerYear} onSelectResident={selectResident} />
       <div className="sim-world" aria-hidden="true">
         <div className="sim-world__mist" />
         <div className="sim-world__river" />
@@ -319,6 +321,8 @@ export default function App() {
                   lifeStage={selectedResident.lifeStage}
                   wealthTier={selectedHousehold?.wealthTier ?? 'plain'}
                   portrait={selectedResident.portrait}
+                  profile={selectedResident.profile}
+                  occupationGroupId={occupation?.groupId}
                   label={`${selectedResident.displayName}的头像`}
                 />
               </div>
@@ -331,6 +335,9 @@ export default function App() {
                 <span>{selectedAge}岁 · {occupation?.name ?? '居民'}</span>
               </div>
               <small>{selectedDistrict} · {selectedFamily}</small>
+              <div className="resident-profile-summary" data-resident-profile>
+                {selectedProfileLabels.map((label) => <span key={label}>{label}</span>)}
+              </div>
               <button
                 className={`resident-follow-toggle ${followed[selectedResident.id] ? 'is-followed' : ''}`}
                 type="button"

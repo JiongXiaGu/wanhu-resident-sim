@@ -8,7 +8,7 @@ export type {PackId,Part};
 export type Choices=Record<Part,string>;
 export type Recipe={schema:'wanhu.avatar';version:1;pack:PackId}&Choices;
 export type Frame=CatalogFrame;
-export type Target={key:string;name:string;detail:string;frame:Frame;seed:number;kind:'studio'|'player'|'resident';residentId?:number};
+export type Target={key:string;name:string;detail:string;frame:Frame;seed:number;kind:'studio'|'player'|'resident';residentId?:number;initialRecipe?:Recipe};
 
 export const frames:Frame[]=[...catalogFrames];
 export const labels:Record<Part,string>={face:'脸型',hair:'头发',outfit:'衣服',expression:'表情'};
@@ -126,6 +126,7 @@ export function foundationRecipe(frame:Frame):Recipe{
 export function defaultFor(target:Target):Recipe{
   if(target.kind==='studio')return foundationRecipe(target.frame);
   const pack=activePackId,base=recipeForPack(pack,target.frame);
+  if(target.kind==='resident'&&target.initialRecipe)return fitRecipeToFrame(target.initialRecipe,target.frame);
   if(target.kind==='player'){
     return fitRecipeToFrame(parseRecipe({...base,...playerWardrobeByFrame[target.frame]}),target.frame);
   }

@@ -1,0 +1,165 @@
+{
+  "schema": "wanhu.resident-profile-catalog.v1",
+  "temperaments": [
+    {
+      "id": "profile.temperament.steady",
+      "label": "沉稳",
+      "description": "做事节奏稳定，不太容易被眼前的小事带乱。",
+      "weight": 3
+    },
+    {
+      "id": "profile.temperament.lively",
+      "label": "活络",
+      "description": "反应快，愿意尝试新鲜事，日常行动更有变化。",
+      "weight": 2
+    },
+    {
+      "id": "profile.temperament.reserved",
+      "label": "内敛",
+      "description": "更习惯独处和熟悉的人情往来，不爱主动张扬。",
+      "weight": 2
+    },
+    {
+      "id": "profile.temperament.sociable",
+      "label": "热络",
+      "description": "容易和邻里熟起来，愿意参与来往和闲谈。",
+      "weight": 2
+    },
+    {
+      "id": "profile.temperament.meticulous",
+      "label": "细致",
+      "description": "做事讲究收尾和秩序，常把手边事情理顺再走。",
+      "weight": 2
+    },
+    {
+      "id": "profile.temperament.resolute",
+      "label": "果断",
+      "description": "遇到需要决定的事情时不太拖延，行动较直接。",
+      "weight": 1
+    }
+  ],
+  "lifeFocuses": [
+    {
+      "id": "profile.focus.family",
+      "label": "顾家",
+      "description": "平日更看重家庭与共同生活。",
+      "weight": 2,
+      "occupationGroupWeights": {
+        "occupation-group.child": 2.5,
+        "occupation-group.agriculture": 1.8,
+        "occupation-group.retired": 2.5
+      }
+    },
+    {
+      "id": "profile.focus.craft",
+      "label": "重手艺",
+      "description": "更在意把一门营生或手艺做熟做好。",
+      "weight": 1,
+      "occupationGroupWeights": {
+        "occupation-group.craft": 6,
+        "occupation-group.agriculture": 2,
+        "occupation-group.medical": 1.8
+      }
+    },
+    {
+      "id": "profile.focus.learning",
+      "label": "爱钻研",
+      "description": "愿意花时间认字、学习或弄明白事情。",
+      "weight": 1,
+      "occupationGroupWeights": {
+        "occupation-group.education": 6,
+        "occupation-group.medical": 3,
+        "occupation-group.craft": 1.8
+      }
+    },
+    {
+      "id": "profile.focus.earnings",
+      "label": "重生计",
+      "description": "更留意收入、买卖与日常开销是否稳当。",
+      "weight": 1,
+      "occupationGroupWeights": {
+        "occupation-group.trade": 6,
+        "occupation-group.transport": 3,
+        "occupation-group.agriculture": 2
+      }
+    },
+    {
+      "id": "profile.focus.neighborhood",
+      "label": "重人情",
+      "description": "较看重熟人往来、邻里关系与日常交情。",
+      "weight": 1,
+      "occupationGroupWeights": {
+        "occupation-group.trade": 2,
+        "occupation-group.performance": 3,
+        "occupation-group.retired": 3,
+        "occupation-group.child": 1.8
+      }
+    },
+    {
+      "id": "profile.focus.travel",
+      "label": "爱走动",
+      "description": "不排斥奔走、换路和经常在城里城外活动。",
+      "weight": 1,
+      "occupationGroupWeights": {
+        "occupation-group.transport": 6,
+        "occupation-group.infrastructure": 3,
+        "occupation-group.performance": 2
+      }
+    }
+  ],
+  "presentationStyles": [
+    {
+      "id": "profile.presentation.practical",
+      "label": "利落",
+      "description": "穿戴以方便行动和做事为先。",
+      "weight": 1.5,
+      "wealthWeights": {
+        "poor": 3,
+        "plain": 2,
+        "comfortable": 1.1,
+        "wealthy": 0.7
+      },
+      "occupationGroupWeights": {
+        "occupation-group.craft": 2.5,
+        "occupation-group.agriculture": 2.5,
+        "occupation-group.transport": 2.5,
+        "occupation-group.infrastructure": 2
+      }
+    },
+    {
+      "id": "profile.presentation.tidy",
+      "label": "整洁",
+      "description": "更在意衣着收拾得干净规整。",
+      "weight": 1.5,
+      "wealthWeights": {
+        "poor": 1,
+        "plain": 2,
+        "comfortable": 3,
+        "wealthy": 2
+      },
+      "occupationGroupWeights": {
+        "occupation-group.trade": 2.5,
+        "occupation-group.medical": 2.5,
+        "occupation-group.education": 2
+      }
+    },
+    {
+      "id": "profile.presentation.refined",
+      "label": "讲究",
+      "description": "在条件允许时会选择更完整、体面的穿戴。",
+      "weight": 0.7,
+      "wealthWeights": {
+        "poor": 0.25,
+        "plain": 0.75,
+        "comfortable": 2,
+        "wealthy": 4
+      },
+      "occupationGroupWeights": {
+        "occupation-group.performance": 2.5,
+        "occupation-group.medical": 1.5,
+        "occupation-group.trade": 1.5,
+        "occupation-group.education": 1.5
+      }
+    }
+  ]
+}

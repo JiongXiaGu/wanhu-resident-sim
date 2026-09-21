@@ -2,6 +2,28 @@ export type Gender = 'male' | 'female';
 
 export type LifeStageId = 'child' | 'teen' | 'young-adult' | 'adult' | 'middle-age' | 'elder';
 export type WealthTier = 'poor' | 'plain' | 'comfortable' | 'wealthy';
+
+export type ResidentProfile = {
+  temperamentId: string;
+  lifeFocusId: string;
+  presentationStyleId: string;
+};
+
+export type ResidentProfileCatalogItem = {
+  id: string;
+  label: string;
+  description: string;
+  weight: number;
+  occupationGroupWeights?: Record<string, number>;
+  wealthWeights?: Partial<Record<WealthTier, number>>;
+};
+
+export type ResidentProfileCatalogDefinition = {
+  schema: 'wanhu.resident-profile-catalog.v1';
+  temperaments: ResidentProfileCatalogItem[];
+  lifeFocuses: ResidentProfileCatalogItem[];
+  presentationStyles: ResidentProfileCatalogItem[];
+};
 export type PortraitFrameId =
   | 'female.child'
   | 'female.adult'
@@ -44,6 +66,7 @@ export type ResidentRecord = {
   birthDay: number;
   gender: Gender;
   portrait: ResidentPortraitDNA;
+  profile: ResidentProfile;
   districtId: string;
   occupationId: string;
   workplaceId: number;
@@ -251,6 +274,7 @@ export type ResidentDefinitions = {
   lifeTags: LifeTagDefinition[];
   occupationGroups: OccupationGroupDefinition[];
   portraitCatalog: PortraitCatalogDefinition;
+  residentProfileCatalog: ResidentProfileCatalogDefinition;
   storyBuckets: StoryBucketCollection;
   contentMeta: {
     stableIdCount: number;
@@ -258,6 +282,9 @@ export type ResidentDefinitions = {
     portraitFaceFamilyCount: number;
     portraitHairStyleCount: number;
     portraitOutfitStyleCount: number;
+    residentTemperamentCount: number;
+    residentLifeFocusCount: number;
+    residentPresentationStyleCount: number;
   };
   occupations: OccupationDefinition[];
   routines: RoutineDefinition[];
@@ -284,4 +311,15 @@ export function familySummary(resident: ResidentRecord, household: HouseholdReco
   if ((resident.fatherId || resident.motherId) && (household?.memberIds.length ?? 0) > 1) return '与家人同住';
   if ((household?.memberIds.length ?? 0) <= 1) return '独居';
   return '与家人同住';
+}
+
+
+export function residentProfileLabels(definitions: ResidentDefinitions, resident: ResidentRecord) {
+  const catalog = definitions.residentProfileCatalog;
+  const find = (items: ResidentProfileCatalogItem[], id: string) => items.find((item) => item.id === id)?.label ?? id;
+  return [
+    find(catalog.temperaments, resident.profile.temperamentId),
+    find(catalog.lifeFocuses, resident.profile.lifeFocusId),
+    find(catalog.presentationStyles, resident.profile.presentationStyleId),
+  ] as const;
 }

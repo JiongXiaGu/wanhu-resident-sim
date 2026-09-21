@@ -136,6 +136,25 @@
   line-height: 1.35;
 }
 
+.resident-profile-summary {
+  max-width:100%;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:5px;
+}
+.resident-profile-summary span {
+  min-width:0;
+  padding:3px 6px;
+  border:1px solid rgba(238,233,223,.055);
+  border-radius:999px;
+  background:rgba(255,255,255,.014);
+  color:#8f928d;
+  font-size:8.5px;
+  line-height:1;
+  white-space:nowrap;
+}
+
 .resident-follow-toggle {
   height: 28px;
   margin-top: 2px;

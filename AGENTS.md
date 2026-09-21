@@ -6,13 +6,15 @@
 
 本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
 
-## 当前执行点：Resident Panel Portrait-first
+## 当前执行点：Resident Profile V1 + 记录资源准备
 
-头像美术暂时停在 Phase 8D2；用户已认可当前素材阶段，当前任务转为居民信息面板布局优化。先读 `Documentation/Resident Panel Portrait-first布局.md`。参考 `wanhu-ui-prototype` 最新 Left Context Surface 的中性 Smoked Graphite + Aged Brass，但只迁移视觉/布局原则，不耦合另一个仓库组件。
+Portrait-first 居民面板已完成；头像美术停在 Phase 8D2。本阶段开始给居民生成稳定个人资料，并用资料派生默认 `chibi-cute-v1` 头像。先读 `Documentation/居民个人资料与头像派生V1.md` 和 `Documentation/居民事实事件与人生记录运行时设计.md`。
 
-居民面板宽度 420px，Header / Body / Footer 职责明确：Header 是 112px 头像 Hero、姓名、年龄职业、地区家庭、关注和编辑头像；世界关联是住所/工作/家庭三列轻量信息；Body 先显示“此刻”，当前 LifeEvent 取消大卡片套卡片并用熟铜竖线组织；Recent 是轻量生活流水；Footer 只做人物关系 / 人生经历。Header/Footer 固定，中间滚动。绿色来自世界透色，Surface 本体使用中性 Tint。
+Resident Profile 当前只有 temperament / lifeFocus / presentationStyle。它们由 Content/Residents/resident-profile-catalog.json 定义，ResidentProfileCompiler 在正式 portrait 编译后写入最终 snapshot。性情不决定脸型；职业、财富和资料只弱影响 Hair / Outfit / Expression。玩家保存 Avatar Recipe > 个人资料派生默认 > 冻结 Portrait fallback。
 
-只改居民面板 UI，不改 Activity / LifeEvent / Routine / History 内容契约，不新增人工 Summary，不改家庭结构效果、居民绑定、正式 portrait、Avatar Workshop、保存键或 Content。Phase 8D2 资产和 Review 继续保留，不趁机开始更多美术扩库。正式交付仍需 Build + Resident Visual Review，并实际查看 `01-player-resident.png`、`01a-resident-header-closeup.png`、`01b-resident-panel-portrait-first.png`、事件续篇与人生经历截图。
+Unity 方向固定：行为树 / Schedule / Utility Job 不写字符串、不直接维护日志、不每个节点发记录，只在行为完成点写紧凑 ResidentFactEvent。后续集中 ResidentLifeRecordSystem 做去重、Routine 映射、LifeEvent Trigger 和 LifeChapter Request。普通 Routine 只保留近期小环；重要结构事实和完成的 recordToHistory LifeEvent 才写 Major Life History。LifeTag 负责系统连续性，历史文本只负责展示。
+
+本阶段仍不在 Web Demo 设计最终 ECS Save / Blob 布局，也不把事实事件做成大量临时 Entity。当前实现用于验证资源、个人资料与头像派生结果；正式 Unity 落地保持 ISystem + SystemAPI、Job/Burst 和集中结构变更原则。
 
 主入口自由创作可以直接选男/女、儿童/成年/老年；这是六份独立样板目标，不是第五种素材分类或修改居民身份。保存到 studio:<frame>，原 player/resident 键保持。绑定居民模式锁定年龄/性别。切框架也必须遵守草稿确认、延迟导入隔离、独立保存/刷新。
 

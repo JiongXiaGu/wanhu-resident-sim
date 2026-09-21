@@ -16,6 +16,7 @@ const occupations = await readJson('Content/Occupations/occupations.json');
 const routines = await readJson('Content/Routines/routine-templates.json');
 const lifeEvents = await readJson('Content/LifeEvents/life-events.json');
 const portrait = await readJson('Content/Portrait/portrait-catalog.json');
+const residentProfiles = await readJson('Content/Residents/resident-profile-catalog.json');
 
 if (surnames.schema !== 'wanhu.surnames.v2') throw new Error(`Unsupported surname schema: ${surnames.schema}`);
 if (givenNames.schema !== 'wanhu.given-names.v2') throw new Error(`Unsupported given-name schema: ${givenNames.schema}`);
@@ -23,6 +24,7 @@ if (lifeTags.schema !== 'wanhu.life-tags.v1') throw new Error(`Unsupported life-
 if (occupationGroups.schema !== 'wanhu.occupation-groups.v1') throw new Error(`Unsupported occupation-group schema: ${occupationGroups.schema}`);
 if (lifeEvents.schema !== 'wanhu.life-events.v2') throw new Error(`Unsupported LifeEvent schema: ${lifeEvents.schema}`);
 if (portrait.schema !== 'wanhu.portrait-catalog.v2') throw new Error(`Unsupported portrait schema: ${portrait.schema}`);
+if (residentProfiles.schema !== 'wanhu.resident-profile-catalog.v1') throw new Error(`Unsupported resident profile schema: ${residentProfiles.schema}`);
 
 const stableIdPattern = /^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/;
 const validGenders = new Set(['male', 'female']);
@@ -132,6 +134,22 @@ for (const item of occupationGroups.items) {
   if (typeof item.label !== 'string' || !item.label.trim()) throw new Error(`${item.id}: occupation-group label is required.`);
 }
 
+requireArray(residentProfiles.temperaments, 'Resident temperaments');
+requireArray(residentProfiles.lifeFocuses, 'Resident life focuses');
+requireArray(residentProfiles.presentationStyles, 'Resident presentation styles');
+for (const [kind, items] of [
+  ['resident-temperament', residentProfiles.temperaments],
+  ['resident-focus', residentProfiles.lifeFocuses],
+  ['resident-presentation', residentProfiles.presentationStyles],
+]) {
+  for (const item of items) {
+    register(item.id, kind, 'Content/Residents/resident-profile-catalog.json');
+    if (typeof item.label !== 'string' || !item.label.trim()) throw new Error(`${item.id}: profile label is required.`);
+    if (typeof item.description !== 'string' || !item.description.trim()) throw new Error(`${item.id}: profile description is required.`);
+    validateWeight(item.weight, item.id);
+  }
+}
+
 for (const item of occupations.items ?? []) register(item.id, 'occupation', 'Content/Occupations/occupations.json');
 for (const item of routines.items ?? []) register(item.id, 'routine', 'Content/Routines/routine-templates.json');
 for (const item of lifeEvents.items ?? []) register(item.id, 'life-event', 'Content/LifeEvents/life-events.json');
@@ -175,6 +193,19 @@ const occupationById = new Map(occupations.items.map((item) => [item.id, item]))
 
 for (const occupation of occupations.items ?? []) {
   if (!occupationGroupIds.has(occupation.groupId)) throw new Error(`${occupation.id}: references unknown occupation group ${occupation.groupId}.`);
+}
+
+for (const item of [...residentProfiles.lifeFocuses, ...residentProfiles.presentationStyles]) {
+  for (const [groupId, weight] of Object.entries(item.occupationGroupWeights ?? {})) {
+    if (!occupationGroupIds.has(groupId)) throw new Error(`${item.id}: unknown occupation group weight ${groupId}.`);
+    if (!Number.isFinite(weight) || weight <= 0) throw new Error(`${item.id}: occupation group weight for ${groupId} must be > 0.`);
+  }
+}
+for (const item of residentProfiles.presentationStyles) {
+  for (const [wealthTier, weight] of Object.entries(item.wealthWeights ?? {})) {
+    if (!validWealthTiers.has(wealthTier)) throw new Error(`${item.id}: unknown wealth tier ${wealthTier}.`);
+    if (!Number.isFinite(weight) || weight <= 0) throw new Error(`${item.id}: wealth weight for ${wealthTier} must be > 0.`);
+  }
 }
 
 for (const routine of routines.items ?? []) {
@@ -322,6 +353,11 @@ const coverage = {
     femaleGivenNames: givenNames.items.filter((item) => item.gender === 'female').length,
     unisexGivenNames: givenNames.items.filter((item) => item.gender === 'unisex').length,
   },
+  residentProfiles: {
+    temperaments: residentProfiles.temperaments.length,
+    lifeFocuses: residentProfiles.lifeFocuses.length,
+    presentationStyles: residentProfiles.presentationStyles.length,
+  },
   portrait: {
     faceFamilies: portrait.faceFamilies.length,
     hairStyles: portrait.hairStyles.length,
@@ -351,7 +387,8 @@ await writeFile(join(generatedDir, 'name-catalog-v2.json'), `${JSON.stringify(na
 await writeFile(join(generatedDir, 'life-tags.json'), `${JSON.stringify(lifeTags, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'occupation-groups.json'), `${JSON.stringify(occupationGroups, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'portrait-catalog.json'), `${JSON.stringify(portraitCatalog, null, 2)}\n`, 'utf8');
+await writeFile(join(generatedDir, 'resident-profile-catalog.json'), `${JSON.stringify(residentProfiles, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'content-coverage.json'), `${JSON.stringify(coverage, null, 2)}\n`, 'utf8');
 
-console.log(`Validated ${registry.items.length} Stable IDs, ${portrait.faceFamilies.length + portrait.hairStyles.length + portrait.outfitStyles.length + portrait.skinPalettes.length + portrait.hairPalettes.length} portrait definitions, ${occupationGroups.items.length} occupation groups, ${lifeTags.items.length} LifeTags and ${lifeEvents.items.length} LifeEvents.`);
+console.log(`Validated ${registry.items.length} Stable IDs, ${residentProfiles.temperaments.length + residentProfiles.lifeFocuses.length + residentProfiles.presentationStyles.length} resident profile definitions, ${portrait.faceFamilies.length + portrait.hairStyles.length + portrait.outfitStyles.length + portrait.skinPalettes.length + portrait.hairPalettes.length} portrait definitions, ${occupationGroups.items.length} occupation groups, ${lifeTags.items.length} LifeTags and ${lifeEvents.items.length} LifeEvents.`);
 console.log(`Coverage report emitted with ${warnings.length} non-fatal warning(s).`);

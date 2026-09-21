@@ -37,6 +37,14 @@ http://localhost:5173/?view=avatar-editor
 
 本轮只改 UI 信息架构与视觉，不改变居民模拟、LifeEvent、人生经历、正式 portrait 或头像工坊数据契约。
 
+## 当前下一阶段：Resident Profile V1
+
+居民开始拥有稳定的个人资料：**性情 / 生活侧重 / 穿戴倾向**。构建管线根据居民 seed、职业组和家庭财富生成资料；未手动编辑的居民头像再根据这些资料、年龄性别与当前职业，从 `chibi-cute-v1` Catalog 确定性生成默认四项 Recipe。脸型不绑定性格或职业，玩家保存的头像覆盖始终优先。
+
+同时新增 [居民事实事件、日常记录与人生经历运行时设计](Documentation/居民事实事件与人生记录运行时设计.md)，明确 Unity ECS Job 未来只写紧凑 Fact，不在 Job 中生成文本；Routine、LifeEvent 和 Life Chapter 由集中记录系统消费事实后形成。
+
+详见 [居民个人资料与头像派生 V1](Documentation/居民个人资料与头像派生V1.md)。
+
 ## 保存与项目边界
 
 自由样板、玩家、居民分别存入浏览器 localStorage，保存/应用才写入。切框架或对象前有草稿会询问；导入只改预览；恢复只移除当前目标覆盖。清除站点数据会丢失本地记录，可自行导出配方备份。描述、关键词和搜索词不进入 Recipe 或保存键。

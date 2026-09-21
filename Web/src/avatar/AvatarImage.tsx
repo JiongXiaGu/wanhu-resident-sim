@@ -8,7 +8,7 @@ export function AvatarImage({frame,recipe,size=96,native=false,className=''}:{fr
 }
 export function SavedAvatar({target,size=48}:{target:Target;size?:number}) {
  const saved=useSaved(target.key);
- // 没应用的居民不能把候选预览冒充为当前游戏头像。
- if(target.kind==='resident'&&!saved.recipe)return <span className="av-unset" aria-label={`${target.name}尚未定制头像`}>{target.name.slice(0,1)}</span>;
+ // 居民未手动应用时显示由个人资料派生的稳定默认头像；玩家覆盖仍优先。
+ if(target.kind==='resident'&&!saved.recipe&&!target.initialRecipe)return <span className="av-unset" aria-label={`${target.name}尚未生成头像`}>{target.name.slice(0,1)}</span>;
  return <AvatarImage frame={target.frame} recipe={saved.recipe??defaultFor(target)} size={size}/>;
 }

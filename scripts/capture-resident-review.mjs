@@ -30,9 +30,12 @@ async function chooseLifeEvent(eventId) {
 
 await open();
 
-const livePortrait = page.locator('.resident-avatar .portrait-renderer');
-if ((await livePortrait.count()) !== 1) throw new Error('Live ResidentAvatar must use the unified PortraitRenderer.');
-if ((await livePortrait.getAttribute('data-render-contract')) !== '9.0') throw new Error('Live ResidentAvatar must use portrait contract 9.0.');
+const livePortrait = page.locator('.resident-avatar [data-generated-resident-avatar]');
+if ((await livePortrait.count()) !== 1) throw new Error('Live ResidentAvatar must use the profile-derived chibi recipe by default.');
+const generatedRecipe = JSON.parse(await livePortrait.getAttribute('data-avatar-recipe'));
+if (generatedRecipe?.schema !== 'wanhu.avatar' || generatedRecipe?.pack !== 'chibi-cute-v1') throw new Error('Generated resident avatar must use the active chibi recipe contract.');
+const profileLabels = await page.locator('[data-resident-profile] span').allTextContents();
+if (profileLabels.length !== 3 || profileLabels.some((label) => !label.trim())) throw new Error('Resident Profile V1 must expose temperament, life focus and presentation style.');
 
 const portraitBox = await page.locator('.resident-avatar').boundingBox();
 const heroBox = await page.locator('.resident-profile-hero').boundingBox();

@@ -33,6 +33,7 @@ try{
  await page.getByRole('button',{name:'+10 天',exact:true}).click();
  await page.waitForFunction(day=>+document.querySelector('.sim-game').dataset.gameDay===day,originalDay+10);
  const identity=await page.locator('.resident-identity').innerText(),story=await page.locator('.dev-panel').innerText();
+ const generatedBefore=await page.locator('[data-generated-resident-avatar]').getAttribute('data-avatar-recipe');assert(generatedBefore,'Resident must have a profile-derived default avatar before manual editing');
  await page.evaluate(()=>{window.__avatarTestGame=document.querySelector('.sim-game');});
  const residentA=await page.locator('[data-edit-resident-avatar]').getAttribute('data-edit-resident-avatar');
  await page.locator('[data-edit-resident-avatar]').click();await editor.waitFor();await ready();
@@ -132,8 +133,8 @@ try{
  await page.locator('[data-close-editor]').click();await editor.waitFor({state:'detached'});
  await page.reload({waitUntil:'networkidle'});await page.locator('[data-open-avatar-workshop]').click();await editor.waitFor();await select(a.key);assert.deepEqual(await recipe(),external);assert.equal(await stored(b.key),bSaved);
  await page.locator('[data-restore-avatar]').click();await page.locator('[data-pending-discard]').click();assert.equal(await stored(a.key),null);assert.equal(await stored(b.key),bSaved);assert.equal(await stored(players[0].key),playerSaved);
- await page.locator('[data-close-editor]').click();await editor.waitFor({state:'detached'});assert.equal(await page.locator('[data-custom-avatar]').count(),0);assert.equal(await page.locator('.resident-avatar .portrait-renderer').count(),1);
- checks.push('Per-object recipes survive page reload; restoring resident A removes only A and returns the formal renderer');
+ await page.locator('[data-close-editor]').click();await editor.waitFor({state:'detached'});assert.equal(await page.locator('[data-custom-avatar]').count(),0);assert.equal(await page.locator('[data-generated-resident-avatar]').count(),1);assert.equal(await page.locator('[data-generated-resident-avatar]').getAttribute('data-avatar-recipe'),generatedBefore);
+ checks.push('Per-object recipes survive page reload; restoring resident A removes only A and returns the profile-derived default avatar while the formal renderer remains the dedicated fallback contract');
 
  await page.locator('[data-open-avatar-workshop]').click();await editor.waitFor();
  const child=allTargets.find(t=>t.frame.endsWith('child')),elder=allTargets.find(t=>t.frame.endsWith('elder'));
