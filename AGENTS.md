@@ -36,9 +36,7 @@ Unity 方向固定：行为树 / Schedule / Utility Job 不写字符串、不直
 
 ## 正式 portrait 边界
 
-`Web/src/resident/portrait/`、`Content/Portrait/`、五字段 ResidentPortraitDNA、六个 PortraitFrame 与原有五层 RenderPlan 保持冻结。本次可编辑头像只作为 ResidentAvatar 上的 Web 覆盖，未应用居民继续使用原 Renderer；移除覆盖恢复原图。不要向正式 DNA 添加表情或画风字段。
-
-居民头像优先级固定为：玩家保存 Avatar Recipe > Resident Profile 派生的 `chibi-cute-v1` 默认 Recipe > 冻结 Portrait fallback。未保存玩家覆盖时优先显示 Profile 派生头像；移除覆盖回到 Profile 派生默认，而不是直接回到旧 PortraitRenderer。正式五字段 DNA 与 fallback 本身仍保持冻结。
+`Web/src/resident/portrait/`、`Content/Portrait/`、五字段 ResidentPortraitDNA、六个 PortraitFrame 与原有五层 RenderPlan 保持冻结。`ResidentAvatar` 只负责在玩家保存覆盖、Profile 派生 Q 版默认与冻结 Portrait fallback 之间选择来源；前两者都不改写正式 DNA 或 Portrait Catalog。移除玩家覆盖回到 Profile 派生默认，只有生成链不可用时才进入正式 Renderer fallback。不要向正式 DNA 添加表情或画风字段。
 
 编辑不得改变居民姓名、生日、性别、家庭、职业、故事和游戏日期。工坊在 App 当前会话内打开，不能通过另载一份快照掩盖对象绑定问题。
 
