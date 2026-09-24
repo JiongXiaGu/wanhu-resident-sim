@@ -43,7 +43,7 @@ for (const bucket of storyBuckets.buckets) {
 
 const output = {
   ...definitions,
-  schema: 'wanhu.resident-definitions.v6',
+  schema: 'wanhu.resident-definitions.v7',
   occupationGroups: occupationGroups.items,
   portraitCatalog,
   residentProfileCatalog,
@@ -57,8 +57,10 @@ const output = {
     residentTemperamentCount: residentProfileCatalog.temperaments.length,
     residentLifeFocusCount: residentProfileCatalog.lifeFocuses.length,
     residentPresentationStyleCount: residentProfileCatalog.presentationStyles.length,
+    routineDefinitionCount: definitions.routines.length,
+    routineVariantCount: definitions.routines.reduce((sum, item) => sum + item.variants.length, 0),
   },
 };
 
 await writeFile(join(generatedDir, 'definitions.json'), `${JSON.stringify(output, null, 2)}\n`, 'utf8');
-console.log(`Assembled Web resident definitions v6 with ${storyBuckets.buckets.length} Story Buckets, ${residentProfileCatalog.temperaments.length + residentProfileCatalog.lifeFocuses.length + residentProfileCatalog.presentationStyles.length} resident profile traits, ${portraitCatalog.faceFamilies.length} FaceFamilies and ${portraitCatalog.hairStyles.length} HairStyles.`);
+console.log(`Assembled Web resident definitions v7 with ${storyBuckets.buckets.length} Story Buckets, ${residentProfileCatalog.temperaments.length + residentProfileCatalog.lifeFocuses.length + residentProfileCatalog.presentationStyles.length} resident profile traits, ${portraitCatalog.faceFamilies.length} FaceFamilies and ${portraitCatalog.hairStyles.length} HairStyles.`);

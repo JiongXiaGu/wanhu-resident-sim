@@ -22,6 +22,7 @@ if (surnames.schema !== 'wanhu.surnames.v2') throw new Error(`Unsupported surnam
 if (givenNames.schema !== 'wanhu.given-names.v2') throw new Error(`Unsupported given-name schema: ${givenNames.schema}`);
 if (lifeTags.schema !== 'wanhu.life-tags.v1') throw new Error(`Unsupported life-tag schema: ${lifeTags.schema}`);
 if (occupationGroups.schema !== 'wanhu.occupation-groups.v1') throw new Error(`Unsupported occupation-group schema: ${occupationGroups.schema}`);
+if (routines.schema !== 'wanhu.routines.v2') throw new Error(`Unsupported Routine schema: ${routines.schema}`);
 if (lifeEvents.schema !== 'wanhu.life-events.v2') throw new Error(`Unsupported LifeEvent schema: ${lifeEvents.schema}`);
 if (portrait.schema !== 'wanhu.portrait-catalog.v2') throw new Error(`Unsupported portrait schema: ${portrait.schema}`);
 if (residentProfiles.schema !== 'wanhu.resident-profile-catalog.v1') throw new Error(`Unsupported resident profile schema: ${residentProfiles.schema}`);
@@ -32,6 +33,46 @@ const validLifeStages = new Set(['child', 'teen', 'young-adult', 'adult', 'middl
 const validWealthTiers = new Set(['poor', 'plain', 'comfortable', 'wealthy']);
 const validPortraitFrames = new Set(['female.child','female.adult','female.elder','male.child','male.adult','male.elder']);
 const structuralRequestTypes = new Set(['changeOccupation', 'moveHousehold', 'formMarriage', 'addChild']);
+const validRoutineCategories = new Set(['household','work','study','market','social','travel','leisure','community','care','custom']);
+const canonicalRoutineIdPattern = /^routine\.(household|work|study|market|social|travel|leisure|community|care|custom)\.[a-z][a-z0-9-]*\.[a-z][a-z0-9-]*$/;
+const factIdPattern = /^fact\.[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/;
+const tokenPattern = /^[a-z][a-z0-9-]*$/;
+const legacyRoutineIds = new Set([
+  'routine.generic.market',
+  'routine.generic.neighbor',
+  'routine.generic.rain',
+  'routine.generic.food',
+  'routine.generic.evening',
+  'routine.student.copy',
+  'routine.student.friend',
+  'routine.apprentice.tools',
+  'routine.apprentice.errand',
+  'routine.cloth.stock',
+  'routine.cloth.customer',
+  'routine.cloth.close',
+  'routine.potter.kiln',
+  'routine.potter.clay',
+  'routine.potter.crack',
+  'routine.carpenter.tool',
+  'routine.carpenter.repair',
+  'routine.account.check',
+  'routine.account.tea',
+  'routine.physician.medicine',
+  'routine.physician.quiet',
+  'routine.lock.water',
+  'routine.lock.grass',
+  'routine.vendor.stock',
+  'routine.vendor.change',
+  'routine.farmer.tool',
+  'routine.farmer.field',
+  'routine.courier.wait',
+  'routine.courier.shoes',
+  'routine.performer.practice',
+  'routine.performer.costume',
+  'routine.midwife.prepare',
+  'routine.retired.repair',
+  'routine.retired.friends',
+]);
 
 function fnv1a32(value) {
   let hash = 2166136261;
@@ -208,10 +249,48 @@ for (const item of residentProfiles.presentationStyles) {
   }
 }
 
-for (const routine of routines.items ?? []) {
-  if (routine.occupation !== null && !occupationIds.has(routine.occupation)) {
-    throw new Error(`${routine.id}: references unknown occupation ${routine.occupation}.`);
+requireArray(routines.items, 'Routine Library V2');
+for (const routine of routines.items) {
+  if (!legacyRoutineIds.has(routine.id) && !canonicalRoutineIdPattern.test(routine.id)) throw new Error(`${routine.id}: new Routine IDs must use routine.<domain>.<scope>.<action>.`);
+  if (!validRoutineCategories.has(routine.category)) throw new Error(`${routine.id}: invalid category ${routine.category}.`);
+  if (!legacyRoutineIds.has(routine.id) && routine.id.split('.')[1] !== routine.category) throw new Error(`${routine.id}: category must match the ID domain.`);
+  requireArray(routine.sourceFacts, `${routine.id}.sourceFacts`);
+  assertUniqueStrings(routine.sourceFacts, `${routine.id}.sourceFacts`);
+  for (const factId of routine.sourceFacts) if (!factIdPattern.test(factId)) throw new Error(`${routine.id}: invalid source Fact ID ${factId}.`);
+  const rule = routine.eligibility;
+  if (!rule || typeof rule !== 'object') throw new Error(`${routine.id}.eligibility is required.`);
+  for (const field of ['occupations','occupationGroups','lifeStages','genders','weather']) {
+    if (!Array.isArray(rule[field])) throw new Error(`${routine.id}.eligibility.${field} must be an array.`);
+    assertUniqueStrings(rule[field], `${routine.id}.eligibility.${field}`);
   }
+  for (const occupationId of rule.occupations) if (!occupationIds.has(occupationId)) throw new Error(`${routine.id}: unknown occupation ${occupationId}.`);
+  for (const groupId of rule.occupationGroups) if (!occupationGroupIds.has(groupId)) throw new Error(`${routine.id}: unknown occupation group ${groupId}.`);
+  validateFilterList(rule.lifeStages, validLifeStages, `${routine.id}.eligibility.lifeStages`);
+  validateFilterList(rule.genders, validGenders, `${routine.id}.eligibility.genders`);
+  for (const weatherId of rule.weather) if (!tokenPattern.test(weatherId)) throw new Error(`${routine.id}: invalid weather token ${weatherId}.`);
+  validateWeight(routine.weight, routine.id);
+  if (!Number.isInteger(routine.cooldownDays) || routine.cooldownDays < 0) throw new Error(`${routine.id}.cooldownDays must be an integer >= 0.`);
+  requireArray(routine.variants, `${routine.id}.variants`);
+  const variantTexts = new Set();
+  for (const [variantIndex, variant] of routine.variants.entries()) {
+    if (!variant || typeof variant.text !== 'string' || !variant.text.trim()) throw new Error(`${routine.id}.variants[${variantIndex}].text is required.`);
+    validateWeight(variant.weight, `${routine.id}.variants[${variantIndex}]`);
+    if (variantTexts.has(variant.text)) throw new Error(`${routine.id}: duplicate variant text ${variant.text}.`);
+    variantTexts.add(variant.text);
+  }
+}
+
+const routineIndexById = new Map([...routines.items].map((item) => item.id).sort().map((id, index) => [id, index]));
+const compiledRoutineCatalog = {
+  schema: 'wanhu.routine-catalog.v2',
+  items: routines.items.map((item) => ({ ...item, runtimeIndex: routineIndexById.get(item.id) })),
+};
+
+function routineMatchesOccupation(routine, occupation) {
+  const rule = routine.eligibility;
+  if (rule.occupations.length && !rule.occupations.includes(occupation.id)) return false;
+  if (rule.occupationGroups.length && !rule.occupationGroups.includes(occupation.groupId)) return false;
+  return true;
 }
 
 
@@ -310,7 +389,7 @@ const occupationCoverage = occupations.items.map((occupation) => ({
   occupationGroupId: occupation.groupId,
   lifeEvents: lifeEvents.items.filter((event) => eventMatchesOccupation(event, occupation.id)).length,
   lifeChapters: lifeEvents.items.filter((event) => event.recordToHistory && eventMatchesOccupation(event, occupation.id)).length,
-  routines: routines.items.filter((routine) => routine.occupation === occupation.id).length,
+  routines: compiledRoutineCatalog.items.filter((routine) => routineMatchesOccupation(routine, occupation)).length,
 }));
 
 const groupCoverage = occupationGroups.items.map((group) => {
@@ -331,6 +410,12 @@ const groupCoverage = occupationGroups.items.map((group) => {
     lifeChapters: chapterIds.size,
   };
 });
+
+const routineCategoryCoverage = [...validRoutineCategories].map((category) => ({
+  category,
+  definitions: compiledRoutineCatalog.items.filter((item) => item.category === category).length,
+  variants: compiledRoutineCatalog.items.filter((item) => item.category === category).reduce((sum, item) => sum + item.variants.length, 0),
+}));
 
 const referencedTags = new Set();
 const producedTags = new Set();
@@ -365,6 +450,11 @@ const coverage = {
     skinPalettes: portrait.skinPalettes.length,
     hairPalettes: portrait.hairPalettes.length,
   },
+  routines: {
+    total: compiledRoutineCatalog.items.length,
+    variants: compiledRoutineCatalog.items.reduce((sum, item) => sum + item.variants.length, 0),
+    categories: routineCategoryCoverage,
+  },
   lifeTags: {
     total: lifeTags.items.length,
     referencedByEligibility: referencedTags.size,
@@ -386,9 +476,10 @@ await writeFile(join(generatedDir, 'stable-id-registry.json'), `${JSON.stringify
 await writeFile(join(generatedDir, 'name-catalog-v2.json'), `${JSON.stringify(nameCatalog, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'life-tags.json'), `${JSON.stringify(lifeTags, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'occupation-groups.json'), `${JSON.stringify(occupationGroups, null, 2)}\n`, 'utf8');
+await writeFile(join(generatedDir, 'routine-catalog-v2.json'), `${JSON.stringify(compiledRoutineCatalog, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'portrait-catalog.json'), `${JSON.stringify(portraitCatalog, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'resident-profile-catalog.json'), `${JSON.stringify(residentProfiles, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'content-coverage.json'), `${JSON.stringify(coverage, null, 2)}\n`, 'utf8');
 
-console.log(`Validated ${registry.items.length} Stable IDs, ${residentProfiles.temperaments.length + residentProfiles.lifeFocuses.length + residentProfiles.presentationStyles.length} resident profile definitions, ${portrait.faceFamilies.length + portrait.hairStyles.length + portrait.outfitStyles.length + portrait.skinPalettes.length + portrait.hairPalettes.length} portrait definitions, ${occupationGroups.items.length} occupation groups, ${lifeTags.items.length} LifeTags and ${lifeEvents.items.length} LifeEvents.`);
+console.log(`Validated ${registry.items.length} Stable IDs, ${compiledRoutineCatalog.items.length} Routine definitions / ${compiledRoutineCatalog.items.reduce((sum, item) => sum + item.variants.length, 0)} variants, ${residentProfiles.temperaments.length + residentProfiles.lifeFocuses.length + residentProfiles.presentationStyles.length} resident profile definitions, ${portrait.faceFamilies.length + portrait.hairStyles.length + portrait.outfitStyles.length + portrait.skinPalettes.length + portrait.hairPalettes.length} portrait definitions, ${occupationGroups.items.length} occupation groups, ${lifeTags.items.length} LifeTags and ${lifeEvents.items.length} LifeEvents.`);
 console.log(`Coverage report emitted with ${warnings.length} non-fatal warning(s).`);

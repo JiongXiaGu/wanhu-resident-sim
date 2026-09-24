@@ -25,6 +25,9 @@ export type LifeFeedEntry = {
   text?: string;
   stage?: 0 | 1 | 2;
   sourceLabel?: string;
+  routineId?: string;
+  routineRuntimeIndex?: number;
+  variantIndex?: number;
 };
 
 export type ResidentLifeView = {
@@ -186,9 +189,27 @@ function eventEntries(event: LifeEventDefinition, assignment: LifeEventAssignmen
 }
 
 function routinePool(resident: ResidentRecord, definitions: ResidentDefinitions) {
-  const specific = definitions.routines.filter((item) => item.occupation === resident.occupationId && !item.weather && !item.season);
-  const generic = definitions.routines.filter((item) => item.occupation === null && !item.weather && !item.season);
-  return specific.length ? [...specific, ...generic] : generic;
+  const occupation = occupationFor(definitions, resident.occupationId);
+  return definitions.routines.filter((item) => {
+    const rule = item.eligibility;
+    if (rule.occupations.length && !rule.occupations.includes(resident.occupationId)) return false;
+    if (rule.occupationGroups.length && (!occupation || !rule.occupationGroups.includes(occupation.groupId))) return false;
+    if (rule.lifeStages.length && !rule.lifeStages.includes(resident.lifeStage)) return false;
+    if (rule.genders.length && !rule.genders.includes(resident.gender)) return false;
+    if (rule.weather.length) return false;
+    return true;
+  });
+}
+
+function routineVariantFor(resident: ResidentRecord, routine: ResidentDefinitions['routines'][number], day: number) {
+  const total = routine.variants.reduce((sum, variant) => sum + Math.max(0, variant.weight), 0);
+  let cursor = (hashText(`${resident.seed}:routine-variant:${routine.id}:${day}`) / 4294967296) * total;
+  for (let index = 0; index < routine.variants.length; index += 1) {
+    cursor -= Math.max(0, routine.variants[index].weight);
+    if (cursor <= 0) return { index, variant: routine.variants[index] };
+  }
+  const index = routine.variants.length - 1;
+  return { index, variant: routine.variants[index] };
 }
 
 function routineEntries(
@@ -200,33 +221,48 @@ function routineEntries(
 ) {
   const entries: LifeFeedEntry[] = resident.recentLifeLog
     .filter((entry) => entry.day <= gameDay)
-    .map((entry) => ({ id: entry.id, day: entry.day, kind: 'routine', title: entry.title, text: entry.text }));
+    .map((entry) => ({
+      id: entry.id, day: entry.day, kind: 'routine', title: entry.title, text: entry.text,
+      routineId: entry.routineId, routineRuntimeIndex: entry.routineRuntimeIndex, variantIndex: entry.variantIndex,
+    }));
 
   if (gameDay <= baselineDay) return entries.sort((a, b) => b.day - a.day);
   const pool = routinePool(resident, definitions);
   if (!pool.length) return entries.sort((a, b) => b.day - a.day);
 
   const { min, max } = definitions.generation.routineIntervalDays;
+  const lastRoutineDay = new Map<string, number>();
+  for (const entry of entries) if (entry.routineId) lastRoutineDay.set(entry.routineId, Math.max(lastRoutineDay.get(entry.routineId) ?? -Infinity, entry.day));
   let day = baselineDay + 2 + (resident.seed % 4);
-  let previousText = entries[0]?.title ?? '';
+  let previousRoutineId = [...entries].sort((a, b) => b.day - a.day)[0]?.routineId ?? '';
   while (day <= gameDay) {
     if (!blockedDays.some((blocked) => Math.abs(blocked - day) <= 1)) {
       const startIndex = hashText(`${resident.seed}:routine:${day}`) % pool.length;
       let template = pool[startIndex];
+      let found = false;
       for (let offset = 0; offset < pool.length; offset += 1) {
         const candidate = pool[(startIndex + offset) % pool.length];
-        if (candidate.text !== previousText) {
-          template = candidate;
-          break;
-        }
+        const previousDay = lastRoutineDay.get(candidate.id);
+        if (candidate.id === previousRoutineId) continue;
+        if (previousDay !== undefined && day - previousDay < candidate.cooldownDays) continue;
+        template = candidate;
+        found = true;
+        break;
       }
-      entries.push({
-        id: `${resident.id}:${template.id}:${day}`,
-        day,
-        kind: 'routine',
-        title: template.text,
-      });
-      previousText = template.text;
+      if (found || !lastRoutineDay.has(template.id) || day - (lastRoutineDay.get(template.id) ?? day) >= template.cooldownDays) {
+        const { index: variantIndex, variant } = routineVariantFor(resident, template, day);
+        entries.push({
+          id: `${resident.id}:${template.id}:${day}`,
+          day,
+          kind: 'routine',
+          routineId: template.id,
+          routineRuntimeIndex: template.runtimeIndex,
+          variantIndex,
+          title: variant.text,
+        });
+        previousRoutineId = template.id;
+        lastRoutineDay.set(template.id, day);
+      }
     }
     day += rangeValue(resident.seed, `routine-interval:${day}`, min, max);
   }

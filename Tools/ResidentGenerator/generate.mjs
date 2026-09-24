@@ -10,12 +10,15 @@ async function readJson(relativePath) {
 
 const nameCatalog = await readJson('Web/public/generated/name-catalog-v2.json');
 const occupations = await readJson('Content/Occupations/occupations.json');
-const routines = await readJson('Content/Routines/routine-templates.json');
+const routines = await readJson('Web/public/generated/routine-catalog-v2.json');
 const generation = await readJson('Content/Simulation/resident-generation.json');
 const lifeEvents = await readJson('Content/LifeEvents/life-events.json');
 
 if (nameCatalog.schema !== 'wanhu.name-catalog.v2') {
   throw new Error(`ResidentGenerator expected wanhu.name-catalog.v2, got ${nameCatalog.schema}`);
+}
+if (routines.schema !== 'wanhu.routine-catalog.v2') {
+  throw new Error(`ResidentGenerator expected wanhu.routine-catalog.v2, got ${routines.schema}`);
 }
 
 const HISTORY_PHASES = [
@@ -125,31 +128,55 @@ function pickOccupation(rng, age, gender) {
   return weightedPick(rng, eligibleOccupations(age, gender));
 }
 
-function availableRoutinePool(occupationId) {
-  const specific = routines.items.filter((item) => item.occupation === occupationId && !item.weather && !item.season);
-  const generic = routines.items.filter((item) => item.occupation === null && !item.weather && !item.season);
-  return specific.length ? [...specific, ...generic] : generic;
+function routineMatchesResident(item, resident) {
+  const rule = item.eligibility;
+  if (rule.occupations.length && !rule.occupations.includes(resident.occupationId)) return false;
+  if (rule.occupationGroups.length && !rule.occupationGroups.includes(resident.occupationGroupId)) return false;
+  if (rule.lifeStages.length && !rule.lifeStages.includes(resident.lifeStage)) return false;
+  if (rule.genders.length && !rule.genders.includes(resident.gender)) return false;
+  if (rule.weather.length) return false;
+  return true;
+}
+
+function availableRoutinePool(resident) {
+  return routines.items.filter((item) => routineMatchesResident(item, resident));
+}
+
+function pickRoutineVariant(rng, routine) {
+  const indexed = routine.variants.map((variant, index) => ({ ...variant, index }));
+  return weightedPick(rng, indexed);
 }
 
 function buildRecentLifeLog(resident, rng) {
-  const pool = availableRoutinePool(resident.occupationId);
+  const pool = availableRoutinePool(resident);
   const result = [];
   if (!pool.length) return result;
 
   const target = Math.min(generation.recentLifeLogCapacity, randomInt(rng, 4, 7));
   const interval = generation.routineIntervalDays;
   const recentTemplateIds = [];
+  const lastRoutineDay = new Map();
   let day = generation.currentDay - randomInt(rng, 1, 5);
   const minimumDay = generation.currentDay - generation.routineWindowDays;
 
   while (result.length < target && day >= minimumDay) {
-    const item = weightedPickAvoiding(rng, pool, new Set(recentTemplateIds));
+    const cooldownPool = pool.filter((item) => {
+      const previousDay = lastRoutineDay.get(item.id);
+      return previousDay === undefined || Math.abs(previousDay - day) >= item.cooldownDays;
+    });
+    const candidates = cooldownPool.length ? cooldownPool : pool;
+    const item = weightedPickAvoiding(rng, candidates, new Set(recentTemplateIds));
+    const variant = pickRoutineVariant(rng, item);
     result.push({
       id: `${resident.id}:${item.id}:${day}`,
       day,
       kind: 'routine',
-      title: item.text,
+      routineId: item.id,
+      routineRuntimeIndex: item.runtimeIndex,
+      variantIndex: variant.index,
+      title: variant.text,
     });
+    lastRoutineDay.set(item.id, day);
     recentTemplateIds.unshift(item.id);
     recentTemplateIds.splice(2);
     day -= randomInt(rng, interval.min, interval.max);

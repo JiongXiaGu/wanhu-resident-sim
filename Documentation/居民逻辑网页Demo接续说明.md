@@ -4,24 +4,25 @@
 
 ## 接手顺序
 
-读取最新 `main` 与 SHA、`AGENTS.md`、`README.md`、本文件，再按任务读取对应领域文档。居民资料与记录任务先读 [居民个人资料与头像派生 V1](居民个人资料与头像派生V1.md)、[居民事实事件与人生记录运行时设计](居民事实事件与人生记录运行时设计.md)、[居民生活记录与故事连续性](居民生活记录与故事连续性.md)；头像任务再读 [Avatar Workshop](Avatar%20Workshop.md)、[Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md)。历史 Phase 文档只用于追溯已完成阶段，不得把旧“当前执行点”覆盖到现在。
+读取最新 `main` 与 SHA、`AGENTS.md`、`README.md`、本文件，再按任务读取对应领域文档。当前日常事件任务先读 [日常事件库 V2](日常事件库V2.md)、[居民事实事件与人生记录运行时设计](居民事实事件与人生记录运行时设计.md)、[居民生活记录与故事连续性](居民生活记录与故事连续性.md)；居民资料任务再读 [居民个人资料与头像派生 V1](居民个人资料与头像派生V1.md)；头像任务再读 [Avatar Workshop](Avatar%20Workshop.md)、[Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md)。历史 Phase 文档只用于追溯已完成阶段，不得把旧“当前执行点”覆盖到现在。
 
 先检查目标源码与当前 SHA 的 Actions。不要用聊天记忆代替仓库。
 
 ## 当前执行点
 
-当前主线是 **Resident Profile V1 已落地 + 居民记录系统准备**。
+当前主线是 **Routine Library V2：R0 契约已落地，下一步 R1 泛居民城市日常扩充**。
 
-已经完成：
+R0 已确定：
 
-- Resident Panel 已重构为 Portrait-first Context Surface。
-- Resident Profile V1 已进入 Content → Compiler → Resident Snapshot → Web 消费链，稳定字段为 temperament / lifeFocus / presentationStyle。
-- 未手动编辑的居民可由 Profile、年龄性别、职业组、财富与稳定 seed 确定性派生 `chibi-cute-v1` 默认 Recipe。
-- 头像优先级为：玩家保存 Avatar Recipe > Profile 派生默认 > 冻结 Portrait fallback。
-- Phase 8D2 童老头像扩库已完成，当前资产基线为 6 Face / 58 Hair / 52 Outfit / 8 Expression，共 124 个可选资产。
-- 旧三 Pack 只保留迁移 alias；compatibility-only Hair/Outfit 不进入 UI、搜索或 Random。
+- `routine.<domain>.<scope>.<action>` 新命名规则，旧 V1 Stable ID 保留；
+- `wanhu.routines.v2`：category / sourceFacts / eligibility / weight / cooldownDays / variants；
+- Compiler 生成 `routine-catalog-v2.json` 与 build-local RuntimeIndex；
+- RecentLifeLog 记录 RoutineId / RuntimeIndex / VariantIndex，UI 仍通过定义解析文本；
+- Variant 发布后只末尾追加，不重排；
+- Coverage 统计 Routine 定义、Variant、category 与职业覆盖；
+- Web synthetic Routine 继续用于验证 UI，但带天气条件的内容等真实 Fact 链后再触发。
 
-当前不再默认继续堆头像素材。没有用户明确新需求时，头像主线保持基线维护，优先把居民“事实 → 近期记录 → 进行中故事 → 长期人生经历”的职责与数据边界整理清楚。
+接下来 R1 只扩充泛居民城市日常，优先家庭、市场、邻里、出行、休闲和公共生活，目标约 80～120 个定义。先按 Coverage 找缺口，不先做职业大批量，也不同时实现最终 Unity ECS Fact Stream。
 
 ## 当前记录链边界
 

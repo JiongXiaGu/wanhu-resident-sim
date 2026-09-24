@@ -1,43 +1,813 @@
 {
-  "schema": "wanhu.routines.v1",
+  "schema": "wanhu.routines.v2",
   "items": [
-    { "id": "routine.generic.market", "occupation": null, "text": "去早市买了些家里缺的东西", "weight": 2 },
-    { "id": "routine.generic.neighbor", "occupation": null, "text": "和邻居在巷口说了一会儿话", "weight": 2 },
-    { "id": "routine.generic.rain", "occupation": null, "text": "午后下了阵雨，比平日早些收了工", "weight": 1, "weather": ["rain"] },
-    { "id": "routine.generic.food", "occupation": null, "text": "回家时顺手带了些吃食", "weight": 2 },
-    { "id": "routine.generic.evening", "occupation": null, "text": "晚上在门口坐了一阵才进屋", "weight": 1 },
-
-    { "id": "routine.student.copy", "occupation": "occupation.student", "text": "把先生留的几行字重新誊了一遍", "weight": 2 },
-    { "id": "routine.student.friend", "occupation": "occupation.student", "text": "放学后和同窗一路走回了坊里", "weight": 1 },
-    { "id": "routine.apprentice.tools", "occupation": "occupation.apprentice", "text": "收工前把今天用过的工具擦干净了", "weight": 2 },
-    { "id": "routine.apprentice.errand", "occupation": "occupation.apprentice", "text": "替师傅跑了一趟腿才回家", "weight": 1 },
-
-    { "id": "routine.cloth.stock", "occupation": "occupation.cloth-worker", "text": "午后盘了一遍架上的布", "weight": 2 },
-    { "id": "routine.cloth.customer", "occupation": "occupation.cloth-worker", "text": "替熟客留下一匹常买的布", "weight": 1 },
-    { "id": "routine.cloth.close", "occupation": "occupation.cloth-worker", "text": "收铺前又清点了一遍柜后的货", "weight": 2 },
-
-    { "id": "routine.potter.kiln", "occupation": "occupation.potter", "text": "天没亮就去看了一遍窑火", "weight": 2 },
-    { "id": "routine.potter.clay", "occupation": "occupation.potter", "text": "去泥场看了看新送来的陶土", "weight": 1 },
-    { "id": "routine.potter.crack", "occupation": "occupation.potter", "text": "午后挑掉了两只裂口的旧坛", "weight": 1 },
-
-    { "id": "routine.carpenter.tool", "occupation": "occupation.carpenter", "text": "收工前把刨子重新磨了一遍", "weight": 2 },
-    { "id": "routine.carpenter.repair", "occupation": "occupation.carpenter", "text": "顺手替邻居修好了一只旧门栓", "weight": 1 },
-    { "id": "routine.account.check", "occupation": "occupation.account-clerk", "text": "上午对完了昨日留下的几笔旧账", "weight": 2 },
-    { "id": "routine.account.tea", "occupation": "occupation.account-clerk", "text": "午后去茶铺见了一个旧相识", "weight": 1 },
-    { "id": "routine.physician.medicine", "occupation": "occupation.physician", "text": "回家前去药铺补了几味常用药", "weight": 2 },
-    { "id": "routine.physician.quiet", "occupation": "occupation.physician", "text": "今日没有急症，难得按时吃了晚饭", "weight": 1 },
-    { "id": "routine.lock.water", "occupation": "occupation.lock-keeper", "text": "天亮后先看了一遍河面水位", "weight": 2 },
-    { "id": "routine.lock.grass", "occupation": "occupation.lock-keeper", "text": "收工前清掉了闸边缠住的水草", "weight": 1 },
-    { "id": "routine.vendor.stock", "occupation": "occupation.vendor", "text": "收摊前把剩下的货重新理了一遍", "weight": 2 },
-    { "id": "routine.vendor.change", "occupation": "occupation.vendor", "text": "今日客人不多，比往常早些收了摊", "weight": 1 },
-    { "id": "routine.farmer.tool", "occupation": "occupation.farmer", "text": "回家后把明日要用的农具修了一遍", "weight": 2 },
-    { "id": "routine.farmer.field", "occupation": "occupation.farmer", "text": "清早去地里看了看新长出的苗", "weight": 2 },
-    { "id": "routine.courier.wait", "occupation": "occupation.courier", "text": "在街口等了半日才接到一趟活", "weight": 1 },
-    { "id": "routine.courier.shoes", "occupation": "occupation.courier", "text": "回家后把磨开的鞋底重新补了补", "weight": 1 },
-    { "id": "routine.performer.practice", "occupation": "occupation.performer", "text": "散场后又把一段没唱稳的地方练了几遍", "weight": 2 },
-    { "id": "routine.performer.costume", "occupation": "occupation.performer", "text": "午后帮着把几件旧戏服重新理好", "weight": 1 },
-    { "id": "routine.midwife.prepare", "occupation": "occupation.midwife", "text": "把接生常用的布和剪子重新收拾了一遍", "weight": 2 },
-    { "id": "routine.retired.repair", "occupation": "occupation.retired-craftsman", "text": "坐在门前修了一只旧木凳", "weight": 2 },
-    { "id": "routine.retired.friends", "occupation": "occupation.retired-craftsman", "text": "午后和几个老熟人说了会儿话", "weight": 1 }
+    {
+      "id": "routine.generic.market",
+      "category": "market",
+      "sourceFacts": [
+        "fact.market.purchase-household-goods-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "去早市买了些家里缺的东西",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.generic.neighbor",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.neighbor-conversation-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "和邻居在巷口说了一会儿话",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.generic.rain",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.returned-early-weather"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [
+          "rain"
+        ]
+      },
+      "weight": 1,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "午后下了阵雨，比平日早些收了工",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.generic.food",
+      "category": "market",
+      "sourceFacts": [
+        "fact.market.food-purchase-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "回家时顺手带了些吃食",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.generic.evening",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.sat-outside-evening"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "晚上在门口坐了一阵才进屋",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.student.copy",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.copy-practice-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.student"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "把先生留的几行字重新誊了一遍",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.student.friend",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.walk-home-with-classmate-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.student"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "放学后和同窗一路走回了坊里",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.apprentice.tools",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.tool-cleaning-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.apprentice"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "收工前把今天用过的工具擦干净了",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.apprentice.errand",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.errand-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.apprentice"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "替师傅跑了一趟腿才回家",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.cloth.stock",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.stock-check-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.cloth-worker"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "午后盘了一遍架上的布",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.cloth.customer",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.customer-goods-reserved"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.cloth-worker"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "替熟客留下一匹常买的布",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.cloth.close",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.shop-closing-stock-check"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.cloth-worker"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "收铺前又清点了一遍柜后的货",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.potter.kiln",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.kiln-check-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.potter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "天没亮就去看了一遍窑火",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.potter.clay",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.material-inspection-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.potter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "去泥场看了看新送来的陶土",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.potter.crack",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.damaged-goods-sorted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.potter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "午后挑掉了两只裂口的旧坛",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.carpenter.tool",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.tool-maintenance-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.carpenter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "收工前把刨子重新磨了一遍",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.carpenter.repair",
+      "category": "community",
+      "sourceFacts": [
+        "fact.community.neighbor-repair-help-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.carpenter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 12,
+      "variants": [
+        {
+          "text": "顺手替邻居修好了一只旧门栓",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.account.check",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.accounts-check-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.account-clerk"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "上午对完了昨日留下的几笔旧账",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.account.tea",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.met-old-acquaintance"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.account-clerk"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "午后去茶铺见了一个旧相识",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.physician.medicine",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.medical-supplies-restocked"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.physician"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "回家前去药铺补了几味常用药",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.physician.quiet",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.ate-evening-meal-on-time"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.physician"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "今日没有急症，难得按时吃了晚饭",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.lock.water",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.water-level-check-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.lock-keeper"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "天亮后先看了一遍河面水位",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.lock.grass",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.waterway-debris-cleared"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.lock-keeper"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "收工前清掉了闸边缠住的水草",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.vendor.stock",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.stall-stock-sorted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.vendor"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "收摊前把剩下的货重新理了一遍",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.vendor.change",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.stall-closed-early"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.vendor"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "今日客人不多，比往常早些收了摊",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.farmer.tool",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.farm-tool-maintenance-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.farmer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "回家后把明日要用的农具修了一遍",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.farmer.field",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.crop-growth-check-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.farmer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "清早去地里看了看新长出的苗",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.courier.wait",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.waited-for-job"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.courier"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "在街口等了半日才接到一趟活",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.courier.shoes",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.work-shoes-repaired"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.courier"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "回家后把磨开的鞋底重新补了补",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.performer.practice",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.performance-practice-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.performer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "散场后又把一段没唱稳的地方练了几遍",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.performer.costume",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.costume-maintenance-completed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.performer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "午后帮着把几件旧戏服重新理好",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.midwife.prepare",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.midwife-kit-prepared"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.midwife"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "把接生常用的布和剪子重新收拾了一遍",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.retired.repair",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.repaired-old-furniture"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.retired-craftsman"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 2,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "坐在门前修了一只旧木凳",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.retired.friends",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.chatted-with-old-friends"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.retired-craftsman"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "午后和几个老熟人说了会儿话",
+          "weight": 1
+        }
+      ]
+    }
   ]
 }

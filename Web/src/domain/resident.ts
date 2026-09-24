@@ -36,6 +36,9 @@ export type ResidentLifeLogRecord = {
   id: string;
   day: number;
   kind: 'routine' | 'story' | 'state';
+  routineId?: string;
+  routineRuntimeIndex?: number;
+  variantIndex?: number;
   title: string;
   text?: string;
 };
@@ -142,13 +145,23 @@ export type OccupationDefinition = {
   offActivity: string;
 };
 
+export type RoutineCategory = 'household' | 'work' | 'study' | 'market' | 'social' | 'travel' | 'leisure' | 'community' | 'care' | 'custom';
+
 export type RoutineDefinition = {
   id: string;
-  occupation: string | null;
-  text: string;
+  runtimeIndex: number;
+  category: RoutineCategory;
+  sourceFacts: string[];
+  eligibility: {
+    occupations: string[];
+    occupationGroups: string[];
+    lifeStages: LifeStageId[];
+    genders: Gender[];
+    weather: string[];
+  };
   weight: number;
-  weather?: string[];
-  season?: string[];
+  cooldownDays: number;
+  variants: Array<{ text: string; weight: number }>;
 };
 
 export type PortraitCatalogFaceFamily = {
@@ -264,7 +277,7 @@ export type ResidentGenerationDefinition = {
 };
 
 export type ResidentDefinitions = {
-  schema: 'wanhu.resident-definitions.v6';
+  schema: 'wanhu.resident-definitions.v7';
   names: {
     surnames: string[];
     maleGivenNames: string[];
@@ -285,6 +298,8 @@ export type ResidentDefinitions = {
     residentTemperamentCount: number;
     residentLifeFocusCount: number;
     residentPresentationStyleCount: number;
+    routineDefinitionCount: number;
+    routineVariantCount: number;
   };
   occupations: OccupationDefinition[];
   routines: RoutineDefinition[];

@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wanhu.local/schemas/routine.schema.json",
+  "title": "Wanhu Routine Library V2",
+  "type": "object",
+  "required": [
+    "schema",
+    "items"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "wanhu.routines.v2"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/routine"
+      }
+    }
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$"
+    },
+    "token": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "eligibility": {
+      "type": "object",
+      "required": [
+        "occupations",
+        "occupationGroups",
+        "lifeStages",
+        "genders",
+        "weather"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "occupations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "occupationGroups": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "lifeStages": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "child",
+              "teen",
+              "young-adult",
+              "adult",
+              "middle-age",
+              "elder"
+            ]
+          }
+        },
+        "genders": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "male",
+              "female"
+            ]
+          }
+        },
+        "weather": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/token"
+          }
+        }
+      }
+    },
+    "variant": {
+      "type": "object",
+      "required": [
+        "text",
+        "weight"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "weight": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "routine": {
+      "type": "object",
+      "required": [
+        "id",
+        "category",
+        "sourceFacts",
+        "eligibility",
+        "weight",
+        "cooldownDays",
+        "variants"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "category": {
+          "enum": [
+            "household",
+            "work",
+            "study",
+            "market",
+            "social",
+            "travel",
+            "leisure",
+            "community",
+            "care",
+            "custom"
+          ]
+        },
+        "sourceFacts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^fact\\.[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$"
+          }
+        },
+        "eligibility": {
+          "$ref": "#/$defs/eligibility"
+        },
+        "weight": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "cooldownDays": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "variants": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/variant"
+          }
+        }
+      }
+    }
+  }
+}

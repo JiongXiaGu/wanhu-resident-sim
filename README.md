@@ -19,7 +19,7 @@ http://localhost:5173/?view=avatar-editor
 
 头像工坊默认进入自由创作，先选男/女、儿童/成年/老年，再选脸型、头发、衣服、表情。六份样板分别保存。指定对象模式可以编辑玩家示例或当前城市居民；从居民身份栏进入直接绑定该居民，年龄/性别不由工坊修改。
 
-## 当前阶段：Resident Profile V1 + 居民记录链准备
+## 当前阶段：Routine Library V2
 
 居民信息面板的 Portrait-first 重构已经完成；Resident Profile V1、Profile 编译器和 Profile 派生默认头像也已进入主线。居民当前拥有稳定的 **性情 / 生活侧重 / 穿戴倾向**，构建管线根据居民 seed、职业组与家庭财富生成资料。
 
@@ -33,7 +33,7 @@ http://localhost:5173/?view=avatar-editor
 > 冻结 Portrait fallback
 ```
 
-当前下一步不再默认继续扩充头像素材，而是围绕 [居民事实事件、日常记录与人生经历运行时设计](Documentation/居民事实事件与人生记录运行时设计.md) 整理事实事件 → Routine / LifeEvent / Life Chapter 的记录链，并保持 Web Demo 与未来 Unity ECS 实现边界分离。详见 [居民个人资料与头像派生 V1](Documentation/居民个人资料与头像派生V1.md) 与 [Resident Panel Portrait-first 布局](Documentation/Resident%20Panel%20Portrait-first布局.md)。
+当前已经完成 Routine Library V2 的 R0 契约：新命名规则、`wanhu.routines.v2`、多文本 Variant、Cooldown、Compiler RuntimeIndex 与 Coverage。下一步进入 R1，分批扩充泛居民的家庭、市场、邻里、出行、休闲和公共生活。详见 [日常事件库 V2](Documentation/日常事件库V2.md) 与 [居民事实事件、日常记录与人生经历运行时设计](Documentation/居民事实事件与人生记录运行时设计.md)。
 
 ## 头像基线：Phase 8D2 已完成
 
