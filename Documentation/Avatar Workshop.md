@@ -10,7 +10,7 @@
 
 ## 当前资产与文字
 
-唯一运行时 Pack 为 `chibi-cute-v1`。用户认可 8D1 后进入 8D2 童老扩库，当前 **6 Face / 58 Hair / 52 Outfit / 8 Expression**，共 124 个玩家可选资产。六 Face ID 在六 Frame 各有画稿，不是 36 个玩家选项。
+唯一运行时 Pack 为 `chibi-cute-v1`。Phase 8D2 童老扩库已经完成，当前 **6 Face / 58 Hair / 52 Outfit / 8 Expression**，共 124 个玩家可选资产。六 Face ID 在六 Frame 各有画稿，不是 36 个玩家选项。当前没有主动头像扩库批次；本系统进入基线维护并服务 Resident Profile 派生默认头像。
 
 8D2 新增儿童 6 Hair / 6 Outfit、老人 6 Hair / 6 Outfit，24 个新 ID 对应 32 个适用 Frame / 资产组合。童老按年龄独立绘制，不使用成年缩放；本批不重画旧素材。具体清单和审查见 [Phase 8D2 童老头像资产扩充](Phase%208D2%20童老头像资产扩充.md)。
 
@@ -60,7 +60,7 @@ wanhu.avatar.v1:city:<seed>:resident:<id>
 
 旧键不变，不批量迁移。一个目标一份记录；自由样板互不覆盖，也不覆盖居民。切对象/Frame、关闭时有未保存修改必须确认。恢复仅删除当前目标覆盖，同目标跨标签页更新提示冲突，配额或读写失败不能显示成功。延迟导入不能污染新目标。
 
-这是浏览器 localStorage Web 原型，不是账号/云存档或 Unity Save。JSON 不携带 Frame，导入前先选目标；PNG/SVG 导出当前所见 Frame。真实居民姓名、生日、性别、家庭、职业、故事、游戏日期不变。正式五字段 DNA 与 `Web/src/resident/portrait/` 冻结，未定制仍用正式 Renderer，移除覆盖恢复原图。
+这是浏览器 localStorage Web 原型，不是账号/云存档或 Unity Save。JSON 不携带 Frame，导入前先选目标；PNG/SVG 导出当前所见 Frame。真实居民姓名、生日、性别、家庭、职业、故事、游戏日期不变。正式五字段 DNA 与 `Web/src/resident/portrait/` 作为 fallback 保持冻结。未保存玩家覆盖的居民优先显示 Resident Profile 派生的 `chibi-cute-v1` 默认 Recipe；移除覆盖回到 Profile 派生默认，只有生成链不可用时才进入正式 Renderer fallback。
 
 ## 源码分工与 Review
 
@@ -70,4 +70,4 @@ packs/chibi/catalog.ts 保管原有描述和选项；theme-catalog.ts 保管 8D1
 
 正式批次跑 Build + Resident Visual Review，下载同 SHA Artifact 并打开真实桌面 UI / 诊断。原全部组合、Hair 跨 Face、Coverage、腮红、六框架保存、草稿确认、导入隔离、对象绑定和居民逻辑继续验证。8D1 保留其增量审查；8D2 追加童老新素材点选、描述检索、四 Frame JSON 往返与绑定，以及 132 份旧固定配方不变。静态图不能替代完整 UI / 存储通过。
 
-用户从 main 拉取测试，不交付压缩包；执行者内部仍下载 Artifact。8C 大交互优化暂缓，独立帽子、连续参数、自动 Hair fit、服务端同步和 Unity 迁移未实施。
+用户从 main 拉取测试，不交付压缩包；执行者内部仍下载 Artifact。8D2 已作为当前头像资产基线收尾；8C 大交互优化暂缓，独立帽子、连续参数、自动 Hair fit、服务端同步和 Unity 迁移未实施。没有明确新需求时，不自行开启新的头像扩库 Phase。

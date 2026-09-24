@@ -6,9 +6,9 @@
 
 本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
 
-## 当前执行点：Resident Profile V1 + 记录资源准备
+## 当前执行点：Resident Profile V1 已落地 + 记录系统准备
 
-Portrait-first 居民面板已完成；头像美术停在 Phase 8D2。本阶段开始给居民生成稳定个人资料，并用资料派生默认 `chibi-cute-v1` 头像。先读 `Documentation/居民个人资料与头像派生V1.md` 和 `Documentation/居民事实事件与人生记录运行时设计.md`。
+Portrait-first 居民面板、Resident Profile V1 与 Profile 派生默认头像已经落地；头像美术 Phase 8D2 已完成并作为当前基线，不再自行进入下一轮扩库。当前优先级转为验证居民个人资料如何稳定服务默认头像、后续 Utility / 故事 Eligibility，以及事实事件 → Routine / LifeEvent / Life Chapter 的记录链。先读 `Documentation/居民个人资料与头像派生V1.md` 和 `Documentation/居民事实事件与人生记录运行时设计.md`。
 
 Resident Profile 当前只有 temperament / lifeFocus / presentationStyle。它们由 Content/Residents/resident-profile-catalog.json 定义，ResidentProfileCompiler 在正式 portrait 编译后写入最终 snapshot。性情不决定脸型；职业、财富和资料只弱影响 Hair / Outfit / Expression。玩家保存 Avatar Recipe > 个人资料派生默认 > 冻结 Portrait fallback。
 
@@ -37,6 +37,8 @@ Unity 方向固定：行为树 / Schedule / Utility Job 不写字符串、不直
 ## 正式 portrait 边界
 
 `Web/src/resident/portrait/`、`Content/Portrait/`、五字段 ResidentPortraitDNA、六个 PortraitFrame 与原有五层 RenderPlan 保持冻结。本次可编辑头像只作为 ResidentAvatar 上的 Web 覆盖，未应用居民继续使用原 Renderer；移除覆盖恢复原图。不要向正式 DNA 添加表情或画风字段。
+
+居民头像优先级固定为：玩家保存 Avatar Recipe > Resident Profile 派生的 `chibi-cute-v1` 默认 Recipe > 冻结 Portrait fallback。未保存玩家覆盖时优先显示 Profile 派生头像；移除覆盖回到 Profile 派生默认，而不是直接回到旧 PortraitRenderer。正式五字段 DNA 与 fallback 本身仍保持冻结。
 
 编辑不得改变居民姓名、生日、性别、家庭、职业、故事和游戏日期。工坊在 App 当前会话内打开，不能通过另载一份快照掩盖对象绑定问题。
 

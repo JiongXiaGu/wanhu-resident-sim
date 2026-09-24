@@ -4,7 +4,7 @@
 
 This document specifies the existing fallback portrait path in `Web/src/resident/portrait/` and `Content/Portrait/`. Its geometry and runtime remain frozen. It is not the authoring guide for the new four-option Avatar Workshop; that Web-only override is documented in `Avatar Workshop.md`.
 
-Unedited residents use this fallback unchanged. A saved workshop override is selected by the `ResidentAvatar` facade using city seed and resident ID. It does not mutate the original ResidentPortraitDNA or catalog. Removing the override restores this renderer.
+This path is now the final fallback rather than the first default for every unedited resident. `ResidentAvatar` resolves sources in this order: saved Workshop override → Resident Profile-derived `chibi-cute-v1` recipe → this frozen PortraitRenderer fallback. Neither the saved override nor the generated recipe mutates the original ResidentPortraitDNA or portrait catalog. Removing a saved override returns to the Profile-derived default; this renderer is used only when the generated path is unavailable.
 
 ## Stable DNA and frames
 

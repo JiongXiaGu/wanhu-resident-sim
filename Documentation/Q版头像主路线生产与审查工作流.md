@@ -2,9 +2,11 @@
 
 ## 当前执行点
 
-**Phase 8D2：儿童与老年头像资产扩充。** 用户认可 8D1 后批准推进，从 `70ca1ccd9cc5fa75491267ce29d20043df942994` 承接；详见 [Phase 8D2 童老头像资产扩充](Phase%208D2%20童老头像资产扩充.md)。
+**头像主线当前处于基线维护，不再主动扩库。** Phase 8D2 已完成儿童与老年头像资产扩充；当前居民主线已经进入 Resident Profile V1 与 Profile 派生默认头像。头像系统现在的职责是提供稳定 Catalog、确定性 Recipe、玩家覆盖与冻结 fallback，而不是自行开始下一轮美术批次。
 
-儿童与老人各新增 6 Hair / 6 Outfit，共 12 Hair + 12 Outfit ID，32 个适用 Frame / 资产组合。全库当前 6 Face / 58 Hair / 52 Outfit / 8 Expression，124 个可选资产都有描述和关键词。原 132 份固定配方渲染不变。8C 大交互继续暂缓；不扩 Face / Expression、不恢复多 Pack、不迁 Unity。
+当前基线为 6 Face / 58 Hair / 52 Outfit / 8 Expression，共 124 个玩家可选资产。8D2 新增儿童与老人各 6 Hair / 6 Outfit，共 24 个新 ID、32 个适用 Frame / 资产组合；原 132 份固定配方保持冻结。Phase 8C 大交互继续暂缓；除非有明确新需求，不扩 Face / Expression、不恢复多 Pack、不迁 Unity。
+
+Resident Avatar 当前优先级为：玩家保存 Avatar Recipe > Resident Profile 派生的 `chibi-cute-v1` 默认 Recipe > 冻结 Portrait fallback。头像主线后续修改必须服务这条契约。
 
 ## 结构不变量
 
@@ -29,7 +31,8 @@ Catalog 为文字、可用性和兼容权威。8D1 新项使用 ThemeCatalogOpti
 | Phase 8B2 | 成年剩余画稿及三款童老衣领已交付，用户认为基本可行 |
 | Phase 8D1 | 四生活主题 32 新 ID 与检索已交付，用户认可继续推进 |
 | Phase 8C 暂缓 | 年龄/性别靠近预览、样板入口和当前对象清晰度 |
-| Phase 8D2 当前 | 儿童/老人各 6 Hair + 6 Outfit，独立画稿与正式批次回归 |
+| Phase 8D2 已完成 | 儿童/老人各 6 Hair + 6 Outfit，独立画稿与正式批次回归已形成当前资产基线 |
+| 当前维护 | 服务 Resident Profile 派生、玩家覆盖与 fallback 回归；无明确需求不继续扩库 |
 
 历史具体问题与旧新对照留在 8B1、8B2 阶段文档和 Git 历史；不把旧多 Pack 或已否定实验指令混入当前任务。每个新 ID 先说明轮廓差异与小尺寸识别依据，不靠改色凑数。
 
@@ -63,7 +66,7 @@ Catalog 为文字、可用性和兼容权威。8D1 新项使用 ThemeCatalogOpti
 
 8D1 图板和截图在 `avatar/phase8d/`，包括四主题、组合总览、六脸型及17 张真实 UI（八张主题工坊、八张全量列表首尾、一张居民绑定）。原生小图另存 native/，全量列表首尾须实际查看。弧线抽样与几何签名只提供有限 QA，不能替代人工审美，也不能把 CI PASS 写成用户认可。
 
-## 8D2 增量审查
+## 8D2 已完成基线审查
 
 保持原童老每类 12 项上限，本批实际每类最多 10。age-theme-catalog 是元数据权威，逐项文档 CI 核对；只改批次卡片标记和搜索提示，不改三栏或保存。132 份旧固定配方逐字节冻结，24 新 ID / 32 个允许组合实际点选，四份样板保存刷新、四次 JSON 往返与四种真实居民绑定必须通过。
 

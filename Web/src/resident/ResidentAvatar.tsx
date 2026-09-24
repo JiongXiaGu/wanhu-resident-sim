@@ -46,7 +46,7 @@ export function ResidentAvatar({
         outfitStyleId:outfitStyleId ?? portrait.outfitStyleId,
       })
     : resolveAppearance(context,{hairStyleId,outfitStyleId});
-  // 仅 Web 覆盖层。未应用的居民仍然使用冻结的正式 Renderer 和原有 DNA。
+  // 来源优先级：玩家保存覆盖 → Profile 派生 Q 版默认 → 冻结 PortraitRenderer fallback。
   if(custom)return <img className="avatar-custom-image" data-custom-avatar data-avatar-target={key} data-avatar-recipe={JSON.stringify(saved.recipe)} src={custom} width={96} height={96} alt={label??'居民自定义头像'}/>;
   if(generated&&generatedSource)return <img className="avatar-custom-image" data-generated-resident-avatar data-avatar-target={key} data-avatar-recipe={JSON.stringify(generated)} src={generatedSource} width={96} height={96} alt={label??'居民生成头像'}/>;
   return <PortraitRenderer dna={dna} context={context} lod={96} label={label}/>;

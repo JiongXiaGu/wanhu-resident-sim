@@ -4,30 +4,71 @@
 
 ## 接手顺序
 
-读取最新 main 与 SHA、AGENTS、README、本文件、玩法/生活/历史规范、Portrait System、Avatar Workshop、Q版头像主路线生产与审查工作流、开发与部署工作流。头像任务追加当前阶段规范；现为 [Phase 8D2 童老头像资产扩充](Phase%208D2%20童老头像资产扩充.md)。先读当前执行点，再检查源码与同 SHA Actions，不用聊天记忆覆盖仓库。
+读取最新 `main` 与 SHA、`AGENTS.md`、`README.md`、本文件，再按任务读取对应领域文档。居民资料与记录任务先读 [居民个人资料与头像派生 V1](居民个人资料与头像派生V1.md)、[居民事实事件与人生记录运行时设计](居民事实事件与人生记录运行时设计.md)、[居民生活记录与故事连续性](居民生活记录与故事连续性.md)；头像任务再读 [Avatar Workshop](Avatar%20Workshop.md)、[Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md)。历史 Phase 文档只用于追溯已完成阶段，不得把旧“当前执行点”覆盖到现在。
+
+先检查目标源码与当前 SHA 的 Actions。不要用聊天记忆代替仓库。
 
 ## 当前执行点
 
-用户已认可 8D1 并批准进入 **Phase 8D2 童老扩库**，本批承接 `70ca1ccd9cc5fa75491267ce29d20043df942994`。儿童和老人分别新增 6 Hair / 6 Outfit，共 24 新 ID、32 个适用 Frame / 资产组合。全库当前 6 Face / 58 Hair / 52 Outfit / 8 Expression，124 个可选选项有中文描述和关键词；成年及所有旧画稿不变，132 份旧固定配方逐字节冻结。
+当前主线是 **Resident Profile V1 已落地 + 居民记录系统准备**。
 
-先读 [Phase 8D2 童老头像资产扩充](Phase%208D2%20童老头像资产扩充.md)。age-theme-catalog.ts 保管本批完整 metadata，child/elder-theme-hair 与 child/elder-theme-outfits 分别保管独立年龄画稿。原 catalog/hair/outfits 只增加登记与显式分发；不灰染成年头发，不缩放成年衣装，不加 solver。
+已经完成：
 
-工坊布局、搜索纯函数和保存逻辑不改。搜索 8D2 查看童老新增，8D1 查看成年主题；本批卡片标“本批新增”，上批标“8D1”。“仅已重画”仍是原样板清单，检索为空可重置。主题不锁职业。六份 studio 样板独立保存，绑定居民 Frame 锁定，正式 fallback 不动。用户自行拉 main，不交付压缩包。
+- Resident Panel 已重构为 Portrait-first Context Surface。
+- Resident Profile V1 已进入 Content → Compiler → Resident Snapshot → Web 消费链，稳定字段为 temperament / lifeFocus / presentationStyle。
+- 未手动编辑的居民可由 Profile、年龄性别、职业组、财富与稳定 seed 确定性派生 `chibi-cute-v1` 默认 Recipe。
+- 头像优先级为：玩家保存 Avatar Recipe > Profile 派生默认 > 冻结 Portrait fallback。
+- Phase 8D2 童老头像扩库已完成，当前资产基线为 6 Face / 58 Hair / 52 Outfit / 8 Expression，共 124 个可选资产。
+- 旧三 Pack 只保留迁移 alias；compatibility-only Hair/Outfit 不进入 UI、搜索或 Random。
 
-## 保持的边界
+当前不再默认继续堆头像素材。没有用户明确新需求时，头像主线保持基线维护，优先把居民“事实 → 近期记录 → 进行中故事 → 长期人生经历”的职责与数据边界整理清楚。
 
-正式 `Web/src/resident/portrait/`、Content/Portrait、五字段 DNA 和原五层 RenderPlan 冻结。工坊只是按对象保存的 Web 覆盖。只有一个运行时 Pack；旧 Pack alias 和十个 compatibility-only ID 继续隔离，不进入 UI/搜索/Random。
+## 当前记录链边界
 
-每 Frame 一个固定 Head Frame，Face 只改下脸，Hair 不读取 Face。八层工坊 Renderer 与 Outfit 四个作者层不变。禁止逐脸 offset、solver、mask/clipPath 自动适配。新帽身必须连续，肩领叠层不能靠补丁遮罩修正。
+Web Demo 当前用于验证语义和内容契约，不设计最终 Unity ECS Save / Blob 布局。
 
-居民生活只展示 Activity、LifeEvent 与少量 Routine；人生是一条年龄升序时间轴，一个 Chapter 对应一件事，展开 memoryText。重要故事或结构效果必须有 memoryText，普通 Routine 不进永久历史。保留未婚 → 成婚/家庭改变 → newly-married → 后续共同生活 → 临时 Tag 消失的真实链。
+未来运行时方向固定：
 
-Content → Contract/Catalog Audit → Compiler → generated。生成物不手改，不借头像扩库设计 Unity ECS/Blob/正式 Save。
+```text
+行为树 / Schedule / Utility Jobs
+→ ResidentFactEvent
+→ ResidentLifeRecordSystem
+→ Routine Resolver / LifeEvent Trigger / LifeChapter Request
+```
 
-## 回归和后续
+高频 Job 只在有意义的行为完成点写紧凑事实，不拼字符串、不直接维护 UI 日志、不为每个行为树节点创建记录。Routine 只保留近期小环；结构事实与需要长期保存的 LifeEvent 才进入 Major Life History；LifeTag 负责系统连续性，不扫描历史正文做逻辑判断。
 
-本批 capture-avatar-age-themes 复用 renderBoards 与旧 baseline exporter，保留全部旧回归。8B1 点选只覆盖历史重画清单，8D1 增量验证只覆盖其明确清单，通用 Review 仍覆盖全部实时 Catalog。8D2 检查 32 次实际点选、24 份完整 metadata、四 Frame 保存刷新/JSON 往返/居民绑定、旧 132 份画稿不变，原童老 12 项上限不提高。
+Resident Profile 可作为后续 Utility / Story Eligibility 的弱输入，但不能直接把性格写成硬职业、硬脸型或强制剧情。
 
-本批源码职责、两处短循环修正和图板路径详见 8D2 文档。正式产物 avatar/phase8d2/ 有 11 张静态图板、28 张真实桌面截图、96 张原尺寸小图，必须核 source commit 并实际查看；不能只看 Actions 绿色。正式流程仍为 tmp-* 聚合 → 两项 CI → Artifact 看图 → 重读 main → 非 force 推进 → main 再 CI / Artifact 复核。
+## 头像与正式 Portrait 边界
 
-8C 大交互仍暂缓，新增 Face/Expression、独立帽子、职业自动配装、Unity 迁移未实施。新画稿仍由用户进入网页验收。
+`chibi-cute-v1` 是当前唯一玩家可用运行时 Pack。玩家仍只编辑 Face / Hair / Outfit / Expression；帽巾属于 Hair，腮红属于 Expression。六 Frame 为 female/male × child/adult/elder。
+
+每 Frame 一个固定 Head Frame；Face 只改下脸与五官，Hair 不读取 Face。禁止逐脸 offset / scale、anchor solver、mask / clipPath 自动适配。八层 Renderer 与 Outfit base / collar / overlay / detail 契约继续保留。
+
+`Web/src/resident/portrait/`、`Content/Portrait/` 与五字段 ResidentPortraitDNA 是冻结 fallback 契约，不再是未编辑居民的第一默认路径。移除玩家覆盖应回到 Profile 派生默认；只有生成链不可用时才进入正式 PortraitRenderer fallback。
+
+8D2 已完成，不是当前主动阶段。Phase 8C 大交互继续暂缓；不主动新增 Face / Expression、独立帽子分类、多 Pack 或 Unity 迁移。
+
+## 居民生活与历史不变量
+
+生活模式只展示当前 Activity、LifeEvent 与少量 Routine；人生模式是一条年龄升序时间轴，一个 Chapter 只代表一件事。故事 Chapter 展开第一人称 memoryText，不重放三个 Stage。普通 Routine 不进永久历史。
+
+过去影响未来依赖 LifeTag 与结构状态，而不是扫描历史文本。继续保留未婚 → 成婚/家庭改变 → newly-married → 后续共同生活 → 临时 Tag 消失的真实链。
+
+Content 是权威；Stable ID 不由标题或数组顺序生成。generated 文件只由 Compiler 生成，不手改。
+
+## 回归与后续
+
+任何居民资料、Profile 派生头像、头像存储/导入、Catalog / Registry、正式 fallback、LifeEvent 或记录内容管线改动，都必须运行完整 Build，并保留 Resident Visual Review 的相关断言。
+
+头像回归继续覆盖 8D2 已有基线：全组合、Hair 跨 Face 不变、Head Frame / Coverage、六框架保存、旧 Recipe fallback、真实居民绑定与 132 份旧固定配方。新增当前回归重点是：
+
+- 同一居民相同输入稳定生成同一默认 Recipe；
+- Face 不受职业、财富、temperament 影响；
+- Hair / Outfit 的职业主题只是弱倾向；
+- 玩家保存覆盖始终高于 Profile 派生；
+- “恢复原头像”回到 Profile 派生默认；
+- Profile 或生成链不可用时冻结 Portrait fallback 仍可用。
+
+下一阶段应优先围绕 ResidentFactEvent / Routine / LifeEvent / LifeChapter 的 Web 语义验证和内容资源准备推进；不要借整理工作提前实现最终 Unity ECS 数据布局。
