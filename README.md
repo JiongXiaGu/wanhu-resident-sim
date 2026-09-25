@@ -33,7 +33,7 @@ http://localhost:5173/?view=avatar-editor
 > 冻结 Portrait fallback
 ```
 
-Routine Library V2 的 R0、R1、R2 已完成，R3 的年龄阶段基线也已完成。两批共新增 48 个年龄专属 Routine / 96 个 Variant；当前全库 **227 个 Routine / 420 个 Variant**。六个 LifeStage 的 `lifeStageCoverage.directRoutines` 均达到 8，Compiler 少于 8 即给 Coverage warning。下一步不继续堆年龄内容，而是设计显式 **Family Eligibility / Context Contract**，再进入夫妻、父母、子女和照料类 Routine。详见 [日常事件库 V2](Documentation/日常事件库V2.md) 与 [居民事实事件、日常记录与人生经历运行时设计](Documentation/居民事实事件与人生记录运行时设计.md)。
+Routine Library V2 的 R0、R1、R2 与 R3 年龄阶段基线已完成，当前全库仍为 **227 个 Routine / 420 个 Variant**。本阶段落地 **Family Eligibility / Context Contract V1**：支持 spouse / parent / childCount / Household / co-resident 条件，以及 spouse / child / parent / household-member 的 ContextResidentId 契约；本契约批不新增家庭素材。下一批再按约 18～24 条开始家庭 Routine。详见 [家庭日常 Eligibility 与 Context 契约 V1](Documentation/家庭日常Eligibility与Context契约V1.md)、[日常事件库 V2](Documentation/日常事件库V2.md)。
 
 ## 头像基线：Phase 8D2 已完成
 

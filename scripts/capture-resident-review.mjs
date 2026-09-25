@@ -109,6 +109,37 @@ for (const lifeStageId of ['child','teen','young-adult','adult','middle-age','el
   const entry = routineCoverage.routines?.lifeStageCoverage?.find((item) => item.lifeStageId === lifeStageId);
   if (!entry || entry.directRoutines < 8) throw new Error(`R3 life-stage coverage below 8 for ${lifeStageId}.`);
 }
+const familyContract = routineCoverage.routines?.familyContract;
+if (!familyContract) throw new Error('Routine Family Contract coverage is missing.');
+if (familyContract.familyConstrainedDefinitions !== 0 || familyContract.contextResidentTargetDefinitions !== 0) {
+  throw new Error('Family Contract stage must not silently add family Routine content.');
+}
+const familyProbe = await page.evaluate(async () => {
+  const mod = await import('/src/simulation/routine-family.ts');
+  const adult = { id: 1, spouseId: 2, childCount: 1, fatherId: 0, motherId: 0, householdId: 10 };
+  const spouse = { id: 2, spouseId: 1, childCount: 1, fatherId: 0, motherId: 0, householdId: 10 };
+  const child = { id: 3, spouseId: 0, childCount: 0, fatherId: 1, motherId: 2, householdId: 10 };
+  const outsider = { id: 4, spouseId: 0, childCount: 0, fatherId: 0, motherId: 0, householdId: 20 };
+  const household = { id: 10, memberIds: [1,2,3] };
+  const residents = [adult, spouse, child, outsider];
+  return {
+    spouseRequired: mod.routineFamilyEligibilityMatches({ spouse: 'required' }, adult, household, residents),
+    spouseForbidden: mod.routineFamilyEligibilityMatches({ spouse: 'forbidden' }, adult, household, residents),
+    coResidentChild: mod.routineFamilyEligibilityMatches({ coResidentChild: 'required' }, adult, household, residents),
+    parentRequired: mod.routineFamilyEligibilityMatches({ parent: 'required' }, child, household, residents),
+    maxChildrenZero: mod.routineFamilyEligibilityMatches({ maxChildren: 0 }, adult, household, residents),
+    spouseContext: mod.routineContextResidentMatches('spouse', adult, spouse, household),
+    childContext: mod.routineContextResidentMatches('child', adult, child, household),
+    parentContext: mod.routineContextResidentMatches('parent', child, adult, household),
+    outsiderHouseholdContext: mod.routineContextResidentMatches('household-member', adult, outsider, household),
+  };
+});
+if (!familyProbe.spouseRequired || familyProbe.spouseForbidden || !familyProbe.coResidentChild || !familyProbe.parentRequired || familyProbe.maxChildrenZero) {
+  throw new Error('Routine Family Eligibility probe failed.');
+}
+if (!familyProbe.spouseContext || !familyProbe.childContext || !familyProbe.parentContext || familyProbe.outsiderHouseholdContext) {
+  throw new Error('Routine resident context relation probe failed.');
+}
 const routineRows = page.locator('.resident-routine-list li');
 if ((await routineRows.count()) < 1) throw new Error('Resident Panel should expose at least one recent Routine.');
 const routineTexts = await routineRows.locator('span').allTextContents();

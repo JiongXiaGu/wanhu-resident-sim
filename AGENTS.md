@@ -2,13 +2,13 @@
 
 ## 先理解项目
 
-修改前读取最新 main、README、Documentation/居民逻辑网页Demo接续说明.md、Documentation/日常事件库V2.md、人生经历与生活界面玩法规则V1、居民面板与生活事件V2、居民生活记录与故事连续性、Portrait System、Avatar Workshop、`Documentation/Q版头像主路线生产与审查工作流.md`、开发与部署工作流。头像相关任务必须先确认主路线工作流的“当前执行点”。再检查目标源码和最新 Actions。不要用聊天记忆代替当前仓库。
+修改前读取最新 main、README、Documentation/居民逻辑网页Demo接续说明.md、Documentation/日常事件库V2.md、Documentation/家庭日常Eligibility与Context契约V1.md、人生经历与生活界面玩法规则V1、居民面板与生活事件V2、居民生活记录与故事连续性、Portrait System、Avatar Workshop、`Documentation/Q版头像主路线生产与审查工作流.md`、开发与部署工作流。头像相关任务必须先确认主路线工作流的“当前执行点”。再检查目标源码和最新 Actions。不要用聊天记忆代替当前仓库。
 
 本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
 
 ## 当前执行点：Routine Library V2 R3 年龄与家庭日常
 
-Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 的 R3 年龄基线已完成，当前全库 227 / 420，六个 LifeStage 的年龄专属 directRoutines 均为 8。下一步只设计 Family Eligibility / Context Contract，再进入夫妻、父母、子女和照料类 Routine；不要继续为了数量堆年龄条目，也不要同时开启头像扩库、8C 或最终 Unity ECS 实现。
+Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 的 R3 年龄基线已完成，当前全库 227 / 420。Family Eligibility / Context Contract V1 已进入当前执行点：只建立 spouse / parent / childCount / Household / co-resident 条件和 ContextResidentId 关系，不在契约批新增家庭素材。下一批再做家庭内容；不要同时开启头像扩库、8C 或最终 Unity ECS 实现。
 
 Resident Profile 当前只有 temperament / lifeFocus / presentationStyle。它们由 Content/Residents/resident-profile-catalog.json 定义，ResidentProfileCompiler 在正式 portrait 编译后写入最终 snapshot。性情不决定脸型；职业、财富和资料只弱影响 Hair / Outfit / Expression。玩家保存 Avatar Recipe > 个人资料派生默认 > 冻结 Portrait fallback。
 

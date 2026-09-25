@@ -37,6 +37,8 @@ const validRoutineCategories = new Set(['household','work','study','market','soc
 const canonicalRoutineIdPattern = /^routine\.(household|work|study|market|social|travel|leisure|community|care|custom)\.[a-z][a-z0-9-]*\.[a-z][a-z0-9-]*$/;
 const factIdPattern = /^fact\.[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/;
 const tokenPattern = /^[a-z][a-z0-9-]*$/;
+const familyRequirementValues = new Set(['any','required','forbidden']);
+const routineContextRelations = new Set(['spouse','child','parent','household-member']);
 const MAX_ROUTINE_VARIANT_CHARACTERS = 24;
 const legacyRoutineIds = new Set([
   'routine.generic.market',
@@ -283,6 +285,33 @@ for (const routine of routines.items) {
   validateFilterList(rule.lifeStages, validLifeStages, `${routine.id}.eligibility.lifeStages`);
   validateFilterList(rule.genders, validGenders, `${routine.id}.eligibility.genders`);
   for (const weatherId of rule.weather) if (!tokenPattern.test(weatherId)) throw new Error(`${routine.id}: invalid weather token ${weatherId}.`);
+  const family = rule.family;
+  if (family !== undefined) {
+    if (!family || typeof family !== 'object' || Array.isArray(family)) throw new Error(`${routine.id}.eligibility.family must be an object.`);
+    for (const field of ['spouse','parent','coResidentSpouse','coResidentChild','coResidentParent']) {
+      if (family[field] !== undefined && !familyRequirementValues.has(family[field])) throw new Error(`${routine.id}.eligibility.family.${field} has unsupported value ${family[field]}.`);
+    }
+    for (const field of ['minChildren','minHouseholdSize']) {
+      if (family[field] !== undefined && (!Number.isInteger(family[field]) || family[field] < (field === 'minHouseholdSize' ? 1 : 0))) throw new Error(`${routine.id}.eligibility.family.${field} is invalid.`);
+    }
+    for (const field of ['maxChildren','maxHouseholdSize']) {
+      const value = family[field];
+      const minimum = field === 'maxHouseholdSize' ? 1 : 0;
+      if (value !== undefined && value !== null && (!Number.isInteger(value) || value < minimum)) throw new Error(`${routine.id}.eligibility.family.${field} is invalid.`);
+    }
+    if (family.maxChildren !== undefined && family.maxChildren !== null && family.minChildren !== undefined && family.maxChildren < family.minChildren) throw new Error(`${routine.id}: maxChildren cannot be lower than minChildren.`);
+    if (family.maxHouseholdSize !== undefined && family.maxHouseholdSize !== null && family.minHouseholdSize !== undefined && family.maxHouseholdSize < family.minHouseholdSize) throw new Error(`${routine.id}: maxHouseholdSize cannot be lower than minHouseholdSize.`);
+    if (family.spouse === 'forbidden' && family.coResidentSpouse === 'required') throw new Error(`${routine.id}: coResidentSpouse required conflicts with spouse forbidden.`);
+    if (family.parent === 'forbidden' && family.coResidentParent === 'required') throw new Error(`${routine.id}: coResidentParent required conflicts with parent forbidden.`);
+    if (family.maxChildren === 0 && family.coResidentChild === 'required') throw new Error(`${routine.id}: coResidentChild required conflicts with maxChildren 0.`);
+  }
+  if (routine.context !== undefined) {
+    if (!routine.context || typeof routine.context !== 'object' || Array.isArray(routine.context)) throw new Error(`${routine.id}.context must be an object.`);
+    if (!routineContextRelations.has(routine.context.residentTarget)) throw new Error(`${routine.id}: unsupported context residentTarget ${routine.context.residentTarget}.`);
+    if (routine.context.residentTarget === 'spouse' && family?.spouse === 'forbidden') throw new Error(`${routine.id}: spouse context conflicts with spouse forbidden.`);
+    if (routine.context.residentTarget === 'parent' && family?.parent === 'forbidden') throw new Error(`${routine.id}: parent context conflicts with parent forbidden.`);
+    if (routine.context.residentTarget === 'child' && family?.maxChildren === 0) throw new Error(`${routine.id}: child context conflicts with maxChildren 0.`);
+  }
   validateWeight(routine.weight, routine.id);
   if (!Number.isInteger(routine.cooldownDays) || routine.cooldownDays < 0) throw new Error(`${routine.id}.cooldownDays must be an integer >= 0.`);
   requireArray(routine.variants, `${routine.id}.variants`);
@@ -455,6 +484,15 @@ const routineCategoryCoverage = [...validRoutineCategories].map((category) => ({
 const reusedRoutineSourceFacts = [...routineSourceFactUsage.entries()]
   .filter(([, routineIds]) => routineIds.length > 1)
   .map(([factId, routineIds]) => ({ factId, routineIds }));
+const routineFamilyContractCoverage = {
+  familyConstrainedDefinitions: compiledRoutineCatalog.items.filter((item) => item.eligibility.family !== undefined).length,
+  contextResidentTargetDefinitions: compiledRoutineCatalog.items.filter((item) => item.context?.residentTarget).length,
+  contextTargets: [...routineContextRelations].map((residentTarget) => ({
+    residentTarget,
+    definitions: compiledRoutineCatalog.items.filter((item) => item.context?.residentTarget === residentTarget).length,
+  })),
+};
+
 const routineTextQuality = {
   maxAllowedCharacters: MAX_ROUTINE_VARIANT_CHARACTERS,
   minCharacters: Math.min(...routineVariantLengths),
@@ -517,6 +555,7 @@ const coverage = {
       groupRoutines,
     })),
     lifeStageCoverage: routineLifeStageCoverage,
+    familyContract: routineFamilyContractCoverage,
   },
   lifeTags: {
     total: lifeTags.items.length,

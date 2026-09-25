@@ -39,6 +39,7 @@ export type ResidentLifeLogRecord = {
   routineId?: string;
   routineRuntimeIndex?: number;
   variantIndex?: number;
+  contextResidentId?: number;
   title: string;
   text?: string;
 };
@@ -146,6 +147,20 @@ export type OccupationDefinition = {
 };
 
 export type RoutineCategory = 'household' | 'work' | 'study' | 'market' | 'social' | 'travel' | 'leisure' | 'community' | 'care' | 'custom';
+export type RoutineFamilyRequirement = 'any' | 'required' | 'forbidden';
+export type RoutineResidentContextRelation = 'spouse' | 'child' | 'parent' | 'household-member';
+
+export type RoutineFamilyEligibility = {
+  spouse?: RoutineFamilyRequirement;
+  parent?: RoutineFamilyRequirement;
+  minChildren?: number;
+  maxChildren?: number | null;
+  minHouseholdSize?: number;
+  maxHouseholdSize?: number | null;
+  coResidentSpouse?: RoutineFamilyRequirement;
+  coResidentChild?: RoutineFamilyRequirement;
+  coResidentParent?: RoutineFamilyRequirement;
+};
 
 export type RoutineDefinition = {
   id: string;
@@ -158,7 +173,9 @@ export type RoutineDefinition = {
     lifeStages: LifeStageId[];
     genders: Gender[];
     weather: string[];
+    family?: RoutineFamilyEligibility;
   };
+  context?: { residentTarget: RoutineResidentContextRelation };
   weight: number;
   cooldownDays: number;
   variants: Array<{ text: string; weight: number }>;

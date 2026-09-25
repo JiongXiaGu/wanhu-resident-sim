@@ -9,6 +9,7 @@ import type {
   ResidentWorldSnapshot,
 } from '../domain/resident';
 import { ageAtDay, occupationFor } from '../domain/resident';
+import { routineFamilyEligibilityMatches } from './routine-family';
 
 export type LifeEventAssignment = {
   eventId: string;
@@ -28,6 +29,7 @@ export type LifeFeedEntry = {
   routineId?: string;
   routineRuntimeIndex?: number;
   variantIndex?: number;
+  contextResidentId?: number;
 };
 
 export type ResidentLifeView = {
@@ -188,7 +190,12 @@ function eventEntries(event: LifeEventDefinition, assignment: LifeEventAssignmen
   }));
 }
 
-function routinePool(resident: ResidentRecord, definitions: ResidentDefinitions) {
+function routinePool(
+  resident: ResidentRecord,
+  household: HouseholdRecord | undefined,
+  snapshot: ResidentWorldSnapshot,
+  definitions: ResidentDefinitions,
+) {
   const occupation = occupationFor(definitions, resident.occupationId);
   return definitions.routines.filter((item) => {
     const rule = item.eligibility;
@@ -197,6 +204,7 @@ function routinePool(resident: ResidentRecord, definitions: ResidentDefinitions)
     if (rule.lifeStages.length && !rule.lifeStages.includes(resident.lifeStage)) return false;
     if (rule.genders.length && !rule.genders.includes(resident.gender)) return false;
     if (rule.weather.length) return false;
+    if (!routineFamilyEligibilityMatches(rule.family, resident, household, snapshot.residents)) return false;
     return true;
   });
 }
@@ -214,6 +222,8 @@ function routineVariantFor(resident: ResidentRecord, routine: ResidentDefinition
 
 function routineEntries(
   resident: ResidentRecord,
+  household: HouseholdRecord | undefined,
+  snapshot: ResidentWorldSnapshot,
   definitions: ResidentDefinitions,
   baselineDay: number,
   gameDay: number,
@@ -224,10 +234,11 @@ function routineEntries(
     .map((entry) => ({
       id: entry.id, day: entry.day, kind: 'routine', title: entry.title, text: entry.text,
       routineId: entry.routineId, routineRuntimeIndex: entry.routineRuntimeIndex, variantIndex: entry.variantIndex,
+      contextResidentId: entry.contextResidentId,
     }));
 
   if (gameDay <= baselineDay) return entries.sort((a, b) => b.day - a.day);
-  const pool = routinePool(resident, definitions);
+  const pool = routinePool(resident, household, snapshot, definitions);
   if (!pool.length) return entries.sort((a, b) => b.day - a.day);
 
   const { min, max } = definitions.generation.routineIntervalDays;
@@ -482,7 +493,7 @@ export function buildResidentLifeView(
 
   const eventHistory = eventEntries(event, assignment, stage);
   const blockedDays = eventHistory.map((entry) => entry.day);
-  const routines = routineEntries(resident, definitions, snapshot.currentDay, gameDay, blockedDays)
+  const routines = routineEntries(resident, household, snapshot, definitions, snapshot.currentDay, gameDay, blockedDays)
     .filter((entry) => !blockedDays.some((blocked) => Math.abs(blocked - entry.day) <= 1))
     .slice(0, 4);
   const occupation = occupationFor(definitions, resident.occupationId);

@@ -128,18 +128,47 @@ function pickOccupation(rng, age, gender) {
   return weightedPick(rng, eligibleOccupations(age, gender));
 }
 
-function routineMatchesResident(item, resident) {
+function familyRequirementMatches(requirement, value) {
+  if (!requirement || requirement === 'any') return true;
+  return requirement === 'required' ? value : !value;
+}
+
+function routineFamilyEligibilityMatches(family, resident, household, residentPool) {
+  if (!family) return true;
+  const memberIds = new Set(household?.memberIds ?? []);
+  const children = residentPool.filter((candidate) => candidate.fatherId === resident.id || candidate.motherId === resident.id);
+  const parentIds = [resident.fatherId, resident.motherId].filter(Boolean);
+  const hasSpouse = Boolean(resident.spouseId);
+  const hasParent = parentIds.length > 0;
+  const coResidentSpouse = Boolean(resident.spouseId && memberIds.has(resident.spouseId));
+  const coResidentChild = children.some((child) => memberIds.has(child.id));
+  const coResidentParent = parentIds.some((parentId) => memberIds.has(parentId));
+  const householdSize = household?.memberIds.length ?? 0;
+  if (!familyRequirementMatches(family.spouse, hasSpouse)) return false;
+  if (!familyRequirementMatches(family.parent, hasParent)) return false;
+  if (family.minChildren !== undefined && resident.childCount < family.minChildren) return false;
+  if (family.maxChildren !== undefined && family.maxChildren !== null && resident.childCount > family.maxChildren) return false;
+  if (family.minHouseholdSize !== undefined && householdSize < family.minHouseholdSize) return false;
+  if (family.maxHouseholdSize !== undefined && family.maxHouseholdSize !== null && householdSize > family.maxHouseholdSize) return false;
+  if (!familyRequirementMatches(family.coResidentSpouse, coResidentSpouse)) return false;
+  if (!familyRequirementMatches(family.coResidentChild, coResidentChild)) return false;
+  if (!familyRequirementMatches(family.coResidentParent, coResidentParent)) return false;
+  return true;
+}
+
+function routineMatchesResident(item, resident, household, residentPool) {
   const rule = item.eligibility;
   if (rule.occupations.length && !rule.occupations.includes(resident.occupationId)) return false;
   if (rule.occupationGroups.length && !rule.occupationGroups.includes(resident.occupationGroupId)) return false;
   if (rule.lifeStages.length && !rule.lifeStages.includes(resident.lifeStage)) return false;
   if (rule.genders.length && !rule.genders.includes(resident.gender)) return false;
   if (rule.weather.length) return false;
+  if (!routineFamilyEligibilityMatches(rule.family, resident, household, residentPool)) return false;
   return true;
 }
 
-function availableRoutinePool(resident) {
-  return routines.items.filter((item) => routineMatchesResident(item, resident));
+function availableRoutinePool(resident, household, residentPool) {
+  return routines.items.filter((item) => routineMatchesResident(item, resident, household, residentPool));
 }
 
 function pickRoutineVariant(rng, routine) {
@@ -147,8 +176,8 @@ function pickRoutineVariant(rng, routine) {
   return weightedPick(rng, indexed);
 }
 
-function buildRecentLifeLog(resident, rng) {
-  const pool = availableRoutinePool(resident);
+function buildRecentLifeLog(resident, rng, household, residentPool) {
+  const pool = availableRoutinePool(resident, household, residentPool);
   const result = [];
   if (!pool.length) return result;
 
@@ -267,6 +296,7 @@ let nextResidentId = 1001;
 let nextHouseholdId = 81;
 const residents = [];
 const households = [];
+const routineRngByResidentId = new Map();
 
 function createResident({ age, gender, householdId, districtId, forcedSurnameId = null }) {
   const id = nextResidentId++;
@@ -311,7 +341,7 @@ function createResident({ age, gender, householdId, districtId, forcedSurnameId 
     majorLifeHistory: [],
   };
 
-  resident.recentLifeLog = buildRecentLifeLog(resident, rng);
+  routineRngByResidentId.set(resident.id, rng);
   residents.push(resident);
   return resident;
 }
@@ -383,12 +413,21 @@ function createHousehold(archetypeId, remaining, rng) {
     members.push(single);
   }
 
-  households.push({
+  const household = {
     id: householdId,
     homeId,
     districtId: district.id,
     memberIds: members.map((member) => member.id),
-  });
+  };
+  households.push(household);
+  // Family eligibility needs completed spouse/parent/child links. Preserve each resident's original RNG
+  // and generate recent routines only after this household's relationships are fully assigned.
+  for (const member of members) {
+    const residentRng = routineRngByResidentId.get(member.id);
+    if (!residentRng) throw new Error(`Missing Routine RNG for resident ${member.id}.`);
+    member.recentLifeLog = buildRecentLifeLog(member, residentRng, household, residents);
+    routineRngByResidentId.delete(member.id);
+  }
 }
 
 const cityRng = createRng(generation.citySeed);
