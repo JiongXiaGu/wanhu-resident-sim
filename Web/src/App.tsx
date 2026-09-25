@@ -405,7 +405,7 @@ export default function App() {
                             {memoryText ? (
                               <button type="button" className="resident-life-chapter__row" onClick={() => setExpandedChapterId((current) => current === entry.id ? null : entry.id)}>
                                 <time>{entryAge}岁</time>
-                                <span>{entry.text}</span>
+                                <span>{entry.title}</span>
                                 <small>{chapterOpen ? '收起' : '展开'}</small>
                               </button>
                             ) : (
@@ -478,7 +478,7 @@ export default function App() {
                       {lifeView.recentActions.slice(0, 3).map((entry) => (
                         <li key={entry.id}>
                           <time>{relativeDayLabel(Math.max(0, gameDay - entry.day))}</time>
-                          <span>{entry.title}</span>
+                          <span>{entry.text}</span>
                         </li>
                       ))}
                     </ul>
