@@ -9,7 +9,7 @@ import type {
   ResidentWorldSnapshot,
 } from '../domain/resident';
 import { ageAtDay, occupationFor } from '../domain/resident';
-import { routineContextResidentCandidates, routineFamilyEligibilityMatches } from './routine-family';
+import { currentActionText, recentActionEntries, type RecentActionViewEntry } from './recent-actions';
 
 export type LifeEventAssignment = {
   eventId: string;
@@ -21,15 +21,11 @@ export type LifeEventAssignment = {
 export type LifeFeedEntry = {
   id: string;
   day: number;
-  kind: 'event' | 'routine' | 'history';
+  kind: 'event' | 'history';
   title: string;
   text?: string;
   stage?: 0 | 1 | 2;
   sourceLabel?: string;
-  routineId?: string;
-  routineRuntimeIndex?: number;
-  variantIndex?: number;
-  contextResidentId?: number;
 };
 
 export type ResidentLifeView = {
@@ -38,9 +34,9 @@ export type ResidentLifeView = {
   currentStageDefinition: LifeEventStageDefinition;
   eventEntries: LifeFeedEntry[];
   priorEventEntries: LifeFeedEntry[];
-  routines: LifeFeedEntry[];
+  recentActions: RecentActionViewEntry[];
   history: ResidentMajorLifeEvent[];
-  activity: string;
+  currentActionText: string;
   showCurrentEvent: boolean;
 };
 
@@ -188,105 +184,6 @@ function eventEntries(event: LifeEventDefinition, assignment: LifeEventAssignmen
     stage: index as 0 | 1 | 2,
     sourceLabel: event.source?.label,
   }));
-}
-
-function routinePool(
-  resident: ResidentRecord,
-  household: HouseholdRecord | undefined,
-  snapshot: ResidentWorldSnapshot,
-  definitions: ResidentDefinitions,
-) {
-  const occupation = occupationFor(definitions, resident.occupationId);
-  return definitions.routines.filter((item) => {
-    const rule = item.eligibility;
-    if (rule.occupations.length && !rule.occupations.includes(resident.occupationId)) return false;
-    if (rule.occupationGroups.length && (!occupation || !rule.occupationGroups.includes(occupation.groupId))) return false;
-    if (rule.lifeStages.length && !rule.lifeStages.includes(resident.lifeStage)) return false;
-    if (rule.genders.length && !rule.genders.includes(resident.gender)) return false;
-    if (rule.weather.length) return false;
-    if (!routineFamilyEligibilityMatches(rule.family, resident, household, snapshot.residents)) return false;
-    if (item.context?.residentTarget
-      && routineContextResidentCandidates(item.context.residentTarget, resident, household, snapshot.residents).length === 0) return false;
-    return true;
-  });
-}
-
-function routineVariantFor(resident: ResidentRecord, routine: ResidentDefinitions['routines'][number], day: number) {
-  const total = routine.variants.reduce((sum, variant) => sum + Math.max(0, variant.weight), 0);
-  let cursor = (hashText(`${resident.seed}:routine-variant:${routine.id}:${day}`) / 4294967296) * total;
-  for (let index = 0; index < routine.variants.length; index += 1) {
-    cursor -= Math.max(0, routine.variants[index].weight);
-    if (cursor <= 0) return { index, variant: routine.variants[index] };
-  }
-  const index = routine.variants.length - 1;
-  return { index, variant: routine.variants[index] };
-}
-
-function routineEntries(
-  resident: ResidentRecord,
-  household: HouseholdRecord | undefined,
-  snapshot: ResidentWorldSnapshot,
-  definitions: ResidentDefinitions,
-  baselineDay: number,
-  gameDay: number,
-  blockedDays: number[],
-) {
-  const entries: LifeFeedEntry[] = resident.recentLifeLog
-    .filter((entry) => entry.day <= gameDay)
-    .map((entry) => ({
-      id: entry.id, day: entry.day, kind: 'routine', title: entry.title, text: entry.text,
-      routineId: entry.routineId, routineRuntimeIndex: entry.routineRuntimeIndex, variantIndex: entry.variantIndex,
-      contextResidentId: entry.contextResidentId,
-    }));
-
-  if (gameDay <= baselineDay) return entries.sort((a, b) => b.day - a.day);
-  const pool = routinePool(resident, household, snapshot, definitions);
-  if (!pool.length) return entries.sort((a, b) => b.day - a.day);
-
-  const { min, max } = definitions.generation.routineIntervalDays;
-  const lastRoutineDay = new Map<string, number>();
-  for (const entry of entries) if (entry.routineId) lastRoutineDay.set(entry.routineId, Math.max(lastRoutineDay.get(entry.routineId) ?? -Infinity, entry.day));
-  let day = baselineDay + 2 + (resident.seed % 4);
-  let previousRoutineId = [...entries].sort((a, b) => b.day - a.day)[0]?.routineId ?? '';
-  while (day <= gameDay) {
-    if (!blockedDays.some((blocked) => Math.abs(blocked - day) <= 1)) {
-      const startIndex = hashText(`${resident.seed}:routine:${day}`) % pool.length;
-      let template = pool[startIndex];
-      let found = false;
-      for (let offset = 0; offset < pool.length; offset += 1) {
-        const candidate = pool[(startIndex + offset) % pool.length];
-        const previousDay = lastRoutineDay.get(candidate.id);
-        if (candidate.id === previousRoutineId) continue;
-        if (previousDay !== undefined && day - previousDay < candidate.cooldownDays) continue;
-        template = candidate;
-        found = true;
-        break;
-      }
-      if (found || !lastRoutineDay.has(template.id) || day - (lastRoutineDay.get(template.id) ?? day) >= template.cooldownDays) {
-        const { index: variantIndex, variant } = routineVariantFor(resident, template, day);
-        const contextCandidates = template.context?.residentTarget
-          ? routineContextResidentCandidates(template.context.residentTarget, resident, household, snapshot.residents)
-          : [];
-        const contextResidentId = contextCandidates.length
-          ? contextCandidates[hashText(`${resident.seed}:routine-context:${template.id}:${day}`) % contextCandidates.length].id
-          : undefined;
-        entries.push({
-          id: `${resident.id}:${template.id}:${day}`,
-          day,
-          kind: 'routine',
-          routineId: template.id,
-          routineRuntimeIndex: template.runtimeIndex,
-          variantIndex,
-          ...(contextResidentId !== undefined ? { contextResidentId } : {}),
-          title: variant.text,
-        });
-        previousRoutineId = template.id;
-        lastRoutineDay.set(template.id, day);
-      }
-    }
-    day += rangeValue(resident.seed, `routine-interval:${day}`, min, max);
-  }
-  return entries.sort((a, b) => b.day - a.day);
 }
 
 function completedEventChapter(
@@ -501,16 +398,8 @@ export function buildResidentLifeView(
   if (stage === 2) applyPrototypeCompletedEvent(resident, event, assignment, snapshot, definitions, gameDay);
 
   const eventHistory = eventEntries(event, assignment, stage);
-  const blockedDays = eventHistory.map((entry) => entry.day);
-  const routines = routineEntries(resident, household, snapshot, definitions, snapshot.currentDay, gameDay, blockedDays)
-    .filter((entry) => !blockedDays.some((blocked) => Math.abs(blocked - entry.day) <= 1))
-    .slice(0, 4);
-  const occupation = occupationFor(definitions, resident.occupationId);
+  const recentActions = recentActionEntries(resident, definitions, gameDay).slice(0, 4);
   const stageDefinition = event.stages[stage];
-  const offDay = ((gameDay + resident.seed) % 7) === 0;
-  const defaultActivity = offDay
-    ? occupation?.offActivity ?? '正在家里歇着'
-    : occupation?.workActivity ?? '正在忙今天的事情';
   const showCurrentEvent = stage < 2 || gameDay - assignment.stage3Day <= COMPLETED_EVENT_VISIBLE_DAYS;
   const runtimeChapter = completedEventChapter(resident, event, assignment, gameDay);
   const history = resident.majorLifeHistory.filter((entry) => entry.day <= gameDay);
@@ -525,9 +414,9 @@ export function buildResidentLifeView(
     currentStageDefinition: stageDefinition,
     eventEntries: eventHistory,
     priorEventEntries: eventHistory.slice(0, -1).reverse(),
-    routines,
+    recentActions,
     history,
-    activity: (showCurrentEvent ? stageDefinition.activityOverride : undefined) ?? defaultActivity,
+    currentActionText: currentActionText(resident.currentAction, definitions),
     showCurrentEvent,
   };
 }

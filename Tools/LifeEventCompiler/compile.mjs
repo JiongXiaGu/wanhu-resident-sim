@@ -33,6 +33,7 @@ for (const event of source.items) {
     if (!stage.title || !stage.text) {
       throw new Error(`${event.id}: stage ${index + 1} is missing title/text.`);
     }
+    if ('activityOverride' in stage) throw new Error(`${event.id}: activityOverride is no longer part of the LifeEvent contract.`);
     const min = Number(stage.delayDays?.min ?? -1);
     const max = Number(stage.delayDays?.max ?? -1);
     if (min < 0 || max < min) throw new Error(`${event.id}: invalid delayDays at stage ${index + 1}.`);

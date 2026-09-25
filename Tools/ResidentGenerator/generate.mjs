@@ -10,15 +10,15 @@ async function readJson(relativePath) {
 
 const nameCatalog = await readJson('Web/public/generated/name-catalog-v2.json');
 const occupations = await readJson('Content/Occupations/occupations.json');
-const routines = await readJson('Web/public/generated/routine-catalog-v2.json');
+const actionPresentations = await readJson('Web/public/generated/resident-action-presentations.json');
 const generation = await readJson('Content/Simulation/resident-generation.json');
 const lifeEvents = await readJson('Content/LifeEvents/life-events.json');
 
 if (nameCatalog.schema !== 'wanhu.name-catalog.v2') {
   throw new Error(`ResidentGenerator expected wanhu.name-catalog.v2, got ${nameCatalog.schema}`);
 }
-if (routines.schema !== 'wanhu.routine-catalog.v2') {
-  throw new Error(`ResidentGenerator expected wanhu.routine-catalog.v2, got ${routines.schema}`);
+if (actionPresentations.schema !== 'wanhu.resident-action-presentations.v1') {
+  throw new Error(`ResidentGenerator expected wanhu.resident-action-presentations.v1, got ${actionPresentations.schema}`);
 }
 
 const HISTORY_PHASES = [
@@ -128,126 +128,106 @@ function pickOccupation(rng, age, gender) {
   return weightedPick(rng, eligibleOccupations(age, gender));
 }
 
-function familyRequirementMatches(requirement, value) {
-  if (!requirement || requirement === 'any') return true;
-  return requirement === 'required' ? value : !value;
-}
+const ACTION_SEQUENCE = [
+  'resident-action.go-to-work',
+  'resident-action.fetch-water',
+  'resident-action.visit-friend',
+  'resident-action.take-walk',
+  'resident-action.wash-clothes',
+  'resident-action.buy-food',
+  'resident-action.visit-family',
+  'resident-action.go-to-teahouse',
+  'resident-action.watch-performance',
+  'resident-action.travel',
+  'resident-action.rest-at-home',
+];
+const actionPresentationById = new Map(actionPresentations.items.map((item) => [item.id, item]));
+const ACTION_DAY_OFFSETS = [2, 5, 9, 14, 21, 31, 44, 60, 78];
 
-function routineFamilyEligibilityMatches(family, resident, household, residentPool) {
-  if (!family) return true;
-  const memberIds = new Set(household?.memberIds ?? []);
-  const children = residentPool.filter((candidate) => candidate.fatherId === resident.id || candidate.motherId === resident.id);
-  const parentIds = [resident.fatherId, resident.motherId].filter(Boolean);
-  const hasSpouse = Boolean(resident.spouseId);
-  const hasParent = parentIds.length > 0;
-  const coResidentSpouse = Boolean(resident.spouseId && memberIds.has(resident.spouseId));
-  const coResidentChild = children.some((child) => memberIds.has(child.id));
-  const coResidentParent = parentIds.some((parentId) => memberIds.has(parentId));
-  const householdSize = household?.memberIds.length ?? 0;
-  if (!familyRequirementMatches(family.spouse, hasSpouse)) return false;
-  if (!familyRequirementMatches(family.parent, hasParent)) return false;
-  if (family.minChildren !== undefined && resident.childCount < family.minChildren) return false;
-  if (family.maxChildren !== undefined && family.maxChildren !== null && resident.childCount > family.maxChildren) return false;
-  if (family.minHouseholdSize !== undefined && householdSize < family.minHouseholdSize) return false;
-  if (family.maxHouseholdSize !== undefined && family.maxHouseholdSize !== null && householdSize > family.maxHouseholdSize) return false;
-  if (!familyRequirementMatches(family.coResidentSpouse, coResidentSpouse)) return false;
-  if (!familyRequirementMatches(family.coResidentChild, coResidentChild)) return false;
-  if (!familyRequirementMatches(family.coResidentParent, coResidentParent)) return false;
-  return true;
+function pickTarget(candidates, resident, salt) {
+  if (!candidates.length) return undefined;
+  const sorted = [...candidates].sort((left, right) => hash32(`${resident.seed}:${salt}:${left.id}`) - hash32(`${resident.seed}:${salt}:${right.id}`));
+  return sorted[0];
 }
-
-function routineContextResidentCandidates(relation, resident, household, residentPool) {
+function familyTargets(resident, residentPool, householdById) {
   const byId = new Map(residentPool.map((candidate) => [candidate.id, candidate]));
-  if (relation === 'spouse') {
-    const spouse = byId.get(resident.spouseId);
-    return spouse ? [spouse] : [];
-  }
-  if (relation === 'child') {
-    return residentPool
-      .filter((candidate) => candidate.fatherId === resident.id || candidate.motherId === resident.id)
-      .sort((left, right) => left.id - right.id);
-  }
-  if (relation === 'parent') {
-    return [resident.fatherId, resident.motherId]
-      .map((parentId) => byId.get(parentId))
-      .filter(Boolean)
-      .sort((left, right) => left.id - right.id);
-  }
-
-  const memberIds = new Set(household?.memberIds ?? []);
-  return residentPool
-    .filter((candidate) =>
-      candidate.id !== resident.id
-      && candidate.householdId === resident.householdId
-      && memberIds.has(candidate.id))
-    .sort((left, right) => left.id - right.id);
+  const household = householdById.get(resident.householdId);
+  const ids = new Set([resident.spouseId,resident.fatherId,resident.motherId,...(household?.memberIds ?? []),...residentPool.filter((candidate) => candidate.fatherId === resident.id || candidate.motherId === resident.id).map((candidate) => candidate.id)].filter((id) => id && id !== resident.id));
+  return [...ids].map((id) => byId.get(id)).filter(Boolean);
 }
-
-function routineMatchesResident(item, resident, household, residentPool) {
-  const rule = item.eligibility;
-  if (rule.occupations.length && !rule.occupations.includes(resident.occupationId)) return false;
-  if (rule.occupationGroups.length && !rule.occupationGroups.includes(resident.occupationGroupId)) return false;
-  if (rule.lifeStages.length && !rule.lifeStages.includes(resident.lifeStage)) return false;
-  if (rule.genders.length && !rule.genders.includes(resident.gender)) return false;
-  if (rule.weather.length) return false;
-  if (!routineFamilyEligibilityMatches(rule.family, resident, household, residentPool)) return false;
-  if (item.context?.residentTarget
-    && routineContextResidentCandidates(item.context.residentTarget, resident, household, residentPool).length === 0) return false;
-  return true;
-}
-
-function availableRoutinePool(resident, household, residentPool) {
-  return routines.items.filter((item) => routineMatchesResident(item, resident, household, residentPool));
-}
-
-function pickRoutineVariant(rng, routine) {
-  const indexed = routine.variants.map((variant, index) => ({ ...variant, index }));
-  return weightedPick(rng, indexed);
-}
-
-function buildRecentLifeLog(resident, rng, household, residentPool) {
-  const pool = availableRoutinePool(resident, household, residentPool);
-  const result = [];
-  if (!pool.length) return result;
-
-  const target = Math.min(generation.recentLifeLogCapacity, randomInt(rng, 4, 7));
-  const interval = generation.routineIntervalDays;
-  const recentTemplateIds = [];
-  const lastRoutineDay = new Map();
-  let day = generation.currentDay - randomInt(rng, 1, 5);
-  const minimumDay = generation.currentDay - generation.routineWindowDays;
-
-  while (result.length < target && day >= minimumDay) {
-    const cooldownPool = pool.filter((item) => {
-      const previousDay = lastRoutineDay.get(item.id);
-      return previousDay === undefined || Math.abs(previousDay - day) >= item.cooldownDays;
-    });
-    const candidates = cooldownPool.length ? cooldownPool : pool;
-    const item = weightedPickAvoiding(rng, candidates, new Set(recentTemplateIds));
-    const variant = pickRoutineVariant(rng, item);
-    const contextCandidates = item.context?.residentTarget
-      ? routineContextResidentCandidates(item.context.residentTarget, resident, household, residentPool)
-      : [];
-    const contextResidentId = contextCandidates.length
-      ? contextCandidates[hash32(`${resident.seed}:routine-context:${item.id}:${day}`) % contextCandidates.length].id
-      : undefined;
-    result.push({
-      id: `${resident.id}:${item.id}:${day}`,
-      day,
-      kind: 'routine',
-      routineId: item.id,
-      routineRuntimeIndex: item.runtimeIndex,
-      variantIndex: variant.index,
-      ...(contextResidentId !== undefined ? { contextResidentId } : {}),
-      title: variant.text,
-    });
-    lastRoutineDay.set(item.id, day);
-    recentTemplateIds.unshift(item.id);
-    recentTemplateIds.splice(2);
-    day -= randomInt(rng, interval.min, interval.max);
+function targetForAction(actionId, resident, residentPool, householdById, salt) {
+  if (actionId === 'resident-action.visit-family') return pickTarget(familyTargets(resident, residentPool, householdById), resident, `family:${salt}`);
+  if (actionId === 'resident-action.visit-friend') {
+    const outside = residentPool.filter((candidate) => candidate.id !== resident.id && candidate.householdId !== resident.householdId);
+    const sameDistrict = outside.filter((candidate) => candidate.districtId === resident.districtId);
+    return pickTarget(sameDistrict.length ? sameDistrict : outside, resident, `friend:${salt}`);
   }
-
-  return result.sort((left, right) => right.day - left.day);
+  return undefined;
+}
+function placeForAction(actionId, resident, target) {
+  if (actionId === 'resident-action.fetch-water') return `place.well.${resident.districtId}`;
+  if (actionId === 'resident-action.wash-clothes') return `place.wash-point.${resident.districtId}`;
+  if (actionId === 'resident-action.go-to-work') return resident.workplaceId ? `place.workplace.${resident.workplaceId}` : undefined;
+  if (actionId === 'resident-action.buy-food') return `place.market.${resident.districtId}`;
+  if (actionId === 'resident-action.take-walk') return `place.riverside.${resident.districtId}`;
+  if (actionId === 'resident-action.watch-performance') return `place.performance.${resident.districtId}`;
+  if (actionId === 'resident-action.go-to-teahouse') return `place.teahouse.${resident.districtId}`;
+  if (actionId === 'resident-action.travel') return `destination.outside-city.${1 + (resident.seed % 3)}`;
+  if (actionId === 'resident-action.rest-at-home') return `place.home.${resident.householdId}`;
+  if ((actionId === 'resident-action.visit-family' || actionId === 'resident-action.visit-friend') && target) return `place.home.${target.householdId}`;
+  return undefined;
+}
+function makeActionEvent(resident, actionId, day, residentPool, householdById, salt) {
+  if (!actionPresentationById.has(actionId)) return undefined;
+  if (actionId === 'resident-action.go-to-work' && !resident.workplaceId) return undefined;
+  const target = targetForAction(actionId, resident, residentPool, householdById, salt);
+  if ((actionId === 'resident-action.visit-family' || actionId === 'resident-action.visit-friend') && !target) return undefined;
+  const placeId = placeForAction(actionId, resident, target);
+  return {residentId:resident.id,actionId,day,...(target?{targetResidentId:target.id}:{}),...(placeId?{placeId}:{})};
+}
+function buildCompletedActionTrace(resident, residentPool, householdById) {
+  const events = [];
+  const start = hash32(`${resident.seed}:action-trace-start`) % ACTION_SEQUENCE.length;
+  for (let slot = 0; slot < ACTION_DAY_OFFSETS.length; slot += 1) {
+    for (let probe = 0; probe < ACTION_SEQUENCE.length; probe += 1) {
+      const actionId = ACTION_SEQUENCE[(start + slot * 3 + probe) % ACTION_SEQUENCE.length];
+      if (events.at(-1)?.actionId === actionId) continue;
+      const event = makeActionEvent(resident, actionId, generation.currentDay - ACTION_DAY_OFFSETS[slot], residentPool, householdById, `completed:${slot}:${probe}`);
+      if (!event) continue;
+      events.push(event);
+      break;
+    }
+  }
+  return events;
+}
+function variantIndexForEvent(resident, event, presentation) {
+  const total = presentation.variants.reduce((sum, variant) => sum + Math.max(0, Number(variant.weight ?? 1)), 0);
+  let cursor = (hash32(`${resident.seed}:action-variant:${event.actionId}:${event.day}`) / 4294967296) * total;
+  for (let index = 0; index < presentation.variants.length; index += 1) {
+    cursor -= Math.max(0, Number(presentation.variants[index].weight ?? 1));
+    if (cursor <= 0) return index;
+  }
+  return presentation.variants.length - 1;
+}
+function recordRecentActions(resident, completedEvents) {
+  const accepted = [], lastDayByAction = new Map();
+  for (const event of [...completedEvents].sort((left, right) => left.day - right.day)) {
+    const presentation = actionPresentationById.get(event.actionId);
+    if (!presentation || accepted.at(-1)?.actionId === event.actionId) continue;
+    const previousDay = lastDayByAction.get(event.actionId);
+    if (previousDay !== undefined && event.day - previousDay < presentation.cooldownDays) continue;
+    accepted.push({id:`${resident.id}:${event.actionId}:${event.day}`,day:event.day,actionId:event.actionId,variantIndex:variantIndexForEvent(resident,event,presentation),...(event.targetResidentId!==undefined?{targetResidentId:event.targetResidentId}:{}),...(event.placeId!==undefined?{placeId:event.placeId}:{})});
+    lastDayByAction.set(event.actionId,event.day);
+  }
+  return accepted.sort((left,right)=>right.day-left.day).slice(0,generation.recentActionCapacity);
+}
+function buildCurrentAction(resident, residentPool, householdById) {
+  const start = hash32(`${resident.seed}:current-action`) % ACTION_SEQUENCE.length;
+  for (let probe = 0; probe < ACTION_SEQUENCE.length; probe += 1) {
+    const event = makeActionEvent(resident,ACTION_SEQUENCE[(start+probe)%ACTION_SEQUENCE.length],generation.currentDay,residentPool,householdById,`current:${probe}`);
+    if (event) return {actionId:event.actionId,...(event.targetResidentId!==undefined?{targetResidentId:event.targetResidentId}:{}),...(event.placeId!==undefined?{placeId:event.placeId}:{}),phase:'executing'};
+  }
+  throw new Error(`No CurrentAction candidate for resident ${resident.id}.`);
 }
 
 function ageAtDay(resident, day) {
@@ -332,7 +312,6 @@ let nextResidentId = 1001;
 let nextHouseholdId = 81;
 const residents = [];
 const households = [];
-const routineRngByResidentId = new Map();
 
 function createResident({ age, gender, householdId, districtId, forcedSurnameId = null }) {
   const id = nextResidentId++;
@@ -373,11 +352,11 @@ function createResident({ age, gender, householdId, districtId, forcedSurnameId 
     stateBits: 0,
     activeStoryId: null,
     lifeTags: [],
-    recentLifeLog: [],
+    currentAction: null,
+    recentActions: [],
     majorLifeHistory: [],
   };
 
-  routineRngByResidentId.set(resident.id, rng);
   residents.push(resident);
   return resident;
 }
@@ -456,14 +435,6 @@ function createHousehold(archetypeId, remaining, rng) {
     memberIds: members.map((member) => member.id),
   };
   households.push(household);
-  // Family eligibility needs completed spouse/parent/child links. Preserve each resident's original RNG
-  // and generate recent routines only after this household's relationships are fully assigned.
-  for (const member of members) {
-    const residentRng = routineRngByResidentId.get(member.id);
-    if (!residentRng) throw new Error(`Missing Routine RNG for resident ${member.id}.`);
-    member.recentLifeLog = buildRecentLifeLog(member, residentRng, household, residents);
-    routineRngByResidentId.delete(member.id);
-  }
 }
 
 const cityRng = createRng(generation.citySeed);
@@ -477,6 +448,12 @@ while (residents.length < generation.residentCount) {
   createHousehold(weightedPick(cityRng, validArchetypes).id, remaining, cityRng);
 }
 
+const householdById = new Map(households.map((household) => [household.id, household]));
+for (const resident of residents) {
+  const completedTrace = buildCompletedActionTrace(resident, residents, householdById);
+  resident.recentActions = recordRecentActions(resident, completedTrace);
+  resident.currentAction = buildCurrentAction(resident, residents, householdById);
+}
 const residentById = new Map(residents.map((resident) => [resident.id, resident]));
 for (const resident of residents) {
   const history = [];
@@ -526,7 +503,7 @@ const definitions = {
     femaleGivenNames: nameCatalog.givenNames.filter((item) => item.gender === 'female').map((item) => item.text),
   },
   occupations: occupations.items,
-  routines: routines.items,
+  actionPresentations: actionPresentations.items,
   generation,
 };
 
@@ -542,4 +519,4 @@ await mkdir(outputDir, { recursive: true });
 await writeFile(join(outputDir, 'definitions.json'), `${JSON.stringify(definitions, null, 2)}\n`, 'utf8');
 await writeFile(join(outputDir, 'resident-snapshot.json'), `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
 
-console.log(`Generated ${snapshot.residents.length} residents in ${snapshot.households.length} households directly from Name V2 tokens.`);
+console.log(`Generated ${snapshot.residents.length} residents in ${snapshot.households.length} households with deterministic CurrentAction / RecentAction traces.`);

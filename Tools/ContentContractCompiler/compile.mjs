@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const root = process.cwd();
@@ -13,7 +13,7 @@ const givenNames = await readJson('Content/Names/given-names-v2.json');
 const lifeTags = await readJson('Content/Tags/life-tags.json');
 const occupationGroups = await readJson('Content/Occupations/occupation-groups.json');
 const occupations = await readJson('Content/Occupations/occupations.json');
-const routines = await readJson('Content/Routines/routine-templates.json');
+const actionPresentations = await readJson('Content/ResidentActions/resident-action-presentations.json');
 const lifeEvents = await readJson('Content/LifeEvents/life-events.json');
 const portrait = await readJson('Content/Portrait/portrait-catalog.json');
 const residentProfiles = await readJson('Content/Residents/resident-profile-catalog.json');
@@ -22,7 +22,7 @@ if (surnames.schema !== 'wanhu.surnames.v2') throw new Error(`Unsupported surnam
 if (givenNames.schema !== 'wanhu.given-names.v2') throw new Error(`Unsupported given-name schema: ${givenNames.schema}`);
 if (lifeTags.schema !== 'wanhu.life-tags.v1') throw new Error(`Unsupported life-tag schema: ${lifeTags.schema}`);
 if (occupationGroups.schema !== 'wanhu.occupation-groups.v1') throw new Error(`Unsupported occupation-group schema: ${occupationGroups.schema}`);
-if (routines.schema !== 'wanhu.routines.v2') throw new Error(`Unsupported Routine schema: ${routines.schema}`);
+if (actionPresentations.schema !== 'wanhu.resident-action-presentations.v1') throw new Error(`Unsupported Action Presentation schema: ${actionPresentations.schema}`);
 if (lifeEvents.schema !== 'wanhu.life-events.v2') throw new Error(`Unsupported LifeEvent schema: ${lifeEvents.schema}`);
 if (portrait.schema !== 'wanhu.portrait-catalog.v2') throw new Error(`Unsupported portrait schema: ${portrait.schema}`);
 if (residentProfiles.schema !== 'wanhu.resident-profile-catalog.v1') throw new Error(`Unsupported resident profile schema: ${residentProfiles.schema}`);
@@ -33,49 +33,6 @@ const validLifeStages = new Set(['child', 'teen', 'young-adult', 'adult', 'middl
 const validWealthTiers = new Set(['poor', 'plain', 'comfortable', 'wealthy']);
 const validPortraitFrames = new Set(['female.child','female.adult','female.elder','male.child','male.adult','male.elder']);
 const structuralRequestTypes = new Set(['changeOccupation', 'moveHousehold', 'formMarriage', 'addChild']);
-const validRoutineCategories = new Set(['household','work','study','market','social','travel','leisure','community','care','custom']);
-const canonicalRoutineIdPattern = /^routine\.(household|work|study|market|social|travel|leisure|community|care|custom)\.[a-z][a-z0-9-]*\.[a-z][a-z0-9-]*$/;
-const factIdPattern = /^fact\.[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/;
-const tokenPattern = /^[a-z][a-z0-9-]*$/;
-const familyRequirementValues = new Set(['any','required','forbidden']);
-const routineContextRelations = new Set(['spouse','child','parent','household-member']);
-const MAX_ROUTINE_VARIANT_CHARACTERS = 24;
-const legacyRoutineIds = new Set([
-  'routine.generic.market',
-  'routine.generic.neighbor',
-  'routine.generic.rain',
-  'routine.generic.food',
-  'routine.generic.evening',
-  'routine.student.copy',
-  'routine.student.friend',
-  'routine.apprentice.tools',
-  'routine.apprentice.errand',
-  'routine.cloth.stock',
-  'routine.cloth.customer',
-  'routine.cloth.close',
-  'routine.potter.kiln',
-  'routine.potter.clay',
-  'routine.potter.crack',
-  'routine.carpenter.tool',
-  'routine.carpenter.repair',
-  'routine.account.check',
-  'routine.account.tea',
-  'routine.physician.medicine',
-  'routine.physician.quiet',
-  'routine.lock.water',
-  'routine.lock.grass',
-  'routine.vendor.stock',
-  'routine.vendor.change',
-  'routine.farmer.tool',
-  'routine.farmer.field',
-  'routine.courier.wait',
-  'routine.courier.shoes',
-  'routine.performer.practice',
-  'routine.performer.costume',
-  'routine.midwife.prepare',
-  'routine.retired.repair',
-  'routine.retired.friends',
-]);
 
 function fnv1a32(value) {
   let hash = 2166136261;
@@ -134,10 +91,6 @@ function validateFilterList(items, allowed, label) {
   for (const value of items ?? []) {
     if (!allowed.has(value)) throw new Error(`${label} contains unsupported value ${value}.`);
   }
-}
-
-function normalizeRoutineVariantText(value) {
-  return value.normalize('NFKC').replace(/[\s，。、“”‘’！？；：,.!?]/g, '');
 }
 
 requireArray(surnames.items, 'Surname V2');
@@ -199,7 +152,7 @@ for (const [kind, items] of [
 }
 
 for (const item of occupations.items ?? []) register(item.id, 'occupation', 'Content/Occupations/occupations.json');
-for (const item of routines.items ?? []) register(item.id, 'routine', 'Content/Routines/routine-templates.json');
+for (const item of actionPresentations.items ?? []) register(item.id, 'resident-action', 'Content/ResidentActions/resident-action-presentations.json');
 for (const item of lifeEvents.items ?? []) register(item.id, 'life-event', 'Content/LifeEvents/life-events.json');
 
 requireArray(portrait.faceFamilies, 'Portrait face families');
@@ -256,94 +209,22 @@ for (const item of residentProfiles.presentationStyles) {
   }
 }
 
-requireArray(routines.items, 'Routine Library V2');
-const routineVariantByNormalizedText = new Map();
-const routineVariantLengths = [];
-const routineSourceFactUsage = new Map();
-for (const routine of routines.items) {
-  if (!legacyRoutineIds.has(routine.id) && !canonicalRoutineIdPattern.test(routine.id)) throw new Error(`${routine.id}: new Routine IDs must use routine.<domain>.<scope>.<action>.`);
-  if (!validRoutineCategories.has(routine.category)) throw new Error(`${routine.id}: invalid category ${routine.category}.`);
-  if (!legacyRoutineIds.has(routine.id) && routine.id.split('.')[1] !== routine.category) throw new Error(`${routine.id}: category must match the ID domain.`);
-  requireArray(routine.sourceFacts, `${routine.id}.sourceFacts`);
-  assertUniqueStrings(routine.sourceFacts, `${routine.id}.sourceFacts`);
-  for (const factId of routine.sourceFacts) {
-    if (!factIdPattern.test(factId)) throw new Error(`${routine.id}: invalid source Fact ID ${factId}.`);
-    const factDomain = factId.split('.')[1];
-    if (factDomain !== routine.category) throw new Error(`${routine.id}: source Fact domain ${factDomain} must match category ${routine.category}.`);
-    const usage = routineSourceFactUsage.get(factId) ?? [];
-    usage.push(routine.id);
-    routineSourceFactUsage.set(factId, usage);
-  }
-  const rule = routine.eligibility;
-  if (!rule || typeof rule !== 'object') throw new Error(`${routine.id}.eligibility is required.`);
-  for (const field of ['occupations','occupationGroups','lifeStages','genders','weather']) {
-    if (!Array.isArray(rule[field])) throw new Error(`${routine.id}.eligibility.${field} must be an array.`);
-    assertUniqueStrings(rule[field], `${routine.id}.eligibility.${field}`);
-  }
-  for (const occupationId of rule.occupations) if (!occupationIds.has(occupationId)) throw new Error(`${routine.id}: unknown occupation ${occupationId}.`);
-  for (const groupId of rule.occupationGroups) if (!occupationGroupIds.has(groupId)) throw new Error(`${routine.id}: unknown occupation group ${groupId}.`);
-  validateFilterList(rule.lifeStages, validLifeStages, `${routine.id}.eligibility.lifeStages`);
-  validateFilterList(rule.genders, validGenders, `${routine.id}.eligibility.genders`);
-  for (const weatherId of rule.weather) if (!tokenPattern.test(weatherId)) throw new Error(`${routine.id}: invalid weather token ${weatherId}.`);
-  const family = rule.family;
-  if (family !== undefined) {
-    if (!family || typeof family !== 'object' || Array.isArray(family)) throw new Error(`${routine.id}.eligibility.family must be an object.`);
-    for (const field of ['spouse','parent','coResidentSpouse','coResidentChild','coResidentParent']) {
-      if (family[field] !== undefined && !familyRequirementValues.has(family[field])) throw new Error(`${routine.id}.eligibility.family.${field} has unsupported value ${family[field]}.`);
-    }
-    for (const field of ['minChildren','minHouseholdSize']) {
-      if (family[field] !== undefined && (!Number.isInteger(family[field]) || family[field] < (field === 'minHouseholdSize' ? 1 : 0))) throw new Error(`${routine.id}.eligibility.family.${field} is invalid.`);
-    }
-    for (const field of ['maxChildren','maxHouseholdSize']) {
-      const value = family[field];
-      const minimum = field === 'maxHouseholdSize' ? 1 : 0;
-      if (value !== undefined && value !== null && (!Number.isInteger(value) || value < minimum)) throw new Error(`${routine.id}.eligibility.family.${field} is invalid.`);
-    }
-    if (family.maxChildren !== undefined && family.maxChildren !== null && family.minChildren !== undefined && family.maxChildren < family.minChildren) throw new Error(`${routine.id}: maxChildren cannot be lower than minChildren.`);
-    if (family.maxHouseholdSize !== undefined && family.maxHouseholdSize !== null && family.minHouseholdSize !== undefined && family.maxHouseholdSize < family.minHouseholdSize) throw new Error(`${routine.id}: maxHouseholdSize cannot be lower than minHouseholdSize.`);
-    if (family.spouse === 'forbidden' && family.coResidentSpouse === 'required') throw new Error(`${routine.id}: coResidentSpouse required conflicts with spouse forbidden.`);
-    if (family.parent === 'forbidden' && family.coResidentParent === 'required') throw new Error(`${routine.id}: coResidentParent required conflicts with parent forbidden.`);
-    if (family.maxChildren === 0 && family.coResidentChild === 'required') throw new Error(`${routine.id}: coResidentChild required conflicts with maxChildren 0.`);
-  }
-  if (routine.context !== undefined) {
-    if (!routine.context || typeof routine.context !== 'object' || Array.isArray(routine.context)) throw new Error(`${routine.id}.context must be an object.`);
-    if (!routineContextRelations.has(routine.context.residentTarget)) throw new Error(`${routine.id}: unsupported context residentTarget ${routine.context.residentTarget}.`);
-    if (routine.context.residentTarget === 'spouse' && family?.spouse === 'forbidden') throw new Error(`${routine.id}: spouse context conflicts with spouse forbidden.`);
-    if (routine.context.residentTarget === 'parent' && family?.parent === 'forbidden') throw new Error(`${routine.id}: parent context conflicts with parent forbidden.`);
-    if (routine.context.residentTarget === 'child' && family?.maxChildren === 0) throw new Error(`${routine.id}: child context conflicts with maxChildren 0.`);
-  }
-  validateWeight(routine.weight, routine.id);
-  if (!Number.isInteger(routine.cooldownDays) || routine.cooldownDays < 0) throw new Error(`${routine.id}.cooldownDays must be an integer >= 0.`);
-  requireArray(routine.variants, `${routine.id}.variants`);
+requireArray(actionPresentations.items, 'Resident Action presentations');
+const actionVariantLengths = [];
+for (const action of actionPresentations.items) {
+  if (!action.id.startsWith('resident-action.')) throw new Error(`${action.id}: Action Presentation id must start with resident-action.`);
+  if (typeof action.currentText !== 'string' || !action.currentText.trim()) throw new Error(`${action.id}.currentText is required.`);
+  if (!Number.isInteger(action.cooldownDays) || action.cooldownDays < 0) throw new Error(`${action.id}.cooldownDays must be an integer >= 0.`);
+  if (!Array.isArray(action.variants) || action.variants.length < 2 || action.variants.length > 4) throw new Error(`${action.id}.variants must contain 2-4 items.`);
   const variantTexts = new Set();
-  for (const [variantIndex, variant] of routine.variants.entries()) {
-    if (!variant || typeof variant.text !== 'string' || !variant.text.trim()) throw new Error(`${routine.id}.variants[${variantIndex}].text is required.`);
-    validateWeight(variant.weight, `${routine.id}.variants[${variantIndex}]`);
-    const characterCount = [...variant.text.trim()].length;
-    if (characterCount > MAX_ROUTINE_VARIANT_CHARACTERS) throw new Error(`${routine.id}.variants[${variantIndex}] exceeds ${MAX_ROUTINE_VARIANT_CHARACTERS} characters (${characterCount}).`);
-    routineVariantLengths.push(characterCount);
-    if (variantTexts.has(variant.text)) throw new Error(`${routine.id}: duplicate variant text ${variant.text}.`);
-    const normalizedText = normalizeRoutineVariantText(variant.text);
-    const previousVariant = routineVariantByNormalizedText.get(normalizedText);
-    if (previousVariant) throw new Error(`${routine.id}.variants[${variantIndex}] duplicates normalized text from ${previousVariant.routineId}.variants[${previousVariant.variantIndex}].`);
-    routineVariantByNormalizedText.set(normalizedText, { routineId: routine.id, variantIndex });
+  for (const [variantIndex, variant] of action.variants.entries()) {
+    if (!variant || typeof variant.text !== 'string' || !variant.text.trim()) throw new Error(`${action.id}.variants[${variantIndex}].text is required.`);
+    validateWeight(variant.weight, `${action.id}.variants[${variantIndex}]`);
+    if (variantTexts.has(variant.text)) throw new Error(`${action.id}: duplicate variant text ${variant.text}.`);
     variantTexts.add(variant.text);
+    actionVariantLengths.push([...variant.text.trim()].length);
   }
 }
-
-const routineIndexById = new Map([...routines.items].map((item) => item.id).sort().map((id, index) => [id, index]));
-const compiledRoutineCatalog = {
-  schema: 'wanhu.routine-catalog.v2',
-  items: routines.items.map((item) => ({ ...item, runtimeIndex: routineIndexById.get(item.id) })),
-};
-
-function routineMatchesOccupation(routine, occupation) {
-  const rule = routine.eligibility;
-  if (rule.occupations.length && !rule.occupations.includes(occupation.id)) return false;
-  if (rule.occupationGroups.length && !rule.occupationGroups.includes(occupation.groupId)) return false;
-  return true;
-}
-
 
 const structuralRequestCounts = Object.fromEntries([...structuralRequestTypes].map((type) => [type, 0]));
 for (const event of lifeEvents.items ?? []) {
@@ -435,27 +316,12 @@ const phaseCoverage = LIFE_PHASES.map((phase) => ({
   lifeChapters: lifeEvents.items.filter((event) => event.recordToHistory && eventOverlapsPhase(event, phase)).length,
 }));
 
-const occupationCoverage = occupations.items.map((occupation) => {
-  const directRoutines = compiledRoutineCatalog.items.filter((routine) => routine.eligibility.occupations.includes(occupation.id)).length;
-  const groupRoutines = compiledRoutineCatalog.items.filter((routine) => routine.eligibility.occupationGroups.includes(occupation.groupId)).length;
-  const applicableRoutines = compiledRoutineCatalog.items.filter((routine) => routineMatchesOccupation(routine, occupation)).length;
-  return {
-    occupationId: occupation.id,
-    occupationGroupId: occupation.groupId,
-    lifeEvents: lifeEvents.items.filter((event) => eventMatchesOccupation(event, occupation.id)).length,
-    lifeChapters: lifeEvents.items.filter((event) => event.recordToHistory && eventMatchesOccupation(event, occupation.id)).length,
-    routines: applicableRoutines,
-    directRoutines,
-    groupRoutines,
-  };
-});
-
-const routineLifeStageCoverage = [...validLifeStages].map((lifeStageId) => {
-  const directRoutines = compiledRoutineCatalog.items.filter((routine) => routine.eligibility.lifeStages.includes(lifeStageId)).length;
-  const unrestrictedRoutines = compiledRoutineCatalog.items.filter((routine) => routine.eligibility.lifeStages.length === 0).length;
-  const applicableRoutines = compiledRoutineCatalog.items.filter((routine) => routine.eligibility.lifeStages.length === 0 || routine.eligibility.lifeStages.includes(lifeStageId)).length;
-  return { lifeStageId, directRoutines, unrestrictedRoutines, applicableRoutines };
-});
+const occupationCoverage = occupations.items.map((occupation) => ({
+  occupationId: occupation.id,
+  occupationGroupId: occupation.groupId,
+  lifeEvents: lifeEvents.items.filter((event) => eventMatchesOccupation(event, occupation.id)).length,
+  lifeChapters: lifeEvents.items.filter((event) => event.recordToHistory && eventMatchesOccupation(event, occupation.id)).length,
+}));
 
 const groupCoverage = occupationGroups.items.map((group) => {
   const groupOccupations = occupations.items.filter((occupation) => occupation.groupId === group.id);
@@ -476,33 +342,6 @@ const groupCoverage = occupationGroups.items.map((group) => {
   };
 });
 
-const routineCategoryCoverage = [...validRoutineCategories].map((category) => ({
-  category,
-  definitions: compiledRoutineCatalog.items.filter((item) => item.category === category).length,
-  variants: compiledRoutineCatalog.items.filter((item) => item.category === category).reduce((sum, item) => sum + item.variants.length, 0),
-}));
-const reusedRoutineSourceFacts = [...routineSourceFactUsage.entries()]
-  .filter(([, routineIds]) => routineIds.length > 1)
-  .map(([factId, routineIds]) => ({ factId, routineIds }));
-const routineFamilyContractCoverage = {
-  familyConstrainedDefinitions: compiledRoutineCatalog.items.filter((item) => item.eligibility.family !== undefined).length,
-  contextResidentTargetDefinitions: compiledRoutineCatalog.items.filter((item) => item.context?.residentTarget).length,
-  contextTargets: [...routineContextRelations].map((residentTarget) => ({
-    residentTarget,
-    definitions: compiledRoutineCatalog.items.filter((item) => item.context?.residentTarget === residentTarget).length,
-  })),
-};
-
-const routineTextQuality = {
-  maxAllowedCharacters: MAX_ROUTINE_VARIANT_CHARACTERS,
-  minCharacters: Math.min(...routineVariantLengths),
-  maxCharacters: Math.max(...routineVariantLengths),
-  averageCharacters: Number((routineVariantLengths.reduce((sum, value) => sum + value, 0) / routineVariantLengths.length).toFixed(2)),
-  normalizedDuplicateVariantTexts: 0,
-  sourceFactCount: routineSourceFactUsage.size,
-  reusedSourceFacts: reusedRoutineSourceFacts,
-};
-
 const referencedTags = new Set();
 const producedTags = new Set();
 for (const event of lifeEvents.items) {
@@ -512,15 +351,8 @@ for (const event of lifeEvents.items) {
 
 const warnings = [];
 for (const phase of phaseCoverage) if (phase.lifeChapters === 0) warnings.push(`No recordable Life Chapter for phase ${phase.phase}.`);
-for (const occupation of occupationCoverage) if (occupation.routines === 0) warnings.push(`${occupation.occupationId} has no occupation-specific Routine.`);
 for (const group of groupCoverage) if (group.lifeEvents === 0) warnings.push(`${group.occupationGroupId} has no LifeEvent coverage.`);
 for (const tag of lifeTags.items) if (!referencedTags.has(tag.id) && !producedTags.has(tag.id)) warnings.push(`${tag.id} is registered but not yet used by LifeEvent eligibility/effects.`);
-for (const category of routineCategoryCoverage) {
-  if (category.category !== 'custom' && category.definitions < 8) warnings.push(`Routine category ${category.category} has only ${category.definitions} definitions; R1 baseline is 8.`);
-}
-for (const stage of routineLifeStageCoverage) {
-  if (stage.directRoutines < 8) warnings.push(`Routine life stage ${stage.lifeStageId} has only ${stage.directRoutines} direct definitions; R3 baseline is 8.`);
-}
 
 const coverage = {
   schema: 'wanhu.resident-content-coverage.v1',
@@ -542,20 +374,12 @@ const coverage = {
     skinPalettes: portrait.skinPalettes.length,
     hairPalettes: portrait.hairPalettes.length,
   },
-  routines: {
-    total: compiledRoutineCatalog.items.length,
-    variants: compiledRoutineCatalog.items.reduce((sum, item) => sum + item.variants.length, 0),
-    categories: routineCategoryCoverage,
-    quality: routineTextQuality,
-    occupationCoverage: occupationCoverage.map(({ occupationId, occupationGroupId, routines, directRoutines, groupRoutines }) => ({
-      occupationId,
-      occupationGroupId,
-      applicableRoutines: routines,
-      directRoutines,
-      groupRoutines,
-    })),
-    lifeStageCoverage: routineLifeStageCoverage,
-    familyContract: routineFamilyContractCoverage,
+  actionPresentations: {
+    total: actionPresentations.items.length,
+    variants: actionPresentations.items.reduce((sum, item) => sum + item.variants.length, 0),
+    minVariantCharacters: Math.min(...actionVariantLengths),
+    maxVariantCharacters: Math.max(...actionVariantLengths),
+    averageVariantCharacters: Number((actionVariantLengths.reduce((sum, value) => sum + value, 0) / actionVariantLengths.length).toFixed(2)),
   },
   lifeTags: {
     total: lifeTags.items.length,
@@ -574,14 +398,15 @@ const coverage = {
 };
 
 await mkdir(generatedDir, { recursive: true });
+await rm(join(generatedDir, 'routine-catalog-v2.json'), { force: true });
 await writeFile(join(generatedDir, 'stable-id-registry.json'), `${JSON.stringify(registry, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'name-catalog-v2.json'), `${JSON.stringify(nameCatalog, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'life-tags.json'), `${JSON.stringify(lifeTags, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'occupation-groups.json'), `${JSON.stringify(occupationGroups, null, 2)}\n`, 'utf8');
-await writeFile(join(generatedDir, 'routine-catalog-v2.json'), `${JSON.stringify(compiledRoutineCatalog, null, 2)}\n`, 'utf8');
+await writeFile(join(generatedDir, 'resident-action-presentations.json'), `${JSON.stringify(actionPresentations, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'portrait-catalog.json'), `${JSON.stringify(portraitCatalog, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'resident-profile-catalog.json'), `${JSON.stringify(residentProfiles, null, 2)}\n`, 'utf8');
 await writeFile(join(generatedDir, 'content-coverage.json'), `${JSON.stringify(coverage, null, 2)}\n`, 'utf8');
 
-console.log(`Validated ${registry.items.length} Stable IDs, ${compiledRoutineCatalog.items.length} Routine definitions / ${compiledRoutineCatalog.items.reduce((sum, item) => sum + item.variants.length, 0)} variants, ${residentProfiles.temperaments.length + residentProfiles.lifeFocuses.length + residentProfiles.presentationStyles.length} resident profile definitions, ${portrait.faceFamilies.length + portrait.hairStyles.length + portrait.outfitStyles.length + portrait.skinPalettes.length + portrait.hairPalettes.length} portrait definitions, ${occupationGroups.items.length} occupation groups, ${lifeTags.items.length} LifeTags and ${lifeEvents.items.length} LifeEvents.`);
+console.log(`Validated ${registry.items.length} Stable IDs, ${actionPresentations.items.length} Action Presentations / ${actionPresentations.items.reduce((sum, item) => sum + item.variants.length, 0)} variants, ${residentProfiles.temperaments.length + residentProfiles.lifeFocuses.length + residentProfiles.presentationStyles.length} resident profile definitions, ${portrait.faceFamilies.length + portrait.hairStyles.length + portrait.outfitStyles.length + portrait.skinPalettes.length + portrait.hairPalettes.length} portrait definitions, ${occupationGroups.items.length} occupation groups, ${lifeTags.items.length} LifeTags and ${lifeEvents.items.length} LifeEvents.`);
 console.log(`Coverage report emitted with ${warnings.length} non-fatal warning(s).`);

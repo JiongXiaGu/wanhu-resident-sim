@@ -1,0 +1,170 @@
+{
+  "schema": "wanhu.resident-action-presentations.v1",
+  "items": [
+    {
+      "id": "resident-action.fetch-water",
+      "currentText": "正在井边打水",
+      "cooldownDays": 3,
+      "variants": [
+        {
+          "text": "家里的水不多了，去井边挑了水回来。",
+          "weight": 1
+        },
+        {
+          "text": "去附近水井打了水，挑回家里备用。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "resident-action.wash-clothes",
+      "currentText": "正在洗衣",
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "把攒下的衣物拿去洗了。",
+          "weight": 1
+        },
+        {
+          "text": "去洗衣点把家里的脏衣洗净了。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "resident-action.go-to-work",
+      "currentText": "正在工作地点做工",
+      "cooldownDays": 2,
+      "variants": [
+        {
+          "text": "照常去了做工的地方，忙完了手头的活。",
+          "weight": 1
+        },
+        {
+          "text": "到工作地点做完了今天该做的事。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "resident-action.buy-food",
+      "currentText": "正在市场买吃用",
+      "cooldownDays": 3,
+      "variants": [
+        {
+          "text": "去市上买了些家里要吃的东西。",
+          "weight": 1
+        },
+        {
+          "text": "家里缺吃用的，去市场补了些粮菜。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "resident-action.take-walk",
+      "currentText": "正在附近散步",
+      "cooldownDays": 3,
+      "variants": [
+        {
+          "text": "空下来沿河走了一阵，才慢慢回去。",
+          "weight": 1
+        },
+        {
+          "text": "忙完手头的事，去附近散了会儿步。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "resident-action.visit-friend",
+      "currentText": "正在朋友家做客",
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "去朋友家坐了坐，聊到天色渐晚才回来。",
+          "weight": 1
+        },
+        {
+          "text": "抽空串了趟门，和朋友说了些近来的事。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "resident-action.visit-family",
+      "currentText": "正在探望家人",
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "去看了家里人，坐了一阵才告辞。",
+          "weight": 1
+        },
+        {
+          "text": "抽空去探了亲，顺便问了问家里的近况。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "resident-action.watch-performance",
+      "currentText": "正在看一场演出",
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "去看了一场演出，散场后才回去。",
+          "weight": 1
+        },
+        {
+          "text": "得了空去看热闹，听完一场才离开。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "resident-action.go-to-teahouse",
+      "currentText": "正在茶馆歇脚",
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "去茶馆坐了会儿，喝完茶才起身。",
+          "weight": 1
+        },
+        {
+          "text": "忙里偷闲，在茶馆歇了阵脚。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "resident-action.travel",
+      "currentText": "正在前往外地",
+      "cooldownDays": 12,
+      "variants": [
+        {
+          "text": "出了趟远门，办完事情才回来。",
+          "weight": 1
+        },
+        {
+          "text": "去外地走了一趟，路上花了不少时间。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "resident-action.rest-at-home",
+      "currentText": "正在家里休息",
+      "cooldownDays": 2,
+      "variants": [
+        {
+          "text": "今天留在家里歇了歇，没有再往外跑。",
+          "weight": 1
+        },
+        {
+          "text": "忙过一阵后回家休息，把这一天缓了下来。",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}

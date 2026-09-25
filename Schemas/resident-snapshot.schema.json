@@ -54,6 +54,65 @@
           "type": "string"
         }
       }
+    },
+    "currentAction": {
+      "type": "object",
+      "required": [
+        "actionId",
+        "phase"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "actionId": {
+          "$ref": "#/$defs/stableId"
+        },
+        "targetResidentId": {
+          "type": "integer"
+        },
+        "placeId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "enum": [
+            "moving",
+            "executing"
+          ]
+        }
+      }
+    },
+    "recentAction": {
+      "type": "object",
+      "required": [
+        "id",
+        "day",
+        "actionId",
+        "variantIndex"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "day": {
+          "type": "integer"
+        },
+        "actionId": {
+          "$ref": "#/$defs/stableId"
+        },
+        "variantIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "targetResidentId": {
+          "type": "integer"
+        },
+        "placeId": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     }
   },
   "type": "object",
@@ -100,7 +159,8 @@
           "lifeStage",
           "stateBits",
           "lifeTags",
-          "recentLifeLog",
+          "currentAction",
+          "recentActions",
           "majorLifeHistory"
         ],
         "properties": {
@@ -187,11 +247,17 @@
             },
             "uniqueItems": true
           },
-          "recentLifeLog": {
-            "type": "array"
-          },
           "majorLifeHistory": {
             "type": "array"
+          },
+          "currentAction": {
+            "$ref": "#/$defs/currentAction"
+          },
+          "recentActions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/recentAction"
+            }
           }
         },
         "additionalProperties": false

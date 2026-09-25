@@ -27,7 +27,7 @@ if (nameCatalog.schema !== 'wanhu.name-catalog.v2') {
 const surnameById = new Map(nameCatalog.surnames.map((item) => [item.id, item]));
 const givenNameById = new Map(nameCatalog.givenNames.map((item) => [item.id, item]));
 const eventById = new Map(definitions.lifeEvents.map((item) => [item.id, item]));
-const routineById = new Map(definitions.routines.map((item) => [item.id, item]));
+const actionPresentationById = new Map(definitions.actionPresentations.map((item) => [item.id, item]));
 const knownLifeTags = new Set(definitions.lifeTags.map((item) => item.id));
 
 function applyEffects(tags, effects, residentId, eventId) {
@@ -73,35 +73,28 @@ for (const resident of snapshot.residents) {
 
 const residentById = new Map(snapshot.residents.map((resident) => [resident.id, resident]));
 const householdById = new Map(snapshot.households.map((household) => [household.id, household]));
-
-function routineContextResidentMatches(relation, resident, target, household) {
-  if (target.id === resident.id) return false;
-  if (relation === 'spouse') return resident.spouseId === target.id;
-  if (relation === 'child') return target.fatherId === resident.id || target.motherId === resident.id;
-  if (relation === 'parent') return resident.fatherId === target.id || resident.motherId === target.id;
-  return target.householdId === resident.householdId && Boolean(household?.memberIds.includes(target.id));
+function validateActionContext(action, label) {
+  if (action.targetResidentId !== undefined && (!Number.isInteger(action.targetResidentId) || !residentById.has(action.targetResidentId))) throw new Error(`${label}: targets missing resident ${action.targetResidentId}.`);
+  if (action.placeId !== undefined && (typeof action.placeId !== 'string' || !action.placeId.trim())) throw new Error(`${label}: placeId must be non-empty when present.`);
 }
-
 for (const resident of snapshot.residents) {
-  const household = householdById.get(resident.householdId);
-  for (const record of resident.recentLifeLog) {
-    if (!record.routineId) continue;
-    const routine = routineById.get(record.routineId);
-    if (!routine) throw new Error(`${resident.id}: recent Routine references unknown definition ${record.routineId}.`);
-    const relation = routine.context?.residentTarget;
-    if (!relation) {
-      if (record.contextResidentId !== undefined) throw new Error(`${resident.id}: ${record.routineId} stores unexpected ContextResidentId.`);
-      continue;
-    }
-    if (!Number.isInteger(record.contextResidentId)) throw new Error(`${resident.id}: ${record.routineId} is missing ContextResidentId.`);
-    const target = residentById.get(record.contextResidentId);
-    if (!target) throw new Error(`${resident.id}: ${record.routineId} targets missing resident ${record.contextResidentId}.`);
-    if (!routineContextResidentMatches(relation, resident, target, household)) {
-      throw new Error(`${resident.id}: ${record.routineId} ContextResidentId ${record.contextResidentId} does not match ${relation}.`);
-    }
+  if (!actionPresentationById.has(resident.currentAction?.actionId)) throw new Error(`${resident.id}: CurrentAction references unknown Action Presentation ${resident.currentAction?.actionId}.`);
+  validateActionContext(resident.currentAction,`${resident.id}: CurrentAction`);
+  if (!Array.isArray(resident.recentActions)) throw new Error(`${resident.id}: recentActions must be an array.`);
+  if (resident.recentActions.length > definitions.generation.recentActionCapacity) throw new Error(`${resident.id}: recentActions exceeds capacity.`);
+  const lastDayByAction = new Map(); let previousActionId;
+  for (const record of [...resident.recentActions].sort((left,right)=>left.day-right.day)) {
+    const presentation=actionPresentationById.get(record.actionId);
+    if (!presentation) throw new Error(`${resident.id}: RecentAction references unknown ${record.actionId}.`);
+    if (!Number.isInteger(record.variantIndex) || record.variantIndex<0 || record.variantIndex>=presentation.variants.length) throw new Error(`${resident.id}: invalid variantIndex for ${record.actionId}.`);
+    if (record.actionId===previousActionId) throw new Error(`${resident.id}: adjacent RecentAction duplicate ${record.actionId}.`);
+    const previousDay=lastDayByAction.get(record.actionId);
+    if (previousDay!==undefined && record.day-previousDay<presentation.cooldownDays) throw new Error(`${resident.id}: ${record.actionId} violates cooldownDays.`);
+    if ('title' in record || 'text' in record || 'contextResidentId' in record || 'routineId' in record) throw new Error(`${resident.id}: RecentAction must store compact facts only.`);
+    validateActionContext(record,`${resident.id}: RecentAction ${record.id}`);
+    lastDayByAction.set(record.actionId,record.day); previousActionId=record.actionId;
   }
 }
-
 for (const resident of snapshot.residents) {
   if (!resident.fatherId) continue;
   const father = residentById.get(resident.fatherId);
