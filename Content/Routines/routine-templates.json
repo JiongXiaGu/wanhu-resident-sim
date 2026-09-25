@@ -6117,7 +6117,10 @@
           "text": "晚上分着做了几样家务，很快便都收拾妥了。",
           "weight": 1
         }
-      ]
+      ],
+      "context": {
+        "residentTarget": "spouse"
+      }
     },
     {
       "id": "routine.household.family.sort-bedding-together",
@@ -6297,7 +6300,10 @@
           "text": "采买日用品时，也把孩子缺的几样一并带回。",
           "weight": 1
         }
-      ]
+      ],
+      "context": {
+        "residentTarget": "child"
+      }
     },
     {
       "id": "routine.leisure.family.walk-with-child",
@@ -6387,7 +6393,10 @@
           "text": "见长辈要歇了，提前备好了热水和干布。",
           "weight": 1
         }
-      ]
+      ],
+      "context": {
+        "residentTarget": "parent"
+      }
     },
     {
       "id": "routine.social.family.sit-with-parent",
@@ -6504,7 +6513,10 @@
           "text": "今日各自搭了把手，屋里的零碎活早早收了尾。",
           "weight": 1
         }
-      ]
+      ],
+      "context": {
+        "residentTarget": "household-member"
+      }
     },
     {
       "id": "routine.care.family.boil-household-water",
@@ -6563,7 +6575,10 @@
           "text": "办完手边事情，又绕去看了看家里那位。",
           "weight": 1
         }
-      ]
+      ],
+      "context": {
+        "residentTarget": "spouse"
+      }
     },
     {
       "id": "routine.social.family.send-word-to-spouse",
@@ -6623,7 +6638,10 @@
           "text": "办完事绕了段路，顺便去长辈住处看了看。",
           "weight": 1
         }
-      ]
+      ],
+      "context": {
+        "residentTarget": "parent"
+      }
     },
     {
       "id": "routine.social.family.send-word-to-parent",
@@ -6683,7 +6701,10 @@
           "text": "今日整理旧物，也把孩子留下的东西放妥了。",
           "weight": 1
         }
-      ]
+      ],
+      "context": {
+        "residentTarget": "child"
+      }
     }
   ]
 }

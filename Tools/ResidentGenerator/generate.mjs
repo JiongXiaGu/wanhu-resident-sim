@@ -156,6 +156,33 @@ function routineFamilyEligibilityMatches(family, resident, household, residentPo
   return true;
 }
 
+function routineContextResidentCandidates(relation, resident, household, residentPool) {
+  const byId = new Map(residentPool.map((candidate) => [candidate.id, candidate]));
+  if (relation === 'spouse') {
+    const spouse = byId.get(resident.spouseId);
+    return spouse ? [spouse] : [];
+  }
+  if (relation === 'child') {
+    return residentPool
+      .filter((candidate) => candidate.fatherId === resident.id || candidate.motherId === resident.id)
+      .sort((left, right) => left.id - right.id);
+  }
+  if (relation === 'parent') {
+    return [resident.fatherId, resident.motherId]
+      .map((parentId) => byId.get(parentId))
+      .filter(Boolean)
+      .sort((left, right) => left.id - right.id);
+  }
+
+  const memberIds = new Set(household?.memberIds ?? []);
+  return residentPool
+    .filter((candidate) =>
+      candidate.id !== resident.id
+      && candidate.householdId === resident.householdId
+      && memberIds.has(candidate.id))
+    .sort((left, right) => left.id - right.id);
+}
+
 function routineMatchesResident(item, resident, household, residentPool) {
   const rule = item.eligibility;
   if (rule.occupations.length && !rule.occupations.includes(resident.occupationId)) return false;
@@ -164,6 +191,8 @@ function routineMatchesResident(item, resident, household, residentPool) {
   if (rule.genders.length && !rule.genders.includes(resident.gender)) return false;
   if (rule.weather.length) return false;
   if (!routineFamilyEligibilityMatches(rule.family, resident, household, residentPool)) return false;
+  if (item.context?.residentTarget
+    && routineContextResidentCandidates(item.context.residentTarget, resident, household, residentPool).length === 0) return false;
   return true;
 }
 
@@ -196,6 +225,12 @@ function buildRecentLifeLog(resident, rng, household, residentPool) {
     const candidates = cooldownPool.length ? cooldownPool : pool;
     const item = weightedPickAvoiding(rng, candidates, new Set(recentTemplateIds));
     const variant = pickRoutineVariant(rng, item);
+    const contextCandidates = item.context?.residentTarget
+      ? routineContextResidentCandidates(item.context.residentTarget, resident, household, residentPool)
+      : [];
+    const contextResidentId = contextCandidates.length
+      ? contextCandidates[hash32(`${resident.seed}:routine-context:${item.id}:${day}`) % contextCandidates.length].id
+      : undefined;
     result.push({
       id: `${resident.id}:${item.id}:${day}`,
       day,
@@ -203,6 +238,7 @@ function buildRecentLifeLog(resident, rng, household, residentPool) {
       routineId: item.id,
       routineRuntimeIndex: item.runtimeIndex,
       variantIndex: variant.index,
+      ...(contextResidentId !== undefined ? { contextResidentId } : {}),
       title: variant.text,
     });
     lastRoutineDay.set(item.id, day);

@@ -174,7 +174,7 @@ Web 运行时也使用当前 snapshot + household 实时判断 Family Eligibilit
 
 ## 当前阶段边界
 
-Family Contract V1 已进入真实内容使用阶段。R3D 完成后当前有 **20 个 family-constrained Routine**；`context.residentTarget` 仍保持 **0**，留给 R3E 单独接入。
+Family Contract V1 与 R3E 已完成。当前有 **20 个 family-constrained Routine**，其中 **7 个**声明 `context.residentTarget`：spouse 2 / child 2 / parent 2 / household-member 1。
 
 Coverage 输出：
 
@@ -184,7 +184,7 @@ routines.familyContract.contextResidentTargetDefinitions
 routines.familyContract.contextTargets[]
 ```
 
-当前 Coverage 应固定看到 family-constrained = 20、context target = 0；R3E 才允许 Context 目标条目增长。
+最终 R3 Coverage 固定为 family-constrained = 20、context target = 7；四类 Context 目标均已进入真实定义。
 
 ## 后续任务审查
 
@@ -204,11 +204,28 @@ routines.familyContract.contextTargets[]
 
 全部文本自包含，不使用姓名占位符，也不声明 `context.residentTarget`。先通过这一批证明 Eligibility 能真实驱动内容候选池。
 
-### R3E：家庭 Context Batch + 收尾（当前）
+### R3E：家庭 Context Batch + 收尾（已完成）
 
-增加真正需要 `context.residentTarget` 的条目，验证 Fact 携带具体家人 ID、记录保存 ContextResidentId、关系变化后的降级策略，并做 Family Coverage / 去重审查。
+没有继续扩数量，而是在 R3D 现有家庭条目上为 7 个具体关系行为增加 Context。Generator 和 Web 日推进都会：
 
-R3E 完成后才结束 R3。
+```text
+Family Eligibility 通过
+→ 解析当前合法 Context 候选
+→ Fact / Demo 记录确定具体目标
+→ 写入 ContextResidentId
+→ UI 仍使用自包含 Routine 文本
+```
+
+没有合法目标时，该 Context Routine 不得进入候选池。
+
+关系变化后的降级策略：
+
+- ContextResidentId 表示**发生当时指向谁**，记录创建后不因当前关系变化而重选；
+- 打开 UI 时不得临时“再找一个配偶 / 孩子 / 父母”覆盖旧 ID；
+- 关系后来失效时，旧 Context ID 仍保留；
+- 将来若目标居民本身已无法解析，只省略附加身份展示，不能改写 Routine 文本或把记录指向别人。
+
+R3 至此结束；下一步进入 R4A Environment Eligibility Contract。
 
 ### R4A：Environment Eligibility Contract
 
