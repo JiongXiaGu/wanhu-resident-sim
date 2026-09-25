@@ -6088,6 +6088,600 @@
           "weight": 1
         }
       ]
+    },
+    {
+      "id": "routine.household.spouse.share-evening-meal",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.spouse-evening-meal-shared"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "spouse": "required",
+          "coResidentSpouse": "required"
+        }
+      },
+      "weight": 0.9,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "晚饭时没有先动筷，等人回来才一起吃。",
+          "weight": 1
+        },
+        {
+          "text": "两个人晚饭赶到一处，慢慢吃完才收桌。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.spouse.divide-chores",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.spouse-chores-divided"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "spouse": "required",
+          "coResidentSpouse": "required"
+        }
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "晚饭后两个人分着把屋里收拾了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "今日家务不少，两个人一人一头慢慢做完。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.spouse.talk-after-dinner",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.spouse-after-dinner-talk-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "spouse": "required",
+          "coResidentSpouse": "required"
+        }
+      },
+      "weight": 0.7,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "饭后两个人在门口坐着说了会儿话。",
+          "weight": 1
+        },
+        {
+          "text": "天黑前一起歇了一阵，顺便聊了些家常。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.spouse.air-bedding",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.spouse-bedding-aired"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "spouse": "required",
+          "coResidentSpouse": "required"
+        }
+      },
+      "weight": 0.7,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "趁天晴，两个人把铺盖搬出去晒了晒。",
+          "weight": 1
+        },
+        {
+          "text": "今日日头好，一起把被褥翻出来晾了一阵。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.market.spouse.choose-household-goods",
+      "category": "market",
+      "sourceFacts": [
+        "fact.market.spouse-household-goods-chosen"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "spouse": "required",
+          "coResidentSpouse": "required"
+        }
+      },
+      "weight": 0.6,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "添置家用物件时多看了几家才定下来。",
+          "weight": 1
+        },
+        {
+          "text": "今日为家里挑东西，来回比较了许久才买。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.parent.mend-child-clothes",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.parent-child-clothes-mended"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "minChildren": 1,
+          "coResidentChild": "required"
+        }
+      },
+      "weight": 0.8,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "孩子衣角开了线，晚上拿针慢慢补好。",
+          "weight": 1
+        },
+        {
+          "text": "发现孩子袖口磨破了些，顺手缝了几针。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.parent.check-child-scrape",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.parent-child-scrape-checked"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "minChildren": 1,
+          "coResidentChild": "required"
+        }
+      },
+      "weight": 0.7,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "孩子腿上蹭破一点，洗净后仔细看了看。",
+          "weight": 1
+        },
+        {
+          "text": "见孩子手上擦破了皮，回家后简单收拾好。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.parent.help-child-characters",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.parent-child-characters-helped"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "minChildren": 1,
+          "coResidentChild": "required"
+        }
+      },
+      "weight": 0.7,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "孩子练字遇到不会的地方，坐旁边教了几笔。",
+          "weight": 1
+        },
+        {
+          "text": "晚上陪孩子认了几个常见字，又写了一遍。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.parent.save-food-for-child",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.parent-child-food-saved"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "minChildren": 1,
+          "coResidentChild": "required"
+        }
+      },
+      "weight": 0.7,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "孩子回来得晚，特意给留了一点热吃食。",
+          "weight": 1
+        },
+        {
+          "text": "晚饭时先留出一小份，等孩子回来再吃。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.parent.listen-child-day",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.parent-child-day-listened"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "minChildren": 1,
+          "coResidentChild": "required"
+        }
+      },
+      "weight": 0.6,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "孩子回来后说起白天的事，坐着听了一阵。",
+          "weight": 1
+        },
+        {
+          "text": "晚间孩子话多，放下手里的事听了好一会儿。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.child.bring-parent-warm-water",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.child-parent-warm-water-brought"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "parent": "required",
+          "coResidentParent": "required"
+        }
+      },
+      "weight": 0.8,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "见老人手脚有些凉，端了碗温水过去。",
+          "weight": 1
+        },
+        {
+          "text": "家里长辈说口渴，顺手送了些热水过去。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.child.walk-with-parent",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.child-parent-walk-accompanied"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "parent": "required",
+          "coResidentParent": "required"
+        }
+      },
+      "weight": 0.6,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "陪家里长辈在近处慢慢走了一小圈。",
+          "weight": 1
+        },
+        {
+          "text": "老人想出去走走，便一道在巷里转了转。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.child.mend-parent-clothes",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.child-parent-clothes-mended"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "parent": "required",
+          "coResidentParent": "required"
+        }
+      },
+      "weight": 0.7,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "长辈一件旧衣开了线，拿来重新补好。",
+          "weight": 1
+        },
+        {
+          "text": "今日替家里老人把磨开的衣角缝了几针。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.child.listen-parent-old-story",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.child-parent-old-story-listened"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "parent": "required",
+          "coResidentParent": "required"
+        }
+      },
+      "weight": 0.6,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "坐着听长辈说了些从前的旧事。",
+          "weight": 1
+        },
+        {
+          "text": "晚间没什么急事，陪老人聊了会儿过去。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.family.share-household-meal",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.family-meal-shared"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "minHouseholdSize": 3
+        }
+      },
+      "weight": 0.9,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "今日家里人都赶上了，一桌吃完才散开。",
+          "weight": 1
+        },
+        {
+          "text": "晚饭人到得齐，大家坐在一处慢慢吃完。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.family.divide-housework",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.family-housework-divided"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "minHouseholdSize": 2
+        }
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "家里几件杂事分着做，很快便收拾妥当。",
+          "weight": 1
+        },
+        {
+          "text": "今日事情不少，屋里人各自搭手做了一些。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.family.sort-provisions",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.family-provisions-sorted"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "minHouseholdSize": 3
+        }
+      },
+      "weight": 0.7,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "把家里存着的吃用重新分了分，心里有了数。",
+          "weight": 1
+        },
+        {
+          "text": "今日清点了一遍家中存物，缺什么也记了下来。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.family.prepare-bedding",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.family-bedding-prepared"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "minHouseholdSize": 2
+        }
+      },
+      "weight": 0.7,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "天凉了些，把家里几床铺盖重新整理好。",
+          "weight": 1
+        },
+        {
+          "text": "晚上收拾睡处，把要用的被褥都铺妥当。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.family.sit-together-evening",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.family-evening-sitting-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "minHouseholdSize": 3
+        }
+      },
+      "weight": 0.7,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "晚饭后家里人没有立刻散，各坐着说了会儿话。",
+          "weight": 1
+        },
+        {
+          "text": "天黑前大家在屋里歇了一阵，顺便聊了家常。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.market.family.plan-household-purchases",
+      "category": "market",
+      "sourceFacts": [
+        "fact.market.family-purchases-planned"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": [],
+        "family": {
+          "minHouseholdSize": 3
+        }
+      },
+      "weight": 0.6,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "去市上前先盘了盘家里缺什么，免得漏买。",
+          "weight": 1
+        },
+        {
+          "text": "今日添置家用，出门前把要买的东西理了一遍。",
+          "weight": 1
+        }
+      ]
     }
   ]
 }

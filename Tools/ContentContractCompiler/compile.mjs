@@ -484,9 +484,17 @@ const routineCategoryCoverage = [...validRoutineCategories].map((category) => ({
 const reusedRoutineSourceFacts = [...routineSourceFactUsage.entries()]
   .filter(([, routineIds]) => routineIds.length > 1)
   .map(([factId, routineIds]) => ({ factId, routineIds }));
+const familyDefinitions = compiledRoutineCatalog.items.filter((item) => item.eligibility.family !== undefined);
 const routineFamilyContractCoverage = {
-  familyConstrainedDefinitions: compiledRoutineCatalog.items.filter((item) => item.eligibility.family !== undefined).length,
+  familyConstrainedDefinitions: familyDefinitions.length,
   contextResidentTargetDefinitions: compiledRoutineCatalog.items.filter((item) => item.context?.residentTarget).length,
+  spouseRequiredDefinitions: familyDefinitions.filter((item) => item.eligibility.family?.spouse === 'required').length,
+  childRequiredDefinitions: familyDefinitions.filter((item) => (item.eligibility.family?.minChildren ?? 0) > 0).length,
+  parentRequiredDefinitions: familyDefinitions.filter((item) => item.eligibility.family?.parent === 'required').length,
+  coResidentSpouseDefinitions: familyDefinitions.filter((item) => item.eligibility.family?.coResidentSpouse === 'required').length,
+  coResidentChildDefinitions: familyDefinitions.filter((item) => item.eligibility.family?.coResidentChild === 'required').length,
+  coResidentParentDefinitions: familyDefinitions.filter((item) => item.eligibility.family?.coResidentParent === 'required').length,
+  householdSizeDefinitions: familyDefinitions.filter((item) => item.eligibility.family?.minHouseholdSize !== undefined || item.eligibility.family?.maxHouseholdSize !== undefined).length,
   contextTargets: [...routineContextRelations].map((residentTarget) => ({
     residentTarget,
     definitions: compiledRoutineCatalog.items.filter((item) => item.context?.residentTarget === residentTarget).length,
