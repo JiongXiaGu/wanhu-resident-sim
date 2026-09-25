@@ -33,7 +33,7 @@ http://localhost:5173/?view=avatar-editor
 > 冻结 Portrait fallback
 ```
 
-Routine Library V2 的 R0 与 R1 已完成。当前全库 **96 个 Routine / 158 个 Variant**；除预留给 R5 的 `custom` 外，各分类至少 8 个定义。Compiler 已固化 24 字 Variant 上限、跨定义规范化去重、Fact 域与 category 一致性及 Coverage 质量统计。下一阶段进入 **R2 职业专属日常**，按当前 15 个职业逐步补到每职业约 8～12 个有辨识度的 Routine。详见 [日常事件库 V2](Documentation/日常事件库V2.md) 与 [居民事实事件、日常记录与人生经历运行时设计](Documentation/居民事实事件与人生记录运行时设计.md)。
+Routine Library V2 的 R0 与 R1 已完成。R2 Batch 1 已完成学徒、陶工、木工、郎中、稳婆五个身份的职业专属扩充，五者 `directRoutines` 均达到 8；当前全库 **126 个 Routine / 218 个 Variant**。Coverage 已区分 `applicableRoutines / directRoutines / groupRoutines`，R2 达标只看直接专属数量。`occupation.child` 留到 R3 年龄内容。下一批继续补其它未达 8 条的职业。详见 [日常事件库 V2](Documentation/日常事件库V2.md) 与 [居民事实事件、日常记录与人生经历运行时设计](Documentation/居民事实事件与人生记录运行时设计.md)。
 
 ## 头像基线：Phase 8D2 已完成
 

@@ -10,7 +10,7 @@
 
 ## 当前执行点
 
-当前主线是 **Routine Library V2：R1 已完成，下一步进入 R2 职业日常**。
+当前主线是 **Routine Library V2：R2 职业日常**。Batch 1 已完成手工业 + 医护五个职业。
 
 R0 已确定：
 
@@ -22,7 +22,7 @@ R0 已确定：
 - Coverage 统计 Routine 定义、Variant、category 与职业覆盖；
 - Web synthetic Routine 继续用于验证 UI，但带天气条件的内容等真实 Fact 链后再触发。
 
-R1 最终为 96 个 Routine / 158 个 Variant。Batch 3 已完成全量去重、Fact 域一致性、24 字 UI 长度与类别密度门禁；除预留给 R5 的 custom 外，所有分类至少 8 个定义。下一步 R2 按职业补 8～12 个具有职业辨识度的 Routine，不同时实现最终 Unity ECS Fact Stream。
+R1 最终为 96 个 Routine / 158 个 Variant。R2 Batch 1 新增 30 个职业专属 Routine / 60 个 Variant；当前全库 126 / 218。学徒、陶工、木工、郎中、稳婆的 `directRoutines` 均达到 8。下一批继续补未达标职业；`occupation.child` 留到 R3，不作为 R2 就业覆盖目标。仍不同时实现最终 Unity ECS Fact Stream。
 
 ## 当前记录链边界
 

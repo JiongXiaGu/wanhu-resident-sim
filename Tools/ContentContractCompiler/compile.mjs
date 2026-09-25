@@ -406,13 +406,20 @@ const phaseCoverage = LIFE_PHASES.map((phase) => ({
   lifeChapters: lifeEvents.items.filter((event) => event.recordToHistory && eventOverlapsPhase(event, phase)).length,
 }));
 
-const occupationCoverage = occupations.items.map((occupation) => ({
-  occupationId: occupation.id,
-  occupationGroupId: occupation.groupId,
-  lifeEvents: lifeEvents.items.filter((event) => eventMatchesOccupation(event, occupation.id)).length,
-  lifeChapters: lifeEvents.items.filter((event) => event.recordToHistory && eventMatchesOccupation(event, occupation.id)).length,
-  routines: compiledRoutineCatalog.items.filter((routine) => routineMatchesOccupation(routine, occupation)).length,
-}));
+const occupationCoverage = occupations.items.map((occupation) => {
+  const directRoutines = compiledRoutineCatalog.items.filter((routine) => routine.eligibility.occupations.includes(occupation.id)).length;
+  const groupRoutines = compiledRoutineCatalog.items.filter((routine) => routine.eligibility.occupationGroups.includes(occupation.groupId)).length;
+  const applicableRoutines = compiledRoutineCatalog.items.filter((routine) => routineMatchesOccupation(routine, occupation)).length;
+  return {
+    occupationId: occupation.id,
+    occupationGroupId: occupation.groupId,
+    lifeEvents: lifeEvents.items.filter((event) => eventMatchesOccupation(event, occupation.id)).length,
+    lifeChapters: lifeEvents.items.filter((event) => event.recordToHistory && eventMatchesOccupation(event, occupation.id)).length,
+    routines: applicableRoutines,
+    directRoutines,
+    groupRoutines,
+  };
+});
 
 const groupCoverage = occupationGroups.items.map((group) => {
   const groupOccupations = occupations.items.filter((occupation) => occupation.groupId === group.id);
@@ -492,6 +499,13 @@ const coverage = {
     variants: compiledRoutineCatalog.items.reduce((sum, item) => sum + item.variants.length, 0),
     categories: routineCategoryCoverage,
     quality: routineTextQuality,
+    occupationCoverage: occupationCoverage.map(({ occupationId, occupationGroupId, routines, directRoutines, groupRoutines }) => ({
+      occupationId,
+      occupationGroupId,
+      applicableRoutines: routines,
+      directRoutines,
+      groupRoutines,
+    })),
   },
   lifeTags: {
     total: lifeTags.items.length,

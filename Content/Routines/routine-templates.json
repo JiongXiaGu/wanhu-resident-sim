@@ -2420,6 +2420,846 @@
           "weight": 1
         }
       ]
+    },
+    {
+      "id": "routine.work.apprentice.sort-materials",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.apprentice-materials-sorted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.apprentice"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "把师傅要用的木料按长短重新分了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "开工前先把手边零散材料归置整齐。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.apprentice.prepare-workbench",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.apprentice-workbench-prepared"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.apprentice"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "师傅还没来，先把案台和工具摆好了。",
+          "weight": 1
+        },
+        {
+          "text": "开工前把案上的杂物清掉，腾出地方。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.apprentice.observe-master",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.apprentice-master-observed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.apprentice"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "今日没急着动手，先站在旁边看师傅做。",
+          "weight": 1
+        },
+        {
+          "text": "碰到不会的活，停下来仔细看了几遍。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.apprentice.practice-basic-skill",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.apprentice-basic-skill-practiced"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.apprentice"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "收工前又练了一阵最基础的手上功夫。",
+          "weight": 1
+        },
+        {
+          "text": "手头有空，把师傅教的旧活重新练了练。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.apprentice.clean-work-area",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.apprentice-work-area-cleaned"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.apprentice"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "活做完后把地上的碎屑扫到了一处。",
+          "weight": 1
+        },
+        {
+          "text": "收工前把案边和脚下简单清理干净。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.apprentice.deliver-small-order",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.apprentice-small-order-delivered"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.apprentice"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "替师傅送了件小活，回来时天还亮着。",
+          "weight": 1
+        },
+        {
+          "text": "今日抱着做好的东西跑了一趟近处。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.potter.wedge-clay",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.potter-clay-wedged"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.potter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "开工前把一团陶土重新揉匀了几遍。",
+          "weight": 1
+        },
+        {
+          "text": "泥里还有硬块，又踩又揉才弄匀。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.potter.shape-rim",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.potter-rim-shaped"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.potter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "今日做坯时，把几只器口慢慢收圆了。",
+          "weight": 1
+        },
+        {
+          "text": "有几只坯口不齐，重新修了一遍边。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.potter.turn-drying-wares",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.potter-drying-wares-turned"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.potter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "午后把晾着的陶坯挨个转了个方向。",
+          "weight": 1
+        },
+        {
+          "text": "怕一边干得太快，把坯子重新挪了挪。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.potter.load-kiln",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.potter-kiln-loaded"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.potter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "把干透的坯子一件件码进了窑里。",
+          "weight": 1
+        },
+        {
+          "text": "今日装窑，来回摆了半日才放稳当。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.potter.sort-fired-wares",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.potter-fired-wares-sorted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.potter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "开窑后把烧好的器物按成色分了几堆。",
+          "weight": 1
+        },
+        {
+          "text": "新烧出的陶器先挑了一遍好坏。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.carpenter.measure-timber",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.carpenter-timber-measured"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.carpenter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "下料前把几根木料重新量了一遍尺寸。",
+          "weight": 1
+        },
+        {
+          "text": "动锯以前先比了比长短，免得裁错。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.carpenter.mark-cut-lines",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.carpenter-cut-lines-marked"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.carpenter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "照着尺寸在木料上重新划好了墨线。",
+          "weight": 1
+        },
+        {
+          "text": "开料前先把要下锯的位置一一标好。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.carpenter.plane-board-flat",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.carpenter-board-planed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.carpenter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "一块板面不平，来回刨了几遍才顺手。",
+          "weight": 1
+        },
+        {
+          "text": "今日花了些工夫，把板面慢慢刨平。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.carpenter.test-joint-fit",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.carpenter-joint-tested"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.carpenter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "榫口合上后又拆开试了两遍松紧。",
+          "weight": 1
+        },
+        {
+          "text": "有处木榫偏紧，重新修了修才合得上。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.carpenter.collect-wood-scraps",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.carpenter-wood-scraps-collected"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.carpenter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "把能留用的短木和边角料单独收了起来。",
+          "weight": 1
+        },
+        {
+          "text": "收工时挑了些还能用的木头放到一边。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.carpenter.sharpen-saw-teeth",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.carpenter-saw-teeth-sharpened"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.carpenter"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 12,
+      "variants": [
+        {
+          "text": "锯子吃木不顺，抽空把锯齿重新整了整。",
+          "weight": 1
+        },
+        {
+          "text": "旧锯有些钝，今日仔细修了修锯齿。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.physician.check-pulse",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.physician-pulse-checked"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.physician"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "给人看诊时又细细搭了一遍脉。",
+          "weight": 1
+        },
+        {
+          "text": "今日有位病人脉象不明，多看了一会儿。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.physician.prepare-decoction",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.physician-decoction-prepared"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.physician"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "照着方子把几味药分好，嘱咐慢慢煎。",
+          "weight": 1
+        },
+        {
+          "text": "今日抓完药，又把煎药次序交代了一遍。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.physician.clean-medical-tools",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.physician-tools-cleaned"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.physician"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "收诊后把常用的小器具重新擦洗干净。",
+          "weight": 1
+        },
+        {
+          "text": "今日看诊结束，把手边器具一一收拾好。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.physician.visit-household",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.physician-household-visited"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.physician"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "午后去一户人家看了病，天黑前才回来。",
+          "weight": 1
+        },
+        {
+          "text": "今日有人来请，背着药箱出去了一趟。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.physician.review-prescription",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.physician-prescription-reviewed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.physician"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "临睡前又翻了翻今日开的几张方子。",
+          "weight": 1
+        },
+        {
+          "text": "有张药方心里没底，晚上重新看了一遍。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.physician.sort-herbs",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.physician-herbs-sorted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.physician"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "把药柜里几味常用草药重新分拣了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "午后得空，把散乱的药材重新归了格。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.midwife.check-expectant-mother",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.midwife-expectant-mother-checked"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.midwife"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "今日去看了一位临近生产的人，问了问近况。",
+          "weight": 1
+        },
+        {
+          "text": "午后上门看了看产期将近的一户人家。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.midwife.boil-clean-cloths",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.midwife-clean-cloths-boiled"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.midwife"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "把常用的干净布重新煮洗晾好备用。",
+          "weight": 1
+        },
+        {
+          "text": "今日把接生要用的几块布又烫洗了一遍。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.midwife.prepare-warm-water",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.midwife-warm-water-prepared"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.midwife"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "上门以后先让人把热水和干净盆备好了。",
+          "weight": 1
+        },
+        {
+          "text": "事情还没开始，先把热水一项项准备齐。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.midwife.comfort-family",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.midwife-family-comforted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.midwife"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "屋里人有些慌，先安抚了几句才继续忙。",
+          "weight": 1
+        },
+        {
+          "text": "家里人急得团团转，只好先让他们稳下来。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.midwife.check-newborn",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.midwife-newborn-checked"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.midwife"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "孩子生下后又仔细看了看气息和脸色。",
+          "weight": 1
+        },
+        {
+          "text": "临走前重新看了一遍新生孩子的情况。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.midwife.clean-kit-after-visit",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.midwife-kit-cleaned-after-visit"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.midwife"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "回来后把今日用过的东西重新洗净收好。",
+          "weight": 1
+        },
+        {
+          "text": "忙完一趟，把剪子和布包重新收拾了一遍。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.midwife.answer-night-call",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.midwife-night-call-answered"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.midwife"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.5,
+      "cooldownDays": 12,
+      "variants": [
+        {
+          "text": "夜里有人来请，提着东西匆匆出了门。",
+          "weight": 1
+        },
+        {
+          "text": "刚准备歇下就有人敲门，只得连夜赶去。",
+          "weight": 1
+        }
+      ]
     }
   ]
 }
