@@ -52,8 +52,8 @@ if ((await page.locator('.resident-summary').count()) !== 0) {
 
 const residentDefinitions = await page.evaluate(async () => (await fetch('/generated/definitions.json')).json());
 if (residentDefinitions?.schema !== 'wanhu.resident-definitions.v7') throw new Error('Routine review expected resident definitions v7.');
-if ((residentDefinitions.contentMeta?.routineDefinitionCount ?? 0) < 227) throw new Error('R3 Batch 2 Routine definitions are missing from generated definitions.');
-if ((residentDefinitions.contentMeta?.routineVariantCount ?? 0) < 420) throw new Error('R3 Batch 2 Routine variants are missing from generated definitions.');
+if ((residentDefinitions.contentMeta?.routineDefinitionCount ?? 0) < 247) throw new Error('R3D family content Routine definitions are missing from generated definitions.');
+if ((residentDefinitions.contentMeta?.routineVariantCount ?? 0) < 460) throw new Error('R3D family content Routine variants are missing from generated definitions.');
 for (const requiredRoutineId of [
   'routine.household.common.sweep-courtyard',
   'routine.market.common.buy-vegetables',
@@ -90,6 +90,10 @@ for (const requiredRoutineId of [
   'routine.household.young-adult.plan-spending',
   'routine.community.adult.join-alley-cleanup',
   'routine.social.middle-age.share-experience',
+  'routine.household.spouse.share-evening-meal',
+  'routine.care.parent.check-child-scrape',
+  'routine.care.child.bring-parent-warm-water',
+  'routine.household.family.share-household-meal',
 ]) {
   if (!residentDefinitions.routines.some((item) => item.id === requiredRoutineId)) {
     throw new Error('Missing R1 Routine '+requiredRoutineId+'.');
@@ -111,9 +115,13 @@ for (const lifeStageId of ['child','teen','young-adult','adult','middle-age','el
 }
 const familyContract = routineCoverage.routines?.familyContract;
 if (!familyContract) throw new Error('Routine Family Contract coverage is missing.');
-if (familyContract.familyConstrainedDefinitions !== 0 || familyContract.contextResidentTargetDefinitions !== 0) {
-  throw new Error('Family Contract stage must not silently add family Routine content.');
+if (familyContract.familyConstrainedDefinitions !== 20 || familyContract.contextResidentTargetDefinitions !== 0) {
+  throw new Error('R3D family content coverage must be 20 eligibility definitions and 0 context definitions.');
 }
+if (familyContract.spouseRequiredDefinitions !== 5 || familyContract.coResidentSpouseDefinitions !== 5) throw new Error('R3D spouse coverage mismatch.');
+if (familyContract.childRequiredDefinitions !== 5 || familyContract.coResidentChildDefinitions !== 5) throw new Error('R3D child coverage mismatch.');
+if (familyContract.parentRequiredDefinitions !== 4 || familyContract.coResidentParentDefinitions !== 4) throw new Error('R3D parent coverage mismatch.');
+if (familyContract.householdSizeDefinitions !== 6) throw new Error('R3D household-size coverage mismatch.');
 const familyProbe = await page.evaluate(async () => {
   const mod = await import('/src/simulation/routine-family.ts');
   const adult = { id: 1, spouseId: 2, childCount: 1, fatherId: 0, motherId: 0, householdId: 10 };
@@ -140,6 +148,25 @@ if (!familyProbe.spouseRequired || familyProbe.spouseForbidden || !familyProbe.c
 if (!familyProbe.spouseContext || !familyProbe.childContext || !familyProbe.parentContext || familyProbe.outsiderHouseholdContext) {
   throw new Error('Routine resident context relation probe failed.');
 }
+const familyRuntimeProbe = await page.evaluate(async () => {
+  const [defs, snapshot] = await Promise.all([
+    fetch('/generated/definitions.json').then((response) => response.json()),
+    fetch('/generated/resident-snapshot.json').then((response) => response.json()),
+  ]);
+  const familyIds = new Set([
+    'routine.household.spouse.share-evening-meal',
+    'routine.care.parent.check-child-scrape',
+    'routine.care.child.bring-parent-warm-water',
+    'routine.household.family.share-household-meal',
+  ]);
+  const familyLogs = snapshot.residents.flatMap((resident) =>
+    (resident.recentLifeLog ?? []).filter((entry) => familyIds.has(entry.routineId)).map((entry) => ({ residentId: resident.id, routineId: entry.routineId }))
+  );
+  const hasFamilyDefinition = defs.routines.some((item) => item.eligibility?.family);
+  return { hasFamilyDefinition, familyLogs };
+});
+if (!familyRuntimeProbe.hasFamilyDefinition) throw new Error('R3D family definitions did not reach generated definitions.');
+if (familyRuntimeProbe.familyLogs.length < 1) throw new Error('R3D generated snapshot should exercise at least one family-constrained Routine.');
 const routineRows = page.locator('.resident-routine-list li');
 if ((await routineRows.count()) < 1) throw new Error('Resident Panel should expose at least one recent Routine.');
 const routineTexts = await routineRows.locator('span').allTextContents();
