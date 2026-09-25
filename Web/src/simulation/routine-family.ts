@@ -60,15 +60,45 @@ export function routineFamilyEligibilityMatches(
   return true;
 }
 
+export function routineContextResidentCandidates(
+  relation: RoutineResidentContextRelation,
+  resident: ResidentRecord,
+  household: HouseholdRecord | undefined,
+  residents: readonly ResidentRecord[],
+) {
+  const byId = new Map(residents.map((candidate) => [candidate.id, candidate]));
+  if (relation === 'spouse') {
+    const spouse = byId.get(resident.spouseId);
+    return spouse ? [spouse] : [];
+  }
+  if (relation === 'child') {
+    return residents
+      .filter((candidate) => candidate.fatherId === resident.id || candidate.motherId === resident.id)
+      .sort((left, right) => left.id - right.id);
+  }
+  if (relation === 'parent') {
+    return [resident.fatherId, resident.motherId]
+      .map((parentId) => byId.get(parentId))
+      .filter((candidate): candidate is ResidentRecord => Boolean(candidate))
+      .sort((left, right) => left.id - right.id);
+  }
+
+  const memberIds = new Set(household?.memberIds ?? []);
+  return residents
+    .filter((candidate) =>
+      candidate.id !== resident.id
+      && candidate.householdId === resident.householdId
+      && memberIds.has(candidate.id))
+    .sort((left, right) => left.id - right.id);
+}
+
 export function routineContextResidentMatches(
   relation: RoutineResidentContextRelation,
   resident: ResidentRecord,
   target: ResidentRecord,
   household: HouseholdRecord | undefined,
+  residents: readonly ResidentRecord[] = [resident, target],
 ) {
-  if (target.id === resident.id) return false;
-  if (relation === 'spouse') return resident.spouseId === target.id;
-  if (relation === 'child') return target.fatherId === resident.id || target.motherId === resident.id;
-  if (relation === 'parent') return resident.fatherId === target.id || resident.motherId === target.id;
-  return target.householdId === resident.householdId && Boolean(household?.memberIds.includes(target.id));
+  return routineContextResidentCandidates(relation, resident, household, residents)
+    .some((candidate) => candidate.id === target.id);
 }

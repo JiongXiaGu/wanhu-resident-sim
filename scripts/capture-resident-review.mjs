@@ -52,8 +52,8 @@ if ((await page.locator('.resident-summary').count()) !== 0) {
 
 const residentDefinitions = await page.evaluate(async () => (await fetch('/generated/definitions.json')).json());
 if (residentDefinitions?.schema !== 'wanhu.resident-definitions.v7') throw new Error('Routine review expected resident definitions v7.');
-if ((residentDefinitions.contentMeta?.routineDefinitionCount ?? 0) < 227) throw new Error('R3 Batch 2 Routine definitions are missing from generated definitions.');
-if ((residentDefinitions.contentMeta?.routineVariantCount ?? 0) < 420) throw new Error('R3 Batch 2 Routine variants are missing from generated definitions.');
+if ((residentDefinitions.contentMeta?.routineDefinitionCount ?? 0) !== 247) throw new Error('R3 final Routine definition count must remain 247.');
+if ((residentDefinitions.contentMeta?.routineVariantCount ?? 0) !== 460) throw new Error('R3 final Routine variant count must remain 460.');
 for (const requiredRoutineId of [
   'routine.household.common.sweep-courtyard',
   'routine.market.common.buy-vegetables',
@@ -111,20 +111,33 @@ for (const lifeStageId of ['child','teen','young-adult','adult','middle-age','el
 }
 const familyContract = routineCoverage.routines?.familyContract;
 if (!familyContract) throw new Error('Routine Family Contract coverage is missing.');
-if (familyContract.familyConstrainedDefinitions !== 20 || familyContract.contextResidentTargetDefinitions !== 0) {
-  throw new Error('R3D must expose exactly 20 family-constrained Routines and no Context-target Routine yet.');
+if (familyContract.familyConstrainedDefinitions !== 20 || familyContract.contextResidentTargetDefinitions !== 7) {
+  throw new Error('R3E must keep 20 family Routines and expose exactly 7 Context-target definitions.');
 }
-for (const requiredFamilyRoutineId of [
-  'routine.household.family.share-evening-chores',
-  'routine.care.family.prepare-child-wash-water',
-  'routine.social.family.sit-with-parent',
-  'routine.household.family.set-shared-meal',
-  'routine.travel.family.visit-spouse',
-  'routine.household.family.keep-child-belongings',
-]) {
-  const definition = residentDefinitions.routines.find((item) => item.id === requiredFamilyRoutineId);
-  if (!definition?.eligibility?.family) throw new Error('Missing R3D family Routine '+requiredFamilyRoutineId+'.');
-  if (definition.context?.residentTarget) throw new Error('R3D must not add residentTarget Context yet: '+requiredFamilyRoutineId+'.');
+const expectedContextTargets = new Map([
+  ['spouse', 2],
+  ['child', 2],
+  ['parent', 2],
+  ['household-member', 1],
+]);
+for (const entry of familyContract.contextTargets ?? []) {
+  if (entry.definitions !== expectedContextTargets.get(entry.residentTarget)) {
+    throw new Error(`Unexpected R3E Context coverage for ${entry.residentTarget}: ${entry.definitions}.`);
+  }
+}
+const requiredFamilyContexts = new Map([
+  ['routine.household.family.share-evening-chores', 'spouse'],
+  ['routine.travel.family.visit-spouse', 'spouse'],
+  ['routine.market.family.buy-child-daily-needs', 'child'],
+  ['routine.household.family.keep-child-belongings', 'child'],
+  ['routine.care.family.prepare-parent-hot-water', 'parent'],
+  ['routine.travel.family.visit-parent', 'parent'],
+  ['routine.household.family.divide-small-chores', 'household-member'],
+]);
+for (const [routineId, residentTarget] of requiredFamilyContexts) {
+  const definition = residentDefinitions.routines.find((item) => item.id === routineId);
+  if (!definition?.eligibility?.family) throw new Error('Missing R3E family Routine '+routineId+'.');
+  if (definition.context?.residentTarget !== residentTarget) throw new Error(`R3E ${routineId} must target ${residentTarget}.`);
 }
 const familyProbe = await page.evaluate(async () => {
   const mod = await import('/src/simulation/routine-family.ts');
@@ -144,6 +157,18 @@ const familyProbe = await page.evaluate(async () => {
     childContext: mod.routineContextResidentMatches('child', adult, child, household),
     parentContext: mod.routineContextResidentMatches('parent', child, adult, household),
     outsiderHouseholdContext: mod.routineContextResidentMatches('household-member', adult, outsider, household),
+    spouseCandidates: mod.routineContextResidentCandidates('spouse', adult, household, residents).map((item) => item.id),
+    childCandidates: mod.routineContextResidentCandidates('child', adult, household, residents).map((item) => item.id),
+    parentCandidates: mod.routineContextResidentCandidates('parent', child, household, residents).map((item) => item.id),
+    householdCandidates: mod.routineContextResidentCandidates('household-member', adult, household, residents).map((item) => item.id),
+    degradation: (() => {
+      const record = { contextResidentId: spouse.id };
+      adult.spouseId = 0;
+      return {
+        storedContextResidentId: record.contextResidentId,
+        relationStillValid: mod.routineContextResidentMatches('spouse', adult, spouse, household, residents),
+      };
+    })(),
   };
 });
 if (!familyProbe.spouseRequired || familyProbe.spouseForbidden || !familyProbe.coResidentChild || !familyProbe.parentRequired || familyProbe.maxChildrenZero) {
@@ -151,6 +176,45 @@ if (!familyProbe.spouseRequired || familyProbe.spouseForbidden || !familyProbe.c
 }
 if (!familyProbe.spouseContext || !familyProbe.childContext || !familyProbe.parentContext || familyProbe.outsiderHouseholdContext) {
   throw new Error('Routine resident context relation probe failed.');
+}
+if (familyProbe.spouseCandidates.join(',') !== '2' || familyProbe.childCandidates.join(',') !== '3' || familyProbe.parentCandidates.join(',') !== '1,2' || familyProbe.householdCandidates.join(',') !== '2,3') {
+  throw new Error('Routine Context candidate resolution is not deterministic.');
+}
+if (familyProbe.degradation.storedContextResidentId !== 2 || familyProbe.degradation.relationStillValid) {
+  throw new Error('Historical Context degradation policy failed.');
+}
+const contextSnapshotProbe = await page.evaluate(async () => {
+  const [snapshot, definitions, mod] = await Promise.all([
+    fetch('/generated/resident-snapshot.json').then((response) => response.json()),
+    fetch('/generated/definitions.json').then((response) => response.json()),
+    import('/src/simulation/routine-family.ts'),
+  ]);
+  const routineById = new Map(definitions.routines.map((item) => [item.id, item]));
+  const residentById = new Map(snapshot.residents.map((item) => [item.id, item]));
+  const householdById = new Map(snapshot.households.map((item) => [item.id, item]));
+  let contextRecords = 0;
+  let invalidRecords = 0;
+  const targetCounts = { spouse: 0, child: 0, parent: 0, 'household-member': 0 };
+  for (const resident of snapshot.residents) {
+    for (const record of resident.recentLifeLog) {
+      const definition = routineById.get(record.routineId);
+      const relation = definition?.context?.residentTarget;
+      if (!relation) {
+        if (record.contextResidentId !== undefined) invalidRecords += 1;
+        continue;
+      }
+      contextRecords += 1;
+      targetCounts[relation] += 1;
+      const target = residentById.get(record.contextResidentId);
+      const household = householdById.get(resident.householdId);
+      if (!target || !mod.routineContextResidentMatches(relation, resident, target, household, snapshot.residents)) invalidRecords += 1;
+    }
+  }
+  return { contextRecords, invalidRecords, targetCounts };
+});
+if (contextSnapshotProbe.contextRecords < 3 || contextSnapshotProbe.invalidRecords !== 0) throw new Error(`Generated R3E Context records invalid: ${JSON.stringify(contextSnapshotProbe)}`);
+for (const relation of ['spouse', 'child', 'parent']) {
+  if (contextSnapshotProbe.targetCounts[relation] < 1) throw new Error(`Generated snapshot did not exercise ${relation} Context.`);
 }
 const routineRows = page.locator('.resident-routine-list li');
 if ((await routineRows.count()) < 1) throw new Error('Resident Panel should expose at least one recent Routine.');

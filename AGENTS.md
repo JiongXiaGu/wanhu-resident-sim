@@ -8,7 +8,7 @@
 
 ## 当前执行点：Routine Library V2 R3 年龄与家庭日常
 
-Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 的 R3 年龄基线与 R3D 家庭内容 Batch 1 已完成，当前全库 247 / 460。已有 20 个 family-constrained Routine 覆盖配偶、子女、父母、Household 人数以及同住 / 不同住状态；ContextResidentId 条目仍为 0。当前执行点转为 R3E Family Context Batch + R3 收尾，只为确实需要具体目标居民的 Routine 增加 context.residentTarget 并验证 ContextResidentId 记录链；不要继续盲目堆家庭句子，也不要同时开启头像扩库、8C 或最终 Unity ECS 实现。
+Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 的 R3 年龄、家庭 Eligibility 与 Context 已完成收尾，当前全库保持 247 / 460；20 个 family-constrained Routine 中有 7 个真实 Context 条目，分布为 spouse 2 / child 2 / parent 2 / household-member 1。Generator 与 Web 日推进都会在记录创建时选择并保存 ContextResidentId；旧记录之后即使关系变化也保留原 ID，文本继续自包含。当前执行点转为 R4A Environment Eligibility Contract；先设计 Weather / season / daypart 与 Fact 发生时的环境快照，不直接批量写天气素材，也不要同时开启头像扩库、8C 或最终 Unity ECS 实现。
 
 Resident Profile 当前只有 temperament / lifeFocus / presentationStyle。它们由 Content/Residents/resident-profile-catalog.json 定义，ResidentProfileCompiler 在正式 portrait 编译后写入最终 snapshot。性情不决定脸型；职业、财富和资料只弱影响 Hair / Outfit / Expression。玩家保存 Avatar Recipe > 个人资料派生默认 > 冻结 Portrait fallback。
 

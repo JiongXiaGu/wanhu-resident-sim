@@ -27,6 +27,7 @@ if (nameCatalog.schema !== 'wanhu.name-catalog.v2') {
 const surnameById = new Map(nameCatalog.surnames.map((item) => [item.id, item]));
 const givenNameById = new Map(nameCatalog.givenNames.map((item) => [item.id, item]));
 const eventById = new Map(definitions.lifeEvents.map((item) => [item.id, item]));
+const routineById = new Map(definitions.routines.map((item) => [item.id, item]));
 const knownLifeTags = new Set(definitions.lifeTags.map((item) => item.id));
 
 function applyEffects(tags, effects, residentId, eventId) {
@@ -71,6 +72,36 @@ for (const resident of snapshot.residents) {
 }
 
 const residentById = new Map(snapshot.residents.map((resident) => [resident.id, resident]));
+const householdById = new Map(snapshot.households.map((household) => [household.id, household]));
+
+function routineContextResidentMatches(relation, resident, target, household) {
+  if (target.id === resident.id) return false;
+  if (relation === 'spouse') return resident.spouseId === target.id;
+  if (relation === 'child') return target.fatherId === resident.id || target.motherId === resident.id;
+  if (relation === 'parent') return resident.fatherId === target.id || resident.motherId === target.id;
+  return target.householdId === resident.householdId && Boolean(household?.memberIds.includes(target.id));
+}
+
+for (const resident of snapshot.residents) {
+  const household = householdById.get(resident.householdId);
+  for (const record of resident.recentLifeLog) {
+    if (!record.routineId) continue;
+    const routine = routineById.get(record.routineId);
+    if (!routine) throw new Error(`${resident.id}: recent Routine references unknown definition ${record.routineId}.`);
+    const relation = routine.context?.residentTarget;
+    if (!relation) {
+      if (record.contextResidentId !== undefined) throw new Error(`${resident.id}: ${record.routineId} stores unexpected ContextResidentId.`);
+      continue;
+    }
+    if (!Number.isInteger(record.contextResidentId)) throw new Error(`${resident.id}: ${record.routineId} is missing ContextResidentId.`);
+    const target = residentById.get(record.contextResidentId);
+    if (!target) throw new Error(`${resident.id}: ${record.routineId} targets missing resident ${record.contextResidentId}.`);
+    if (!routineContextResidentMatches(relation, resident, target, household)) {
+      throw new Error(`${resident.id}: ${record.routineId} ContextResidentId ${record.contextResidentId} does not match ${relation}.`);
+    }
+  }
+}
+
 for (const resident of snapshot.residents) {
   if (!resident.fatherId) continue;
   const father = residentById.get(resident.fatherId);

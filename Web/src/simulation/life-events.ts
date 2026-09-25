@@ -9,7 +9,7 @@ import type {
   ResidentWorldSnapshot,
 } from '../domain/resident';
 import { ageAtDay, occupationFor } from '../domain/resident';
-import { routineFamilyEligibilityMatches } from './routine-family';
+import { routineContextResidentCandidates, routineFamilyEligibilityMatches } from './routine-family';
 
 export type LifeEventAssignment = {
   eventId: string;
@@ -205,6 +205,8 @@ function routinePool(
     if (rule.genders.length && !rule.genders.includes(resident.gender)) return false;
     if (rule.weather.length) return false;
     if (!routineFamilyEligibilityMatches(rule.family, resident, household, snapshot.residents)) return false;
+    if (item.context?.residentTarget
+      && routineContextResidentCandidates(item.context.residentTarget, resident, household, snapshot.residents).length === 0) return false;
     return true;
   });
 }
@@ -262,6 +264,12 @@ function routineEntries(
       }
       if (found || !lastRoutineDay.has(template.id) || day - (lastRoutineDay.get(template.id) ?? day) >= template.cooldownDays) {
         const { index: variantIndex, variant } = routineVariantFor(resident, template, day);
+        const contextCandidates = template.context?.residentTarget
+          ? routineContextResidentCandidates(template.context.residentTarget, resident, household, snapshot.residents)
+          : [];
+        const contextResidentId = contextCandidates.length
+          ? contextCandidates[hashText(`${resident.seed}:routine-context:${template.id}:${day}`) % contextCandidates.length].id
+          : undefined;
         entries.push({
           id: `${resident.id}:${template.id}:${day}`,
           day,
@@ -269,6 +277,7 @@ function routineEntries(
           routineId: template.id,
           routineRuntimeIndex: template.runtimeIndex,
           variantIndex,
+          ...(contextResidentId !== undefined ? { contextResidentId } : {}),
           title: variant.text,
         });
         previousRoutineId = template.id;
