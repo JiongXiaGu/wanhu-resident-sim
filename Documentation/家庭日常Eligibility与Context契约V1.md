@@ -174,7 +174,7 @@ Web 运行时也使用当前 snapshot + household 实时判断 Family Eligibilit
 
 ## 当前阶段边界
 
-Family Contract V1 **已支持，但当前 family-constrained Routine 数量仍应为 0**。这是刻意的契约阶段。
+Family Contract V1 已进入真实内容使用阶段。R3D 完成后当前有 **20 个 family-constrained Routine**；`context.residentTarget` 仍保持 **0**，留给 R3E 单独接入。
 
 Coverage 输出：
 
@@ -184,26 +184,27 @@ routines.familyContract.contextResidentTargetDefinitions
 routines.familyContract.contextTargets[]
 ```
 
-下一批开始写家庭内容后，这些数才允许从 0 增长。
+当前 Coverage 应固定看到 family-constrained = 20、context target = 0；R3E 才允许 Context 目标条目增长。
 
 ## 后续任务审查
 
-### R3C：Family Contract V1（本批）
+### R3C：Family Contract V1（已完成）
 
-完成 Schema、Compiler、Web/Generator 匹配、ContextResidentId 边界和 Review Probe。不增加家庭素材。
+已完成 Schema、Compiler、Web/Generator 匹配、ContextResidentId 边界和 Review Probe；该契约批没有增加家庭素材。
 
-### R3D：家庭内容 Batch 1
+### R3D：家庭内容 Batch 1（已完成）
 
-优先只使用 V1 已有事实，建议约 18～24 条：
+已新增 20 条 Family Routine / 40 个 Variant，覆盖：
 
-- 配偶存在 / 配偶同住；
-- 有孩子 / 与孩子同住；
-- 有父母 / 与父母同住；
-- Household 人数与共同生活。
+- 配偶存在且同住；
+- 有孩子且与孩子同住；
+- 有父母且与父母同住；
+- Household 3～4 人以上的共同生活；
+- 配偶 / 父母 / 子女关系存在但不同住。
 
-文本继续自包含，不使用姓名占位符。先证明 Eligibility 正确，再增加 Context 目标条目。
+全部文本自包含，不使用姓名占位符，也不声明 `context.residentTarget`。先通过这一批证明 Eligibility 能真实驱动内容候选池。
 
-### R3E：家庭 Context Batch + 收尾
+### R3E：家庭 Context Batch + 收尾（当前）
 
 增加真正需要 `context.residentTarget` 的条目，验证 Fact 携带具体家人 ID、记录保存 ContextResidentId、关系变化后的降级策略，并做 Family Coverage / 去重审查。
 
