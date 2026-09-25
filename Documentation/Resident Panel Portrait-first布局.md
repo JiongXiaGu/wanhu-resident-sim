@@ -30,7 +30,7 @@
 
 住所、工作地仍只触发现有镜头定位提示；家庭摘要不承担展开动作，人物关系统一由 Footer 打开。关注仍是 Web Demo 本地状态。编辑头像仍走原 Avatar Workshop。人生经历的时间轴、memoryText、当前 Activity、LifeEvent 三阶段、家庭结构效果和居民绑定不改。
 
-不新增居民 Summary，不把 Routine 写入永久历史，不改变正式 portrait DNA、头像保存键、故事 Content、职业与家庭数据。UI 重构不能以“更好看”为理由改变模拟语义。
+不新增居民 Summary，不把 RecentAction 写入永久历史，不改变正式 portrait DNA、头像保存键、故事 Content、职业与家庭数据。UI 重构不能以“更好看”为理由改变模拟语义。
 
 ## Review
 
