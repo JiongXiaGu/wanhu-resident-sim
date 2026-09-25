@@ -10,9 +10,9 @@
 
 ## 当前执行点
 
-当前执行点是 **Resident Action Life 基线完成后的行为接入准备**。
+当前执行点是 **Resident Action Life RecordPolicy 边界收敛后的行为接入准备**。
 
-当前 main 只保留 Action Presentation、CurrentAction、ResidentActionCompletedEvent 语义和 RecentAction。Web 的确定性 Action Trace 仅用于验证展示链，不承担正式 AI 决策职责。
+当前 main 只保留 Action Presentation、CurrentAction、ResidentActionCompletedEvent 语义和 RecentAction。Web 的确定性 Action Trace 仅用于验证展示链，不承担正式 AI 决策职责；RecentAction 的过滤、cooldown、相邻去重、VariantIndex 与容量统一由 `Tools/ResidentActionLife/record-policy.mjs` 负责。
 
 重构目标：
 
@@ -82,4 +82,4 @@ Content 是权威；Stable ID 不由标题或数组顺序生成。generated 文�
 - “恢复原头像”回到 Profile 派生默认；
 - Profile 或生成链不可用时冻结 Portrait fallback 仍可用。
 
-下一阶段应优先补充 Unity 侧 Behaviour Complete → ResidentActionCompletedEvent 的正式契约映射，并按真实 Behaviour 到位情况逐步扩 Action Presentation；不要借整理工作提前实现最终 Unity ECS Save / Blob 物理布局。
+下一阶段应优先补充 Unity 侧 Behaviour Complete → ResidentActionCompletedEvent 的正式契约映射，并明确 Unity RecordSystem 与 Web `record-policy.mjs` 需要保持一致的语义测试；按真实 Behaviour 到位情况再逐步扩 Action Presentation。不要借整理工作提前实现最终 Unity ECS Save / Blob 物理布局。

@@ -31,6 +31,7 @@ Need / Schedule / Opportunity
 - 财富、职业、年龄、性格通常影响时间、成本、收益、机会和 Utility 权重，不作为娱乐、社交、旅行的硬白名单；只有现实硬约束才阻止行为。
 - Current Activity 必须来自真实 CurrentAction；不要再根据职业、时间或 LifeEvent 文本在 UI 层猜一个活动。
 - RecentAction 使用固定小环，只保存值得展示的完成行为；吃饭、普通走路等是否展示由轻量 RecordPolicy / 是否存在 Presentation 决定。
+- Web 的 RecordPolicy 唯一实现位于 `Tools/ResidentActionLife/record-policy.mjs`；ResidentGenerator 只能提供确定性 Completed Action Trace，不得再次实现 cooldown、相邻去重、Variant 选择或容量裁剪。
 - LifeEvent / LifeTag / LifeChapter 保留，和 RecentAction 分层；重大结构事实仍进入人生历史，普通行为记录自然淘汰。
 - 不为已经移除的近期生活格式保留兼容读取、Stable ID remap 或双轨数据结构；需要追溯旧方案时使用 Git 历史。
 - 当前 Web Demo 只需验证 Action → RecentAction → UI 语义，不要在 Web 再造一套复杂居民 AI；正式 Behaviour / Utility 在 Unity 主工程实现。
