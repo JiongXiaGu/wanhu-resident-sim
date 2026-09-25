@@ -6,9 +6,9 @@
 
 本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
 
-## 当前执行点：Routine Library V2 R2 职业日常
+## 当前执行点：Routine Library V2 R2 已完成 → R3 年龄与家庭日常
 
-Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 已进入 R2；Batch 1 + Batch 2 已让 10 个职业 directRoutines 达到 8，当前全库 155 / 276。下一批优先学生、守闸人、戏班演员、退下来的手艺人；职业达标只看 directRoutines。`occupation.child` 留到 R3，不在 R2 强行职业化。不要同时开启头像扩库、8C 或最终 Unity ECS 实现。
+Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 的 R2 已完成，当前全库 179 / 324；除 `occupation.child` 外 14 个教育/就业/退养身份 directRoutines 均达到 8。下一阶段进入 R3 年龄与家庭日常，先处理儿童、生命阶段差异与家庭共同生活；不要同时开启头像扩库、8C 或最终 Unity ECS 实现。
 
 Resident Profile 当前只有 temperament / lifeFocus / presentationStyle。它们由 Content/Residents/resident-profile-catalog.json 定义，ResidentProfileCompiler 在正式 portrait 编译后写入最终 snapshot。性情不决定脸型；职业、财富和资料只弱影响 Hair / Outfit / Expression。玩家保存 Avatar Recipe > 个人资料派生默认 > 冻结 Portrait fallback。
 

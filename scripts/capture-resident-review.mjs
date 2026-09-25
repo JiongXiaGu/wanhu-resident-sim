@@ -52,8 +52,8 @@ if ((await page.locator('.resident-summary').count()) !== 0) {
 
 const residentDefinitions = await page.evaluate(async () => (await fetch('/generated/definitions.json')).json());
 if (residentDefinitions?.schema !== 'wanhu.resident-definitions.v7') throw new Error('Routine review expected resident definitions v7.');
-if ((residentDefinitions.contentMeta?.routineDefinitionCount ?? 0) < 155) throw new Error('R2 Batch 2 Routine definitions are missing from generated definitions.');
-if ((residentDefinitions.contentMeta?.routineVariantCount ?? 0) < 276) throw new Error('R2 Batch 2 Routine variants are missing from generated definitions.');
+if ((residentDefinitions.contentMeta?.routineDefinitionCount ?? 0) < 179) throw new Error('R2 closure Routine definitions are missing from generated definitions.');
+if ((residentDefinitions.contentMeta?.routineVariantCount ?? 0) < 324) throw new Error('R2 closure Routine variants are missing from generated definitions.');
 for (const requiredRoutineId of [
   'routine.household.common.sweep-courtyard',
   'routine.market.common.buy-vegetables',
@@ -80,6 +80,10 @@ for (const requiredRoutineId of [
   'routine.market.vendor.weigh-goods',
   'routine.work.farmer.mend-field-ridge',
   'routine.travel.courier.carry-heavy-load',
+  'routine.study.student.recite-lesson',
+  'routine.work.lock-keeper.inspect-gate',
+  'routine.work.performer.rehearse-stage-movement',
+  'routine.social.retired-craftsman.show-technique',
 ]) {
   if (!residentDefinitions.routines.some((item) => item.id === requiredRoutineId)) {
     throw new Error('Missing R1 Routine '+requiredRoutineId+'.');
@@ -91,7 +95,7 @@ if ((routineCoverage.routines?.quality?.normalizedDuplicateVariantTexts ?? 1) !=
 for (const category of routineCoverage.routines?.categories ?? []) {
   if (category.category !== 'custom' && category.definitions < 8) throw new Error(`Routine category ${category.category} fell below the R1 density floor.`);
 }
-for (const occupationId of ['occupation.apprentice','occupation.potter','occupation.carpenter','occupation.physician','occupation.midwife','occupation.cloth-worker','occupation.account-clerk','occupation.vendor','occupation.farmer','occupation.courier']) {
+for (const occupationId of ['occupation.student','occupation.apprentice','occupation.cloth-worker','occupation.potter','occupation.carpenter','occupation.account-clerk','occupation.physician','occupation.lock-keeper','occupation.vendor','occupation.farmer','occupation.courier','occupation.performer','occupation.midwife','occupation.retired-craftsman']) {
   const entry = routineCoverage.routines?.occupationCoverage?.find((item) => item.occupationId === occupationId);
   if (!entry || entry.directRoutines < 8) throw new Error(`R2 occupation coverage below 8 for ${occupationId}.`);
 }

@@ -10,7 +10,7 @@
 
 ## 当前执行点
 
-当前主线是 **Routine Library V2：R2 职业日常**。Batch 1、Batch 2 已完成，共 10 个职业达到 directRoutines=8。
+当前主线是 **Routine Library V2：R2 已完成，下一步进入 R3 年龄与家庭日常**。
 
 R0 已确定：
 
@@ -22,7 +22,7 @@ R0 已确定：
 - Coverage 统计 Routine 定义、Variant、category 与职业覆盖；
 - Web synthetic Routine 继续用于验证 UI，但带天气条件的内容等真实 Fact 链后再触发。
 
-R1 最终为 96 个 Routine / 158 个 Variant。R2 Batch 1 + Batch 2 共新增 59 个职业专属 Routine / 118 个 Variant；当前全库 155 / 276。已有 10 个职业 `directRoutines=8`：学徒、陶工、木工、郎中、稳婆、布庄伙计、账房、小贩、农户、脚夫。下一批继续补学生、守闸人、戏班演员、退下来的手艺人；`occupation.child` 留到 R3。仍不同时实现最终 Unity ECS Fact Stream。
+R1 最终为 96 / 158。R2 三个批次共新增 83 个职业专属 Routine / 166 个 Variant；当前全库 179 / 324。除 `occupation.child` 外的 14 个教育/就业/退养身份 `directRoutines` 均达到 8，R2 已完成。下一阶段 R3 处理年龄与家庭日常，首先补儿童与生命阶段差异；仍不同时实现最终 Unity ECS Fact Stream。
 
 ## 当前记录链边界
 

@@ -4072,6 +4072,678 @@
           "weight": 1
         }
       ]
+    },
+    {
+      "id": "routine.study.student.recite-lesson",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.student-lesson-recited"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.student"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "晨间把昨日学过的课文重新背了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "先生还没来时，先把熟课低声诵了几遍。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.student.review-mistakes",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.student-mistakes-reviewed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.student"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "把昨日写错的几处圈出来重新改了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "先生批过的错处，今日又仔细看了看。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.student.practice-counting-rods",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.student-counting-rods-practiced"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.student"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "拿算筹把先生出的几道数题重新摆了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "今日算术不太顺，用算筹多练了几回。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.student.ask-teacher-question",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.student-teacher-question-asked"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.student"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "有一句总没弄明白，下课后又问了先生。",
+          "weight": 1
+        },
+        {
+          "text": "课上留了疑处，散学前向先生请教了一遍。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.student.organize-study-kit",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.student-study-kit-organized"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.student"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "散学前把笔墨纸张重新收好放进书袋。",
+          "weight": 1
+        },
+        {
+          "text": "今日下学后，把桌上的书具一一归了位。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.student.discuss-lesson",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.student-lesson-discussed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.student"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "散学后和同窗对了对今日没弄懂的地方。",
+          "weight": 1
+        },
+        {
+          "text": "回去前同同窗站了一会儿，说了几句课业。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.lock-keeper.inspect-gate",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.lock-keeper-gate-inspected"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.lock-keeper"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "清早沿着闸门看了一遍缝隙和木件。",
+          "weight": 1
+        },
+        {
+          "text": "开闸前先检查了闸板有没有松动。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.lock-keeper.clear-silt",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.lock-keeper-silt-cleared"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.lock-keeper"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "闸边积了些淤泥，铲开一段才顺畅。",
+          "weight": 1
+        },
+        {
+          "text": "今日水口有些堵，把浅处淤泥清了清。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.lock-keeper.grease-winch",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.lock-keeper-winch-greased"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.lock-keeper"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "绞盘转得发涩，补了些油又试了几圈。",
+          "weight": 1
+        },
+        {
+          "text": "闸边绞盘有异响，停下来仔细润了润。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.lock-keeper.test-gate-lift",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.lock-keeper-gate-lift-tested"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.lock-keeper"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "今日空闲时把闸板升降试了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "怕闸板卡住，收工前又开合试了试。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.lock-keeper.inspect-bank",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.lock-keeper-bank-inspected"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.lock-keeper"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "沿岸走了一圈，看看有没有新塌的地方。",
+          "weight": 1
+        },
+        {
+          "text": "午后巡了巡闸旁岸坡，土面还算稳当。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.lock-keeper.note-water-change",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.lock-keeper-water-change-noted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.lock-keeper"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "今日水位变得快，又多记了一次高低。",
+          "weight": 1
+        },
+        {
+          "text": "午后重新看了水面，把变化记在纸上。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.performer.warm-up-voice",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.performer-voice-warmed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.performer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "开场前先轻声吊了会儿嗓子。",
+          "weight": 1
+        },
+        {
+          "text": "今日嗓子有些紧，上场前多开了几遍声。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.performer.rehearse-stage-movement",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.performer-stage-movement-rehearsed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.performer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "午后把一段走场重新排了几遍。",
+          "weight": 1
+        },
+        {
+          "text": "有几步总接不上，空场时又练了一阵。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.performer.memorize-lines",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.performer-lines-memorized"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.performer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "趁歇场把明日要唱的几句词又背了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "今日空下来，把容易忘的几句词重新记牢。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.performer.prepare-makeup",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.performer-makeup-prepared"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.performer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "上场前把妆面重新补齐，又理了理头面。",
+          "weight": 1
+        },
+        {
+          "text": "候场时照了照镜子，把妆容收拾妥当。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.performer.check-props",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.performer-props-checked"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.performer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "开场前把今日要用的几件道具检查了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "有件道具不太顺手，上场前重新调了调。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.performer.remove-makeup",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.performer-makeup-removed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.performer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "散场后慢慢卸了妆，才换回平日衣裳。",
+          "weight": 1
+        },
+        {
+          "text": "今日收场晚，卸完妆时人已经散得差不多。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.retired-craftsman.sort-old-tools",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.retired-craftsman-old-tools-sorted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.retired-craftsman"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "把多年不用的旧工具拿出来重新理了理。",
+          "weight": 1
+        },
+        {
+          "text": "午后翻了翻旧工具，擦净后又收回箱里。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.retired-craftsman.patch-household-item",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.retired-craftsman-household-item-patched"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.retired-craftsman"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "家里有件旧物松了，顺手慢慢修稳。",
+          "weight": 1
+        },
+        {
+          "text": "闲着无事，把一件开裂的小物补了补。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.retired-craftsman.show-technique",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.retired-craftsman-technique-shown"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.retired-craftsman"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "有后辈来问手艺，拿旧物示范了几下。",
+          "weight": 1
+        },
+        {
+          "text": "今日有人请教，坐着讲了几句做活的窍门。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.retired-craftsman.make-small-item",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.retired-craftsman-small-item-made"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.retired-craftsman"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 12,
+      "variants": [
+        {
+          "text": "拿手边余料做了件不费事的小东西。",
+          "weight": 1
+        },
+        {
+          "text": "午后手痒，用旧料慢慢做了个小物件。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.retired-craftsman.discuss-craft",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.retired-craftsman-craft-discussed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.retired-craftsman"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "和旧同行聊起从前做活的老办法。",
+          "weight": 1
+        },
+        {
+          "text": "碰见老熟人，又说了些旧时手艺上的事。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.retired-craftsman.inspect-old-work",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.retired-craftsman-old-work-inspected"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.retired-craftsman"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 14,
+      "variants": [
+        {
+          "text": "路过从前做过的旧活，停下来多看了一会儿。",
+          "weight": 1
+        },
+        {
+          "text": "今日见到旧年做的东西，顺手摸了摸接缝。",
+          "weight": 1
+        }
+      ]
     }
   ]
 }
