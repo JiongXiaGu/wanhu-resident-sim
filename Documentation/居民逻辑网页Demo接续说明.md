@@ -4,42 +4,52 @@
 
 ## 接手顺序
 
-读取最新 `main` 与 SHA、`AGENTS.md`、`README.md`、本文件，再按任务读取对应领域文档。当前日常事件任务先读 [日常事件库 V2](日常事件库V2.md)、[居民事实事件与人生记录运行时设计](居民事实事件与人生记录运行时设计.md)、[居民生活记录与故事连续性](居民生活记录与故事连续性.md)；居民资料任务再读 [居民个人资料与头像派生 V1](居民个人资料与头像派生V1.md)；头像任务再读 [Avatar Workshop](Avatar%20Workshop.md)、[Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md)。历史 Phase 文档只用于追溯已完成阶段，不得把旧“当前执行点”覆盖到现在。
+读取最新 `main` 与 SHA、`AGENTS.md`、`README.md`、本文件，再读 [居民行为与最近生活记录](居民行为与最近生活记录.md)、[居民事实事件与人生记录运行时设计](居民事实事件与人生记录运行时设计.md)、[居民生活记录与故事连续性](居民生活记录与故事连续性.md)。居民资料任务再读 [居民个人资料与头像派生 V1](居民个人资料与头像派生V1.md)；头像任务再读 [Avatar Workshop](Avatar%20Workshop.md)、[Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md)。Routine V2 / Family Context 旧设计不再作为当前文档入口，需要时查 Git 历史。
 
 先检查目标源码与当前 SHA 的 Actions。不要用聊天记忆代替仓库。
 
 ## 当前执行点
 
-Routine Library V2 的 **R3 年龄与家庭日常已完成收尾**。当前执行点转为 **R4A Environment Eligibility Contract**：先定义环境条件和 Fact 发生时的环境快照，再进入天气 / 昼夜 / 季节内容。
+当前执行 **Resident Action Life 重构**，R4A Environment Eligibility 已取消。
 
-R0 已确定：
+当前 main 的 Routine V2、247 / 460 内容库、Family Eligibility / Context、Routine Resolver 与 Web 随机 RecentLifeLog 都是本次要清理的旧实现。下一批允许直接破坏这些数据结构，不写兼容读取、不保留旧 Stable ID 映射、不建立 deprecated / legacy 目录；旧方案从 Git 历史获取。
 
-- `routine.<domain>.<scope>.<action>` 新命名规则，旧 V1 Stable ID 保留；
-- `wanhu.routines.v2`：category / sourceFacts / eligibility / weight / cooldownDays / variants；
-- Compiler 生成 `routine-catalog-v2.json` 与 build-local RuntimeIndex；
-- RecentLifeLog 记录 RoutineId / RuntimeIndex / VariantIndex，UI 仍通过定义解析文本；
-- Variant 发布后只末尾追加，不重排；
-- Coverage 统计 Routine 定义、Variant、category 与职业覆盖；
-- Web synthetic Routine 继续用于验证 UI，但带天气条件的内容等真实 Fact 链后再触发。
+重构目标：
 
-R1 为 96 / 158，R2 收尾后为 179 / 324，R3 最终保持 **247 / 460**。六个 LifeStage directRoutines 均为 8；Family Contract V1 有 20 个 family-constrained Routine，其中 7 个 Context 定义按 spouse 2 / child 2 / parent 2 / household-member 1 分布。Generator 与 Web 日推进都会在创建记录时保存 ContextResidentId；旧 Context 不因关系变化重选。R3 已结束，仍不同时实现最终 Unity ECS Fact Stream。
+```text
+真实 Need / Schedule / Opportunity
+→ Utility
+→ Behaviour
+→ 完成时已经知道 Target / Place
+→ ResidentActionCompletedEvent
+→ RecentActionRecordSystem
+→ RecentAction 小环
+→ 玩家“最近”UI
+```
+
+第一轮 Web 不实现完整 Utility / Behaviour AI，只建立 Action Presentation、Completed Event / Trace、RecentAction Record 和 UI 数据链，使用少量确定性的测试 Action Trace 验证语义。真实 3 万居民 AI 最终在 Unity 中由现有 Schedule + Utility + Job 化行为树负责。
 
 ## 当前记录链边界
 
-Web Demo 当前用于验证语义和内容契约，不设计最终 Unity ECS Save / Blob 布局。
+Web Demo 只验证语义、内容和 UI，不模拟最终 3 万居民 AI。
 
-未来运行时方向固定：
+新的运行时方向固定为：
 
 ```text
-行为树 / Schedule / Utility Jobs
-→ ResidentFactEvent
-→ ResidentLifeRecordSystem
-→ Routine Resolver / LifeEvent Trigger / LifeChapter Request
+Schedule / Utility / Behaviour Jobs
+→ ResidentActionCompletedEvent
+→ RecentActionRecordSystem
+→ RecentAction UI
+
+LifeEvent Trigger
+→ Story Thread
+→ 重要结果
+→ LifeChapter / LifeTag
 ```
 
-高频 Job 只在有意义的行为完成点写紧凑事实，不拼字符串、不直接维护 UI 日志、不为每个行为树节点创建记录。Routine 只保留近期小环；结构事实与需要长期保存的 LifeEvent 才进入 Major Life History；LifeTag 负责系统连续性，不扫描历史正文做逻辑判断。
+行为系统拥有“为什么做、去哪里、找谁、是否成功”；记录系统只在成功完成点接收事实。TargetResidentId / PlaceId 由 Behaviour 提供，记录层禁止扫描全体居民、Household 或地点重新推断目标。
 
-Resident Profile 可作为后续 Utility / Story Eligibility 的弱输入，但不能直接把性格写成硬职业、硬脸型或强制剧情。
+RecentAction 只负责近期观察窗口，不进入永久人生历史。CurrentAction 是此刻真实行为。LifeEvent / LifeChapter 继续承担低频叙事和长期人生记录。
 
 ## 头像与正式 Portrait 边界
 

@@ -2,31 +2,42 @@
 
 ## 先理解项目
 
-修改前读取最新 main、README、Documentation/居民逻辑网页Demo接续说明.md、Documentation/日常事件库V2.md、Documentation/家庭日常Eligibility与Context契约V1.md、人生经历与生活界面玩法规则V1、居民面板与生活事件V2、居民生活记录与故事连续性、Portrait System、Avatar Workshop、`Documentation/Q版头像主路线生产与审查工作流.md`、开发与部署工作流。头像相关任务必须先确认主路线工作流的“当前执行点”。再检查目标源码和最新 Actions。不要用聊天记忆代替当前仓库。
+修改前读取最新 main、README、Documentation/居民逻辑网页Demo接续说明.md、Documentation/居民行为与最近生活记录.md、Documentation/居民事实事件与人生记录运行时设计.md、Documentation/居民生活记录与故事连续性.md、人生经历与生活界面玩法规则V1、居民面板与生活事件V2、Portrait System、Avatar Workshop、`Documentation/Q版头像主路线生产与审查工作流.md`、开发与部署工作流。头像相关任务必须先确认主路线工作流的“当前执行点”。再检查目标源码和最新 Actions。不要用聊天记忆代替当前仓库。
 
 本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
 
-## 当前执行点：Routine Library V2 R3 年龄与家庭日常
+## 当前执行点：Resident Action Life 重构
 
-Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 的 R3 年龄、家庭 Eligibility 与 Context 已完成收尾，当前全库保持 247 / 460；20 个 family-constrained Routine 中有 7 个真实 Context 条目，分布为 spouse 2 / child 2 / parent 2 / household-member 1。Generator 与 Web 日推进都会在记录创建时选择并保存 ContextResidentId；旧记录之后即使关系变化也保留原 ID，文本继续自包含。当前执行点转为 R4A Environment Eligibility Contract；先设计 Weather / season / daypart 与 Fact 发生时的环境快照，不直接批量写天气素材，也不要同时开启头像扩库、8C 或最终 Unity ECS 实现。
+Routine Library V2 的 R0～R3 已完成过一轮研究验证，但**不再是当前架构方向**。当前 main 仍保留 Routine V2 代码、247 个 Routine / 460 个 Variant、Family Eligibility / Context 等实现，只用于作为待删除的旧主线。不要继续 R4A Environment Eligibility，不要继续扩 Routine、Family / Weather / Calendar Eligibility，也不要为旧数据设计兼容层；需要追溯旧方案时直接查 Git 历史。
 
-Resident Profile 当前只有 temperament / lifeFocus / presentationStyle。它们由 Content/Residents/resident-profile-catalog.json 定义，ResidentProfileCompiler 在正式 portrait 编译后写入最终 snapshot。性情不决定脸型；职业、财富和资料只弱影响 Hair / Outfit / Expression。玩家保存 Avatar Recipe > 个人资料派生默认 > 冻结 Portrait fallback。
+当前唯一主线是 **Resident Action Life 重构**：
 
-Routine 新内容必须使用 `routine.<domain>.<scope>.<action>`；历史 V1 ID 不改名。Authoring 只写 Stable ID 和文本定义，Compiler 分配 build-local RuntimeIndex；VariantIndex 发布后保持索引语义，旧 Variant 不重排。Routine 是由 Fact 触发的近期展示，不允许为了扩素材库直接让 ECS 行为节点写中文字符串。
+```text
+Need / Schedule / Opportunity
+→ Utility
+→ Behaviour
+→ 找目标 / 地点 / 预定 / 移动 / 执行
+→ Behaviour Complete
+→ ResidentActionCompletedEvent
+→ RecentActionRecordSystem
+→ 最近的事情 UI
+```
 
-Routine 质量门禁固定保留：Variant 最长 24 字；全库规范化文本不得重复；sourceFact 顶层域必须与 category 一致；除 custom 外分类基线至少 8 条。R2 职业扩库不得通过放宽或删除这些门禁来过 Build。
+固定原则：
 
-R2 Coverage 规则：`applicableRoutines` 只反映运行时可选总池；`directRoutines` 才表示职业专属内容；`groupRoutines` 表示职业组共享。R2 每职业 8～12 条目标只看 directRoutines，不能拿 R1 泛用条目凑数。
+- “最近的事情”只记录居民真实完成的行为，不再由独立内容系统生成生活。
+- Action 能不能执行由 Schedule / Utility / Behaviour 决定；Presentation 不拥有 Occupation / LifeStage / Wealth / Family / Weather Eligibility。
+- TargetResidentId / PlaceId 等 Context 由 Behaviour 在执行时已经确定，记录系统不得反向扫描家庭或社会关系来“找一个目标”。
+- 财富、职业、年龄、性格通常影响时间、成本、收益、机会和 Utility 权重，不作为娱乐、社交、旅行的硬白名单；只有现实硬约束才阻止行为。
+- Current Activity 必须来自真实 CurrentAction；不要再根据职业、时间或 LifeEvent 文本在 UI 层猜一个活动。
+- RecentAction 使用固定小环，只保存值得展示的完成行为；吃饭、普通走路等是否展示由轻量 RecordPolicy / 是否存在 Presentation 决定。
+- LifeEvent / LifeTag / LifeChapter 保留，和 RecentAction 分层；重大结构事实仍进入人生历史，普通行为记录自然淘汰。
+- 不保留 Routine V2 数据兼容、旧 Stable ID remap、旧 Recipe 式迁移层；删除时一次清理 Authoring / Schema / Compiler / Generator / Web / Review / 文档，历史从 Git 获取。
+- 当前 Web Demo 只需验证 Action → RecentAction → UI 语义，不要在 Web 再造一套复杂居民 AI；正式 Behaviour / Utility 在 Unity 主工程实现。
 
-R3 Coverage 规则：`lifeStageCoverage.directRoutines` 才表示年龄专属内容；`unrestrictedRoutines` 与 `applicableRoutines` 只用于观察运行时池大小。六个 LifeStage 当前均至少 8，Compiler 少于 8 即给 Coverage warning。夫妻、父母、子女、照料老人等家庭语义不得通过 lifeStage 或 occupation 推断，必须等待显式 Family Eligibility / Context。
+Resident Profile 当前只有 temperament / lifeFocus / presentationStyle。它们可以在未来作为 Utility 弱倾向输入，但不能直接把性格写成硬职业、硬脸型、硬娱乐限制或强制剧情。
 
-Unity 方向固定：行为树 / Schedule / Utility Job 不写字符串、不直接维护日志、不每个节点发记录，只在行为完成点写紧凑 ResidentFactEvent。后续集中 ResidentLifeRecordSystem 做去重、Routine 映射、LifeEvent Trigger 和 LifeChapter Request。普通 Routine 只保留近期小环；重要结构事实和完成的 recordToHistory LifeEvent 才写 Major Life History。LifeTag 负责系统连续性，历史文本只负责展示。
-
-本阶段仍不在 Web Demo 设计最终 ECS Save / Blob 布局，也不把事实事件做成大量临时 Entity。当前实现用于验证资源、个人资料与头像派生结果；正式 Unity 落地保持 ISystem + SystemAPI、Job/Burst 和集中结构变更原则。
-
-主入口自由创作可以直接选男/女、儿童/成年/老年；这是六份独立样板目标，不是第五种素材分类或修改居民身份。保存到 studio:<frame>，原 player/resident 键保持。绑定居民模式锁定年龄/性别。切框架也必须遵守草稿确认、延迟导入隔离、独立保存/刷新。
-
-移动端不再截图或列为人工必查；基础窄屏溢出 smoke 可以保留。头像画稿的高频美术迭代优先直接使用当前 SHA 的真实 Avatar Renderer（`renderAvatar()` / Pack SVG 图层）生成静态诊断图板，并实际检查 320 / 96 / 64 / 48px；不要求每个中间美术提交都等待 Resident Visual Review。静态图板必须标明它不是完整 Avatar Workshop / Resident UI 截图。候选批次稳定后，正式交付仍需运行并查看对应真实桌面 UI 与完整契约 Review。工坊“已重画”表示累计重画候选，不表示用户已定稿；旧图通过 Git 历史临时生成，不在运行时复活旧资源。
+Unity 方向固定：行为树 / Schedule / Utility Job 不拼字符串、不直接维护 UI 日志，只在有意义的行为完成点写紧凑 Action Completed Event。正式 Unity 继续保持 ISystem + SystemAPI、Job/Burst、多线程优先和集中结构变更；Web Demo 不提前设计最终 ECS Save / Blob 物理布局。
 
 ## 当前头像方向
 
@@ -50,10 +61,10 @@ Unity 方向固定：行为树 / Schedule / Utility Job 不写字符串、不直
 
 ## 玩法与内容不变量
 
-- 生活模式只显示当前 Activity、正在/最近 LifeEvent、少量 Routine，不做人工综合近况 Summary。
+- 生活模式只显示真实 CurrentAction、正在/最近 LifeEvent、少量 RecentAction，不做人工综合近况 Summary。
 - 人生模式只有年龄升序时间轴，不按少年/青年分组。一个 Chapter 对应一件事，不把三个 Stage 拆成三段历史。
-- 事实节点只显示年龄/标题。故事节点展开第一人称 memoryText，不重放 Stage 1/2/3，不显示起初/后来/最后。人生模式隐藏 Activity、Routine 与当前事件，末尾有“如今”。
-- 重要故事（recordToHistory 或结构效果）必须有 memoryText。普通 Routine 不写入永久历史。
+- 事实节点只显示年龄/标题。故事节点展开第一人称 memoryText，不重放 Stage 1/2/3，不显示起初/后来/最后。人生模式隐藏 CurrentAction、RecentAction 与当前事件，末尾有“如今”。
+- 重要故事（recordToHistory 或结构效果）必须有 memoryText。普通 RecentAction 不写入永久历史。
 - 过去的 LifeTag 影响后来 Eligibility；无需扫描全文历史。保留未婚 → 成婚 → spouse/Household 改变 → newly-married → 后续两人生活 → 临时 Tag 消失的真实链。
 - Content 是权威；Stable ID 不由标题、数组顺序生成。新增内容遵守 Schema、Reference、Coverage。
 - generated 文件经 Compiler 生成，不手动修改。涉及内容契约的修改要同步 Authoring、Schema、Compiler、Web 消费者与审查。
