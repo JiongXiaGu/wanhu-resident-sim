@@ -6,9 +6,9 @@
 
 本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
 
-## 当前执行点：Routine Library V2 R0 已落地 → R1 泛居民城市日常
+## 当前执行点：Routine Library V2 R1 泛居民城市日常
 
-Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 的 R0 契约已经建立；下一阶段优先扩充泛居民城市日常（R1），先读 `Documentation/日常事件库V2.md` 与 `Documentation/居民事实事件与人生记录运行时设计.md`。没有明确需求时不要同时开启头像扩库、8C 或最终 Unity ECS 实现。
+Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 已进入 R1；Batch 1 已补家庭、市场、邻里、公共生活、出行和闲暇。继续扩库前先读 `Documentation/日常事件库V2.md` 与最新 Coverage；没有明确需求时不要同时开启 R2 职业大批量、头像扩库、8C 或最终 Unity ECS 实现。
 
 Resident Profile 当前只有 temperament / lifeFocus / presentationStyle。它们由 Content/Residents/resident-profile-catalog.json 定义，ResidentProfileCompiler 在正式 portrait 编译后写入最终 snapshot。性情不决定脸型；职业、财富和资料只弱影响 Hair / Outfit / Expression。玩家保存 Avatar Recipe > 个人资料派生默认 > 冻结 Portrait fallback。
 

@@ -33,7 +33,7 @@ http://localhost:5173/?view=avatar-editor
 > 冻结 Portrait fallback
 ```
 
-当前已经完成 Routine Library V2 的 R0 契约：新命名规则、`wanhu.routines.v2`、多文本 Variant、Cooldown、Compiler RuntimeIndex 与 Coverage。下一步进入 R1，分批扩充泛居民的家庭、市场、邻里、出行、休闲和公共生活。详见 [日常事件库 V2](Documentation/日常事件库V2.md) 与 [居民事实事件、日常记录与人生经历运行时设计](Documentation/居民事实事件与人生记录运行时设计.md)。
+Routine Library V2 的 R0 契约已经完成，R1 Batch 1 也已加入 28 个泛居民日常定义，每个含 2 个 Variant；当前全库 62 个 Routine / 90 个 Variant。下一步继续按 Coverage 分批补泛居民城市生活，暂不进入职业专属 R2。详见 [日常事件库 V2](Documentation/日常事件库V2.md) 与 [居民事实事件、日常记录与人生经历运行时设计](Documentation/居民事实事件与人生记录运行时设计.md)。
 
 ## 头像基线：Phase 8D2 已完成
 
