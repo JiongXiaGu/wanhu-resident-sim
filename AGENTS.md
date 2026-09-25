@@ -6,9 +6,9 @@
 
 本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
 
-## 当前执行点：Routine Library V2 R2 已完成 → R3 年龄与家庭日常
+## 当前执行点：Routine Library V2 R3 年龄与家庭日常
 
-Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 的 R2 已完成，当前全库 179 / 324；除 `occupation.child` 外 14 个教育/就业/退养身份 directRoutines 均达到 8。下一阶段进入 R3 年龄与家庭日常，先处理儿童、生命阶段差异与家庭共同生活；不要同时开启头像扩库、8C 或最终 Unity ECS 实现。
+Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 已进入 R3；Batch 1 后全库 203 / 372，child / teen / elder 的年龄专属 directRoutines 均为 8，young-adult / adult / middle-age 仍为 0。下一批先补三个成年阶段；家庭关系内容必须等显式 Family Eligibility / Context Contract，不能拿 lifeStage 或 occupation 代替。不要同时开启头像扩库、8C 或最终 Unity ECS 实现。
 
 Resident Profile 当前只有 temperament / lifeFocus / presentationStyle。它们由 Content/Residents/resident-profile-catalog.json 定义，ResidentProfileCompiler 在正式 portrait 编译后写入最终 snapshot。性情不决定脸型；职业、财富和资料只弱影响 Hair / Outfit / Expression。玩家保存 Avatar Recipe > 个人资料派生默认 > 冻结 Portrait fallback。
 
@@ -17,6 +17,8 @@ Routine 新内容必须使用 `routine.<domain>.<scope>.<action>`；历史 V1 ID
 Routine 质量门禁固定保留：Variant 最长 24 字；全库规范化文本不得重复；sourceFact 顶层域必须与 category 一致；除 custom 外分类基线至少 8 条。R2 职业扩库不得通过放宽或删除这些门禁来过 Build。
 
 R2 Coverage 规则：`applicableRoutines` 只反映运行时可选总池；`directRoutines` 才表示职业专属内容；`groupRoutines` 表示职业组共享。R2 每职业 8～12 条目标只看 directRoutines，不能拿 R1 泛用条目凑数。
+
+R3 Coverage 规则：`lifeStageCoverage.directRoutines` 才表示年龄专属内容；`unrestrictedRoutines` 与 `applicableRoutines` 只用于观察运行时池大小。Batch 1 要求 child / teen / elder 各至少 8，young-adult / adult / middle-age 明确延期到下一批。夫妻、父母、子女、照料老人等家庭语义不得通过 lifeStage 或 occupation 推断，必须等待显式 Family Eligibility / Context。
 
 Unity 方向固定：行为树 / Schedule / Utility Job 不写字符串、不直接维护日志、不每个节点发记录，只在行为完成点写紧凑 ResidentFactEvent。后续集中 ResidentLifeRecordSystem 做去重、Routine 映射、LifeEvent Trigger 和 LifeChapter Request。普通 Routine 只保留近期小环；重要结构事实和完成的 recordToHistory LifeEvent 才写 Major Life History。LifeTag 负责系统连续性，历史文本只负责展示。
 

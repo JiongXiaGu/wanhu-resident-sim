@@ -421,6 +421,13 @@ const occupationCoverage = occupations.items.map((occupation) => {
   };
 });
 
+const routineLifeStageCoverage = [...validLifeStages].map((lifeStageId) => {
+  const directRoutines = compiledRoutineCatalog.items.filter((routine) => routine.eligibility.lifeStages.includes(lifeStageId)).length;
+  const unrestrictedRoutines = compiledRoutineCatalog.items.filter((routine) => routine.eligibility.lifeStages.length === 0).length;
+  const applicableRoutines = compiledRoutineCatalog.items.filter((routine) => routine.eligibility.lifeStages.length === 0 || routine.eligibility.lifeStages.includes(lifeStageId)).length;
+  return { lifeStageId, directRoutines, unrestrictedRoutines, applicableRoutines };
+});
+
 const groupCoverage = occupationGroups.items.map((group) => {
   const groupOccupations = occupations.items.filter((occupation) => occupation.groupId === group.id);
   const eventIds = new Set();
@@ -473,6 +480,9 @@ for (const tag of lifeTags.items) if (!referencedTags.has(tag.id) && !producedTa
 for (const category of routineCategoryCoverage) {
   if (category.category !== 'custom' && category.definitions < 8) warnings.push(`Routine category ${category.category} has only ${category.definitions} definitions; R1 baseline is 8.`);
 }
+for (const stage of routineLifeStageCoverage) {
+  if (stage.directRoutines === 0) warnings.push(`Routine life stage ${stage.lifeStageId} has no direct age-specific definitions yet.`);
+}
 
 const coverage = {
   schema: 'wanhu.resident-content-coverage.v1',
@@ -506,6 +516,7 @@ const coverage = {
       directRoutines,
       groupRoutines,
     })),
+    lifeStageCoverage: routineLifeStageCoverage,
   },
   lifeTags: {
     total: lifeTags.items.length,

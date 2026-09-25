@@ -4744,6 +4744,678 @@
           "weight": 1
         }
       ]
+    },
+    {
+      "id": "routine.leisure.child.play-pebbles",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.child-pebbles-played"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "child"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "蹲在门边捡了几颗石子，来回摆着玩。",
+          "weight": 1
+        },
+        {
+          "text": "今日捡了几颗圆石，在地上玩了好一阵。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.child.draw-on-ground",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.child-ground-drawing-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "child"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "拿树枝在地上画了半天，手上沾满灰土。",
+          "weight": 1
+        },
+        {
+          "text": "在院角用小棍画来画去，直到被叫回家。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.child.play-with-neighbors",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.child-neighbor-play-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "child"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "和隔壁几个孩子在巷口追着玩了一阵。",
+          "weight": 1
+        },
+        {
+          "text": "今日同邻家孩子玩到天色渐暗才回去。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.child.help-sweep-courtyard",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.child-courtyard-helped-sweep"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "child"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "拿着小笤帚帮家里扫了扫院角。",
+          "weight": 1
+        },
+        {
+          "text": "大人忙着收拾屋子，也跟着扫了几下地。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.child.help-sort-vegetables",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.child-vegetables-helped-sort"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "child"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "坐在一旁帮着挑菜，把坏叶一片片摘掉。",
+          "weight": 1
+        },
+        {
+          "text": "家里择菜时也凑过去，帮忙分了好坏。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.child.practice-simple-characters",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.child-simple-characters-practiced"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "child"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "照着旧纸，把几个最简单的字写了几遍。",
+          "weight": 1
+        },
+        {
+          "text": "有人教了几个字，趴在桌边慢慢学着写。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.child.follow-family-to-market",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.child-family-market-trip-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "child"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "跟着家里人去了一趟市上，一路东看西看。",
+          "weight": 1
+        },
+        {
+          "text": "今日随大人进了市场，回家时还舍不得走。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.community.child.watch-street-craft",
+      "category": "community",
+      "sourceFacts": [
+        "fact.community.child-street-craft-watched"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "child"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "在街边看人做活，看了许久才被叫走。",
+          "weight": 1
+        },
+        {
+          "text": "路过铺子时停下来，看师傅手上忙个不停。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.teen.carry-water-home",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.teen-water-carried-home"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "teen"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "替家里挑了趟水，回来时肩上有些发酸。",
+          "weight": 1
+        },
+        {
+          "text": "水缸快空了，自己去井边挑了水回来。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.market.teen.buy-household-supplies",
+      "category": "market",
+      "sourceFacts": [
+        "fact.market.teen-household-supplies-bought"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "teen"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "照家里交代的单子，在市上买齐了几样东西。",
+          "weight": 1
+        },
+        {
+          "text": "今日独自跑了趟市口，把家里要用的东西带回。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.teen.run-family-errand",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.teen-family-errand-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "teen"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "替家里跑了趟近处，把交代的事情办完了。",
+          "weight": 1
+        },
+        {
+          "text": "今日独自出门办了件小事，没让家里人跟着。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.teen.help-prepare-meal",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.teen-meal-helped-prepare"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "teen"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "晚饭前帮着切洗了些菜，灶边忙了一阵。",
+          "weight": 1
+        },
+        {
+          "text": "家里做饭时搭了把手，把几样食材收拾好。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.teen.write-by-lamp",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.teen-lamp-writing-practiced"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "teen"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "晚上点着灯，又把白日没写好的字练了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "夜里还有点精神，坐在灯下多写了几行字。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.teen.walk-with-peers",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.teen-peer-walk-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "teen"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "回去时同几个同龄人一道走了段路。",
+          "weight": 1
+        },
+        {
+          "text": "散了手头的事，和熟识同伴边走边说话。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.teen.walk-riverbank",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.teen-riverbank-walk-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "teen"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "傍晚沿河边走了一阵，天暗才慢慢回去。",
+          "weight": 1
+        },
+        {
+          "text": "今日没急着回家，在河岸多走了一小段。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.teen.mend-own-clothes",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.teen-own-clothes-mended"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "teen"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "衣角开了线，自己拿针慢慢补好了。",
+          "weight": 1
+        },
+        {
+          "text": "发现衣袖磨破一点，晚上自己缝了几针。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.elder.rest-in-sun",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.elder-sun-rest-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "elder"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "午后在有太阳的地方坐着暖了一阵。",
+          "weight": 1
+        },
+        {
+          "text": "今日天晴，搬个小凳在日头下坐了会儿。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.elder.rest-sore-knees",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.elder-sore-knees-rested"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "elder"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "膝上有些发酸，走累后坐着揉了一阵。",
+          "weight": 1
+        },
+        {
+          "text": "今日腿脚不太利索，歇下来慢慢按了按。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.elder.take-midday-rest",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.elder-midday-rest-taken"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "elder"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "午饭后有些困，靠着歇了好一阵。",
+          "weight": 1
+        },
+        {
+          "text": "今日午后没再忙，先躺着养了养精神。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.elder.chat-with-younger-neighbor",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.elder-younger-neighbor-chat-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "elder"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "门口碰见年轻邻居，坐着聊了几句家常。",
+          "weight": 1
+        },
+        {
+          "text": "今日有晚辈来问候，留人坐了一会儿。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.elder.sort-stored-items",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.elder-stored-items-sorted"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "elder"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "翻了翻家里旧物，把还用得上的重新收好。",
+          "weight": 1
+        },
+        {
+          "text": "午后整理了一只旧箱，把东西慢慢分了分。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.elder.take-slow-walk",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.elder-slow-walk-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "elder"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "饭后在近处慢慢走了一圈，没走太远。",
+          "weight": 1
+        },
+        {
+          "text": "今日腿脚还好，沿着巷口缓缓走了一阵。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.elder.tell-old-story",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.elder-old-story-told"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "elder"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "和晚辈坐着说起一段多年前的旧事。",
+          "weight": 1
+        },
+        {
+          "text": "今日聊得兴起，又讲了几句从前的见闻。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.elder.warm-hands",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.elder-hands-warmed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "elder"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "手指有些发凉，捧着热水暖了一阵。",
+          "weight": 1
+        },
+        {
+          "text": "今日手上发冷，靠着热气慢慢暖了暖。",
+          "weight": 1
+        }
+      ]
     }
   ]
 }

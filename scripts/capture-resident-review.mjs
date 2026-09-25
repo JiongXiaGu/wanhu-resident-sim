@@ -52,8 +52,8 @@ if ((await page.locator('.resident-summary').count()) !== 0) {
 
 const residentDefinitions = await page.evaluate(async () => (await fetch('/generated/definitions.json')).json());
 if (residentDefinitions?.schema !== 'wanhu.resident-definitions.v7') throw new Error('Routine review expected resident definitions v7.');
-if ((residentDefinitions.contentMeta?.routineDefinitionCount ?? 0) < 179) throw new Error('R2 closure Routine definitions are missing from generated definitions.');
-if ((residentDefinitions.contentMeta?.routineVariantCount ?? 0) < 324) throw new Error('R2 closure Routine variants are missing from generated definitions.');
+if ((residentDefinitions.contentMeta?.routineDefinitionCount ?? 0) < 203) throw new Error('R3 Batch 1 Routine definitions are missing from generated definitions.');
+if ((residentDefinitions.contentMeta?.routineVariantCount ?? 0) < 372) throw new Error('R3 Batch 1 Routine variants are missing from generated definitions.');
 for (const requiredRoutineId of [
   'routine.household.common.sweep-courtyard',
   'routine.market.common.buy-vegetables',
@@ -84,6 +84,9 @@ for (const requiredRoutineId of [
   'routine.work.lock-keeper.inspect-gate',
   'routine.work.performer.rehearse-stage-movement',
   'routine.social.retired-craftsman.show-technique',
+  'routine.leisure.child.play-pebbles',
+  'routine.travel.teen.run-family-errand',
+  'routine.leisure.elder.rest-in-sun',
 ]) {
   if (!residentDefinitions.routines.some((item) => item.id === requiredRoutineId)) {
     throw new Error('Missing R1 Routine '+requiredRoutineId+'.');
@@ -98,6 +101,14 @@ for (const category of routineCoverage.routines?.categories ?? []) {
 for (const occupationId of ['occupation.student','occupation.apprentice','occupation.cloth-worker','occupation.potter','occupation.carpenter','occupation.account-clerk','occupation.physician','occupation.lock-keeper','occupation.vendor','occupation.farmer','occupation.courier','occupation.performer','occupation.midwife','occupation.retired-craftsman']) {
   const entry = routineCoverage.routines?.occupationCoverage?.find((item) => item.occupationId === occupationId);
   if (!entry || entry.directRoutines < 8) throw new Error(`R2 occupation coverage below 8 for ${occupationId}.`);
+}
+for (const lifeStageId of ['child','teen','elder']) {
+  const entry = routineCoverage.routines?.lifeStageCoverage?.find((item) => item.lifeStageId === lifeStageId);
+  if (!entry || entry.directRoutines < 8) throw new Error(`R3 Batch 1 life-stage coverage below 8 for ${lifeStageId}.`);
+}
+for (const lifeStageId of ['young-adult','adult','middle-age']) {
+  const entry = routineCoverage.routines?.lifeStageCoverage?.find((item) => item.lifeStageId === lifeStageId);
+  if (!entry || entry.directRoutines !== 0) throw new Error(`R3 Batch 1 expected deferred life-stage coverage for ${lifeStageId}.`);
 }
 const routineRows = page.locator('.resident-routine-list li');
 if ((await routineRows.count()) < 1) throw new Error('Resident Panel should expose at least one recent Routine.');

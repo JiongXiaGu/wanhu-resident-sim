@@ -10,7 +10,7 @@
 
 ## 当前执行点
 
-当前主线是 **Routine Library V2：R2 已完成，下一步进入 R3 年龄与家庭日常**。
+当前主线是 **Routine Library V2：R3 年龄与家庭日常**。Batch 1 已完成儿童、青少年、老人三个 LifeStage。
 
 R0 已确定：
 
@@ -22,7 +22,7 @@ R0 已确定：
 - Coverage 统计 Routine 定义、Variant、category 与职业覆盖；
 - Web synthetic Routine 继续用于验证 UI，但带天气条件的内容等真实 Fact 链后再触发。
 
-R1 最终为 96 / 158。R2 三个批次共新增 83 个职业专属 Routine / 166 个 Variant；当前全库 179 / 324。除 `occupation.child` 外的 14 个教育/就业/退养身份 `directRoutines` 均达到 8，R2 已完成。下一阶段 R3 处理年龄与家庭日常，首先补儿童与生命阶段差异；仍不同时实现最终 Unity ECS Fact Stream。
+R1 为 96 / 158，R2 收尾后为 179 / 324。R3 Batch 1 新增 24 个年龄专属 Routine / 48 个 Variant，当前全库 **203 / 372**；child / teen / elder 的 `lifeStageCoverage.directRoutines` 均为 8，young-adult / adult / middle-age 仍为 0，留给下一批。家庭关系内容暂不伪造，等 Family Eligibility / Context Contract 独立设计后再做。仍不同时实现最终 Unity ECS Fact Stream。
 
 ## 当前记录链边界
 
