@@ -37,6 +37,7 @@ const validRoutineCategories = new Set(['household','work','study','market','soc
 const canonicalRoutineIdPattern = /^routine\.(household|work|study|market|social|travel|leisure|community|care|custom)\.[a-z][a-z0-9-]*\.[a-z][a-z0-9-]*$/;
 const factIdPattern = /^fact\.[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/;
 const tokenPattern = /^[a-z][a-z0-9-]*$/;
+const MAX_ROUTINE_VARIANT_CHARACTERS = 24;
 const legacyRoutineIds = new Set([
   'routine.generic.market',
   'routine.generic.neighbor',
@@ -131,6 +132,10 @@ function validateFilterList(items, allowed, label) {
   for (const value of items ?? []) {
     if (!allowed.has(value)) throw new Error(`${label} contains unsupported value ${value}.`);
   }
+}
+
+function normalizeRoutineVariantText(value) {
+  return value.normalize('NFKC').replace(/[\s，。、“”‘’！？；：,.!?]/g, '');
 }
 
 requireArray(surnames.items, 'Surname V2');
@@ -250,13 +255,23 @@ for (const item of residentProfiles.presentationStyles) {
 }
 
 requireArray(routines.items, 'Routine Library V2');
+const routineVariantByNormalizedText = new Map();
+const routineVariantLengths = [];
+const routineSourceFactUsage = new Map();
 for (const routine of routines.items) {
   if (!legacyRoutineIds.has(routine.id) && !canonicalRoutineIdPattern.test(routine.id)) throw new Error(`${routine.id}: new Routine IDs must use routine.<domain>.<scope>.<action>.`);
   if (!validRoutineCategories.has(routine.category)) throw new Error(`${routine.id}: invalid category ${routine.category}.`);
   if (!legacyRoutineIds.has(routine.id) && routine.id.split('.')[1] !== routine.category) throw new Error(`${routine.id}: category must match the ID domain.`);
   requireArray(routine.sourceFacts, `${routine.id}.sourceFacts`);
   assertUniqueStrings(routine.sourceFacts, `${routine.id}.sourceFacts`);
-  for (const factId of routine.sourceFacts) if (!factIdPattern.test(factId)) throw new Error(`${routine.id}: invalid source Fact ID ${factId}.`);
+  for (const factId of routine.sourceFacts) {
+    if (!factIdPattern.test(factId)) throw new Error(`${routine.id}: invalid source Fact ID ${factId}.`);
+    const factDomain = factId.split('.')[1];
+    if (factDomain !== routine.category) throw new Error(`${routine.id}: source Fact domain ${factDomain} must match category ${routine.category}.`);
+    const usage = routineSourceFactUsage.get(factId) ?? [];
+    usage.push(routine.id);
+    routineSourceFactUsage.set(factId, usage);
+  }
   const rule = routine.eligibility;
   if (!rule || typeof rule !== 'object') throw new Error(`${routine.id}.eligibility is required.`);
   for (const field of ['occupations','occupationGroups','lifeStages','genders','weather']) {
@@ -275,7 +290,14 @@ for (const routine of routines.items) {
   for (const [variantIndex, variant] of routine.variants.entries()) {
     if (!variant || typeof variant.text !== 'string' || !variant.text.trim()) throw new Error(`${routine.id}.variants[${variantIndex}].text is required.`);
     validateWeight(variant.weight, `${routine.id}.variants[${variantIndex}]`);
+    const characterCount = [...variant.text.trim()].length;
+    if (characterCount > MAX_ROUTINE_VARIANT_CHARACTERS) throw new Error(`${routine.id}.variants[${variantIndex}] exceeds ${MAX_ROUTINE_VARIANT_CHARACTERS} characters (${characterCount}).`);
+    routineVariantLengths.push(characterCount);
     if (variantTexts.has(variant.text)) throw new Error(`${routine.id}: duplicate variant text ${variant.text}.`);
+    const normalizedText = normalizeRoutineVariantText(variant.text);
+    const previousVariant = routineVariantByNormalizedText.get(normalizedText);
+    if (previousVariant) throw new Error(`${routine.id}.variants[${variantIndex}] duplicates normalized text from ${previousVariant.routineId}.variants[${previousVariant.variantIndex}].`);
+    routineVariantByNormalizedText.set(normalizedText, { routineId: routine.id, variantIndex });
     variantTexts.add(variant.text);
   }
 }
@@ -416,6 +438,18 @@ const routineCategoryCoverage = [...validRoutineCategories].map((category) => ({
   definitions: compiledRoutineCatalog.items.filter((item) => item.category === category).length,
   variants: compiledRoutineCatalog.items.filter((item) => item.category === category).reduce((sum, item) => sum + item.variants.length, 0),
 }));
+const reusedRoutineSourceFacts = [...routineSourceFactUsage.entries()]
+  .filter(([, routineIds]) => routineIds.length > 1)
+  .map(([factId, routineIds]) => ({ factId, routineIds }));
+const routineTextQuality = {
+  maxAllowedCharacters: MAX_ROUTINE_VARIANT_CHARACTERS,
+  minCharacters: Math.min(...routineVariantLengths),
+  maxCharacters: Math.max(...routineVariantLengths),
+  averageCharacters: Number((routineVariantLengths.reduce((sum, value) => sum + value, 0) / routineVariantLengths.length).toFixed(2)),
+  normalizedDuplicateVariantTexts: 0,
+  sourceFactCount: routineSourceFactUsage.size,
+  reusedSourceFacts: reusedRoutineSourceFacts,
+};
 
 const referencedTags = new Set();
 const producedTags = new Set();
@@ -429,6 +463,9 @@ for (const phase of phaseCoverage) if (phase.lifeChapters === 0) warnings.push(`
 for (const occupation of occupationCoverage) if (occupation.routines === 0) warnings.push(`${occupation.occupationId} has no occupation-specific Routine.`);
 for (const group of groupCoverage) if (group.lifeEvents === 0) warnings.push(`${group.occupationGroupId} has no LifeEvent coverage.`);
 for (const tag of lifeTags.items) if (!referencedTags.has(tag.id) && !producedTags.has(tag.id)) warnings.push(`${tag.id} is registered but not yet used by LifeEvent eligibility/effects.`);
+for (const category of routineCategoryCoverage) {
+  if (category.category !== 'custom' && category.definitions < 8) warnings.push(`Routine category ${category.category} has only ${category.definitions} definitions; R1 baseline is 8.`);
+}
 
 const coverage = {
   schema: 'wanhu.resident-content-coverage.v1',
@@ -454,6 +491,7 @@ const coverage = {
     total: compiledRoutineCatalog.items.length,
     variants: compiledRoutineCatalog.items.reduce((sum, item) => sum + item.variants.length, 0),
     categories: routineCategoryCoverage,
+    quality: routineTextQuality,
   },
   lifeTags: {
     total: lifeTags.items.length,

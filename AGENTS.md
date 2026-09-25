@@ -6,13 +6,15 @@
 
 本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
 
-## 当前执行点：Routine Library V2 R1 泛居民城市日常
+## 当前执行点：Routine Library V2 R1 已完成 → R2 职业日常
 
-Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 的 R1 Batch 1、Batch 2 已完成，当前 90 个 Routine / 146 个 Variant。下一步只做 R1 Batch 3 小型收尾：近义项去重、Fact 可触发性、UI 文本长度和类别密度平衡；收尾前不要开启 R2 职业大批量、头像扩库、8C 或最终 Unity ECS 实现。
+Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 的 R1 已完成，当前 96 个 Routine / 158 个 Variant；除 custom 外每类至少 8 个定义。下一阶段进入 R2：按当前职业逐批增加职业专属 Routine，每个职业先以 8～12 个为覆盖目标；不要同时开启头像扩库、8C 或最终 Unity ECS 实现。
 
 Resident Profile 当前只有 temperament / lifeFocus / presentationStyle。它们由 Content/Residents/resident-profile-catalog.json 定义，ResidentProfileCompiler 在正式 portrait 编译后写入最终 snapshot。性情不决定脸型；职业、财富和资料只弱影响 Hair / Outfit / Expression。玩家保存 Avatar Recipe > 个人资料派生默认 > 冻结 Portrait fallback。
 
 Routine 新内容必须使用 `routine.<domain>.<scope>.<action>`；历史 V1 ID 不改名。Authoring 只写 Stable ID 和文本定义，Compiler 分配 build-local RuntimeIndex；VariantIndex 发布后保持索引语义，旧 Variant 不重排。Routine 是由 Fact 触发的近期展示，不允许为了扩素材库直接让 ECS 行为节点写中文字符串。
+
+Routine 质量门禁固定保留：Variant 最长 24 字；全库规范化文本不得重复；sourceFact 顶层域必须与 category 一致；除 custom 外分类基线至少 8 条。R2 职业扩库不得通过放宽或删除这些门禁来过 Build。
 
 Unity 方向固定：行为树 / Schedule / Utility Job 不写字符串、不直接维护日志、不每个节点发记录，只在行为完成点写紧凑 ResidentFactEvent。后续集中 ResidentLifeRecordSystem 做去重、Routine 映射、LifeEvent Trigger 和 LifeChapter Request。普通 Routine 只保留近期小环；重要结构事实和完成的 recordToHistory LifeEvent 才写 Major Life History。LifeTag 负责系统连续性，历史文本只负责展示。
 

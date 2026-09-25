@@ -52,8 +52,8 @@ if ((await page.locator('.resident-summary').count()) !== 0) {
 
 const residentDefinitions = await page.evaluate(async () => (await fetch('/generated/definitions.json')).json());
 if (residentDefinitions?.schema !== 'wanhu.resident-definitions.v7') throw new Error('Routine review expected resident definitions v7.');
-if ((residentDefinitions.contentMeta?.routineDefinitionCount ?? 0) < 90) throw new Error('R1 Batch 2 Routine definitions are missing from generated definitions.');
-if ((residentDefinitions.contentMeta?.routineVariantCount ?? 0) < 146) throw new Error('R1 Batch 2 Routine variants are missing from generated definitions.');
+if ((residentDefinitions.contentMeta?.routineDefinitionCount ?? 0) < 96) throw new Error('R1 closure Routine definitions are missing from generated definitions.');
+if ((residentDefinitions.contentMeta?.routineVariantCount ?? 0) < 158) throw new Error('R1 closure Routine variants are missing from generated definitions.');
 for (const requiredRoutineId of [
   'routine.household.common.sweep-courtyard',
   'routine.market.common.buy-vegetables',
@@ -67,10 +67,19 @@ for (const requiredRoutineId of [
   'routine.community.common.wash-clothes-at-riverbank',
   'routine.household.common.sort-stored-grain',
   'routine.social.common.sit-with-neighbors-after-dinner',
+  'routine.care.common.rest-sore-shoulders',
+  'routine.study.common.practice-own-name',
+  'routine.leisure.common.walk-after-meal',
 ]) {
   if (!residentDefinitions.routines.some((item) => item.id === requiredRoutineId)) {
     throw new Error('Missing R1 Routine '+requiredRoutineId+'.');
   }
+}
+const routineCoverage = await page.evaluate(async () => (await fetch('/generated/content-coverage.json')).json());
+if ((routineCoverage.routines?.quality?.maxCharacters ?? 999) > 24) throw new Error('Routine text exceeds the R1 24-character UI budget.');
+if ((routineCoverage.routines?.quality?.normalizedDuplicateVariantTexts ?? 1) !== 0) throw new Error('Routine normalized duplicate text audit failed.');
+for (const category of routineCoverage.routines?.categories ?? []) {
+  if (category.category !== 'custom' && category.definitions < 8) throw new Error(`Routine category ${category.category} fell below the R1 density floor.`);
 }
 const routineRows = page.locator('.resident-routine-list li');
 if ((await routineRows.count()) < 1) throw new Error('Resident Panel should expose at least one recent Routine.');

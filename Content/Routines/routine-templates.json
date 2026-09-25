@@ -2264,6 +2264,162 @@
           "weight": 1
         }
       ]
+    },
+    {
+      "id": "routine.care.common.rest-sore-shoulders",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.sore-shoulders-rested"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "肩背有些发酸，晚上坐着揉了一阵才歇下。",
+          "weight": 1
+        },
+        {
+          "text": "忙了一日肩上发紧，回家后慢慢按了按。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.common.practice-own-name",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.own-name-practiced"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "拿纸把自己的名字重新写了几遍。",
+          "weight": 1
+        },
+        {
+          "text": "闲下来时照着旧字，把姓名慢慢写了一遍。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.common.ask-character-meaning",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.character-meaning-asked"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.5,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "碰见不认得的字，顺口向识字的人问了问。",
+          "weight": 1
+        },
+        {
+          "text": "有个字总认不准，今日找人问清了意思。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.common.walk-after-meal",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.after-meal-walk-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "吃过饭沿着附近慢慢走了一小圈。",
+          "weight": 1
+        },
+        {
+          "text": "饭后没有立刻回屋，在巷里走了走才回去。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.common.drink-tea-slowly",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.tea-break-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "手头没什么急事，坐下来慢慢喝了碗茶。",
+          "weight": 1
+        },
+        {
+          "text": "忙完一阵后歇了歇，温着茶慢慢喝完。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.common.watch-river-boats",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.river-boats-watched"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "在河边站了一阵，看几条船慢慢过去。",
+          "weight": 1
+        },
+        {
+          "text": "路过河岸时没有急着走，看了会儿往来的船。",
+          "weight": 1
+        }
+      ]
     }
   ]
 }
