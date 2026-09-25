@@ -1536,6 +1536,734 @@
           "weight": 1
         }
       ]
+    },
+    {
+      "id": "routine.care.common.prepare-herbal-decoction",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.herbal-decoction-prepared"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "身上有些不舒服，煎了点常用草药慢慢喝了。",
+          "weight": 1
+        },
+        {
+          "text": "觉得有些不爽利，照旧方煎了碗草药汤。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.common.clean-small-wound",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.small-wound-cleaned"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 12,
+      "variants": [
+        {
+          "text": "手上蹭破了一小块，回去后用清水仔细洗了洗。",
+          "weight": 1
+        },
+        {
+          "text": "干活时划了个小口子，收工后简单收拾了一下。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.common.soak-tired-feet",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.tired-feet-soaked"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "今日走得多，回去后用热水泡了会儿脚。",
+          "weight": 1
+        },
+        {
+          "text": "腿脚有些乏，晚上烧了点热水缓了一阵。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.common.bring-water-to-unwell-household",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.water-brought-to-unwell-household"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.5,
+      "cooldownDays": 12,
+      "variants": [
+        {
+          "text": "家里有人不太舒服，端了碗温水过去。",
+          "weight": 1
+        },
+        {
+          "text": "见家里人没什么精神，顺手送了些热水过去。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.common.keep-warm-at-night",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.kept-warm-at-night"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "夜里觉得有些凉，又添了一层薄被才睡。",
+          "weight": 1
+        },
+        {
+          "text": "晚上风有些凉，把铺盖重新掖严实了些。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.common.rest-after-feeling-unwell",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.rested-after-feeling-unwell"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.5,
+      "cooldownDays": 12,
+      "variants": [
+        {
+          "text": "午后有些乏，早早停了手里的事歇了一阵。",
+          "weight": 1
+        },
+        {
+          "text": "今日精神不大好，回去以后没有再忙别的。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.common.practice-common-characters",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.common-characters-practiced"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "照着旧纸把几个常用字又写了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "晚上得空，把平日常见的几个字重新练了练。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.common.listen-to-reading",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.reading-listened-to"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.5,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "听人念了一小段书，顺便记住了几个字。",
+          "weight": 1
+        },
+        {
+          "text": "旁边有人读书，坐着听了一阵才离开。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.common.copy-short-passage",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.short-passage-copied"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.5,
+      "cooldownDays": 12,
+      "variants": [
+        {
+          "text": "照着纸上的几行字，慢慢誊写了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "手边有张旧纸，顺着上面的字重新抄了几行。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.common.count-with-tallies",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.tallies-practiced"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "拿几根小筹重新算了算家里近日的花用。",
+          "weight": 1
+        },
+        {
+          "text": "闲下来时用木筹摆了几遍，算了算手头的数。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.common.read-shop-signs",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.shop-signs-read"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.5,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "路过几家铺面时，认了认门上写的字。",
+          "weight": 1
+        },
+        {
+          "text": "经过市口时多看了几眼招牌，认出了几个熟字。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.common.cross-stone-bridge",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.stone-bridge-crossed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "今日过了趟石桥，桥上人多，走得比平时慢些。",
+          "weight": 1
+        },
+        {
+          "text": "从桥上绕过河去办了点事，回来时天色还早。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.common.follow-river-road",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.river-road-used"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "回去时沿着河边走了一段，路上比大街清静。",
+          "weight": 1
+        },
+        {
+          "text": "今日没走正街，顺着河岸慢慢绕了回去。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.common.wait-for-ferry",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.ferry-waited-for"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.5,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "到渡口时船刚离岸，只好在岸边等了一阵。",
+          "weight": 1
+        },
+        {
+          "text": "过河时没赶上上一趟船，在渡口多坐了会儿。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.common.detour-around-roadwork",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.roadwork-detour-used"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.5,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "前头正有人修路，只得从旁边小巷绕了过去。",
+          "weight": 1
+        },
+        {
+          "text": "常走的路被占了一段，今日多绕了两条街。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.common.visit-other-district",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.other-district-visited"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "今日去了趟别的坊，回来时多走了不少路。",
+          "weight": 1
+        },
+        {
+          "text": "有事去了城里另一片地方，午后才慢慢回来。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.common.return-by-market-road",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.market-road-used"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "回家时从市口那条路经过，看着摊子一路走回去。",
+          "weight": 1
+        },
+        {
+          "text": "今日绕过市场回来，路上比平日热闹些。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.community.common.wait-at-well",
+      "category": "community",
+      "sourceFacts": [
+        "fact.community.well-waited-at"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "井边正有人打水，在旁边等了一小会儿才轮到。",
+          "weight": 1
+        },
+        {
+          "text": "今日井边人多，水桶放下后等了会儿才打上水。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.community.common.wash-clothes-at-riverbank",
+      "category": "community",
+      "sourceFacts": [
+        "fact.community.clothes-washed-at-riverbank"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "把几件脏衣带到河边洗了，晾干前先拧去了水。",
+          "weight": 1
+        },
+        {
+          "text": "午后去河边洗了几件衣裳，回来时手还有些凉。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.community.common.move-road-obstacle",
+      "category": "community",
+      "sourceFacts": [
+        "fact.community.road-obstacle-moved"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.5,
+      "cooldownDays": 12,
+      "variants": [
+        {
+          "text": "路边横着一块碍事的木料，顺手挪到了一旁。",
+          "weight": 1
+        },
+        {
+          "text": "巷口有东西挡路，和旁人一起往边上移了移。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.community.common.cross-drain-on-plank",
+      "category": "community",
+      "sourceFacts": [
+        "fact.community.drain-plank-crossed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "巷边水沟正在过水，踩着横木慢慢走了过去。",
+          "weight": 1
+        },
+        {
+          "text": "门前沟里水多，今日从搭着的木板上绕了过去。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.community.common.stop-at-notice-board",
+      "category": "community",
+      "sourceFacts": [
+        "fact.community.notice-board-visited"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.5,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "在坊口告示前站了一阵，听旁人说了说上面的事。",
+          "weight": 1
+        },
+        {
+          "text": "路过告示处时停了停，跟着旁边的人听了几句。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.community.common.wait-for-bridge-traffic",
+      "category": "community",
+      "sourceFacts": [
+        "fact.community.bridge-traffic-waited-for"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "桥头正挤着几辆车，在一旁等人流散些才过去。",
+          "weight": 1
+        },
+        {
+          "text": "今日桥上有些堵，站在桥头等了一会儿。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.common.sort-stored-grain",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.stored-grain-sorted"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 12,
+      "variants": [
+        {
+          "text": "把家里存着的粮袋重新挪了挪，顺便看了看余量。",
+          "weight": 1
+        },
+        {
+          "text": "翻了翻存粮，把受潮的袋子换到干燥处放着。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.common.shake-dust-from-mat",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.mat-dusted"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "把屋里的席子拿出去拍了拍灰，再铺回原处。",
+          "weight": 1
+        },
+        {
+          "text": "趁天晴把旧席搬到门外抖了抖土。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.common.check-door-latch",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.door-latch-checked"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "临睡前又看了一眼门闩，确认闩好才去歇下。",
+          "weight": 1
+        },
+        {
+          "text": "天黑以后把前后门都看了一遍，才吹灯睡下。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.common.chat-at-shopfront",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.shopfront-smalltalk-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "路过熟悉的铺面时停了停，和人说了几句闲话。",
+          "weight": 1
+        },
+        {
+          "text": "今日经过常去的铺子，在门前站着聊了一会儿。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.common.sit-with-neighbors-after-dinner",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.neighbors-sat-after-dinner"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "晚饭以后在门口和邻里坐了一阵，天黑才散。",
+          "weight": 1
+        },
+        {
+          "text": "吃过饭没有马上进屋，和街坊在外头说了会儿话。",
+          "weight": 1
+        }
+      ]
     }
   ]
 }

@@ -52,8 +52,8 @@ if ((await page.locator('.resident-summary').count()) !== 0) {
 
 const residentDefinitions = await page.evaluate(async () => (await fetch('/generated/definitions.json')).json());
 if (residentDefinitions?.schema !== 'wanhu.resident-definitions.v7') throw new Error('Routine review expected resident definitions v7.');
-if ((residentDefinitions.contentMeta?.routineDefinitionCount ?? 0) < 62) throw new Error('R1 Batch 1 Routine definitions are missing from generated definitions.');
-if ((residentDefinitions.contentMeta?.routineVariantCount ?? 0) < 90) throw new Error('R1 Batch 1 Routine variants are missing from generated definitions.');
+if ((residentDefinitions.contentMeta?.routineDefinitionCount ?? 0) < 90) throw new Error('R1 Batch 2 Routine definitions are missing from generated definitions.');
+if ((residentDefinitions.contentMeta?.routineVariantCount ?? 0) < 146) throw new Error('R1 Batch 2 Routine variants are missing from generated definitions.');
 for (const requiredRoutineId of [
   'routine.household.common.sweep-courtyard',
   'routine.market.common.buy-vegetables',
@@ -61,9 +61,15 @@ for (const requiredRoutineId of [
   'routine.community.common.fetch-water',
   'routine.travel.common.walk-through-city-gate',
   'routine.leisure.common.rest-under-eaves',
+  'routine.care.common.prepare-herbal-decoction',
+  'routine.study.common.practice-common-characters',
+  'routine.travel.common.wait-for-ferry',
+  'routine.community.common.wash-clothes-at-riverbank',
+  'routine.household.common.sort-stored-grain',
+  'routine.social.common.sit-with-neighbors-after-dinner',
 ]) {
   if (!residentDefinitions.routines.some((item) => item.id === requiredRoutineId)) {
-    throw new Error('Missing R1 Batch 1 Routine '+requiredRoutineId+'.');
+    throw new Error('Missing R1 Routine '+requiredRoutineId+'.');
   }
 }
 const routineRows = page.locator('.resident-routine-list li');

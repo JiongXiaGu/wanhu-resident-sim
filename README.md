@@ -33,7 +33,7 @@ http://localhost:5173/?view=avatar-editor
 > 冻结 Portrait fallback
 ```
 
-Routine Library V2 的 R0 契约已经完成，R1 Batch 1 也已加入 28 个泛居民日常定义，每个含 2 个 Variant；当前全库 62 个 Routine / 90 个 Variant。下一步继续按 Coverage 分批补泛居民城市生活，暂不进入职业专属 R2。详见 [日常事件库 V2](Documentation/日常事件库V2.md) 与 [居民事实事件、日常记录与人生经历运行时设计](Documentation/居民事实事件与人生记录运行时设计.md)。
+Routine Library V2 的 R0 契约已经完成，R1 Batch 1 + Batch 2 共新增 56 个泛居民定义；当前全库 90 个 Routine / 146 个 Variant，已经达到 R1 目标区间下限。下一步进行 R1 Batch 3 小型收尾，重点审查近义重复、Fact 可触发性、UI 文本长度与类别密度，再进入职业专属 R2。详见 [日常事件库 V2](Documentation/日常事件库V2.md) 与 [居民事实事件、日常记录与人生经历运行时设计](Documentation/居民事实事件与人生记录运行时设计.md)。
 
 ## 头像基线：Phase 8D2 已完成
 

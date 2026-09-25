@@ -10,7 +10,7 @@
 
 ## 当前执行点
 
-当前主线是 **Routine Library V2：R1 泛居民城市日常扩充**。Batch 1 已完成，继续做 R1 后续批次。
+当前主线是 **Routine Library V2：R1 泛居民城市日常扩充**。Batch 1、Batch 2 已完成，下一步做 R1 Batch 3 小型收尾。
 
 R0 已确定：
 
@@ -22,7 +22,7 @@ R0 已确定：
 - Coverage 统计 Routine 定义、Variant、category 与职业覆盖；
 - Web synthetic Routine 继续用于验证 UI，但带天气条件的内容等真实 Fact 链后再触发。
 
-R1 Batch 1 已新增 28 个泛居民定义，每个 2 个 Variant；当前全库 62 个 Routine / 90 个 Variant。下一批继续按 Coverage 补泛居民城市生活，暂不进入 R2 职业专属大批量，也不同时实现最终 Unity ECS Fact Stream。
+R1 Batch 1 + Batch 2 共新增 56 个泛居民定义；当前全库 90 个 Routine / 146 个 Variant，已经进入 R1 目标区间。下一步只做 Batch 3 小型收尾：去重、Fact 可触发性、UI 长度和类别密度平衡；收尾完成前不进入 R2，也不同时实现最终 Unity ECS Fact Stream。
 
 ## 当前记录链边界
 
