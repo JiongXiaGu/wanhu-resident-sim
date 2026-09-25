@@ -4,31 +4,89 @@
   "residentCount": 50,
   "currentDay": 120,
   "daysPerYear": 360,
-  "recentLifeLogCapacity": 12,
-  "routineWindowDays": 90,
-  "routineIntervalDays": { "min": 7, "max": 14 },
   "lifeStages": [
-    { "id": "child", "minAge": 0, "maxAge": 12 },
-    { "id": "teen", "minAge": 13, "maxAge": 17 },
-    { "id": "young-adult", "minAge": 18, "maxAge": 29 },
-    { "id": "adult", "minAge": 30, "maxAge": 44 },
-    { "id": "middle-age", "minAge": 45, "maxAge": 59 },
-    { "id": "elder", "minAge": 60, "maxAge": 120 }
+    {
+      "id": "child",
+      "minAge": 0,
+      "maxAge": 12
+    },
+    {
+      "id": "teen",
+      "minAge": 13,
+      "maxAge": 17
+    },
+    {
+      "id": "young-adult",
+      "minAge": 18,
+      "maxAge": 29
+    },
+    {
+      "id": "adult",
+      "minAge": 30,
+      "maxAge": 44
+    },
+    {
+      "id": "middle-age",
+      "minAge": 45,
+      "maxAge": 59
+    },
+    {
+      "id": "elder",
+      "minAge": 60,
+      "maxAge": 120
+    }
   ],
   "districts": [
-    { "id": "district.river-east", "name": "河东坊" },
-    { "id": "district.south-kiln", "name": "南窑巷" },
-    { "id": "district.west-market", "name": "西市" },
-    { "id": "district.north-market", "name": "北市坊" },
-    { "id": "district.bridge-south", "name": "桥南里" },
-    { "id": "district.well-lane", "name": "井台巷" },
-    { "id": "district.east-city", "name": "城东" },
-    { "id": "district.south-river", "name": "南河口" }
+    {
+      "id": "district.river-east",
+      "name": "河东坊"
+    },
+    {
+      "id": "district.south-kiln",
+      "name": "南窑巷"
+    },
+    {
+      "id": "district.west-market",
+      "name": "西市"
+    },
+    {
+      "id": "district.north-market",
+      "name": "北市坊"
+    },
+    {
+      "id": "district.bridge-south",
+      "name": "桥南里"
+    },
+    {
+      "id": "district.well-lane",
+      "name": "井台巷"
+    },
+    {
+      "id": "district.east-city",
+      "name": "城东"
+    },
+    {
+      "id": "district.south-river",
+      "name": "南河口"
+    }
   ],
   "householdArchetypes": [
-    { "id": "single", "weight": 3 },
-    { "id": "couple", "weight": 3 },
-    { "id": "family", "weight": 6 },
-    { "id": "elder-child", "weight": 2 }
-  ]
+    {
+      "id": "single",
+      "weight": 3
+    },
+    {
+      "id": "couple",
+      "weight": 3
+    },
+    {
+      "id": "family",
+      "weight": 6
+    },
+    {
+      "id": "elder-child",
+      "weight": 2
+    }
+  ],
+  "recentActionCapacity": 12
 }

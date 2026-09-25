@@ -443,7 +443,7 @@ export default function App() {
                   <div className="resident-section-label">此刻</div>
                   <div className="resident-activity__current">
                     <i aria-hidden="true" />
-                    <p>{lifeView.activity}</p>
+                    <p>{lifeView.currentActionText}</p>
                   </div>
                 </section>
 
@@ -471,14 +471,14 @@ export default function App() {
                   </section>
                 )}
 
-                {lifeView.routines.length > 0 && (
-                  <section className="resident-routine-section">
-                    <div className="resident-routine-section__heading"><b>最近</b></div>
-                    <ul className="resident-routine-list">
-                      {lifeView.routines.slice(0, 3).map((entry) => (
+                {lifeView.recentActions.length > 0 && (
+                  <section className="resident-recent-action-section">
+                    <div className="resident-recent-action-section__heading"><b>最近</b></div>
+                    <ul className="resident-recent-action-list">
+                      {lifeView.recentActions.slice(0, 3).map((entry) => (
                         <li key={entry.id}>
                           <time>{relativeDayLabel(Math.max(0, gameDay - entry.day))}</time>
-                          <span>{entry.title}</span>
+                          <span>{entry.text}</span>
                         </li>
                       ))}
                     </ul>

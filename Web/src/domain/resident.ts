@@ -32,16 +32,28 @@ export type PortraitFrameId =
   | 'male.adult'
   | 'male.elder';
 
-export type ResidentLifeLogRecord = {
+export type ResidentCurrentAction = {
+  actionId: string;
+  targetResidentId?: number;
+  placeId?: string;
+  phase: 'moving' | 'executing';
+};
+
+export type ResidentActionCompletedEvent = {
+  residentId: number;
+  actionId: string;
+  day: number;
+  targetResidentId?: number;
+  placeId?: string;
+};
+
+export type ResidentRecentActionRecord = {
   id: string;
   day: number;
-  kind: 'routine' | 'story' | 'state';
-  routineId?: string;
-  routineRuntimeIndex?: number;
-  variantIndex?: number;
-  contextResidentId?: number;
-  title: string;
-  text?: string;
+  actionId: string;
+  variantIndex: number;
+  targetResidentId?: number;
+  placeId?: string;
 };
 
 export type ResidentMajorLifeEvent = {
@@ -85,7 +97,8 @@ export type ResidentRecord = {
   stateBits: number;
   activeStoryId: string | null;
   lifeTags: string[];
-  recentLifeLog: ResidentLifeLogRecord[];
+  currentAction: ResidentCurrentAction;
+  recentActions: ResidentRecentActionRecord[];
   majorLifeHistory: ResidentMajorLifeEvent[];
 };
 
@@ -146,37 +159,9 @@ export type OccupationDefinition = {
   offActivity: string;
 };
 
-export type RoutineCategory = 'household' | 'work' | 'study' | 'market' | 'social' | 'travel' | 'leisure' | 'community' | 'care' | 'custom';
-export type RoutineFamilyRequirement = 'any' | 'required' | 'forbidden';
-export type RoutineResidentContextRelation = 'spouse' | 'child' | 'parent' | 'household-member';
-
-export type RoutineFamilyEligibility = {
-  spouse?: RoutineFamilyRequirement;
-  parent?: RoutineFamilyRequirement;
-  minChildren?: number;
-  maxChildren?: number | null;
-  minHouseholdSize?: number;
-  maxHouseholdSize?: number | null;
-  coResidentSpouse?: RoutineFamilyRequirement;
-  coResidentChild?: RoutineFamilyRequirement;
-  coResidentParent?: RoutineFamilyRequirement;
-};
-
-export type RoutineDefinition = {
+export type ActionPresentationDefinition = {
   id: string;
-  runtimeIndex: number;
-  category: RoutineCategory;
-  sourceFacts: string[];
-  eligibility: {
-    occupations: string[];
-    occupationGroups: string[];
-    lifeStages: LifeStageId[];
-    genders: Gender[];
-    weather: string[];
-    family?: RoutineFamilyEligibility;
-  };
-  context?: { residentTarget: RoutineResidentContextRelation };
-  weight: number;
+  currentText: string;
   cooldownDays: number;
   variants: Array<{ text: string; weight: number }>;
 };
@@ -250,7 +235,6 @@ export type LifeEventStageDefinition = {
   delayDays: { min: number; max: number };
   title: string;
   text: string;
-  activityOverride?: string;
 };
 
 export type LifeEventDefinition = {
@@ -285,9 +269,7 @@ export type ResidentGenerationDefinition = {
   residentCount: number;
   currentDay: number;
   daysPerYear: number;
-  recentLifeLogCapacity: number;
-  routineWindowDays: number;
-  routineIntervalDays: { min: number; max: number };
+  recentActionCapacity: number;
   lifeStages: Array<{ id: LifeStageId; minAge: number; maxAge: number }>;
   districts: Array<{ id: string; name: string }>;
   householdArchetypes: Array<{ id: string; weight: number }>;
@@ -315,11 +297,11 @@ export type ResidentDefinitions = {
     residentTemperamentCount: number;
     residentLifeFocusCount: number;
     residentPresentationStyleCount: number;
-    routineDefinitionCount: number;
-    routineVariantCount: number;
+    actionPresentationCount: number;
+    actionVariantCount: number;
   };
   occupations: OccupationDefinition[];
-  routines: RoutineDefinition[];
+  actionPresentations: ActionPresentationDefinition[];
   lifeEvents: LifeEventDefinition[];
   generation: ResidentGenerationDefinition;
 };

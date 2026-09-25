@@ -4,15 +4,15 @@
 
 ## 接手顺序
 
-读取最新 `main` 与 SHA、`AGENTS.md`、`README.md`、本文件，再读 [居民行为与最近生活记录](居民行为与最近生活记录.md)、[居民事实事件与人生记录运行时设计](居民事实事件与人生记录运行时设计.md)、[居民生活记录与故事连续性](居民生活记录与故事连续性.md)。居民资料任务再读 [居民个人资料与头像派生 V1](居民个人资料与头像派生V1.md)；头像任务再读 [Avatar Workshop](Avatar%20Workshop.md)、[Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md)。Routine V2 / Family Context 旧设计不再作为当前文档入口，需要时查 Git 历史。
+读取最新 `main` 与 SHA、`AGENTS.md`、`README.md`、本文件，再读 [居民行为与最近生活记录](居民行为与最近生活记录.md)、[居民事实事件与人生记录运行时设计](居民事实事件与人生记录运行时设计.md)、[居民生活记录与故事连续性](居民生活记录与故事连续性.md)。居民资料任务再读 [居民个人资料与头像派生 V1](居民个人资料与头像派生V1.md)；头像任务再读 [Avatar Workshop](Avatar%20Workshop.md)、[Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md)。
 
 先检查目标源码与当前 SHA 的 Actions。不要用聊天记忆代替仓库。
 
 ## 当前执行点
 
-当前执行 **Resident Action Life 重构**，R4A Environment Eligibility 已取消。
+当前执行点是 **Resident Action Life 基线完成后的行为接入准备**。
 
-当前 main 的 Routine V2、247 / 460 内容库、Family Eligibility / Context、Routine Resolver 与 Web 随机 RecentLifeLog 都是本次要清理的旧实现。下一批允许直接破坏这些数据结构，不写兼容读取、不保留旧 Stable ID 映射、不建立 deprecated / legacy 目录；旧方案从 Git 历史获取。
+当前 main 只保留 Action Presentation、CurrentAction、ResidentActionCompletedEvent 语义和 RecentAction。Web 的确定性 Action Trace 仅用于验证展示链，不承担正式 AI 决策职责。
 
 重构目标：
 
@@ -63,7 +63,7 @@ RecentAction 只负责近期观察窗口，不进入永久人生历史。Current
 
 ## 居民生活与历史不变量
 
-生活模式只展示当前 Activity、LifeEvent 与少量 Routine；人生模式是一条年龄升序时间轴，一个 Chapter 只代表一件事。故事 Chapter 展开第一人称 memoryText，不重放三个 Stage。普通 Routine 不进永久历史。
+生活模式只展示 CurrentAction、LifeEvent 与少量 RecentAction；人生模式是一条年龄升序时间轴，一个 Chapter 只代表一件事。故事 Chapter 展开第一人称 memoryText，不重放三个 Stage。普通 RecentAction 不进永久历史。
 
 过去影响未来依赖 LifeTag 与结构状态，而不是扫描历史文本。继续保留未婚 → 成婚/家庭改变 → newly-married → 后续共同生活 → 临时 Tag 消失的真实链。
 
@@ -82,4 +82,4 @@ Content 是权威；Stable ID 不由标题或数组顺序生成。generated 文�
 - “恢复原头像”回到 Profile 派生默认；
 - Profile 或生成链不可用时冻结 Portrait fallback 仍可用。
 
-下一阶段应优先围绕 ResidentFactEvent / Routine / LifeEvent / LifeChapter 的 Web 语义验证和内容资源准备推进；不要借整理工作提前实现最终 Unity ECS 数据布局。
+下一阶段应优先补充 Unity 侧 Behaviour Complete → ResidentActionCompletedEvent 的正式契约映射，并按真实 Behaviour 到位情况逐步扩 Action Presentation；不要借整理工作提前实现最终 Unity ECS Save / Blob 物理布局。

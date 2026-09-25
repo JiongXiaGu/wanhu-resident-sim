@@ -162,7 +162,7 @@ Story Bucket 是只读内容数据，适合放进 `ResidentContentBlob`。
 
 ```text
 LifeStage → LifeEvent / Life Chapter 数量
-Occupation → LifeEvent / Life Chapter / Routine 数量
+Occupation → LifeEvent / Life Chapter 数量
 OccupationGroup → Occupation / LifeEvent / Life Chapter 数量
 LifeTag → 被条件引用 / 被 Effect 产出情况
 Name → 各池数量

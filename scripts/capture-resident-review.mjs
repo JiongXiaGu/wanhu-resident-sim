@@ -1,5 +1,5 @@
 import { chromium } from 'playwright';
-import { mkdir } from 'node:fs/promises';
+import { access, mkdir } from 'node:fs/promises';
 
 const baseUrl = process.env.REVIEW_BASE_URL || 'http://127.0.0.1:4173';
 const outDir = process.env.REVIEW_SCREENSHOT_DIR || 'review-screenshots';
@@ -51,184 +51,72 @@ if ((await page.locator('.resident-summary').count()) !== 0) {
 }
 
 const residentDefinitions = await page.evaluate(async () => (await fetch('/generated/definitions.json')).json());
-if (residentDefinitions?.schema !== 'wanhu.resident-definitions.v7') throw new Error('Routine review expected resident definitions v7.');
-if ((residentDefinitions.contentMeta?.routineDefinitionCount ?? 0) !== 247) throw new Error('R3 final Routine definition count must remain 247.');
-if ((residentDefinitions.contentMeta?.routineVariantCount ?? 0) !== 460) throw new Error('R3 final Routine variant count must remain 460.');
-for (const requiredRoutineId of [
-  'routine.household.common.sweep-courtyard',
-  'routine.market.common.buy-vegetables',
-  'routine.social.common.return-borrowed-item',
-  'routine.community.common.fetch-water',
-  'routine.travel.common.walk-through-city-gate',
-  'routine.leisure.common.rest-under-eaves',
-  'routine.care.common.prepare-herbal-decoction',
-  'routine.study.common.practice-common-characters',
-  'routine.travel.common.wait-for-ferry',
-  'routine.community.common.wash-clothes-at-riverbank',
-  'routine.household.common.sort-stored-grain',
-  'routine.social.common.sit-with-neighbors-after-dinner',
-  'routine.care.common.rest-sore-shoulders',
-  'routine.study.common.practice-own-name',
-  'routine.leisure.common.walk-after-meal',
-  'routine.work.apprentice.practice-basic-skill',
-  'routine.work.potter.load-kiln',
-  'routine.work.carpenter.test-joint-fit',
-  'routine.care.physician.visit-household',
-  'routine.care.midwife.check-newborn',
-  'routine.work.cloth-worker.measure-cloth',
-  'routine.work.account-clerk.verify-receipts',
-  'routine.market.vendor.weigh-goods',
-  'routine.work.farmer.mend-field-ridge',
-  'routine.travel.courier.carry-heavy-load',
-  'routine.study.student.recite-lesson',
-  'routine.work.lock-keeper.inspect-gate',
-  'routine.work.performer.rehearse-stage-movement',
-  'routine.social.retired-craftsman.show-technique',
-  'routine.leisure.child.play-pebbles',
-  'routine.travel.teen.run-family-errand',
-  'routine.leisure.elder.rest-in-sun',
-  'routine.household.young-adult.plan-spending',
-  'routine.community.adult.join-alley-cleanup',
-  'routine.social.middle-age.share-experience',
-]) {
-  if (!residentDefinitions.routines.some((item) => item.id === requiredRoutineId)) {
-    throw new Error('Missing R1 Routine '+requiredRoutineId+'.');
-  }
+if (residentDefinitions?.schema !== 'wanhu.resident-definitions.v7') throw new Error('Resident Action review expected resident definitions v7.');
+const requiredActionIds = [
+  'resident-action.fetch-water',
+  'resident-action.wash-clothes',
+  'resident-action.go-to-work',
+  'resident-action.buy-food',
+  'resident-action.take-walk',
+  'resident-action.visit-friend',
+  'resident-action.visit-family',
+  'resident-action.watch-performance',
+  'resident-action.go-to-teahouse',
+  'resident-action.travel',
+  'resident-action.rest-at-home',
+];
+if ((residentDefinitions.contentMeta?.actionPresentationCount ?? 0) !== requiredActionIds.length) throw new Error('Action Presentation count mismatch.');
+if ((residentDefinitions.contentMeta?.actionVariantCount ?? 0) !== 22) throw new Error('Action Presentation variant count mismatch.');
+if ('routines' in residentDefinitions) throw new Error('Definitions must not expose legacy routines.');
+for (const actionId of requiredActionIds) {
+  const definition = residentDefinitions.actionPresentations?.find((item) => item.id === actionId);
+  if (!definition) throw new Error(`Missing Action Presentation ${actionId}.`);
+  if (!definition.currentText?.trim()) throw new Error(`${actionId} is missing currentText.`);
+  if (definition.variants.length < 2 || definition.variants.length > 4 || definition.variants.some((item) => !item.text?.trim())) throw new Error(`${actionId} must expose 2-4 readable variants.`);
 }
-const routineCoverage = await page.evaluate(async () => (await fetch('/generated/content-coverage.json')).json());
-if ((routineCoverage.routines?.quality?.maxCharacters ?? 999) > 24) throw new Error('Routine text exceeds the R1 24-character UI budget.');
-if ((routineCoverage.routines?.quality?.normalizedDuplicateVariantTexts ?? 1) !== 0) throw new Error('Routine normalized duplicate text audit failed.');
-for (const category of routineCoverage.routines?.categories ?? []) {
-  if (category.category !== 'custom' && category.definitions < 8) throw new Error(`Routine category ${category.category} fell below the R1 density floor.`);
-}
-for (const occupationId of ['occupation.student','occupation.apprentice','occupation.cloth-worker','occupation.potter','occupation.carpenter','occupation.account-clerk','occupation.physician','occupation.lock-keeper','occupation.vendor','occupation.farmer','occupation.courier','occupation.performer','occupation.midwife','occupation.retired-craftsman']) {
-  const entry = routineCoverage.routines?.occupationCoverage?.find((item) => item.occupationId === occupationId);
-  if (!entry || entry.directRoutines < 8) throw new Error(`R2 occupation coverage below 8 for ${occupationId}.`);
-}
-for (const lifeStageId of ['child','teen','young-adult','adult','middle-age','elder']) {
-  const entry = routineCoverage.routines?.lifeStageCoverage?.find((item) => item.lifeStageId === lifeStageId);
-  if (!entry || entry.directRoutines < 8) throw new Error(`R3 life-stage coverage below 8 for ${lifeStageId}.`);
-}
-const familyContract = routineCoverage.routines?.familyContract;
-if (!familyContract) throw new Error('Routine Family Contract coverage is missing.');
-if (familyContract.familyConstrainedDefinitions !== 20 || familyContract.contextResidentTargetDefinitions !== 7) {
-  throw new Error('R3E must keep 20 family Routines and expose exactly 7 Context-target definitions.');
-}
-const expectedContextTargets = new Map([
-  ['spouse', 2],
-  ['child', 2],
-  ['parent', 2],
-  ['household-member', 1],
-]);
-for (const entry of familyContract.contextTargets ?? []) {
-  if (entry.definitions !== expectedContextTargets.get(entry.residentTarget)) {
-    throw new Error(`Unexpected R3E Context coverage for ${entry.residentTarget}: ${entry.definitions}.`);
-  }
-}
-const requiredFamilyContexts = new Map([
-  ['routine.household.family.share-evening-chores', 'spouse'],
-  ['routine.travel.family.visit-spouse', 'spouse'],
-  ['routine.market.family.buy-child-daily-needs', 'child'],
-  ['routine.household.family.keep-child-belongings', 'child'],
-  ['routine.care.family.prepare-parent-hot-water', 'parent'],
-  ['routine.travel.family.visit-parent', 'parent'],
-  ['routine.household.family.divide-small-chores', 'household-member'],
-]);
-for (const [routineId, residentTarget] of requiredFamilyContexts) {
-  const definition = residentDefinitions.routines.find((item) => item.id === routineId);
-  if (!definition?.eligibility?.family) throw new Error('Missing R3E family Routine '+routineId+'.');
-  if (definition.context?.residentTarget !== residentTarget) throw new Error(`R3E ${routineId} must target ${residentTarget}.`);
-}
-const familyProbe = await page.evaluate(async () => {
-  const mod = await import('/src/simulation/routine-family.ts');
-  const adult = { id: 1, spouseId: 2, childCount: 1, fatherId: 0, motherId: 0, householdId: 10 };
-  const spouse = { id: 2, spouseId: 1, childCount: 1, fatherId: 0, motherId: 0, householdId: 10 };
-  const child = { id: 3, spouseId: 0, childCount: 0, fatherId: 1, motherId: 2, householdId: 10 };
-  const outsider = { id: 4, spouseId: 0, childCount: 0, fatherId: 0, motherId: 0, householdId: 20 };
-  const household = { id: 10, memberIds: [1,2,3] };
-  const residents = [adult, spouse, child, outsider];
-  return {
-    spouseRequired: mod.routineFamilyEligibilityMatches({ spouse: 'required' }, adult, household, residents),
-    spouseForbidden: mod.routineFamilyEligibilityMatches({ spouse: 'forbidden' }, adult, household, residents),
-    coResidentChild: mod.routineFamilyEligibilityMatches({ coResidentChild: 'required' }, adult, household, residents),
-    parentRequired: mod.routineFamilyEligibilityMatches({ parent: 'required' }, child, household, residents),
-    maxChildrenZero: mod.routineFamilyEligibilityMatches({ maxChildren: 0 }, adult, household, residents),
-    spouseContext: mod.routineContextResidentMatches('spouse', adult, spouse, household),
-    childContext: mod.routineContextResidentMatches('child', adult, child, household),
-    parentContext: mod.routineContextResidentMatches('parent', child, adult, household),
-    outsiderHouseholdContext: mod.routineContextResidentMatches('household-member', adult, outsider, household),
-    spouseCandidates: mod.routineContextResidentCandidates('spouse', adult, household, residents).map((item) => item.id),
-    childCandidates: mod.routineContextResidentCandidates('child', adult, household, residents).map((item) => item.id),
-    parentCandidates: mod.routineContextResidentCandidates('parent', child, household, residents).map((item) => item.id),
-    householdCandidates: mod.routineContextResidentCandidates('household-member', adult, household, residents).map((item) => item.id),
-    degradation: (() => {
-      const record = { contextResidentId: spouse.id };
-      adult.spouseId = 0;
-      return {
-        storedContextResidentId: record.contextResidentId,
-        relationStillValid: mod.routineContextResidentMatches('spouse', adult, spouse, household, residents),
-      };
-    })(),
-  };
-});
-if (!familyProbe.spouseRequired || familyProbe.spouseForbidden || !familyProbe.coResidentChild || !familyProbe.parentRequired || familyProbe.maxChildrenZero) {
-  throw new Error('Routine Family Eligibility probe failed.');
-}
-if (!familyProbe.spouseContext || !familyProbe.childContext || !familyProbe.parentContext || familyProbe.outsiderHouseholdContext) {
-  throw new Error('Routine resident context relation probe failed.');
-}
-if (familyProbe.spouseCandidates.join(',') !== '2' || familyProbe.childCandidates.join(',') !== '3' || familyProbe.parentCandidates.join(',') !== '1,2' || familyProbe.householdCandidates.join(',') !== '2,3') {
-  throw new Error('Routine Context candidate resolution is not deterministic.');
-}
-if (familyProbe.degradation.storedContextResidentId !== 2 || familyProbe.degradation.relationStillValid) {
-  throw new Error('Historical Context degradation policy failed.');
-}
-const contextSnapshotProbe = await page.evaluate(async () => {
-  const [snapshot, definitions, mod] = await Promise.all([
-    fetch('/generated/resident-snapshot.json').then((response) => response.json()),
-    fetch('/generated/definitions.json').then((response) => response.json()),
-    import('/src/simulation/routine-family.ts'),
-  ]);
-  const routineById = new Map(definitions.routines.map((item) => [item.id, item]));
-  const residentById = new Map(snapshot.residents.map((item) => [item.id, item]));
-  const householdById = new Map(snapshot.households.map((item) => [item.id, item]));
-  let contextRecords = 0;
-  let invalidRecords = 0;
-  const targetCounts = { spouse: 0, child: 0, parent: 0, 'household-member': 0 };
-  for (const resident of snapshot.residents) {
-    for (const record of resident.recentLifeLog) {
-      const definition = routineById.get(record.routineId);
-      const relation = definition?.context?.residentTarget;
-      if (!relation) {
-        if (record.contextResidentId !== undefined) invalidRecords += 1;
-        continue;
-      }
-      contextRecords += 1;
-      targetCounts[relation] += 1;
-      const target = residentById.get(record.contextResidentId);
-      const household = householdById.get(resident.householdId);
-      if (!target || !mod.routineContextResidentMatches(relation, resident, target, household, snapshot.residents)) invalidRecords += 1;
+let legacyRoutineCatalogExists = true;
+try { await access('Web/public/generated/routine-catalog-v2.json'); } catch { legacyRoutineCatalogExists = false; }
+if (legacyRoutineCatalogExists) throw new Error('Legacy Routine catalog must not be generated.');
+
+const actionCoverage = await page.evaluate(async () => (await fetch('/generated/content-coverage.json')).json());
+if (actionCoverage.actionPresentations?.total !== requiredActionIds.length || actionCoverage.actionPresentations?.variants !== 22) throw new Error('Action Presentation coverage is missing or inconsistent.');
+if ('routines' in actionCoverage) throw new Error('Coverage must not expose legacy Routine metrics.');
+
+const actionSnapshot = await page.evaluate(async () => (await fetch('/generated/resident-snapshot.json')).json());
+const residentIds = new Set(actionSnapshot.residents.map((item) => item.id));
+let targetRecordCount = 0;
+for (const resident of actionSnapshot.residents) {
+  if ('recentLifeLog' in resident) throw new Error(`${resident.id}: legacy recentLifeLog must be removed.`);
+  if (!resident.currentAction?.actionId || !requiredActionIds.includes(resident.currentAction.actionId)) throw new Error(`${resident.id}: CurrentAction is missing or unknown.`);
+  if (!Array.isArray(resident.recentActions) || resident.recentActions.length < 1) throw new Error(`${resident.id}: deterministic Action Trace must produce RecentAction records.`);
+  if (resident.majorLifeHistory.some((entry) => 'actionId' in entry)) throw new Error(`${resident.id}: RecentAction must not enter major life history.`);
+  for (const record of resident.recentActions) {
+    const presentation = residentDefinitions.actionPresentations.find((item) => item.id === record.actionId);
+    if (!presentation || !presentation.variants[record.variantIndex]) throw new Error(`${resident.id}: invalid RecentAction presentation reference.`);
+    if ('title' in record || 'text' in record || 'contextResidentId' in record || 'routineId' in record) throw new Error(`${resident.id}: RecentAction stores presentation text or legacy Routine fields.`);
+    if (record.targetResidentId !== undefined) {
+      targetRecordCount += 1;
+      if (!residentIds.has(record.targetResidentId)) throw new Error(`${resident.id}: RecentAction targets missing resident ${record.targetResidentId}.`);
     }
   }
-  return { contextRecords, invalidRecords, targetCounts };
-});
-if (contextSnapshotProbe.contextRecords < 3 || contextSnapshotProbe.invalidRecords !== 0) throw new Error(`Generated R3E Context records invalid: ${JSON.stringify(contextSnapshotProbe)}`);
-for (const relation of ['spouse', 'child', 'parent']) {
-  if (contextSnapshotProbe.targetCounts[relation] < 1) throw new Error(`Generated snapshot did not exercise ${relation} Context.`);
 }
-const routineRows = page.locator('.resident-routine-list li');
-if ((await routineRows.count()) < 1) throw new Error('Resident Panel should expose at least one recent Routine.');
-const routineTexts = await routineRows.locator('span').allTextContents();
-if (routineTexts.some((text) => !text.trim() || /(?:routine|fact)\./.test(text))) {
-  throw new Error('Resident Panel must resolve Routine IDs to readable text.');
-}
+if (targetRecordCount < 3) throw new Error('Deterministic Action Trace did not exercise targetResidentId.');
+
+const selectedSnapshotResident = actionSnapshot.residents[0];
+const selectedCurrentPresentation = residentDefinitions.actionPresentations.find((item) => item.id === selectedSnapshotResident.currentAction.actionId);
+const currentActionUiText = await page.locator('.resident-activity__current p').innerText();
+if (currentActionUiText !== selectedCurrentPresentation.currentText) throw new Error(`CurrentAction UI mismatch: ${currentActionUiText} !== ${selectedCurrentPresentation.currentText}`);
+const recentActionRows = page.locator('.resident-recent-action-list li');
+if ((await recentActionRows.count()) < 1) throw new Error('Resident Panel should expose at least one RecentAction.');
+const recentActionTexts = await recentActionRows.locator('span').allTextContents();
+if (recentActionTexts.some((value) => !value.trim() || /resident-action\./.test(value))) throw new Error('Resident Panel must resolve RecentAction IDs to readable text.');
 
 await page.getByRole('button', { name: '隐藏', exact: true }).click();
 await page.waitForSelector('.dev-reopen');
 await page.screenshot({ path: `${outDir}/01-player-resident.png` });
 await page.locator('.resident-panel__header').screenshot({ path: `${outDir}/01a-resident-header-closeup.png` });
 await page.locator('.resident-panel').screenshot({ path: `${outDir}/01b-resident-panel-portrait-first.png` });
-await page.locator('.resident-routine-section').screenshot({ path: `${outDir}/01c-resident-routines.png` });
+await page.locator('.resident-recent-action-section').screenshot({ path: `${outDir}/01c-resident-recent-actions.png` });
 
 await page.getByRole('button', { name: 'DEV', exact: true }).click();
 await page.getByRole('button', { name: '推进故事', exact: true }).click();
@@ -245,7 +133,7 @@ await historyButton.click();
 await page.waitForSelector('.resident-history-mode');
 if ((await page.locator('.resident-activity').count()) !== 0) throw new Error('Life history mode must hide current activity.');
 if ((await page.locator('.resident-recent').count()) !== 0) throw new Error('Life history mode must hide current LifeEvent.');
-if ((await page.locator('.resident-routine-section').count()) !== 0) throw new Error('Life history mode must hide routine entries.');
+if ((await page.locator('.resident-recent-action-section').count()) !== 0) throw new Error('Life history mode must hide RecentAction entries.');
 if ((await page.locator('.resident-life-stage__label').count()) !== 0) throw new Error('Life history should not use life-stage groups.');
 if ((await page.locator('.resident-life-timeline--continuous').count()) !== 1) throw new Error('Life history should render one chronological timeline.');
 

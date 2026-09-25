@@ -57,8 +57,8 @@ const output = {
     residentTemperamentCount: residentProfileCatalog.temperaments.length,
     residentLifeFocusCount: residentProfileCatalog.lifeFocuses.length,
     residentPresentationStyleCount: residentProfileCatalog.presentationStyles.length,
-    routineDefinitionCount: definitions.routines.length,
-    routineVariantCount: definitions.routines.reduce((sum, item) => sum + item.variants.length, 0),
+    actionPresentationCount: definitions.actionPresentations.length,
+    actionVariantCount: definitions.actionPresentations.reduce((sum, item) => sum + item.variants.length, 0),
   },
 };
 
