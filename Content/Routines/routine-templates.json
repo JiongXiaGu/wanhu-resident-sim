@@ -3260,6 +3260,818 @@
           "weight": 1
         }
       ]
+    },
+    {
+      "id": "routine.work.cloth-worker.measure-cloth",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.cloth-worker-cloth-measured"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.cloth-worker"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "给客人量布时又把尺寸细细核了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "裁布前重新量了长度，免得少上一截。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.cloth-worker.fold-cloth",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.cloth-worker-cloth-folded"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.cloth-worker"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "把柜上散开的几匹布重新折整齐了。",
+          "weight": 1
+        },
+        {
+          "text": "午后得空，把架上的布一匹匹叠好。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.cloth-worker.dust-shelves",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.cloth-worker-shelves-dusted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.cloth-worker"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "柜架上落了灰，拿布把几层架子擦净了。",
+          "weight": 1
+        },
+        {
+          "text": "开铺前先把陈布和架面上的灰掸掉。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.market.cloth-worker.quote-price",
+      "category": "market",
+      "sourceFacts": [
+        "fact.market.cloth-worker-price-quoted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.cloth-worker"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "有客人问布价，按成色一匹匹报了价。",
+          "weight": 1
+        },
+        {
+          "text": "今日有人来问价，把几种布的价钱说明了。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.cloth-worker.note-customer-order",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.cloth-worker-customer-order-noted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.cloth-worker"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "把客人预留的布色和数量记在了纸上。",
+          "weight": 1
+        },
+        {
+          "text": "怕弄混订货，顺手把客人的要求记下。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.account-clerk.sort-ledgers",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.account-clerk-ledgers-sorted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.account-clerk"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "把几本旧账册按月份重新排好放回柜里。",
+          "weight": 1
+        },
+        {
+          "text": "午后整理账册，把散着的几本归了类。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.account-clerk.tally-cash",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.account-clerk-cash-tallied"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.account-clerk"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "收铺前把今日进出的银钱重新点了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "临走前又把柜里的钱数逐笔对了对。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.account-clerk.copy-account",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.account-clerk-account-copied"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.account-clerk"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "把一页写乱的账重新誊到新纸上。",
+          "weight": 1
+        },
+        {
+          "text": "旧账页不好看，今日重新抄清了一遍。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.account-clerk.verify-receipts",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.account-clerk-receipts-verified"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.account-clerk"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "拿着几张收据同账册逐项核了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "有几笔数对不上，翻出凭据重新查了查。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.account-clerk.calculate-credit",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.account-clerk-credit-calculated"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.account-clerk"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "把熟客暂欠的几笔货钱重新算了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "今日整理赊账，把该收的数重新合计好。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.account-clerk.close-daily-ledger",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.account-clerk-daily-ledger-closed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.account-clerk"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "今日账目都对上后，才把账册合起来收好。",
+          "weight": 1
+        },
+        {
+          "text": "收铺前把最后几笔写完，这才合上账本。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.market.vendor.set-up-stall",
+      "category": "market",
+      "sourceFacts": [
+        "fact.market.vendor-stall-set-up"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.vendor"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "天刚亮就把摊布铺开，货一样样摆了出来。",
+          "weight": 1
+        },
+        {
+          "text": "开市前先把摊子支好，又重新排了排货。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.market.vendor.call-customers",
+      "category": "market",
+      "sourceFacts": [
+        "fact.market.vendor-customers-called"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.vendor"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "街上人多时吆喝了几阵，引来几位客人。",
+          "weight": 1
+        },
+        {
+          "text": "今日摊前有些冷清，只好多喊了几声。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.market.vendor.weigh-goods",
+      "category": "market",
+      "sourceFacts": [
+        "fact.market.vendor-goods-weighed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.vendor"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "卖货时把秤杆看了又看，免得分量出错。",
+          "weight": 1
+        },
+        {
+          "text": "今日称了不少货，秤砣一直没闲下来。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.market.vendor.make-change",
+      "category": "market",
+      "sourceFacts": [
+        "fact.market.vendor-change-made"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.vendor"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "一位客人给了大钱，找零时细细数了两遍。",
+          "weight": 1
+        },
+        {
+          "text": "摊上零钱不多，找钱时来回凑了好一会儿。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.vendor.pack-unsold-goods",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.vendor-unsold-goods-packed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.vendor"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "收摊后把没卖完的货重新包好捆紧。",
+          "weight": 1
+        },
+        {
+          "text": "天色晚了，把剩下的东西一件件收进包里。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.vendor.carry-goods-to-stall",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.vendor-goods-carried-to-stall"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.vendor"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "开市前挑着货走到常摆摊的地方。",
+          "weight": 1
+        },
+        {
+          "text": "今日货有些多，来回两趟才搬到摊边。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.farmer.inspect-irrigation",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.farmer-irrigation-inspected"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.farmer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "去田边看了看水沟，水流还算顺畅。",
+          "weight": 1
+        },
+        {
+          "text": "清早先绕着田埂走了一圈，看看进水情况。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.farmer.pull-weeds",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.farmer-weeds-pulled"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.farmer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "地里杂草冒得快，弯腰拔了大半晌。",
+          "weight": 1
+        },
+        {
+          "text": "今日在苗间除草，手上沾了不少泥。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.farmer.mend-field-ridge",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.farmer-field-ridge-mended"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.farmer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "田埂有处塌了，挖土重新补实了一段。",
+          "weight": 1
+        },
+        {
+          "text": "看见田边漏水，把松开的埂重新拍紧。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.farmer.spread-compost",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.farmer-compost-spread"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.farmer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "把沤好的肥挑到地里，分着撒开了。",
+          "weight": 1
+        },
+        {
+          "text": "今日给一块地添肥，来回挑了好几趟。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.farmer.sort-seed",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.farmer-seed-sorted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.farmer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "把留作种用的粮重新挑了一遍好坏。",
+          "weight": 1
+        },
+        {
+          "text": "晚上得空，把明后要用的种子仔细筛了筛。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.farmer.dry-harvest",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.farmer-harvest-dried"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.farmer"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "日头不错，把收回来的粮摊开晒了一阵。",
+          "weight": 1
+        },
+        {
+          "text": "午后翻了翻晒着的粮，免得底下返潮。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.courier.carry-heavy-load",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.courier-heavy-load-carried"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.courier"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "今日接了趟重货，肩上压得比平时沉。",
+          "weight": 1
+        },
+        {
+          "text": "一担东西不轻，走到半路换肩歇了几次。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.courier.choose-short-route",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.courier-short-route-chosen"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.courier"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "为了赶路，从熟悉的小巷抄近道送了过去。",
+          "weight": 1
+        },
+        {
+          "text": "今日路熟，没走大街便把货送到了。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.courier.pass-city-gate",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.courier-city-gate-passed"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.courier"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "挑着货过城门时人多，只能慢慢挪过去。",
+          "weight": 1
+        },
+        {
+          "text": "今日送货出了趟城，回门时已经近午。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.courier.secure-load",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.courier-load-secured"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.courier"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 1,
+      "cooldownDays": 4,
+      "variants": [
+        {
+          "text": "出发前把绳结重新勒紧，免得路上散货。",
+          "weight": 1
+        },
+        {
+          "text": "货包有些松，重新捆了两道才上肩。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.work.courier.adjust-pole",
+      "category": "work",
+      "sourceFacts": [
+        "fact.work.courier-carrying-pole-adjusted"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.courier"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "扁担压肩不顺，回去后重新缠了缠垫布。",
+          "weight": 1
+        },
+        {
+          "text": "旧扁担有些硌肩，收工后仔细调了调。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.courier.return-empty",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.courier-returned-empty"
+      ],
+      "eligibility": {
+        "occupations": [
+          "occupation.courier"
+        ],
+        "occupationGroups": [],
+        "lifeStages": [],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 5,
+      "variants": [
+        {
+          "text": "货送完后空着担子回来，脚步轻快不少。",
+          "weight": 1
+        },
+        {
+          "text": "今日送完一趟货，回程只带着空绳和扁担。",
+          "weight": 1
+        }
+      ]
     }
   ]
 }
