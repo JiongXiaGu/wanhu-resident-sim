@@ -111,8 +111,20 @@ for (const lifeStageId of ['child','teen','young-adult','adult','middle-age','el
 }
 const familyContract = routineCoverage.routines?.familyContract;
 if (!familyContract) throw new Error('Routine Family Contract coverage is missing.');
-if (familyContract.familyConstrainedDefinitions !== 0 || familyContract.contextResidentTargetDefinitions !== 0) {
-  throw new Error('Family Contract stage must not silently add family Routine content.');
+if (familyContract.familyConstrainedDefinitions !== 20 || familyContract.contextResidentTargetDefinitions !== 0) {
+  throw new Error('R3D must expose exactly 20 family-constrained Routines and no Context-target Routine yet.');
+}
+for (const requiredFamilyRoutineId of [
+  'routine.household.family.share-evening-chores',
+  'routine.care.family.prepare-child-wash-water',
+  'routine.social.family.sit-with-parent',
+  'routine.household.family.set-shared-meal',
+  'routine.travel.family.visit-spouse',
+  'routine.household.family.keep-child-belongings',
+]) {
+  const definition = residentDefinitions.routines.find((item) => item.id === requiredFamilyRoutineId);
+  if (!definition?.eligibility?.family) throw new Error('Missing R3D family Routine '+requiredFamilyRoutineId+'.');
+  if (definition.context?.residentTarget) throw new Error('R3D must not add residentTarget Context yet: '+requiredFamilyRoutineId+'.');
 }
 const familyProbe = await page.evaluate(async () => {
   const mod = await import('/src/simulation/routine-family.ts');
