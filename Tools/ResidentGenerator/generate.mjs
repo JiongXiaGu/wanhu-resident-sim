@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { recordRecentActions } from '../ResidentActionLife/record-policy.mjs';
 
 const root = process.cwd();
 const outputDir = join(root, 'Web', 'public', 'generated');
@@ -199,27 +200,6 @@ function buildCompletedActionTrace(resident, residentPool, householdById) {
     }
   }
   return events;
-}
-function variantIndexForEvent(resident, event, presentation) {
-  const total = presentation.variants.reduce((sum, variant) => sum + Math.max(0, Number(variant.weight ?? 1)), 0);
-  let cursor = (hash32(`${resident.seed}:action-variant:${event.actionId}:${event.day}`) / 4294967296) * total;
-  for (let index = 0; index < presentation.variants.length; index += 1) {
-    cursor -= Math.max(0, Number(presentation.variants[index].weight ?? 1));
-    if (cursor <= 0) return index;
-  }
-  return presentation.variants.length - 1;
-}
-function recordRecentActions(resident, completedEvents) {
-  const accepted = [], lastDayByAction = new Map();
-  for (const event of [...completedEvents].sort((left, right) => left.day - right.day)) {
-    const presentation = actionPresentationById.get(event.actionId);
-    if (!presentation || accepted.at(-1)?.actionId === event.actionId) continue;
-    const previousDay = lastDayByAction.get(event.actionId);
-    if (previousDay !== undefined && event.day - previousDay < presentation.cooldownDays) continue;
-    accepted.push({id:`${resident.id}:${event.actionId}:${event.day}`,day:event.day,actionId:event.actionId,variantIndex:variantIndexForEvent(resident,event,presentation),...(event.targetResidentId!==undefined?{targetResidentId:event.targetResidentId}:{}),...(event.placeId!==undefined?{placeId:event.placeId}:{})});
-    lastDayByAction.set(event.actionId,event.day);
-  }
-  return accepted.sort((left,right)=>right.day-left.day).slice(0,generation.recentActionCapacity);
 }
 function buildCurrentAction(resident, residentPool, householdById) {
   const start = hash32(`${resident.seed}:current-action`) % ACTION_SEQUENCE.length;
@@ -451,7 +431,13 @@ while (residents.length < generation.residentCount) {
 const householdById = new Map(households.map((household) => [household.id, household]));
 for (const resident of residents) {
   const completedTrace = buildCompletedActionTrace(resident, residents, householdById);
-  resident.recentActions = recordRecentActions(resident, completedTrace);
+  resident.recentActions = recordRecentActions({
+    residentId: resident.id,
+    residentSeed: resident.seed,
+    completedEvents: completedTrace,
+    presentationById: actionPresentationById,
+    capacity: generation.recentActionCapacity,
+  });
   resident.currentAction = buildCurrentAction(resident, residents, householdById);
 }
 const residentById = new Map(residents.map((resident) => [resident.id, resident]));

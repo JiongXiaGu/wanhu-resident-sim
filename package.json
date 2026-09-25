@@ -11,11 +11,12 @@
   ],
   "scripts": {
     "validate-content-contract": "node Tools/ContentContractCompiler/compile.mjs",
-    "build-content": "node Tools/ContentContractCompiler/compile.mjs && node Tools/PortraitCatalogAudit/validate.mjs && node Tools/StoryCompiler/compile.mjs && node Tools/ResidentGenerator/generate.mjs && node Tools/LifeEventCompiler/compile.mjs && node Tools/StoryBucketCompiler/compile.mjs && node Tools/ResidentSnapshotCompiler/compile.mjs && node Tools/ResidentPortraitCompiler/compile.mjs && node Tools/ResidentProfileCompiler/compile.mjs && node Tools/WebContentCompiler/compile.mjs",
+    "build-content": "node Tools/ContentContractCompiler/compile.mjs && node Tools/ResidentActionLife/validate.mjs && node Tools/PortraitCatalogAudit/validate.mjs && node Tools/StoryCompiler/compile.mjs && node Tools/ResidentGenerator/generate.mjs && node Tools/LifeEventCompiler/compile.mjs && node Tools/StoryBucketCompiler/compile.mjs && node Tools/ResidentSnapshotCompiler/compile.mjs && node Tools/ResidentPortraitCompiler/compile.mjs && node Tools/ResidentProfileCompiler/compile.mjs && node Tools/WebContentCompiler/compile.mjs",
     "dev": "npm run build-content && npm run dev -w Web",
     "build": "npm run build-content && npm run build -w Web",
     "preview": "npm run preview -w Web",
-    "validate-portrait-art": "node Tools/PortraitCatalogAudit/validate.mjs"
+    "validate-portrait-art": "node Tools/PortraitCatalogAudit/validate.mjs",
+    "validate-action-record-policy": "node Tools/ResidentActionLife/validate.mjs"
   },
   "dependencies": {
     "yaml": "^2.8.1"
