@@ -19,7 +19,7 @@ http://localhost:5173/?view=avatar-editor
 
 头像工坊默认进入自由创作，先选男/女、儿童/成年/老年，再选脸型、头发、衣服、表情。六份样板分别保存。指定对象模式可以编辑玩家示例或当前城市居民；从居民身份栏进入直接绑定该居民，年龄/性别不由工坊修改。
 
-## 当前阶段：Routine Library V2
+## 当前阶段：Resident Action Life 重构
 
 居民信息面板的 Portrait-first 重构已经完成；Resident Profile V1、Profile 编译器和 Profile 派生默认头像也已进入主线。居民当前拥有稳定的 **性情 / 生活侧重 / 穿戴倾向**，构建管线根据居民 seed、职业组与家庭财富生成资料。
 
@@ -33,7 +33,7 @@ http://localhost:5173/?view=avatar-editor
 > 冻结 Portrait fallback
 ```
 
-Routine Library V2 的 **R3 年龄与家庭阶段已经完成**，全库保持 **247 个 Routine / 460 个 Variant**。20 个 family-constrained Routine 已覆盖 spouse / parent / childCount / Household / co-resident 条件，其中 **7 个 Context Routine** 会在记录创建时保存具体 ContextResidentId，分布为 spouse 2 / child 2 / parent 2 / household-member 1。Context 是发生时事实，之后关系变化不会重选或改写旧记录。当前下一阶段是 **R4A Environment Eligibility Contract**：先建立 Weather / season / daypart 与 Fact 环境快照契约，再写环境内容。详见 [家庭日常 Eligibility 与 Context 契约 V1](Documentation/家庭日常Eligibility与Context契约V1.md)、[日常事件库 V2](Documentation/日常事件库V2.md)。
+Routine V2 的 R0～R3 已完成过一轮研究，但当前决定**停止继续扩展并直接替换**。现有 247 个 Routine / 460 个 Variant、Family Eligibility / Context 和后续 R4A 计划都不再作为未来主线，也不保留数据兼容；需要旧方案时直接查 Git 历史。下一阶段是 **Resident Action Life 重构**：真实 Behaviour 完成后产生 `ResidentActionCompletedEvent`，再由轻量 `RecentActionRecordSystem` 记录“最近的事情”。Current Activity 也改为读取真实 `CurrentAction`，不再由 UI 根据职业/故事推导。详见 [居民行为与最近生活记录](Documentation/居民行为与最近生活记录.md)。
 
 ## 头像基线：Phase 8D2 已完成
 
@@ -49,7 +49,7 @@ Phase 8D2 已完成儿童与老人扩库：儿童 6 Hair / 6 Outfit、老人 6 H
 
 `Web/src/avatar/` 是工坊及 Web 外观覆盖。`Web/src/resident/portrait/`、`Content/Portrait/`、正式五字段 DNA 保持冻结。未保存玩家覆盖的居民优先显示 Profile 派生默认 Q 版头像；生成链不可用时才进入冻结 Portrait fallback。移除玩家覆盖回到 Profile 派生默认。外观编辑不改身份、家庭、职业、故事和游戏日期。
 
-生活模式只展示当前 Activity、LifeEvent 与少量 Routine；人生模式是一条年龄升序时间轴，一件事一个 Chapter，展开 memoryText。LifeTag 保留过去影响后来的真实链。
+生活模式展示真实 CurrentAction、LifeEvent 与少量 RecentAction；人生模式仍是一条年龄升序时间轴，一件事一个 Chapter，展开 memoryText。RecentAction 来自真实完成行为并自然淘汰，LifeTag 继续保留过去影响后来的真实链。
 
 `npm run build` 完整构建；`npm run build-content` 生成 Web 内容，generated 文件不手改。
 
