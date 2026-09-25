@@ -5416,6 +5416,678 @@
           "weight": 1
         }
       ]
+    },
+    {
+      "id": "routine.household.young-adult.plan-spending",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.young-adult-spending-planned"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "young-adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "晚上把近日花销重新算了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "手头钱不算多，仔细盘了盘接下来的用处。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.study.young-adult.learn-new-skill",
+      "category": "study",
+      "sourceFacts": [
+        "fact.study.young-adult-new-skill-practiced"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "young-adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "得了空又练了会儿最近新学的手艺。",
+          "weight": 1
+        },
+        {
+          "text": "今日把前几天学到的新做法重新试了一遍。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.young-adult.meet-peers",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.young-adult-peer-meeting-completed"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "young-adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "收工后和几个同龄人坐着说了会儿话。",
+          "weight": 1
+        },
+        {
+          "text": "傍晚碰见熟识同龄人，一起走了一段路。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.young-adult.explore-district",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.young-adult-district-explored"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "young-adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "今日去了趟不常走的坊里，顺路认了认路。",
+          "weight": 1
+        },
+        {
+          "text": "有空多绕了两条街，把附近道路记熟了些。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.market.young-adult.compare-tools",
+      "category": "market",
+      "sourceFacts": [
+        "fact.market.young-adult-tools-compared"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "young-adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "在市上看了几样耐用物件，比较了好一阵。",
+          "weight": 1
+        },
+        {
+          "text": "今日没有急着买，先问了几家同样东西的价。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.young-adult.tidy-personal-belongings",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.young-adult-belongings-tidied"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "young-adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "把自己的衣物和零碎东西重新归置了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "晚上收拾了手边物件，屋里看着整齐许多。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.young-adult.rest-after-long-day",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.young-adult-long-day-rested"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "young-adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "今日在外奔波得久，回来后早早歇了下来。",
+          "weight": 1
+        },
+        {
+          "text": "忙了一整日，晚上没有再安排别的事。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.young-adult.walk-city-evening",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.young-adult-evening-city-walk"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "young-adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "晚饭后在街上走了一圈才回去。",
+          "weight": 1
+        },
+        {
+          "text": "天还没全黑，在附近慢慢逛了一小阵。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.adult.check-house-repairs",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.adult-house-repairs-checked"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "看了看屋里几处松动的地方，记下要修的。",
+          "weight": 1
+        },
+        {
+          "text": "今日收拾屋子时发现几处小毛病，先记了下来。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.adult.sort-stored-supplies",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.adult-stored-supplies-sorted"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.9,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "把家里常用的存物重新清点了一遍。",
+          "weight": 1
+        },
+        {
+          "text": "午后翻了翻存着的日用品，缺什么心里有了数。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.market.adult.buy-durable-goods",
+      "category": "market",
+      "sourceFacts": [
+        "fact.market.adult-durable-goods-bought"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 12,
+      "variants": [
+        {
+          "text": "添了一件能用许久的日用物件。",
+          "weight": 1
+        },
+        {
+          "text": "今日挑了样耐用东西，问过几家才买下。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.adult.help-neighbor-errand",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.adult-neighbor-errand-helped"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "顺路替邻里办了件不费事的小事。",
+          "weight": 1
+        },
+        {
+          "text": "今日有人托带东西，回来时一并送了过去。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.community.adult.join-alley-cleanup",
+      "category": "community",
+      "sourceFacts": [
+        "fact.community.adult-alley-cleanup-joined"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "和街坊一起把巷里一段杂物清了清。",
+          "weight": 1
+        },
+        {
+          "text": "今日门前人手正好，搭手收拾了下巷道。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.adult.rest-sore-back",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.adult-sore-back-rested"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "腰背有些发紧，晚上坐着缓了一阵。",
+          "weight": 1
+        },
+        {
+          "text": "今日站得久，回去后靠着歇了好一会儿。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.adult.combine-errands",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.adult-errands-combined"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "把几件要办的小事顺在一条路上一起办了。",
+          "weight": 1
+        },
+        {
+          "text": "今日少跑了趟冤枉路，把几处事情一并做完。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.adult.sit-quietly-evening",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.adult-quiet-evening-rested"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "adult"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "忙完以后安静坐了一阵，没有再出门。",
+          "weight": 1
+        },
+        {
+          "text": "晚上得空，在屋里歇了会儿才准备睡下。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.middle-age.stretch-back",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.middle-age-back-stretched"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "middle-age"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.8,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "腰背有些僵，停下来慢慢舒展了几下。",
+          "weight": 1
+        },
+        {
+          "text": "今日坐久了些，起身活动了会儿筋骨。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.travel.middle-age.choose-easier-route",
+      "category": "travel",
+      "sourceFacts": [
+        "fact.travel.middle-age-easier-route-chosen"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "middle-age"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 7,
+      "variants": [
+        {
+          "text": "回去时选了条平缓些的路，少绕陡坡。",
+          "weight": 1
+        },
+        {
+          "text": "今日没赶近路，挑了条好走些的路回去。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.middle-age.inspect-old-furniture",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.middle-age-old-furniture-inspected"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "middle-age"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 10,
+      "variants": [
+        {
+          "text": "看了看用了多年的桌凳，有松处便按了按。",
+          "weight": 1
+        },
+        {
+          "text": "今日整理旧家具，顺手查了查榫口松紧。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.market.middle-age.replace-worn-shoes",
+      "category": "market",
+      "sourceFacts": [
+        "fact.market.middle-age-worn-shoes-replaced"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "middle-age"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 14,
+      "variants": [
+        {
+          "text": "旧鞋底磨得厉害，去市上重新挑了一双。",
+          "weight": 1
+        },
+        {
+          "text": "走路总硌脚，今日换了双合脚些的鞋。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.social.middle-age.share-experience",
+      "category": "social",
+      "sourceFacts": [
+        "fact.social.middle-age-experience-shared"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "middle-age"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 9,
+      "variants": [
+        {
+          "text": "有人问起旧经验，坐着讲了几句自己的做法。",
+          "weight": 1
+        },
+        {
+          "text": "今日和年轻人聊了聊这些年做事的心得。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.household.middle-age.sort-old-clothes",
+      "category": "household",
+      "sourceFacts": [
+        "fact.household.middle-age-old-clothes-sorted"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "middle-age"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 11,
+      "variants": [
+        {
+          "text": "把多年没穿的旧衣翻出来重新分了分。",
+          "weight": 1
+        },
+        {
+          "text": "今日整理衣箱，把还能穿的旧衣另放一处。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.leisure.middle-age.take-slow-tea-break",
+      "category": "leisure",
+      "sourceFacts": [
+        "fact.leisure.middle-age-tea-break-taken"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "middle-age"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.7,
+      "cooldownDays": 6,
+      "variants": [
+        {
+          "text": "忙完一阵后慢慢喝了碗茶，才继续做事。",
+          "weight": 1
+        },
+        {
+          "text": "午后没有急着起身，坐着把茶喝完才走。",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "routine.care.middle-age.rest-tired-eyes",
+      "category": "care",
+      "sourceFacts": [
+        "fact.care.middle-age-tired-eyes-rested"
+      ],
+      "eligibility": {
+        "occupations": [],
+        "occupationGroups": [],
+        "lifeStages": [
+          "middle-age"
+        ],
+        "genders": [],
+        "weather": []
+      },
+      "weight": 0.6,
+      "cooldownDays": 8,
+      "variants": [
+        {
+          "text": "看东西久了眼睛发涩，闭目歇了一阵。",
+          "weight": 1
+        },
+        {
+          "text": "今日用眼多，晚上早早放下手边细活。",
+          "weight": 1
+        }
+      ]
     }
   ]
 }

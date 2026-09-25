@@ -481,7 +481,7 @@ for (const category of routineCategoryCoverage) {
   if (category.category !== 'custom' && category.definitions < 8) warnings.push(`Routine category ${category.category} has only ${category.definitions} definitions; R1 baseline is 8.`);
 }
 for (const stage of routineLifeStageCoverage) {
-  if (stage.directRoutines === 0) warnings.push(`Routine life stage ${stage.lifeStageId} has no direct age-specific definitions yet.`);
+  if (stage.directRoutines < 8) warnings.push(`Routine life stage ${stage.lifeStageId} has only ${stage.directRoutines} direct definitions; R3 baseline is 8.`);
 }
 
 const coverage = {
