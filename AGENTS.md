@@ -8,7 +8,7 @@
 
 ## 当前执行点：Routine Library V2 R2 职业日常
 
-Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 已进入 R2；Batch 1 已把学徒、陶工、木工、郎中、稳婆的 directRoutines 补到 8，当前全库 126 / 218。后续继续按 4～5 个职业一批推进；职业达标只看 directRoutines。`occupation.child` 留到 R3，不在 R2 强行职业化。不要同时开启头像扩库、8C 或最终 Unity ECS 实现。
+Portrait-first、Resident Profile V1 与头像基线保持完成状态。Routine Library V2 已进入 R2；Batch 1 + Batch 2 已让 10 个职业 directRoutines 达到 8，当前全库 155 / 276。下一批优先学生、守闸人、戏班演员、退下来的手艺人；职业达标只看 directRoutines。`occupation.child` 留到 R3，不在 R2 强行职业化。不要同时开启头像扩库、8C 或最终 Unity ECS 实现。
 
 Resident Profile 当前只有 temperament / lifeFocus / presentationStyle。它们由 Content/Residents/resident-profile-catalog.json 定义，ResidentProfileCompiler 在正式 portrait 编译后写入最终 snapshot。性情不决定脸型；职业、财富和资料只弱影响 Hair / Outfit / Expression。玩家保存 Avatar Recipe > 个人资料派生默认 > 冻结 Portrait fallback。
 
