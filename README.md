@@ -33,7 +33,7 @@ http://localhost:5173/?view=avatar-editor
 > 冻结 Portrait fallback
 ```
 
-Routine V2 的 R0～R3 已完成过一轮研究，但当前决定**停止继续扩展并直接替换**。现有 247 个 Routine / 460 个 Variant、Family Eligibility / Context 和后续 R4A 计划都不再作为未来主线，也不保留数据兼容；需要旧方案时直接查 Git 历史。下一阶段是 **Resident Action Life 重构**：真实 Behaviour 完成后产生 `ResidentActionCompletedEvent`，再由轻量 `RecentActionRecordSystem` 记录“最近的事情”。Current Activity 也改为读取真实 `CurrentAction`，不再由 UI 根据职业/故事推导。详见 [居民行为与最近生活记录](Documentation/居民行为与最近生活记录.md)。
+Resident Action Life 已成为当前近期生活主线：真实 Behaviour 完成后产生 `ResidentActionCompletedEvent`，由轻量 `RecentActionRecordSystem` 写入 `RecentAction`；“此刻”直接读取 `CurrentAction`。Action Presentation 只提供当前动作短句、cooldown 与少量 Variant，不拥有职业、年龄、财富、家庭或天气 Eligibility。Web Demo 使用确定性 Action Trace 验证该链路，正式 Schedule / Utility / Behaviour 在 Unity 主工程实现。详见 [居民行为与最近生活记录](Documentation/居民行为与最近生活记录.md)。
 
 ## 头像基线：Phase 8D2 已完成
 

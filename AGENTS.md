@@ -8,7 +8,7 @@
 
 ## 当前执行点：Resident Action Life 重构
 
-Routine Library V2 的 R0～R3 已完成过一轮研究验证，但**不再是当前架构方向**。当前 main 仍保留 Routine V2 代码、247 个 Routine / 460 个 Variant、Family Eligibility / Context 等实现，只用于作为待删除的旧主线。不要继续 R4A Environment Eligibility，不要继续扩 Routine、Family / Weather / Calendar Eligibility，也不要为旧数据设计兼容层；需要追溯旧方案时直接查 Git 历史。
+Resident Action Life 基线已经落地：当前树以 `Action Presentation → CurrentAction / ResidentActionCompletedEvent → RecentAction` 为唯一近期生活主线。Presentation 只负责显示；Behaviour 决定能否执行以及目标居民 / 地点。Web 只用确定性 Action Trace 验证数据链，不实现完整 Utility AI。
 
 当前唯一主线是 **Resident Action Life 重构**：
 
@@ -32,7 +32,7 @@ Need / Schedule / Opportunity
 - Current Activity 必须来自真实 CurrentAction；不要再根据职业、时间或 LifeEvent 文本在 UI 层猜一个活动。
 - RecentAction 使用固定小环，只保存值得展示的完成行为；吃饭、普通走路等是否展示由轻量 RecordPolicy / 是否存在 Presentation 决定。
 - LifeEvent / LifeTag / LifeChapter 保留，和 RecentAction 分层；重大结构事实仍进入人生历史，普通行为记录自然淘汰。
-- 不保留 Routine V2 数据兼容、旧 Stable ID remap、旧 Recipe 式迁移层；删除时一次清理 Authoring / Schema / Compiler / Generator / Web / Review / 文档，历史从 Git 获取。
+- 不为已经移除的近期生活格式保留兼容读取、Stable ID remap 或双轨数据结构；需要追溯旧方案时使用 Git 历史。
 - 当前 Web Demo 只需验证 Action → RecentAction → UI 语义，不要在 Web 再造一套复杂居民 AI；正式 Behaviour / Utility 在 Unity 主工程实现。
 
 Resident Profile 当前只有 temperament / lifeFocus / presentationStyle。它们可以在未来作为 Utility 弱倾向输入，但不能直接把性格写成硬职业、硬脸型、硬娱乐限制或强制剧情。
