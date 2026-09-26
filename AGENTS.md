@@ -2,7 +2,7 @@
 
 ## 先理解项目
 
-修改前读取最新 main、README、Documentation/居民内容实验室职责边界.md、Documentation/居民逻辑网页Demo接续说明.md 与 Documentation/开发与部署工作流.md。居民内容任务再读 Documentation/居民内容契约V1.md、Documentation/居民内容生产与运行时数据管线V1.md、Documentation/居民生活记录与故事连续性.md 和故事写作规范；头像任务再读 Avatar Workshop、Portrait System 与 Q版头像主路线生产与审查工作流。只有讨论 Unity 主工程语义时才读取居民模拟 / Runtime 设计文档，不把它们当作 Web 实施任务。再检查目标源码和最新 Actions。不要用聊天记忆代替当前仓库。
+修改前读取最新 main、README、Documentation/居民内容实验室职责边界.md、Documentation/居民逻辑网页Demo接续说明.md 与 Documentation/开发与部署工作流.md。居民内容任务再读 Documentation/居民生活记录与故事连续性.md、Documentation/居民面板与生活事件V3.md、Documentation/人生经历与生活界面玩法规则V2.md、Documentation/故事写作规范.md、Documentation/故事格式规范.md、Documentation/居民内容契约V1.md 与 Documentation/居民内容生产与运行时数据管线V1.md；头像任务再读 Avatar Workshop、Portrait System 与 Q版头像主路线生产与审查工作流。只有讨论 Unity 主工程语义时才读取居民模拟 / Runtime 设计文档，不把它们当作 Web 实施任务。再检查目标源码和最新 Actions。不要用聊天记忆代替当前仓库。
 
 本仓库生产并验证居民故事、内容管线、UI 预览和头像资产，不是 Unity Runtime 实现仓库。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或游戏算法。
 
@@ -28,7 +28,7 @@
 - Web 可以记录 CurrentAction / RecentAction / LifeEvent / LifeChapter 的语义，但不实现正式游戏决策。
 - ResidentGenerator、确定性 Action Trace 与 Tools/ResidentActionLife/record-policy.mjs 只作为现有预览 / 回归 Fixture 保留；除修复预览和契约问题外，不继续扩展算法。
 - Action Presentation 只负责显示；新增项跟随真实 Unity Behaviour，不为了扩库先造不存在的行为。
-- 当前内容生产优先 LifeEvent / 人生经历，其次按 Coverage 扩姓名、职业、Tag、Profile；头像只按明确需求扩充。
+- 当前第一优先是完成 LifeEvent V3 迁移：移除强制 `stages[3]`、Story Thread / Stage 主线和独立“正在经历 / 最近发生”区域。迁移完成后再按 Coverage 扩 LifeEvent / 人生经历；头像只按明确需求扩充。
 - 不把 Web Fixture 与 Unity Runtime 强制保持实现一致；Unity 代码才是游戏算法权威。
 - 不在本仓库继续设计最终 ECS Component、Blob、Save、NativeStream / Queue 等物理实现。
 
@@ -56,9 +56,9 @@ Resident Profile 的 temperament / lifeFocus / presentationStyle 属于内容与
 
 ## 玩法与内容不变量
 
-- 生活模式只显示真实 CurrentAction、正在/最近 LifeEvent、少量 RecentAction，不做人工综合近况 Summary。
-- 人生模式只有年龄升序时间轴，不按少年/青年分组。一个 Chapter 对应一件事，不把三个 Stage 拆成三段历史。
-- 事实节点只显示年龄/标题。故事节点展开第一人称 memoryText，不重放 Stage 1/2/3，不显示起初/后来/最后。人生模式隐藏 CurrentAction、RecentAction 与当前事件，末尾有“如今”。
+- 生活模式只保留“此刻 / 最近 / 人生经历入口”。“最近”在展示层混合 RecentAction 与离散 LifeEvent，不再分“正在经历 / 最近发生”。
+- LifeEvent V3 是一次完整发生的离散事件，不再强制三阶段；连续故事通过真实结构事实、长期 LifeTag 与少量短期机会 Tag 串联。
+- 人生模式只有年龄升序时间轴，不按少年/青年分组。一个 Chapter 对应一件事；事实节点只显示年龄/标题，故事节点展开第一人称 memoryText，末尾保留“如今”。
 - 重要故事（recordToHistory 或结构效果）必须有 memoryText。普通 RecentAction 不写入永久历史。
 - 过去的 LifeTag 影响后来 Eligibility；无需扫描全文历史。保留未婚 → 成婚 → spouse/Household 改变 → newly-married → 后续两人生活 → 临时 Tag 消失的真实链。
 - Content 是权威；Stable ID 不由标题、数组顺序生成。新增内容遵守 Schema、Reference、Coverage。

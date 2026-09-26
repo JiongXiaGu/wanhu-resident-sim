@@ -2,7 +2,7 @@
 
 仓库：JiongXiaGu/wanhu-resident-sim。
 
-仓库名保留历史命名，但当前职责是 Resident Content Lab / 居民内容实验室。
+当前职责是 Resident Content Lab / 居民内容实验室。
 
 ## 接手顺序
 
@@ -12,140 +12,168 @@
 2. AGENTS.md；
 3. README.md；
 4. 居民内容实验室职责边界；
-5. 本文件；
-6. 开发与部署工作流。
-
-内容任务再读居民内容契约 V1、居民内容生产与运行时数据管线 V1、居民生活记录与故事连续性、故事写作规范与故事格式规范。
+5. 居民生活记录与故事连续性；
+6. 居民面板与生活事件 V3；
+7. 人生经历与生活界面玩法规则 V2；
+8. 故事写作规范与故事格式规范；
+9. 开发与部署工作流。
 
 头像任务再读 Avatar Workshop、Portrait System 与 Q版头像主路线。
 
-居民模拟V1架构.md、居民事实事件与人生记录运行时设计.md 只作为 Unity 语义和历史设计背景使用，不是 Web 工作清单。
+居民模拟 / Runtime 文档只作为 Unity 语义背景，不是 Web 工作清单。
 
 ## 当前执行点
 
-当前执行点是 Resident Content Production。
+当前执行点是 **LifeEvent V3 Migration**。
 
-不要继续推进：
-
-~~~text
-Web Utility
-Web Schedule
-Web Behaviour Tree
-Web 社会关系搜索
-Web 旅行 / 经济 / 设施算法
-Web 正式 RecentAction RecordSystem
-Web 正式 LifeEvent Trigger
-Unity ECS / Blob / Save 物理设计
-~~~
-
-当前主链：
+新的目标模型：
 
 ~~~text
-Content / Avatar Authoring
-→ Schema / Stable ID / Reference
-→ Compiler
-→ Coverage / Lint
-→ Web Preview
-→ 人工审内容 / 审视觉
-→ Compiled Content
+CurrentAction
+→ 此刻
+
+RecentAction + recent LifeEvent
+→ 最近
+
+重要 LifeEvent / 结构事实
+→ LifeChapter
+→ 人生经历
 ~~~
 
-Unity 主工程再消费这些内容并负责实际模拟。
+LifeEvent 本身是一次完整、离散的事件。
 
-## 现有模拟 Fixture
-
-当前代码里仍然存在：
-
-- ResidentGenerator；
-- 固定 City Snapshot；
-- 确定性 Action Trace；
-- Tools/ResidentActionLife/record-policy.mjs；
-- LifeEvent 推进与结构效果的 Web 测试链。
-
-这些只用于让居民面板和人生时间轴拥有稳定可重复的数据。
-
-规则：
-
-- 可以修复 Fixture 让预览恢复正确；
-- 可以增加断言保证内容引用与 UI 不坏；
-- 不继续给 Fixture 增加正式游戏算法；
-- 不要求 Unity 与 Web Fixture 保持实现一致；
-- 若未来 Fixture 维护成本过高，可进一步简化。
-
-## 内容资产边界
-
-### Action Presentation
-
-只负责展示已经存在的 Behaviour：
+不再把所有内容写成：
 
 ~~~text
-Stable ID
-CurrentAction 短句
-少量 Variant
-必要的轻量展示参数
+Stage 1
+→ Stage 2
+→ Stage 3
 ~~~
 
-新增 Action Presentation 跟随 Unity 已实现或明确排期的 Behaviour，不先写大量虚构行为。
-
-### LifeEvent / LifeChapter
-
-这是当前最适合持续扩充的内容域。
-
-Web 负责验证：
-
-- 三阶段文本；
-- 时间跨度；
-- 第一人称叙述；
-- memoryText；
-- Eligibility / Effect 引用；
-- Coverage；
-- Resident Panel / 人生时间轴中的实际阅读效果。
-
-触发概率、选择算法、结构变化执行与运行时状态由 Unity 负责。
-
-### 头像
-
-chibi-cute-v1 仍是当前唯一玩家可用 Pack。
-
-头像工坊继续负责 Face / Hair / Outfit / Expression 的素材生产、组合、编辑、Catalog、Frame 适配与视觉 Review。现有 Phase 8D2 基线保留；没有明确需求时不为了数量继续扩库。
-
-## 当前内容盘点
-
-以当前 main 为基线：
+连续故事通过：
 
 ~~~text
-Action Presentation     11
-LifeEvent               14
-Occupation              15
-Occupation Group        10
-Surname                 40
-Given Name              60
-LifeTag                  12
+真实结构事实
+>
+长期 LifeTag
+>
+短期机会 Tag
 ~~~
 
-头像已有成熟的 8D2 资产基线。
+产生后续资格。
 
-因此目前最明显的内容短板不是头像，而是 LifeEvent / 人生经历数量与题材覆盖。
+## UI 目标
 
-## 下一阶段顺序
-
-Review 拆分已经完成：
+居民当前生活页只保留：
 
 ~~~text
-居民内容 → Build + Resident Content Review
-头像内容 → Build + Avatar Visual Review
-跨域修改 → Build + 两套 Review
-纯文档 → 不触发视觉 Review
+此刻
+最近
+人生经历入口
 ~~~
 
-### 1. LifeEvent 内容生产
+取消独立：
 
-Review 变轻后，进入 LifeEvent 小批量生产。
+~~~text
+正在经历
+最近发生
+~~~
 
-优先补当前明显不足的题材：
+“最近”在展示层混合 RecentAction 与近期 LifeEvent，并按时间排序。数据层不必把两类记录合并成同一种存储。
+
+## Tag 原则
+
+不要用 Tag 重复真实结构状态。
+
+例如：
+
+~~~text
+spouse / Household 已经表示已婚
+childCount / relation 已经表示有孩子
+occupation 已经表示当前职业
+~~~
+
+这些不再额外写 married / has-child / carpenter Tag。
+
+LifeTag 用于：
+
+- 当前结构已经看不出来的长期过去，例如 served-military；
+- 短期后续机会，例如 newly-married。
+
+禁止使用 stage-1 / stage-2 / stage-3 Tag。
+
+## 当前实现与目标的差距
+
+当前 main 仍是 LifeEvent V2：
+
+- Schema：wanhu.life-events.v2；
+- 固定 stages[3]；
+- 14 条现有 LifeEvent；
+- Web Fixture 维护 Stage 推进；
+- Resident Panel 有独立 LifeEvent 区域；
+- capture-resident-review 仍验证 Stage 连续性。
+
+从现在开始不新增 V2 LifeEvent。
+
+## 下一代码批次
+
+在同一 tmp 分支内分两个可控子批：
+
+### A. LifeEvent V3 数据契约
+
+只处理：
+
+- life-event.schema；
+- Content/LifeEvents 现有 14 条迁移；
+- ContentContractCompiler / LifeEventCompiler；
+- Snapshot / TS Domain 中 Stage / StoryThread 相关字段；
+- 必要 Fixture。
+
+迁移规则：
+
+- 旧三个 Stage 只是同一件事 → 合并成一个离散 LifeEvent；
+- 旧节点各自有独立意义 → 拆成多个 LifeEvent，用事实 / Tag 串联；
+- 不保留 V2 双轨兼容。
+
+### B. Resident Panel V3
+
+只处理：
+
+- 删除“正在经历 / 最近发生”独立区域；
+- RecentAction + recent LifeEvent 合并到一个“最近”展示列表；
+- 删除 Stage 推进 DEV / Fixture；
+- 更新人生经历读取；
+- 更新 capture-resident-review。
+
+A+B 全部完成后再进入 main，不让 main 停在半迁移状态。
+
+## Review
+
+此次 V3 代码迁移属于居民内容域：
+
+~~~text
+Build
++ Resident Content Review
+~~~
+
+只在修改 Avatar / Portrait 跨域文件时才需要 Avatar Visual Review。
+
+正式内容生产仍保持小批：
+
+~~~text
+8～12 条 LifeEvent
+→ Build
+→ Resident Content Review
+→ 实际看 Resident Panel / 最近 / Life History
+→ 再决定下一批
+~~~
+
+## V3 完成后的内容优先级
+
+优先扩：
 
 - 邻里与普通生活；
-- 婚嫁之后的家庭生活；
+- 婚嫁后的家庭生活；
 - 债务与生计；
 - 学业 / 学徒；
 - 女性营生与家庭角色；
@@ -157,44 +185,13 @@ Review 变轻后，进入 LifeEvent 小批量生产。
 - 晚年生活；
 - 城市设施改善对个人生活的反馈。
 
-每批保持小规模，先看真实 Resident Panel / Life History 阅读效果，再继续扩。
-
-### 2. Coverage 驱动补缺
-
-不要以“总条数”为唯一目标。
-
-继续利用 LifeStage、Occupation Group、家庭状态、Gender、LifeTag 等已有 Coverage 找空洞，再决定下一批故事。
-
-### 3. 其它内容按缺口扩充
-
-姓名、职业、LifeTag、Profile 和头像都按实际内容需要扩。
-
-Action Presentation 保持薄，并等待 Unity Behaviour 列表。
-
-## Review 原则
-
-文档纯修改不需要为了制造绿色状态人工要求完整视觉回归。
-
-内容数据修改至少需要：
-
-~~~text
-Build
-+ 内容引用 / Schema / Coverage
-+ Resident Panel / LifeEvent / Life History 专项 Review
-~~~
-
-头像修改继续按头像工作流审图。
-
-Resident Content Review 的 Artifact 只需要审查居民内容相关截图；Avatar Visual Review 才承担完整头像资产回归。
+Action Presentation 继续等待真实 Unity Behaviour，不为扩库虚构行为。
 
 ## 当前不做
 
-- 不继续设计 Web Resident Simulation；
-- 不新增第二套 Utility / Behaviour 实现；
-- 不为了 Web 演示让所有居民平均拥有娱乐；
-- 不把 LifeEvent 当成 Behaviour 替代品；
-- 不提前确定 Unity ECS / Blob / Save 物理布局；
-- 不为未来可能存在的 Behaviour 预写大量 Action Presentation；
-- 不因为内容生产而重做已经稳定的头像系统。
-
-下一阶段正式进入 LifeEvent / 人生经历的小批量内容生产。
+- 不新增三阶段 LifeEvent；
+- 不新增 Story Thread Runtime；
+- 不把 Tag 变成隐藏 Stage 状态机；
+- 不继续设计 Web Utility / Behaviour；
+- 不提前规定 Unity ECS / Save 物理布局；
+- 不在 V3 迁移完成前开始大规模内容生产。

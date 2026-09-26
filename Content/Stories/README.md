@@ -1,19 +1,21 @@
 # Stories
 
-新故事统一放在本目录下，并按内容类型分组。现有 `居民故事/` 仍由编译器兼容读取，后续逐步迁移。
+本目录不再作为新 LifeEvent 的 Authoring 入口。
 
-推荐结构：
+旧 `wanhu-story-v1` Markdown / StoryCompiler 属于历史兼容管线；当前居民叙事方向已经改为离散 LifeEvent V3。
 
-```text
-Content/Stories/
-├─ 家庭/
-├─ 邻里朋友/
-├─ 职业营生/
-├─ 城市生活/
-├─ 民俗节令/
-├─ 儿童青年/
-├─ 老年生活/
-└─ 特殊事件/
-```
+新的居民叙事内容在 V3 代码迁移完成后统一维护于：
 
-故事格式见 `Documentation/故事格式规范.md`。
+~~~text
+Content/LifeEvents/
+~~~
+
+规则见：
+
+~~~text
+Documentation/故事写作规范.md
+Documentation/故事格式规范.md
+Documentation/居民生活记录与故事连续性.md
+~~~
+
+在 LifeEvent V3 Schema / Compiler / UI 尚未迁移完成前，不新增三阶段 Story Markdown，也不新增 V2 `stages[3]` LifeEvent。
