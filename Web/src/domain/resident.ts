@@ -240,7 +240,7 @@ export type LifeEventEffects = {
 export type LifeEventDefinition = {
   id: string;
   title: string;
-  text: string;
+  recentText: string;
   weight: number;
   eligibility: LifeEventEligibility;
   effects?: LifeEventEffects;
