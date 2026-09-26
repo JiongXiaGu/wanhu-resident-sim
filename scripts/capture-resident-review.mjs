@@ -49,9 +49,9 @@ const coverage = await page.evaluate(async () => (await fetch('/generated/conten
 
 if (definitions?.schema !== 'wanhu.resident-definitions.v7') throw new Error('Resident Content Review expected resident definitions v7.');
 if (snapshot?.schema !== 'wanhu.resident-snapshot.v6') throw new Error(`Resident Content Review expected snapshot v6, got ${snapshot?.schema}`);
-if (!Array.isArray(definitions.lifeEvents) || definitions.lifeEvents.length !== 16) throw new Error('LifeEvent V3 migration should compile 16 discrete events.');
+if (!Array.isArray(definitions.lifeEvents) || definitions.lifeEvents.length < 16) throw new Error('LifeEvent V3 must retain the 16-event migration baseline before adding new content.');
 if (definitions.lifeEvents.some((event) => !event.text?.trim() || 'stages' in event || 'delayDays' in event)) throw new Error('LifeEvent V3 must expose text and no Stage fields.');
-if ((coverage.lifeEvents?.total ?? 0) !== 16) throw new Error('Coverage must report 16 V3 LifeEvents.');
+if ((coverage.lifeEvents?.total ?? 0) !== definitions.lifeEvents.length) throw new Error('Coverage LifeEvent total must match compiled definitions.');
 
 const requiredActionIds = [
   'resident-action.fetch-water',
