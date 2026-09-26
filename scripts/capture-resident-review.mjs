@@ -216,10 +216,21 @@ if (!followup || !occupation || !eligible(followup, newlywed, occupation.groupId
 
 if (!(await page.locator('.resident-identity').innerText()).includes('已婚')) throw new Error('Marriage structure fact should be visible in resident identity.');
 await page.waitForSelector('.resident-recent-feed');
-const continuityText = await page.locator('.resident-recent-feed').innerText();
-for (const title of ['有人来给家里说亲', '两家把亲事谈妥了', '今日成了婚']) {
-  if (!continuityText.includes(title)) throw new Error(`Marriage continuity fixture is missing ${title}.`);
+const marriageFixtureIds = newlywed.recentLifeEvents
+  .filter((record) => record.eventId.startsWith('lifeevent.marriage-'))
+  .sort((left, right) => left.day - right.day)
+  .map((record) => record.eventId);
+const expectedMarriageFixtureIds = [
+  'lifeevent.marriage-introduction',
+  'lifeevent.marriage-agreement',
+  'lifeevent.marriage-completion',
+];
+if (JSON.stringify(marriageFixtureIds) !== JSON.stringify(expectedMarriageFixtureIds)) {
+  throw new Error(`Marriage continuity fixture sequence mismatch: ${marriageFixtureIds.join(', ')}`);
 }
+const continuityText = await page.locator('.resident-recent-feed').innerText();
+if (!continuityText.includes('今日成了婚')) throw new Error('Unified recent feed should show the most recent marriage LifeEvent inside its display window.');
+if (continuityText.includes('有人来给家里说亲') && kinds.length > 5) throw new Error('Unified recent feed must keep its bounded display window.');
 await page.getByRole('button', { name: '隐藏', exact: true }).click();
 await page.locator('.resident-panel').screenshot({ path: `${outDir}/05-life-tag-structure-continuity.png` });
 
