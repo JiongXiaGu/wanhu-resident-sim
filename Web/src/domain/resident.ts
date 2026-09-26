@@ -126,7 +126,7 @@ export type ResidentWorldSnapshot = {
 
 export type NameTokenDefinition = {
   id: string;
-  text: string;
+  recentText: string;
   weight: number;
   gender?: Gender | 'unisex';
   styles?: string[];

@@ -93,7 +93,7 @@ export function buildResidentLifeView(
         kind: 'life-event' as const,
         eventId: record.eventId,
         title: definition.title,
-        text: definition.text,
+        text: definition.recentText,
       };
     })
     .filter((entry): entry is Extract<RecentFeedEntry, { kind: 'life-event' }> => Boolean(entry));
