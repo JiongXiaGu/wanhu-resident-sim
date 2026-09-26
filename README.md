@@ -73,7 +73,7 @@ Resident Content Review
 Avatar Visual Review
 ~~~
 
-居民内容修改只跑 Build + Resident Content Review；头像素材 / Catalog / Renderer 修改跑 Build + Avatar Visual Review；App.tsx、main.tsx、styles.css、ResidentAvatar.tsx 等跨域修改同时跑两套。纯文档不触发视觉 Review。
+居民内容在 `tmp-*` 开发阶段只跑 Build；阶段完成后创建 PR，由 PR 跑 Build + Resident Content Review，合入 main 后再做同范围最终回归。头像素材 / Catalog / Renderer 修改跑 Build + Avatar Visual Review；App.tsx、main.tsx、styles.css、ResidentAvatar.tsx 等跨域修改同时跑两套。纯文档不触发视觉 Review。
 
 Resident Content Review 的 Artifact 为 `resident-content-review`，重点检查 Resident Panel、LifeEvent、Life History、婚姻 / LifeTag 连续性和 Action Presentation 展示。Avatar Visual Review 的 Artifact 为 `avatar-visual-review`，继续保留 Portrait、Avatar Workshop、8A / 8B / 8D 与旧固定配方门禁。
 
