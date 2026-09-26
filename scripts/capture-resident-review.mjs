@@ -166,7 +166,7 @@ await page.screenshot({ path: `${outDir}/01-player-resident.png` });
 await page.locator('.resident-panel').screenshot({ path: `${outDir}/01b-resident-panel-v3.png` });
 await page.locator('.resident-recent-feed').screenshot({ path: `${outDir}/01c-unified-recent.png` });
 
-await page.getByRole('button', { name: 'DEV', exact: true }).click();
+await open();
 const storyIndex = snapshot.residents.findIndex((resident) => resident.lifeChapters.some((entry) => entry.sourceEventId));
 if (storyIndex < 0) throw new Error('Fixture must contain at least one Story Chapter.');
 await selectResidentAt(storyIndex, snapshot.residents.length);
@@ -197,7 +197,7 @@ if (!chapterEvent?.memoryText || memoryText.trim() !== chapterEvent.memoryText.t
 if (/Stage\s*\d|起初\s*[／/]|后来\s*[／/]|最后\s*[／/]/.test(await page.locator('.resident-history-mode').innerText())) throw new Error('Life History must not expose Stage structure.');
 await page.screenshot({ path: `${outDir}/03-life-history.png` });
 
-await page.getByRole('button', { name: 'DEV', exact: true }).click();
+await open();
 const newlywedIndex = snapshot.residents.findIndex((resident) =>
   resident.spouseId
   && resident.lifeTags.includes('lifetag.newly-married')
