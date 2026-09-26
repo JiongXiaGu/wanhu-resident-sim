@@ -14,6 +14,7 @@ const occupations = await readJson('Content/Occupations/occupations.json');
 const actionPresentations = await readJson('Web/public/generated/resident-action-presentations.json');
 const generation = await readJson('Content/Simulation/resident-generation.json');
 const lifeEvents = await readJson('Content/LifeEvents/life-events.json');
+if (lifeEvents.schema !== 'wanhu.life-events.v3') throw new Error(`ResidentGenerator expected LifeEvent V3, got ${lifeEvents.schema}`);
 
 if (nameCatalog.schema !== 'wanhu.name-catalog.v2') {
   throw new Error(`ResidentGenerator expected wanhu.name-catalog.v2, got ${nameCatalog.schema}`);
@@ -216,6 +217,7 @@ function ageAtDay(resident, day) {
 
 function eventFitsResidentHistory(event, resident, phase, currentAge, lifeTags) {
   if (!event.recordToHistory) return false;
+  if (event.effects?.structuralRequests?.length) return false;
   const rule = event.eligibility ?? {};
   const minAge = Math.max(phase.minAge, Number(rule.minAge ?? phase.minAge));
   const maxAge = Math.min(phase.maxAge, Number(rule.maxAge ?? phase.maxAge), currentAge - 1);
@@ -238,12 +240,12 @@ function applyTagEffects(lifeTags, event) {
 function buildStoryHistory(resident) {
   const currentAge = ageAtDay(resident, generation.currentDay);
   const livedPhases = HISTORY_PHASES.filter((phase) => phase.minAge <= currentAge - 1);
-  if (!livedPhases.length) return [];
+  if (!livedPhases.length) return { chapters: [], lifeTags: [] };
 
   const densityRoll = hash32(`${resident.seed}:life-story-density`) % 100;
   const desiredCount = densityRoll < 15 ? 0 : densityRoll < 55 ? 1 : densityRoll < 88 ? 2 : 3;
   const target = Math.min(desiredCount, livedPhases.length);
-  if (!target) return [];
+  if (!target) return { chapters: [], lifeTags: [] };
 
   const selectedPhaseIds = new Set(
     [...livedPhases]
@@ -285,7 +287,7 @@ function buildStoryHistory(resident) {
     applyTagEffects(lifeTags, chosen);
   }
 
-  return selected;
+  return { chapters: selected, lifeTags: [...lifeTags].sort() };
 }
 
 let nextResidentId = 1001;
@@ -330,11 +332,11 @@ function createResident({ age, gender, householdId, districtId, forcedSurnameId 
     nextUpdateDay: generation.currentDay + randomInt(rng, 2, 8),
     lifeStage: lifeStageForAge(age),
     stateBits: 0,
-    activeStoryId: null,
     lifeTags: [],
     currentAction: null,
     recentActions: [],
-    majorLifeHistory: [],
+    recentLifeEvents: [],
+    lifeChapters: [],
   };
 
   residents.push(resident);
@@ -477,8 +479,62 @@ for (const resident of residents) {
     });
   }
 
-  history.push(...buildStoryHistory(resident));
-  resident.majorLifeHistory = history.sort((left, right) => right.day - left.day);
+  const storyHistory = buildStoryHistory(resident);
+  history.push(...storyHistory.chapters);
+  resident.lifeTags = storyHistory.lifeTags;
+  resident.lifeChapters = history.sort((left, right) => right.day - left.day);
+}
+
+const lifeEventById = new Map(lifeEvents.items.map((item) => [item.id, item]));
+function appendRecentLifeEvent(resident, eventId, dayOffset, applyEffects = true) {
+  const definition = lifeEventById.get(eventId);
+  if (!definition) throw new Error(`Missing fixture LifeEvent ${eventId}.`);
+  const day = generation.currentDay - dayOffset;
+  resident.recentLifeEvents.push({ id: `${resident.id}:lifeevent:${eventId}:${day}`, day, eventId });
+  if (applyEffects) {
+    const tags = new Set(resident.lifeTags);
+    applyTagEffects(tags, definition);
+    resident.lifeTags = [...tags].sort();
+  }
+}
+
+// 固定 Preview Fixture：只准备内容数据，不模拟正式 LifeEvent Trigger。
+for (const resident of residents) {
+  if (ageAtDay(resident, generation.currentDay) >= 18) {
+    appendRecentLifeEvent(resident, 'lifeevent.neighbor-small-favor', 2 + (resident.id % 5), false);
+  }
+}
+
+// 新婚连续性：spouse / Household 是结构事实；短期 Tag 只负责后续离散事件资格。
+const newlywedFixture = residents.find((resident) =>
+  resident.spouseId
+  && ageAtDay(resident, generation.currentDay) >= 20
+  && ageAtDay(resident, generation.currentDay) <= 45
+);
+if (newlywedFixture) {
+  const tags = new Set(newlywedFixture.lifeTags);
+  tags.delete('lifetag.courtship-open');
+  tags.delete('lifetag.betrothed');
+  tags.delete('lifetag.newly-married');
+  newlywedFixture.lifeTags = [...tags].sort();
+  newlywedFixture.recentLifeEvents = [];
+  appendRecentLifeEvent(newlywedFixture, 'lifeevent.marriage-introduction', 12);
+  appendRecentLifeEvent(newlywedFixture, 'lifeevent.marriage-agreement', 8);
+  appendRecentLifeEvent(newlywedFixture, 'lifeevent.marriage-completion', 4);
+
+  const marriageEvent = lifeEventById.get('lifeevent.marriage-completion');
+  const marriageDay = generation.currentDay - 4;
+  newlywedFixture.lifeChapters = newlywedFixture.lifeChapters.filter(
+    (entry) => entry.type !== 'marriage' && entry.sourceEventId !== 'lifeevent.marriage-completion',
+  );
+  newlywedFixture.lifeChapters.push({
+    id: `${newlywedFixture.id}:story:lifeevent.marriage-completion:${marriageDay}`,
+    day: marriageDay,
+    type: 'story',
+    title: marriageEvent.title,
+    sourceEventId: marriageEvent.id,
+  });
+  newlywedFixture.lifeChapters.sort((left, right) => right.day - left.day);
 }
 
 const definitions = {
@@ -505,4 +561,4 @@ await mkdir(outputDir, { recursive: true });
 await writeFile(join(outputDir, 'definitions.json'), `${JSON.stringify(definitions, null, 2)}\n`, 'utf8');
 await writeFile(join(outputDir, 'resident-snapshot.json'), `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
 
-console.log(`Generated ${snapshot.residents.length} residents in ${snapshot.households.length} households with deterministic CurrentAction / RecentAction traces.`);
+console.log(`Generated ${snapshot.residents.length} residents in ${snapshot.households.length} households with CurrentAction / RecentAction and fixed LifeEvent V3 preview fixtures.`);

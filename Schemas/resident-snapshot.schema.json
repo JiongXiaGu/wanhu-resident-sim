@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wanhu.local/schemas/resident-snapshot.schema.json",
-  "title": "Wanhu Resident Snapshot V5",
+  "title": "Wanhu Resident Snapshot V6",
   "$defs": {
     "stableId": {
       "type": "string",
@@ -113,6 +113,57 @@
           "minLength": 1
         }
       }
+    },
+    "recentLifeEvent": {
+      "type": "object",
+      "required": [
+        "id",
+        "day",
+        "eventId"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "day": {
+          "type": "integer"
+        },
+        "eventId": {
+          "$ref": "#/$defs/stableId"
+        }
+      }
+    },
+    "lifeChapter": {
+      "type": "object",
+      "required": [
+        "id",
+        "day",
+        "type",
+        "title"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "day": {
+          "type": "integer"
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceEventId": {
+          "$ref": "#/$defs/stableId"
+        }
+      }
     }
   },
   "type": "object",
@@ -123,9 +174,10 @@
     "residents",
     "households"
   ],
+  "additionalProperties": false,
   "properties": {
     "schema": {
-      "const": "wanhu.resident-snapshot.v5"
+      "const": "wanhu.resident-snapshot.v6"
     },
     "citySeed": {
       "type": "integer"
@@ -137,6 +189,7 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "required": [
           "id",
           "seed",
@@ -161,7 +214,8 @@
           "lifeTags",
           "currentAction",
           "recentActions",
-          "majorLifeHistory"
+          "recentLifeEvents",
+          "lifeChapters"
         ],
         "properties": {
           "id": {
@@ -234,21 +288,12 @@
           "stateBits": {
             "type": "integer"
           },
-          "activeStoryId": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
           "lifeTags": {
             "type": "array",
             "items": {
               "$ref": "#/$defs/stableId"
             },
             "uniqueItems": true
-          },
-          "majorLifeHistory": {
-            "type": "array"
           },
           "currentAction": {
             "$ref": "#/$defs/currentAction"
@@ -258,9 +303,20 @@
             "items": {
               "$ref": "#/$defs/recentAction"
             }
+          },
+          "recentLifeEvents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/recentLifeEvent"
+            }
+          },
+          "lifeChapters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/lifeChapter"
+            }
           }
-        },
-        "additionalProperties": false
+        }
       }
     },
     "households": {
@@ -274,6 +330,7 @@
           "memberIds",
           "wealthTier"
         ],
+        "additionalProperties": false,
         "properties": {
           "id": {
             "type": "integer"
@@ -298,10 +355,8 @@
               "wealthy"
             ]
           }
-        },
-        "additionalProperties": false
+        }
       }
     }
-  },
-  "additionalProperties": false
+  }
 }
