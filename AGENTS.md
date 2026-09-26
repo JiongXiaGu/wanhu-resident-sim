@@ -2,43 +2,37 @@
 
 ## 先理解项目
 
-修改前读取最新 main、README、Documentation/居民逻辑网页Demo接续说明.md、Documentation/居民行为与最近生活记录.md、Documentation/居民事实事件与人生记录运行时设计.md、Documentation/居民生活记录与故事连续性.md、人生经历与生活界面玩法规则V1、居民面板与生活事件V2、Portrait System、Avatar Workshop、`Documentation/Q版头像主路线生产与审查工作流.md`、开发与部署工作流。头像相关任务必须先确认主路线工作流的“当前执行点”。再检查目标源码和最新 Actions。不要用聊天记忆代替当前仓库。
+修改前读取最新 main、README、Documentation/居民内容实验室职责边界.md、Documentation/居民逻辑网页Demo接续说明.md 与 Documentation/开发与部署工作流.md。居民内容任务再读 Documentation/居民内容契约V1.md、Documentation/居民内容生产与运行时数据管线V1.md、Documentation/居民生活记录与故事连续性.md 和故事写作规范；头像任务再读 Avatar Workshop、Portrait System 与 Q版头像主路线生产与审查工作流。只有讨论 Unity 主工程语义时才读取居民模拟 / Runtime 设计文档，不把它们当作 Web 实施任务。再检查目标源码和最新 Actions。不要用聊天记忆代替当前仓库。
 
 本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
 
-## 当前执行点：Resident Action Life 重构
+## 当前执行点：Resident Content Production
 
-Resident Action Life 基线已经落地：当前树以 `Action Presentation → CurrentAction / ResidentActionCompletedEvent → RecentAction` 为唯一近期生活主线。Presentation 只负责显示；Behaviour 决定能否执行以及目标居民 / 地点。Web 只用确定性 Action Trace 验证数据链，不实现完整 Utility AI。
+本仓库当前定位是 Resident Content Lab / 居民内容实验室，不是第二套居民 Runtime。共同职责边界以 Documentation/居民内容实验室职责边界.md 为准。
 
-当前唯一主线是 **Resident Action Life 重构**：
+当前主线：
 
-```text
-Need / Schedule / Opportunity
-→ Utility
-→ Behaviour
-→ 找目标 / 地点 / 预定 / 移动 / 执行
-→ Behaviour Complete
-→ ResidentActionCompletedEvent
-→ RecentActionRecordSystem
-→ 最近的事情 UI
-```
+~~~text
+内容 Authoring / 头像素材
+→ Schema / Stable ID / Reference
+→ Compiler / Coverage
+→ Web 预览与人工审查
+→ Compiled Content
+→ Unity 消费
+~~~
 
-固定原则：
+固定分工：
 
-- “最近的事情”只记录居民真实完成的行为，不再由独立内容系统生成生活。
-- Action 能不能执行由 Schedule / Utility / Behaviour 决定；Presentation 不拥有 Occupation / LifeStage / Wealth / Family / Weather Eligibility。
-- TargetResidentId / PlaceId 等 Context 由 Behaviour 在执行时已经确定，记录系统不得反向扫描家庭或社会关系来“找一个目标”。
-- 财富、职业、年龄、性格通常影响时间、成本、收益、机会和 Utility 权重，不作为娱乐、社交、旅行的硬白名单；只有现实硬约束才阻止行为。
-- Current Activity 必须来自真实 CurrentAction；不要再根据职业、时间或 LifeEvent 文本在 UI 层猜一个活动。
-- RecentAction 使用固定小环，只保存值得展示的完成行为；吃饭、普通走路等是否展示由轻量 RecordPolicy / 是否存在 Presentation 决定。
-- Web 的 RecordPolicy 唯一实现位于 `Tools/ResidentActionLife/record-policy.mjs`；ResidentGenerator 只能提供确定性 Completed Action Trace，不得再次实现 cooldown、相邻去重、Variant 选择或容量裁剪。
-- LifeEvent / LifeTag / LifeChapter 保留，和 RecentAction 分层；重大结构事实仍进入人生历史，普通行为记录自然淘汰。
-- 不为已经移除的近期生活格式保留兼容读取、Stable ID remap 或双轨数据结构；需要追溯旧方案时使用 Git 历史。
-- 当前 Web Demo 只需验证 Action → RecentAction → UI 语义，不要在 Web 再造一套复杂居民 AI；正式 Behaviour / Utility 在 Unity 主工程实现。
+- Web / Tools 负责内容生产、内容校验、Coverage、头像编辑、固定 Fixture 预览与浏览器 UI 审查。
+- Unity 主工程负责 Need、Schedule、Utility、Behaviour Tree、目标搜索、预约、导航、经济、关系、LifeEvent Trigger、RecentAction 记录算法、ECS 和 Save。
+- Web 可以记录 CurrentAction / RecentAction / LifeEvent / LifeChapter 的语义，但不实现正式游戏决策。
+- ResidentGenerator、确定性 Action Trace 与 Tools/ResidentActionLife/record-policy.mjs 只作为现有预览 / 回归 Fixture 保留；除修复预览和契约问题外，不继续扩展算法。
+- Action Presentation 只负责显示；新增项跟随真实 Unity Behaviour，不为了扩库先造不存在的行为。
+- 当前内容生产优先 LifeEvent / 人生经历，其次按 Coverage 扩姓名、职业、Tag、Profile；头像只按明确需求扩充。
+- 不把 Web Fixture 与 Unity Runtime 强制保持实现一致；Unity 代码才是游戏算法权威。
+- 不在本仓库继续设计最终 ECS Component、Blob、Save、NativeStream / Queue 等物理实现。
 
-Resident Profile 当前只有 temperament / lifeFocus / presentationStyle。它们可以在未来作为 Utility 弱倾向输入，但不能直接把性格写成硬职业、硬脸型、硬娱乐限制或强制剧情。
-
-Unity 方向固定：行为树 / Schedule / Utility Job 不拼字符串、不直接维护 UI 日志，只在有意义的行为完成点写紧凑 Action Completed Event。正式 Unity 继续保持 ISystem + SystemAPI、Job/Burst、多线程优先和集中结构变更；Web Demo 不提前设计最终 ECS Save / Blob 物理布局。
+Resident Profile 的 temperament / lifeFocus / presentationStyle 属于内容与展示输入。它们未来如何影响 Utility 由 Unity 决定；Web 不把这些资料演化成新的决策系统。
 
 ## 当前头像方向
 

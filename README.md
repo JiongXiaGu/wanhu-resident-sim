@@ -1,6 +1,6 @@
-# 万户天工 · 居民逻辑网页 demo
+# 万户天工 · 居民内容实验室
 
-验证居民当前生活、人生经历、故事连续性和可编辑头像。不是 Unity ECS / Blob / 正式存档设计稿。
+仓库名仍为 wanhu-resident-sim，但当前定位已经收缩为居民内容资产生产、预览、审查与导出工具。这里维护头像、Action Presentation、LifeEvent、人生经历、姓名/职业/Profile 等内容；Need、Schedule、Utility、Behaviour、关系、导航、预约、经济、ECS 与 Save 由 Unity 主工程实现。详见 Documentation/居民内容实验室职责边界.md。
 
 ## 本地体验
 
@@ -19,21 +19,28 @@ http://localhost:5173/?view=avatar-editor
 
 头像工坊默认进入自由创作，先选男/女、儿童/成年/老年，再选脸型、头发、衣服、表情。六份样板分别保存。指定对象模式可以编辑玩家示例或当前城市居民；从居民身份栏进入直接绑定该居民，年龄/性别不由工坊修改。
 
-## 当前阶段：Resident Action Life 重构
+## 当前阶段：Resident Content Production
 
-居民信息面板的 Portrait-first 重构已经完成；Resident Profile V1、Profile 编译器和 Profile 派生默认头像也已进入主线。居民当前拥有稳定的 **性情 / 生活侧重 / 穿戴倾向**，构建管线根据居民 seed、职业组与家庭财富生成资料。
+Resident Panel、人生时间轴、头像工坊、内容 Compiler 与 Resident Action Life 的展示语义已经足够支撑内容生产。
 
-未手动保存头像的居民会根据 `Resident seed + Gender + LifeStage + OccupationGroup + Household Wealth + Resident Profile`，从真实 `chibi-cute-v1` Catalog 确定性生成默认 Face / Hair / Outfit / Expression。脸型不绑定职业或性格；职业、财富和资料只对 Hair / Outfit / Expression 提供弱倾向，避免同职业居民变成制服复制。
+当前工作重点不再是继续完善 Web 居民算法，而是：
 
-头像优先级固定为：
+- 扩充 LifeEvent / 人生经历内容；
+- 用 Coverage 找内容缺口；
+- 维护姓名、职业、LifeTag、Resident Profile 等内容资产；
+- Action Presentation 跟随 Unity 真实 Behaviour 增长；
+- 需要时继续制作头像素材；
+- 把内容 Review 与头像 Review 拆开，缩短高频内容迭代链路。
 
-```text
+现有确定性 Action Trace 与 Tools/ResidentActionLife/record-policy.mjs 只为固定预览数据和回归保留，不是正式游戏算法。Unity 不需要复制它们。
+
+头像优先级仍固定为：
+
+~~~text
 玩家保存 Avatar Recipe
 > Resident Profile 派生的 chibi-cute-v1 默认 Recipe
 > 冻结 Portrait fallback
-```
-
-Resident Action Life 已成为当前近期生活主线：真实 Behaviour 完成后产生 `ResidentActionCompletedEvent`，由轻量 `RecentActionRecordSystem` 写入 `RecentAction`；“此刻”直接读取 `CurrentAction`。Action Presentation 只提供当前动作短句、cooldown 与少量 Variant，不拥有职业、年龄、财富、家庭或天气 Eligibility。Web Demo 使用确定性 Action Trace 验证该链路，正式 Schedule / Utility / Behaviour 在 Unity 主工程实现。详见 [居民行为与最近生活记录](Documentation/居民行为与最近生活记录.md)。
+~~~
 
 ## 头像基线：Phase 8D2 已完成
 
