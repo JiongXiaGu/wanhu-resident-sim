@@ -1,85 +1,208 @@
-# 居民逻辑网页 Demo 接续说明
+# 居民内容实验室接续说明
 
-仓库：`JiongXiaGu/wanhu-resident-sim`；固定简称：居民逻辑网页 demo。
+仓库：JiongXiaGu/wanhu-resident-sim。
+
+仓库名保留历史命名，但当前职责是 Resident Content Lab / 居民内容实验室。
 
 ## 接手顺序
 
-读取最新 `main` 与 SHA、`AGENTS.md`、`README.md`、本文件，再读 [居民行为与最近生活记录](居民行为与最近生活记录.md)、[居民事实事件与人生记录运行时设计](居民事实事件与人生记录运行时设计.md)、[居民生活记录与故事连续性](居民生活记录与故事连续性.md)。居民资料任务再读 [居民个人资料与头像派生 V1](居民个人资料与头像派生V1.md)；头像任务再读 [Avatar Workshop](Avatar%20Workshop.md)、[Q版头像主路线生产与审查工作流](Q版头像主路线生产与审查工作流.md)。
+开始前读取：
 
-先检查目标源码与当前 SHA 的 Actions。不要用聊天记忆代替仓库。
+1. 最新 main 与 SHA；
+2. AGENTS.md；
+3. README.md；
+4. 居民内容实验室职责边界；
+5. 本文件；
+6. 开发与部署工作流。
+
+内容任务再读居民内容契约 V1、居民内容生产与运行时数据管线 V1、居民生活记录与故事连续性、故事写作规范与故事格式规范。
+
+头像任务再读 Avatar Workshop、Portrait System 与 Q版头像主路线。
+
+居民模拟V1架构.md、居民事实事件与人生记录运行时设计.md 只作为 Unity 语义和历史设计背景使用，不是 Web 工作清单。
 
 ## 当前执行点
 
-当前执行点是 **Resident Action Life RecordPolicy 边界收敛后的行为接入准备**。
+当前执行点是 Resident Content Production。
 
-当前 main 只保留 Action Presentation、CurrentAction、ResidentActionCompletedEvent 语义和 RecentAction。Web 的确定性 Action Trace 仅用于验证展示链，不承担正式 AI 决策职责；RecentAction 的过滤、cooldown、相邻去重、VariantIndex 与容量统一由 `Tools/ResidentActionLife/record-policy.mjs` 负责。
+不要继续推进：
 
-重构目标：
+~~~text
+Web Utility
+Web Schedule
+Web Behaviour Tree
+Web 社会关系搜索
+Web 旅行 / 经济 / 设施算法
+Web 正式 RecentAction RecordSystem
+Web 正式 LifeEvent Trigger
+Unity ECS / Blob / Save 物理设计
+~~~
 
-```text
-真实 Need / Schedule / Opportunity
-→ Utility
-→ Behaviour
-→ 完成时已经知道 Target / Place
-→ ResidentActionCompletedEvent
-→ RecentActionRecordSystem
-→ RecentAction 小环
-→ 玩家“最近”UI
-```
+当前主链：
 
-第一轮 Web 不实现完整 Utility / Behaviour AI，只建立 Action Presentation、Completed Event / Trace、RecentAction Record 和 UI 数据链，使用少量确定性的测试 Action Trace 验证语义。真实 3 万居民 AI 最终在 Unity 中由现有 Schedule + Utility + Job 化行为树负责。
+~~~text
+Content / Avatar Authoring
+→ Schema / Stable ID / Reference
+→ Compiler
+→ Coverage / Lint
+→ Web Preview
+→ 人工审内容 / 审视觉
+→ Compiled Content
+~~~
 
-## 当前记录链边界
+Unity 主工程再消费这些内容并负责实际模拟。
 
-Web Demo 只验证语义、内容和 UI，不模拟最终 3 万居民 AI。
+## 现有模拟 Fixture
 
-新的运行时方向固定为：
+当前代码里仍然存在：
 
-```text
-Schedule / Utility / Behaviour Jobs
-→ ResidentActionCompletedEvent
-→ RecentActionRecordSystem
-→ RecentAction UI
+- ResidentGenerator；
+- 固定 City Snapshot；
+- 确定性 Action Trace；
+- Tools/ResidentActionLife/record-policy.mjs；
+- LifeEvent 推进与结构效果的 Web 测试链。
 
-LifeEvent Trigger
-→ Story Thread
-→ 重要结果
-→ LifeChapter / LifeTag
-```
+这些只用于让居民面板和人生时间轴拥有稳定可重复的数据。
 
-行为系统拥有“为什么做、去哪里、找谁、是否成功”；记录系统只在成功完成点接收事实。TargetResidentId / PlaceId 由 Behaviour 提供，记录层禁止扫描全体居民、Household 或地点重新推断目标。
+规则：
 
-RecentAction 只负责近期观察窗口，不进入永久人生历史。CurrentAction 是此刻真实行为。LifeEvent / LifeChapter 继续承担低频叙事和长期人生记录。
+- 可以修复 Fixture 让预览恢复正确；
+- 可以增加断言保证内容引用与 UI 不坏；
+- 不继续给 Fixture 增加正式游戏算法；
+- 不要求 Unity 与 Web Fixture 保持实现一致；
+- 若未来 Fixture 维护成本过高，可进一步简化。
 
-## 头像与正式 Portrait 边界
+## 内容资产边界
 
-`chibi-cute-v1` 是当前唯一玩家可用运行时 Pack。玩家仍只编辑 Face / Hair / Outfit / Expression；帽巾属于 Hair，腮红属于 Expression。六 Frame 为 female/male × child/adult/elder。
+### Action Presentation
 
-每 Frame 一个固定 Head Frame；Face 只改下脸与五官，Hair 不读取 Face。禁止逐脸 offset / scale、anchor solver、mask / clipPath 自动适配。八层 Renderer 与 Outfit base / collar / overlay / detail 契约继续保留。
+只负责展示已经存在的 Behaviour：
 
-`Web/src/resident/portrait/`、`Content/Portrait/` 与五字段 ResidentPortraitDNA 是冻结 fallback 契约，不再是未编辑居民的第一默认路径。移除玩家覆盖应回到 Profile 派生默认；只有生成链不可用时才进入正式 PortraitRenderer fallback。
+~~~text
+Stable ID
+CurrentAction 短句
+少量 Variant
+必要的轻量展示参数
+~~~
 
-8D2 已完成，不是当前主动阶段。Phase 8C 大交互继续暂缓；不主动新增 Face / Expression、独立帽子分类、多 Pack 或 Unity 迁移。
+新增 Action Presentation 跟随 Unity 已实现或明确排期的 Behaviour，不先写大量虚构行为。
 
-## 居民生活与历史不变量
+### LifeEvent / LifeChapter
 
-生活模式只展示 CurrentAction、LifeEvent 与少量 RecentAction；人生模式是一条年龄升序时间轴，一个 Chapter 只代表一件事。故事 Chapter 展开第一人称 memoryText，不重放三个 Stage。普通 RecentAction 不进永久历史。
+这是当前最适合持续扩充的内容域。
 
-过去影响未来依赖 LifeTag 与结构状态，而不是扫描历史文本。继续保留未婚 → 成婚/家庭改变 → newly-married → 后续共同生活 → 临时 Tag 消失的真实链。
+Web 负责验证：
 
-Content 是权威；Stable ID 不由标题或数组顺序生成。generated 文件只由 Compiler 生成，不手改。
+- 三阶段文本；
+- 时间跨度；
+- 第一人称叙述；
+- memoryText；
+- Eligibility / Effect 引用；
+- Coverage；
+- Resident Panel / 人生时间轴中的实际阅读效果。
 
-## 回归与后续
+触发概率、选择算法、结构变化执行与运行时状态由 Unity 负责。
 
-任何居民资料、Profile 派生头像、头像存储/导入、Catalog / Registry、正式 fallback、LifeEvent 或记录内容管线改动，都必须运行完整 Build，并保留 Resident Visual Review 的相关断言。
+### 头像
 
-头像回归继续覆盖 8D2 已有基线：全组合、Hair 跨 Face 不变、Head Frame / Coverage、六框架保存、旧 Recipe fallback、真实居民绑定与 132 份旧固定配方。新增当前回归重点是：
+chibi-cute-v1 仍是当前唯一玩家可用 Pack。
 
-- 同一居民相同输入稳定生成同一默认 Recipe；
-- Face 不受职业、财富、temperament 影响；
-- Hair / Outfit 的职业主题只是弱倾向；
-- 玩家保存覆盖始终高于 Profile 派生；
-- “恢复原头像”回到 Profile 派生默认；
-- Profile 或生成链不可用时冻结 Portrait fallback 仍可用。
+头像工坊继续负责 Face / Hair / Outfit / Expression 的素材生产、组合、编辑、Catalog、Frame 适配与视觉 Review。现有 Phase 8D2 基线保留；没有明确需求时不为了数量继续扩库。
 
-下一阶段应优先补充 Unity 侧 Behaviour Complete → ResidentActionCompletedEvent 的正式契约映射，并明确 Unity RecordSystem 与 Web `record-policy.mjs` 需要保持一致的语义测试；按真实 Behaviour 到位情况再逐步扩 Action Presentation。不要借整理工作提前实现最终 Unity ECS Save / Blob 物理布局。
+## 当前内容盘点
+
+以当前 main 为基线：
+
+~~~text
+Action Presentation     11
+LifeEvent               14
+Occupation              15
+Occupation Group        10
+Surname                 40
+Given Name              60
+LifeTag                  12
+~~~
+
+头像已有成熟的 8D2 资产基线。
+
+因此目前最明显的内容短板不是头像，而是 LifeEvent / 人生经历数量与题材覆盖。
+
+## 下一阶段顺序
+
+### 1. 先拆内容 Review 与头像 Review
+
+当前 Resident Visual Review 对 Content/**、Documentation/** 等修改也会执行整套头像 8A / 8B / 8D 回归。
+
+这对高频内容生产过重。
+
+下一项基础设施任务应把 Review 分成：
+
+~~~text
+Resident Content Review
+Avatar Visual Review
+~~~
+
+内容改动只跑 Build + 居民内容专项浏览器检查；头像改动才跑完整头像资产回归。跨域代码再跑两边。
+
+这一步只优化验证链路，不改变居民玩法。
+
+### 2. LifeEvent 内容生产
+
+Review 变轻后，进入 LifeEvent 小批量生产。
+
+优先补当前明显不足的题材：
+
+- 邻里与普通生活；
+- 婚嫁之后的家庭生活；
+- 债务与生计；
+- 学业 / 学徒；
+- 女性营生与家庭角色；
+- 生育、育儿与儿童成长；
+- 疾病 / 求医；
+- 娱乐、节庆、庙会；
+- 合作与正向发展；
+- 少量民俗 / 悬疑；
+- 晚年生活；
+- 城市设施改善对个人生活的反馈。
+
+每批保持小规模，先看真实 Resident Panel / Life History 阅读效果，再继续扩。
+
+### 3. Coverage 驱动补缺
+
+不要以“总条数”为唯一目标。
+
+继续利用 LifeStage、Occupation Group、家庭状态、Gender、LifeTag 等已有 Coverage 找空洞，再决定下一批故事。
+
+### 4. 其它内容按缺口扩充
+
+姓名、职业、LifeTag、Profile 和头像都按实际内容需要扩。
+
+Action Presentation 保持薄，并等待 Unity Behaviour 列表。
+
+## Review 原则
+
+文档纯修改不需要为了制造绿色状态人工要求完整视觉回归。
+
+内容数据修改至少需要：
+
+~~~text
+Build
++ 内容引用 / Schema / Coverage
++ Resident Panel / LifeEvent / Life History 专项 Review
+~~~
+
+头像修改继续按头像工作流审图。
+
+当前 Actions 尚未拆分，因此自动触发的完整 Resident Visual Review 只是现有 CI 结构，不应被理解为未来内容生产的永久要求。
+
+## 当前不做
+
+- 不继续设计 Web Resident Simulation；
+- 不新增第二套 Utility / Behaviour 实现；
+- 不为了 Web 演示让所有居民平均拥有娱乐；
+- 不把 LifeEvent 当成 Behaviour 替代品；
+- 不提前确定 Unity ECS / Blob / Save 物理布局；
+- 不为未来可能存在的 Behaviour 预写大量 Action Presentation；
+- 不因为内容生产而重做已经稳定的头像系统。
+
+下一阶段应先完成 Review 工作流拆分，然后正式进入 LifeEvent / 人生经历内容生产。
