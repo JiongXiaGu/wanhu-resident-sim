@@ -472,39 +472,11 @@ button.resident-world-link:disabled { opacity: .38; }
   color: #777b76;
   font-size: 8px;
 }
-.resident-recent-feed__action,
-.resident-recent-feed__event p {
+.resident-recent-feed__text {
   margin: 0;
   color: #9fa39e;
   font-size: 9.5px;
   line-height: 1.5;
-}
-.resident-recent-feed__event {
-  position: relative;
-  padding-left: 10px;
-}
-.resident-recent-feed__event::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 2px;
-  bottom: 2px;
-  width: 2px;
-  border-radius: 999px;
-  background: rgba(169,132,75,.52);
-}
-.resident-recent-feed__event b {
-  display: block;
-  margin: 0 0 3px;
-  color: #d8d3ca;
-  font-family: 'Songti SC', 'STSong', 'Noto Serif CJK SC', serif;
-  font-size: 11px;
-  font-weight: 590;
-  line-height: 1.4;
-}
-.resident-recent-feed__event p {
-  color: #aaa69e;
-  font-family: 'Songti SC', 'STSong', 'Noto Serif CJK SC', serif;
 }
 
 .resident-history-drawer.resident-history-mode {

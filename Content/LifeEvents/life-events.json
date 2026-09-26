@@ -4,7 +4,6 @@
     {
       "id": "lifeevent.drainage-access",
       "title": "街口排水工程",
-      "text": "铺门前挖排水沟时，客人只能绕路进来。几日后工人铺了临时木板，等围栏撤走，门前不再积水，铺子的生意也慢慢恢复了。",
       "weight": 6,
       "eligibility": {
         "occupations": [
@@ -18,12 +17,12 @@
       "source": {
         "type": "city",
         "label": "北市坊排水工程"
-      }
+      },
+      "recentText": "街口排水工程完工，铺门前终于不再积水。"
     },
     {
       "id": "lifeevent.new-bridge-route",
       "title": "新桥改变了来回的路",
-      "text": "新桥通行后，我先走了一趟，过河不用再等渡船。几趟活改走这边以后，来回省下不少时辰，常走的客人也渐渐换了路线。",
       "weight": 5,
       "eligibility": {
         "occupations": [
@@ -36,12 +35,12 @@
       "source": {
         "type": "city",
         "label": "河中新桥"
-      }
+      },
+      "recentText": "新桥通了，我来回过河比从前省了不少时辰。"
     },
     {
       "id": "lifeevent.craft-busy-orders",
       "title": "最近的活忽然多了",
-      "text": "原本排好的活还没做完，又一连来了几笔新活。我把急活和慢活重新排过，推掉实在赶不及的，忙了一阵，总算把最后一件赶活交了出去。",
       "weight": 7,
       "eligibility": {
         "occupations": [
@@ -55,12 +54,12 @@
       "source": {
         "type": "work",
         "label": "近来订单增多"
-      }
+      },
+      "recentText": "这阵子活忽然多了，我连着几日都收工得晚。"
     },
     {
       "id": "lifeevent.market-opening",
       "title": "新菜市开张以后",
-      "text": "城中新菜市开张后，街上忽然多了许多生面孔。我这边也来了不少新客，最热闹的几日过去以后，仍有几个人会特意绕来找我。",
       "weight": 5,
       "eligibility": {
         "occupations": [
@@ -73,12 +72,12 @@
       "source": {
         "type": "city",
         "label": "城中新菜市"
-      }
+      },
+      "recentText": "新菜市开张后，我这边也多了不少新客。"
     },
     {
       "id": "lifeevent.service-draft",
       "title": "服役结束回家",
-      "text": "名册轮到我去城北修官道，我把家里的事交代好便跟队出发。十几日里天天搬石填土，回城时鞋底都磨薄了，第二天又回去做原来的活。",
       "weight": 3,
       "recordToHistory": true,
       "memoryText": "那年名册上轮到了我，我跟着一队人去城北修官道。天一亮就点名搬石、填土，肩背酸得晚上翻身都费劲。十几日后回城，鞋底已经磨薄，家里的活还原样等着我。歇了一夜，第二天我又照常出门做事。",
@@ -110,12 +109,12 @@
       "source": {
         "type": "city",
         "label": "城北官道修缮"
-      }
+      },
+      "recentText": "城北官道的差役结束了，我今日回了家。"
     },
     {
       "id": "lifeevent.old-service-companion",
       "title": "旧同伍进城了",
-      "text": "门口来了个多年没见的熟面孔，我听他提起当年修官道那队人才认出来。我们坐着说了半日旧事，送他出城时约好以后有机会再见。",
       "weight": 4,
       "eligibility": {
         "genders": [
@@ -130,12 +129,12 @@
       "source": {
         "type": "personal",
         "label": "旧日同伍"
-      }
+      },
+      "recentText": "旧日同伍进城来看我，我们坐着聊了半日。"
     },
     {
       "id": "lifeevent.marriage-introduction",
       "title": "有人来给家里说亲",
-      "text": "姨母今日来问我的意思，说城南有户人家想先见一面。我没有立刻答应亲事，只说可以找个空闲时候去茶铺坐坐。",
       "weight": 5,
       "eligibility": {
         "minAge": 20,
@@ -155,12 +154,12 @@
       "source": {
         "type": "family",
         "label": "亲友牵线"
-      }
+      },
+      "recentText": "姨母来问亲事，我答应找时间先见一面。"
     },
     {
       "id": "lifeevent.marriage-agreement",
       "title": "两家把亲事谈妥了",
-      "text": "这几回见面，我们把各自的营生和家里情况都说清楚了。今日两边长辈坐下来把日子和安排谈妥，我也点了头，婚事算正式定下。",
       "weight": 5,
       "eligibility": {
         "minAge": 20,
@@ -181,12 +180,12 @@
       "source": {
         "type": "family",
         "label": "两家商议婚事"
-      }
+      },
+      "recentText": "两家把日子和安排谈妥，这门亲事定下了。"
     },
     {
       "id": "lifeevent.marriage-completion",
       "title": "今日成了婚",
-      "text": "两边都点了头，今日把婚事办了。亲友来帮着搬了几样东西，忙到天黑才散，屋里从今晚起多了一个一起过日子的人。",
       "weight": 5,
       "recordToHistory": true,
       "memoryText": "那阵子亲友替我牵了线，我们在茶铺见过几回，把各自的营生和家里情况都说清楚。两家谈妥以后选了日子，成婚那天亲友帮着搬东西、收拾屋子，一直忙到天黑。人散以后再看屋里，才真觉得往后的日子要两个人一起过了。",
@@ -214,12 +213,12 @@
       "source": {
         "type": "family",
         "label": "成婚"
-      }
+      },
+      "recentText": "今日把婚事办了，屋里从此多了一个人。"
     },
     {
       "id": "lifeevent.newlywed-settling",
       "title": "两个人一起过日子以后",
-      "text": "成婚后屋里的碗筷、衣物和做活用的东西都得重新找地方。过了些日子，我们也慢慢分清谁顺手买菜、谁记得添灯油，许多小事已经不用特意商量。",
       "weight": 7,
       "eligibility": {
         "minAge": 20,
@@ -237,12 +236,12 @@
       "source": {
         "type": "family",
         "label": "新婚后的日常"
-      }
+      },
+      "recentText": "成婚后过了些日子，两个人的生活渐渐顺手了。"
     },
     {
       "id": "lifeevent.child-schooling",
       "title": "孩子到了该认字的年纪",
-      "text": "孩子到了爱问招牌上字的年纪，我和家里商量后把他送进附近私塾。先生领进去时他还回头看，过些日子回家路上，已经能念出几处常见的招牌。",
       "weight": 4,
       "recordToHistory": true,
       "memoryText": "孩子那阵子总爱盯着牌匾上的字，我便去问附近哪家私塾合适。送去那天，他走进门前还回头看了我好几次，先生领进去以后，我反倒在门外多站了一会儿。过些日子回家路上，他忽然念出一家铺子的招牌，只认得几个字，也高兴了一路。",
@@ -262,12 +261,12 @@
       "source": {
         "type": "family",
         "label": "家里的孩子"
-      }
+      },
+      "recentText": "孩子第一天进了私塾，开始正经认字了。"
     },
     {
       "id": "lifeevent.rain-delay",
       "title": "这阵雨耽误了不少活",
-      "text": "这阵雨从早到晚下个不停，许多活只能先搁着。我趁着人在屋里把能收拾的先处理好，天气转晴后又连赶几日，总算把最急的活补了回来。",
       "weight": 4,
       "eligibility": {
         "occupations": [
@@ -281,12 +280,12 @@
       "source": {
         "type": "weather",
         "label": "连日秋雨"
-      }
+      },
+      "recentText": "连日下雨耽误了活，我这几日都在赶工补回来。"
     },
     {
       "id": "lifeevent.apprentice-first-task",
       "title": "第一次让我独自做一件活",
-      "text": "师傅第一次把一件小活完整交给我，只说尺寸，让我自己做。我第一遍做得不齐，拆掉重来，交活时他没再替我改，只说下次可以再快些。",
       "weight": 8,
       "recordToHistory": true,
       "memoryText": "师傅第一次把一件小活完整交给我，只说了尺寸，剩下的让我自己想办法。我第一遍做得不够齐，只好拆掉重来。交活时师傅翻看了几遍，没有再替我动手，只说下次可以再快些。那是我第一次觉得，手里的活真是自己做完的。",
@@ -308,12 +307,12 @@
       "source": {
         "type": "work",
         "label": "师傅交来的活"
-      }
+      },
+      "recentText": "师傅第一次把一件活完整交给我独自做。"
     },
     {
       "id": "lifeevent.student-errand",
       "title": "第一次独自替家里办事",
-      "text": "家里第一次让我一个人去东市买东西，只给了钱和一张小纸条。回来的时候我绕错了一条巷子，好在东西和余钱都没丢，第二回再去已经认得路了。",
       "weight": 7,
       "recordToHistory": true,
       "memoryText": "家里第一次让我一个人去东市买东西，只给了钱和一张小纸条。回来的时候我绕错了一条巷子，走了好一阵才认出熟悉的街口，好在东西和余钱都没有丢。再去东市时，家里没再反复叮嘱，我自己已经认得该从哪条路回来。",
@@ -335,12 +334,12 @@
       "source": {
         "type": "family",
         "label": "家里交代的小事"
-      }
+      },
+      "recentText": "家里第一次让我独自去东市把东西买回来。"
     },
     {
       "id": "lifeevent.elder-free-time",
       "title": "闲下来以后也有了自己的去处",
-      "text": "闲下来以后，街口几个人叫我坐下下了一盘棋。我第一回输得很快，第二天却又去了。如今去晚了有人留位置，我先到时也会顺手把棋盘摆好。",
       "weight": 8,
       "recordToHistory": true,
       "memoryText": "闲下来以后，街口几个人叫我坐下来下了一盘棋。我第一回输得很快，第二天却又去了。渐渐地，去晚了有人会给我留位置，有一回我先到，还顺手把棋盘摆好了。以前出门多半是为了办事，那以后也有了只是自己想去的地方。",
@@ -361,12 +360,12 @@
       "source": {
         "type": "personal",
         "label": "日常生活"
-      }
+      },
+      "recentText": "闲下来以后，我开始常去街口和人下棋。"
     },
     {
       "id": "lifeevent.neighbor-small-favor",
       "title": "邻居来借了一次手",
-      "text": "隔壁来问我能不能帮一把，我顺手把那件小事做完了。第二天他把借走的东西送回来，还带了些吃食，从那以后两家临时缺东西时也会互相问一句。",
       "weight": 2,
       "eligibility": {
         "minAge": 18
@@ -374,12 +373,12 @@
       "source": {
         "type": "personal",
         "label": "邻里日常"
-      }
+      },
+      "recentText": "邻居来借了一次手，后来两家也常互相帮忙。"
     },
     {
       "id": "lifeevent.child-first-change",
       "title": "第一次把零钱数清楚了",
-      "text": "家里让我拿几枚钱去巷口买酱，我一路都把钱攥在手里。回来时我把找回的铜钱一枚枚数给大人看，数到最后一枚也没有差。",
       "weight": 6,
       "recordToHistory": true,
       "memoryText": "小时候家里第一次让我拿几枚钱去巷口买东西。我一路都怕把铜钱弄丢，买完以后又在摊前数了两遍。回家时我把找回的钱一枚枚摆在桌上，大人没有再替我重数，只说这回办得很稳当。那天以后，家里偶尔也会让我自己拿钱去买些小东西。",
@@ -393,12 +392,12 @@
       "source": {
         "type": "family",
         "label": "家里的小差事"
-      }
+      },
+      "recentText": "我第一次自己买东西，还把找回的零钱数清了。"
     },
     {
       "id": "lifeevent.child-kite-repair",
       "title": "我们把破纸鸢重新糊好了",
-      "text": "巷里孩子的纸鸢挂破了一角，几个人凑来旧纸和浆糊，一边争怎么补一边动手。晾到下午再放时，它竟然还能稳稳升起来。",
       "weight": 7,
       "eligibility": {
         "occupations": [
@@ -410,12 +409,12 @@
       "source": {
         "type": "personal",
         "label": "巷里玩伴"
-      }
+      },
+      "recentText": "我和巷里几个孩子把破掉的纸鸢重新糊好了。"
     },
     {
       "id": "lifeevent.performer-first-lead",
       "title": "第一次让我站到正中的位置",
-      "text": "戏班临时缺人，班主把原本的小角色换给别人，让我顶到正中的位置。我在后台把词又过了两遍，上场时腿有些发紧，好在整段没有断。",
       "weight": 5,
       "recordToHistory": true,
       "memoryText": "那回戏班临时缺人，班主忽然让我顶到正中的位置。我在后台把词来回念了好几遍，听见前场锣鼓响时，手心全是汗。真正上台以后倒顾不上怕，只记得一句接一句往下唱。散场时班主没有多夸，只拍了拍我的肩，说以后可以多给我几段。",
@@ -429,12 +428,12 @@
       "source": {
         "type": "work",
         "label": "戏班临时换角"
-      }
+      },
+      "recentText": "戏班临时缺人，我第一次站到了正中的位置。"
     },
     {
       "id": "lifeevent.performer-costume-repair",
       "title": "开场前才发现戏衣开了线",
-      "text": "换衣时才看见袖口裂了一道，离开场已经没多久。后台几个人一起找针线，我按着布边让老师傅缝了几针，锣响前总算收拾妥当。",
       "weight": 7,
       "eligibility": {
         "occupations": [
@@ -446,12 +445,12 @@
       "source": {
         "type": "work",
         "label": "戏班后台"
-      }
+      },
+      "recentText": "开场前戏衣裂了，我们赶在锣响前把它缝好。"
     },
     {
       "id": "lifeevent.physician-first-solo-call",
       "title": "第一次独自接下一户出诊",
-      "text": "师长不在铺里时，有人急着来请郎中，我只得自己背起药箱过去。问过症候、开好方子以后，我在门口又把药量默念了一遍才离开。",
       "weight": 4,
       "recordToHistory": true,
       "memoryText": "刚做郎中那几年，有一回师长正好不在铺里，偏有人急着来请。我只得自己背起药箱跟过去，进门时心里比病家还紧。问症、看舌、摸脉都照平日学的做，写完方子以后又逐味核了一遍。回到铺里时我才发现一路都没怎么松过肩。",
@@ -465,12 +464,12 @@
       "source": {
         "type": "work",
         "label": "医馆出诊"
-      }
+      },
+      "recentText": "师长不在时，我第一次独自背药箱去给人看病。"
     },
     {
       "id": "lifeevent.midwife-return-visit",
       "title": "那户人家抱着孩子来道谢",
-      "text": "前些日子帮过的一户人家今日抱着孩子来了，还带了一小包点心。我只看了看大人和孩子的气色，嘱咐几句坐月子的事，东西推了半天还是留下了。",
       "weight": 5,
       "eligibility": {
         "occupations": [
@@ -482,12 +481,12 @@
       "source": {
         "type": "work",
         "label": "旧日产家"
-      }
+      },
+      "recentText": "前些日子的产家抱着孩子来谢我，还带了点心。"
     },
     {
       "id": "lifeevent.farmer-seedling-swap",
       "title": "邻田拿秧苗来和我换了一把",
-      "text": "邻田今年多育了些秧苗，我这边却正缺一角。他抱来一捆让我先补上，我便拿自家剩下的豆种换给他，省得两边都把东西白白放坏。",
       "weight": 6,
       "eligibility": {
         "occupations": [
@@ -499,12 +498,12 @@
       "source": {
         "type": "work",
         "label": "邻田互换"
-      }
+      },
+      "recentText": "邻田拿秧苗来换，我用自家豆种和他换了一些。"
     },
     {
       "id": "lifeevent.lock-keeper-silt-clearing",
       "title": "闸口淤泥突然厚了起来",
-      "text": "这几日水势慢，闸脚积了一层淤泥，过船时总要多费一番手脚。我和人趁午后水浅把泥铲开，傍晚再放船时已经顺畅许多。",
       "weight": 6,
       "eligibility": {
         "occupations": [
@@ -516,12 +515,12 @@
       "source": {
         "type": "work",
         "label": "河闸日常"
-      }
+      },
+      "recentText": "闸脚淤泥厚了，我和人趁水浅把它清开了。"
     },
     {
       "id": "lifeevent.courier-road-detour",
       "title": "常走的那条路临时封住了",
-      "text": "送东西时才发现前街正在修路，车马都被挡在外面。我只好拐进两条小巷，多绕了一段才把东西送到，好在没有误了约好的时辰。",
       "weight": 7,
       "eligibility": {
         "occupations": [
@@ -533,12 +532,12 @@
       "source": {
         "type": "city",
         "label": "街道临时封路"
-      }
+      },
+      "recentText": "前街临时封路，我绕了两条巷子才把东西送到。"
     },
     {
       "id": "lifeevent.retired-old-tool-repair",
       "title": "旧工具又让我翻了出来",
-      "text": "邻居拿来一件坏木器问我还能不能修，我便把收起来许久的旧工具翻了出来。手慢了些，做法倒还记得，修好以后顺手又把刨子磨了一遍。",
       "weight": 6,
       "eligibility": {
         "occupations": [
@@ -550,7 +549,8 @@
       "source": {
         "type": "personal",
         "label": "旧手艺"
-      }
+      },
+      "recentText": "邻居拿来坏木器，我又翻出旧工具替他修好了。"
     }
   ]
 }

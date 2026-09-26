@@ -10,7 +10,7 @@ import { currentActionText, recentActionEntries } from './recent-actions';
 
 export type RecentFeedEntry =
   | { id: string; day: number; kind: 'action'; text: string }
-  | { id: string; day: number; kind: 'life-event'; eventId: string; title: string; text: string };
+  | { id: string; day: number; kind: 'life-event'; eventId: string; text: string };
 
 export type ResidentLifeView = {
   recentEntries: RecentFeedEntry[];
@@ -92,8 +92,7 @@ export function buildResidentLifeView(
         day: record.day,
         kind: 'life-event' as const,
         eventId: record.eventId,
-        title: definition.title,
-        text: definition.text,
+        text: definition.recentText,
       };
     })
     .filter((entry): entry is Extract<RecentFeedEntry, { kind: 'life-event' }> => Boolean(entry));

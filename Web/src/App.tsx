@@ -355,20 +355,9 @@ export default function App() {
                   <div className="resident-recent-feed__heading"><b>最近</b></div>
                   <ul className="resident-recent-feed__list">
                     {lifeView.recentEntries.map((entry) => (
-                      <li
-                        key={entry.id}
-                        data-recent-kind={entry.kind}
-                        className={entry.kind === 'life-event' ? 'is-life-event' : 'is-action'}
-                      >
+                      <li key={entry.id} data-recent-kind={entry.kind}>
                         <time>{relativeDayLabel(Math.max(0, gameDay - entry.day))}</time>
-                        {entry.kind === 'life-event' ? (
-                          <div className="resident-recent-feed__event">
-                            <b>{entry.title}</b>
-                            <p>{entry.text}</p>
-                          </div>
-                        ) : (
-                          <p className="resident-recent-feed__action">{entry.text}</p>
-                        )}
+                        <p className="resident-recent-feed__text">{entry.text}</p>
                       </li>
                     ))}
                   </ul>

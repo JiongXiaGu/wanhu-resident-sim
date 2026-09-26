@@ -101,7 +101,7 @@
         "required": [
           "id",
           "title",
-          "text",
+          "recentText",
           "weight",
           "eligibility"
         ],
@@ -111,10 +111,6 @@
             "$ref": "#/$defs/stableId"
           },
           "title": {
-            "type": "string",
-            "minLength": 1
-          },
-          "text": {
             "type": "string",
             "minLength": 1
           },
@@ -221,6 +217,11 @@
                 "minLength": 1
               }
             }
+          },
+          "recentText": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 36
           }
         }
       }

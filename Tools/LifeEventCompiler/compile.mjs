@@ -8,7 +8,10 @@ const ids=new Set();
 for(const event of source.items){
  if(!event.id||ids.has(event.id))throw new Error(`Duplicate or missing LifeEvent id: ${event.id??'(missing)'}`); ids.add(event.id);
  if(typeof event.title!=='string'||!event.title.trim())throw new Error(`${event.id}: title is required.`);
- if(typeof event.text!=='string'||!event.text.trim())throw new Error(`${event.id}: text is required.`);
+ if(typeof event.recentText!=='string'||!event.recentText.trim())throw new Error(`${event.id}: recentText is required.`);
+ const recentTextLength=[...event.recentText.trim()].length;
+ if(recentTextLength<12||recentTextLength>36)throw new Error(`${event.id}: recentText must be 12-36 characters, got ${recentTextLength}.`);
+ if('text' in event)throw new Error(`${event.id}: legacy text field is not allowed.`);
  if('stages' in event||'delayDays' in event)throw new Error(`${event.id}: Stage fields are not part of LifeEvent V3.`);
  if(event.recordToHistory!==undefined&&typeof event.recordToHistory!=='boolean')throw new Error(`${event.id}: recordToHistory must be boolean.`);
  if(event.recordToHistory&&(typeof event.memoryText!=='string'||!event.memoryText.trim()))throw new Error(`${event.id}: recordable Story Chapter requires memoryText.`);

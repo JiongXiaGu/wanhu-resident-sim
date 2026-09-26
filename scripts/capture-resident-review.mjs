@@ -50,7 +50,12 @@ const coverage = await page.evaluate(async () => (await fetch('/generated/conten
 if (definitions?.schema !== 'wanhu.resident-definitions.v7') throw new Error('Resident Content Review expected resident definitions v7.');
 if (snapshot?.schema !== 'wanhu.resident-snapshot.v6') throw new Error(`Resident Content Review expected snapshot v6, got ${snapshot?.schema}`);
 if (!Array.isArray(definitions.lifeEvents) || definitions.lifeEvents.length < 16) throw new Error('LifeEvent V3 must retain the 16-event migration baseline before adding new content.');
-if (definitions.lifeEvents.some((event) => !event.text?.trim() || 'stages' in event || 'delayDays' in event)) throw new Error('LifeEvent V3 must expose text and no Stage fields.');
+if (definitions.lifeEvents.some((event) => !event.recentText?.trim() || 'text' in event || 'stages' in event || 'delayDays' in event)) throw new Error('LifeEvent V3 must expose recentText and no legacy text / Stage fields.');
+for (const event of definitions.lifeEvents) {
+  const length = [...event.recentText.trim()].length;
+  if (length < 12 || length > 36) throw new Error(`${event.id}: recentText must stay within 12-36 characters, got ${length}.`);
+}
+if ((coverage.lifeEvents?.recentTextCharacters?.max ?? 99) > 36) throw new Error('Coverage reports an overlong LifeEvent recentText.');
 if ((coverage.lifeEvents?.total ?? 0) !== definitions.lifeEvents.length) throw new Error('Coverage LifeEvent total must match compiled definitions.');
 
 const requiredActionIds = [
@@ -140,7 +145,7 @@ const expectedRecent = [
   })),
   ...mixedResident.recentLifeEvents.map((record) => {
     const event = definitions.lifeEvents.find((item) => item.id === record.eventId);
-    return { day: record.day, kind: 'life-event', title: event?.title, text: event?.text };
+    return { day: record.day, kind: 'life-event', text: event?.recentText };
   }),
 ].filter((entry) => entry.day <= snapshot.currentDay)
   .sort((left, right) => right.day - left.day || (left.kind === 'life-event' ? -1 : 1))
@@ -148,14 +153,15 @@ const expectedRecent = [
 
 const actualRecent = await page.locator('.resident-recent-feed__list > li').evaluateAll((items) => items.map((item) => ({
   kind: item.getAttribute('data-recent-kind'),
-  text: item.textContent?.replace(/\s+/g, ' ').trim() ?? '',
+  text: item.querySelector('.resident-recent-feed__text')?.textContent?.trim() ?? '',
+  titleCount: item.querySelectorAll('b').length,
 })));
 if (actualRecent.length !== expectedRecent.length) throw new Error('Unified recent feed length does not match the sorted V3 view.');
 for (let index = 0; index < expectedRecent.length; index += 1) {
   const expected = expectedRecent[index];
   if (actualRecent[index].kind !== expected.kind) throw new Error('Unified recent feed is not sorted by day.');
-  if (expected.kind === 'action' && !actualRecent[index].text.includes(expected.text)) throw new Error('RecentAction text is not resolved in unified recent feed.');
-  if (expected.kind === 'life-event' && (!actualRecent[index].text.includes(expected.title) || !actualRecent[index].text.includes(expected.text))) throw new Error('LifeEvent title/text is not resolved in unified recent feed.');
+  if (actualRecent[index].text !== expected.text) throw new Error(`Unified recent text mismatch: ${actualRecent[index].text} !== ${expected.text}`);
+  if (actualRecent[index].titleCount !== 0) throw new Error('Unified recent feed must not render a separate LifeEvent title.');
 }
 
 await page.getByRole('button', { name: '隐藏', exact: true }).click();
@@ -229,7 +235,9 @@ if (JSON.stringify(marriageFixtureIds) !== JSON.stringify(expectedMarriageFixtur
   throw new Error(`Marriage continuity fixture sequence mismatch: ${marriageFixtureIds.join(', ')}`);
 }
 const continuityText = await page.locator('.resident-recent-feed').innerText();
-if (!continuityText.includes('今日成了婚')) throw new Error('Unified recent feed should show the most recent marriage LifeEvent inside its display window.');
+const marriageRecentText = definitions.lifeEvents.find((event) => event.id === 'lifeevent.marriage-completion')?.recentText;
+if (!marriageRecentText || !continuityText.includes(marriageRecentText)) throw new Error('Unified recent feed should show the marriage recentText inside its display window.');
+if (continuityText.includes('今日成了婚')) throw new Error('Unified recent feed must not render the LifeEvent title separately.');
 if (continuityText.includes('有人来给家里说亲') && kinds.length > 5) throw new Error('Unified recent feed must keep its bounded display window.');
 await page.getByRole('button', { name: '隐藏', exact: true }).click();
 await page.locator('.resident-panel').screenshot({ path: `${outDir}/05-life-tag-structure-continuity.png` });

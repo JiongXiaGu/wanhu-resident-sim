@@ -227,11 +227,16 @@ for (const action of actionPresentations.items) {
 }
 
 const structuralRequestCounts = Object.fromEntries([...structuralRequestTypes].map((type) => [type, 0]));
+const lifeEventRecentTextLengths = [];
 requireArray(lifeEvents.items, 'LifeEvent V3');
 for (const event of lifeEvents.items) {
   validateWeight(event.weight, event.id);
   if (typeof event.title !== 'string' || !event.title.trim()) throw new Error(`${event.id}: title is required.`);
-  if (typeof event.text !== 'string' || !event.text.trim()) throw new Error(`${event.id}: LifeEvent V3 text is required.`);
+  if (typeof event.recentText !== 'string' || !event.recentText.trim()) throw new Error(`${event.id}: LifeEvent V3 recentText is required.`);
+  const recentTextLength = [...event.recentText.trim()].length;
+  if (recentTextLength < 12 || recentTextLength > 36) throw new Error(`${event.id}: recentText must be 12-36 characters, got ${recentTextLength}.`);
+  if ('text' in event) throw new Error(`${event.id}: legacy LifeEvent text field must be removed.`);
+  lifeEventRecentTextLengths.push([...event.recentText.trim()].length);
   if ('stages' in event || 'delayDays' in event) throw new Error(`${event.id}: LifeEvent V3 must not contain Stage fields.`);
   if (event.recordToHistory !== undefined && typeof event.recordToHistory !== 'boolean') throw new Error(`${event.id}: recordToHistory must be boolean.`);
   if (event.recordToHistory && (typeof event.memoryText !== 'string' || !event.memoryText.trim())) throw new Error(`${event.id}: Story Chapter requires memoryText.`);
@@ -403,6 +408,11 @@ const coverage = {
     phaseCoverage,
     occupationCoverage,
     structuralRequestsByType: structuralRequestCounts,
+    recentTextCharacters: {
+      min: Math.min(...lifeEventRecentTextLengths),
+      max: Math.max(...lifeEventRecentTextLengths),
+      average: Number((lifeEventRecentTextLengths.reduce((sum, value) => sum + value, 0) / lifeEventRecentTextLengths.length).toFixed(2)),
+    },
   },
   warnings,
 };
