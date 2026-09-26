@@ -375,6 +375,182 @@
         "type": "personal",
         "label": "邻里日常"
       }
+    },
+    {
+      "id": "lifeevent.child-first-change",
+      "title": "第一次把零钱数清楚了",
+      "text": "家里让我拿几枚钱去巷口买酱，我一路都把钱攥在手里。回来时我把找回的铜钱一枚枚数给大人看，数到最后一枚也没有差。",
+      "weight": 6,
+      "recordToHistory": true,
+      "memoryText": "小时候家里第一次让我拿几枚钱去巷口买东西。我一路都怕把铜钱弄丢，买完以后又在摊前数了两遍。回家时我把找回的钱一枚枚摆在桌上，大人没有再替我重数，只说这回办得很稳当。那天以后，家里偶尔也会让我自己拿钱去买些小东西。",
+      "eligibility": {
+        "occupations": [
+          "occupation.child"
+        ],
+        "minAge": 8,
+        "maxAge": 12
+      },
+      "source": {
+        "type": "family",
+        "label": "家里的小差事"
+      }
+    },
+    {
+      "id": "lifeevent.child-kite-repair",
+      "title": "我们把破纸鸢重新糊好了",
+      "text": "巷里孩子的纸鸢挂破了一角，几个人凑来旧纸和浆糊，一边争怎么补一边动手。晾到下午再放时，它竟然还能稳稳升起来。",
+      "weight": 7,
+      "eligibility": {
+        "occupations": [
+          "occupation.child"
+        ],
+        "minAge": 6,
+        "maxAge": 12
+      },
+      "source": {
+        "type": "personal",
+        "label": "巷里玩伴"
+      }
+    },
+    {
+      "id": "lifeevent.performer-first-lead",
+      "title": "第一次让我站到正中的位置",
+      "text": "戏班临时缺人，班主把原本的小角色换给别人，让我顶到正中的位置。我在后台把词又过了两遍，上场时腿有些发紧，好在整段没有断。",
+      "weight": 5,
+      "recordToHistory": true,
+      "memoryText": "那回戏班临时缺人，班主忽然让我顶到正中的位置。我在后台把词来回念了好几遍，听见前场锣鼓响时，手心全是汗。真正上台以后倒顾不上怕，只记得一句接一句往下唱。散场时班主没有多夸，只拍了拍我的肩，说以后可以多给我几段。",
+      "eligibility": {
+        "occupations": [
+          "occupation.performer"
+        ],
+        "minAge": 16,
+        "maxAge": 35
+      },
+      "source": {
+        "type": "work",
+        "label": "戏班临时换角"
+      }
+    },
+    {
+      "id": "lifeevent.performer-costume-repair",
+      "title": "开场前才发现戏衣开了线",
+      "text": "换衣时才看见袖口裂了一道，离开场已经没多久。后台几个人一起找针线，我按着布边让老师傅缝了几针，锣响前总算收拾妥当。",
+      "weight": 7,
+      "eligibility": {
+        "occupations": [
+          "occupation.performer"
+        ],
+        "minAge": 16,
+        "maxAge": 62
+      },
+      "source": {
+        "type": "work",
+        "label": "戏班后台"
+      }
+    },
+    {
+      "id": "lifeevent.physician-first-solo-call",
+      "title": "第一次独自接下一户出诊",
+      "text": "师长不在铺里时，有人急着来请郎中，我只得自己背起药箱过去。问过症候、开好方子以后，我在门口又把药量默念了一遍才离开。",
+      "weight": 4,
+      "recordToHistory": true,
+      "memoryText": "刚做郎中那几年，有一回师长正好不在铺里，偏有人急着来请。我只得自己背起药箱跟过去，进门时心里比病家还紧。问症、看舌、摸脉都照平日学的做，写完方子以后又逐味核了一遍。回到铺里时我才发现一路都没怎么松过肩。",
+      "eligibility": {
+        "occupations": [
+          "occupation.physician"
+        ],
+        "minAge": 24,
+        "maxAge": 40
+      },
+      "source": {
+        "type": "work",
+        "label": "医馆出诊"
+      }
+    },
+    {
+      "id": "lifeevent.midwife-return-visit",
+      "title": "那户人家抱着孩子来道谢",
+      "text": "前些日子帮过的一户人家今日抱着孩子来了，还带了一小包点心。我只看了看大人和孩子的气色，嘱咐几句坐月子的事，东西推了半天还是留下了。",
+      "weight": 5,
+      "eligibility": {
+        "occupations": [
+          "occupation.midwife"
+        ],
+        "minAge": 28,
+        "maxAge": 72
+      },
+      "source": {
+        "type": "work",
+        "label": "旧日产家"
+      }
+    },
+    {
+      "id": "lifeevent.farmer-seedling-swap",
+      "title": "邻田拿秧苗来和我换了一把",
+      "text": "邻田今年多育了些秧苗，我这边却正缺一角。他抱来一捆让我先补上，我便拿自家剩下的豆种换给他，省得两边都把东西白白放坏。",
+      "weight": 6,
+      "eligibility": {
+        "occupations": [
+          "occupation.farmer"
+        ],
+        "minAge": 18,
+        "maxAge": 72
+      },
+      "source": {
+        "type": "work",
+        "label": "邻田互换"
+      }
+    },
+    {
+      "id": "lifeevent.lock-keeper-silt-clearing",
+      "title": "闸口淤泥突然厚了起来",
+      "text": "这几日水势慢，闸脚积了一层淤泥，过船时总要多费一番手脚。我和人趁午后水浅把泥铲开，傍晚再放船时已经顺畅许多。",
+      "weight": 6,
+      "eligibility": {
+        "occupations": [
+          "occupation.lock-keeper"
+        ],
+        "minAge": 20,
+        "maxAge": 70
+      },
+      "source": {
+        "type": "work",
+        "label": "河闸日常"
+      }
+    },
+    {
+      "id": "lifeevent.courier-road-detour",
+      "title": "常走的那条路临时封住了",
+      "text": "送东西时才发现前街正在修路，车马都被挡在外面。我只好拐进两条小巷，多绕了一段才把东西送到，好在没有误了约好的时辰。",
+      "weight": 7,
+      "eligibility": {
+        "occupations": [
+          "occupation.courier"
+        ],
+        "minAge": 18,
+        "maxAge": 58
+      },
+      "source": {
+        "type": "city",
+        "label": "街道临时封路"
+      }
+    },
+    {
+      "id": "lifeevent.retired-old-tool-repair",
+      "title": "旧工具又让我翻了出来",
+      "text": "邻居拿来一件坏木器问我还能不能修，我便把收起来许久的旧工具翻了出来。手慢了些，做法倒还记得，修好以后顺手又把刨子磨了一遍。",
+      "weight": 6,
+      "eligibility": {
+        "occupations": [
+          "occupation.retired-craftsman"
+        ],
+        "minAge": 58,
+        "maxAge": 100
+      },
+      "source": {
+        "type": "personal",
+        "label": "旧手艺"
+      }
     }
   ]
 }
