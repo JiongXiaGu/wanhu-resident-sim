@@ -4,7 +4,7 @@
 
 修改前读取最新 main、README、Documentation/居民内容实验室职责边界.md、Documentation/居民逻辑网页Demo接续说明.md 与 Documentation/开发与部署工作流.md。居民内容任务再读 Documentation/居民内容契约V1.md、Documentation/居民内容生产与运行时数据管线V1.md、Documentation/居民生活记录与故事连续性.md 和故事写作规范；头像任务再读 Avatar Workshop、Portrait System 与 Q版头像主路线生产与审查工作流。只有讨论 Unity 主工程语义时才读取居民模拟 / Runtime 设计文档，不把它们当作 Web 实施任务。再检查目标源码和最新 Actions。不要用聊天记忆代替当前仓库。
 
-本仓库验证居民玩法、故事、内容管线、UI 和头像编辑，不是 Unity Runtime 设计稿。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或资源加载架构。
+本仓库生产并验证居民故事、内容管线、UI 预览和头像资产，不是 Unity Runtime 实现仓库。不要扩张 ECS、Blob、正式 Save、RuntimeIndex、序列化或游戏算法。
 
 ## 当前执行点：Resident Content Production
 
