@@ -23,17 +23,17 @@ http://localhost:5173/?view=avatar-editor
 
 Resident Panel、人生时间轴、头像工坊、内容 Compiler 与 Resident Action Life 的展示语义已经足够支撑内容生产。
 
-当前工作重点不再是继续完善 Web 居民算法。当前先完成 **LifeEvent V3 离散事件迁移**：
+LifeEvent V3、Stage 移除和统一“最近”已经完成。当前先做 **Recent / LifeChapter 展示语义收敛**：
 
-- 把 LifeEvent 从固定 `stages[3]` 改成一次完整离散事件；
-- 用结构事实 / LifeTag 串联后续事件；
-- 取消居民面板独立“正在经历 / 最近发生”；
-- 把 RecentAction 与近期 LifeEvent 合并到一个“最近”；
-- 迁移现有 14 条 V2 内容后，再用 Coverage 扩 LifeEvent / 人生经历；
-- 维护姓名、职业、LifeTag、Resident Profile 等内容资产；
-- Action Presentation 跟随 Unity 真实 Behaviour 增长；
-- 需要时继续制作头像素材；
-- 把内容 Review 与头像 Review 拆开，缩短高频内容迭代链路。
+- “最近”只显示一句短记录，用于快速了解居民最近在做什么；
+- RecentAction 与 RecentLifeEvent 可以混排，但 UI 不显示技术分类；
+- LifeEvent 的近期 Presentation 从当前过渡字段 `text` 收敛为短 `recentText`；
+- 长文本只保留在 Story Chapter 的 `memoryText`；
+- 人生故事由结构事实 / LifeTag / 年龄 / 职业等决定资格，真正发生后写入 LifeChapter；
+- 打开人生经历时只读取已经发生的 Chapter，不根据当前 Tag 即时重算过去；
+- 这一层代码修正完成前暂停新的 LifeEvent 扩库；
+- Action Presentation 继续跟随 Unity 真实 Behaviour 增长；
+- 姓名、职业、LifeTag、Resident Profile 与头像素材按明确需求维护。
 
 现有确定性 Action Trace 与 Tools/ResidentActionLife/record-policy.mjs 只为固定预览数据和回归保留，不是正式游戏算法。Unity 不需要复制它们。
 
@@ -59,7 +59,7 @@ Phase 8D2 已完成儿童与老人扩库：儿童 6 Hair / 6 Outfit、老人 6 H
 
 `Web/src/avatar/` 是工坊及 Web 外观覆盖。`Web/src/resident/portrait/`、`Content/Portrait/`、正式五字段 DNA 保持冻结。未保存玩家覆盖的居民优先显示 Profile 派生默认 Q 版头像；生成链不可用时才进入冻结 Portrait fallback。移除玩家覆盖回到 Profile 派生默认。外观编辑不改身份、家庭、职业、故事和游戏日期。
 
-目标生活模式只展示“此刻 / 最近”：此刻读取真实 CurrentAction；最近在展示层混合 RecentAction 与离散 LifeEvent。人生模式仍是一条年龄升序时间轴，一件事一个 Chapter，重要事件展开 memoryText。当前代码仍是 V2 三阶段 Fixture，下一代码批次统一迁移，不新增 V2 内容。 
+生活模式只展示“此刻 / 最近”：此刻读取真实 CurrentAction；最近混合 RecentAction 与 RecentLifeEvent，但每条只是一句短文本。人生模式是一条年龄升序时间轴，一件事一个 Chapter；长故事只在 Story Chapter 展开 `memoryText`。当前代码已经是 V3，但 `最近` 仍暂时使用较长 `text`；下一代码批次先迁移到 `recentText`，完成前暂停新的 LifeEvent 内容批次。 
 
 `npm run build` 完整构建；`npm run build-content` 生成 Web 内容，generated 文件不手改。
 
@@ -73,7 +73,7 @@ Resident Content Review
 Avatar Visual Review
 ~~~
 
-居民内容修改只跑 Build + Resident Content Review；头像素材 / Catalog / Renderer 修改跑 Build + Avatar Visual Review；App.tsx、main.tsx、styles.css、ResidentAvatar.tsx 等跨域修改同时跑两套。纯文档不触发视觉 Review。
+居民内容在 `tmp-*` 开发阶段只跑 Build；阶段完成后创建 PR，由 PR 跑 Build + Resident Content Review，合入 main 后再做同范围最终回归。头像素材 / Catalog / Renderer 修改跑 Build + Avatar Visual Review；App.tsx、main.tsx、styles.css、ResidentAvatar.tsx 等跨域修改同时跑两套。纯文档不触发视觉 Review。
 
 Resident Content Review 的 Artifact 为 `resident-content-review`，重点检查 Resident Panel、LifeEvent、Life History、婚姻 / LifeTag 连续性和 Action Presentation 展示。Avatar Visual Review 的 Artifact 为 `avatar-visual-review`，继续保留 Portrait、Avatar Workshop、8A / 8B / 8D 与旧固定配方门禁。
 

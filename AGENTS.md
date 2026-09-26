@@ -28,7 +28,7 @@
 - Web 可以记录 CurrentAction / RecentAction / LifeEvent / LifeChapter 的语义，但不实现正式游戏决策。
 - ResidentGenerator、确定性 Action Trace 与 Tools/ResidentActionLife/record-policy.mjs 只作为现有预览 / 回归 Fixture 保留；除修复预览和契约问题外，不继续扩展算法。
 - Action Presentation 只负责显示；新增项跟随真实 Unity Behaviour，不为了扩库先造不存在的行为。
-- 当前第一优先是完成 LifeEvent V3 迁移：移除强制 `stages[3]`、Story Thread / Stage 主线和独立“正在经历 / 最近发生”区域。迁移完成后再按 Coverage 扩 LifeEvent / 人生经历；头像只按明确需求扩充。
+- LifeEvent V3 迁移已经完成。当前第一优先改为 **Recent / LifeChapter 展示语义收敛**：`最近`只显示一句短记录，长文本只进入 LifeChapter / `memoryText`。在这一层修正完成前暂停新的 LifeEvent 扩库；头像只按明确需求扩充。
 - 不把 Web Fixture 与 Unity Runtime 强制保持实现一致；Unity 代码才是游戏算法权威。
 - 不在本仓库继续设计最终 ECS Component、Blob、Save、NativeStream / Queue 等物理实现。
 
@@ -56,10 +56,12 @@ Resident Profile 的 temperament / lifeFocus / presentationStyle 属于内容与
 
 ## 玩法与内容不变量
 
-- 生活模式只保留“此刻 / 最近 / 人生经历入口”。“最近”在展示层混合 RecentAction 与离散 LifeEvent，不再分“正在经历 / 最近发生”。
+- 生活模式只保留“此刻 / 最近 / 人生经历入口”。“最近”混合 RecentAction 与 RecentLifeEvent，但每条都只能是一句短记录，不显示标题 + 长正文，也不显示 `memoryText`。
 - LifeEvent V3 是一次完整发生的离散事件，不再强制三阶段；连续故事通过真实结构事实、长期 LifeTag 与少量短期机会 Tag 串联。
-- 人生模式只有年龄升序时间轴，不按少年/青年分组。一个 Chapter 对应一件事；事实节点只显示年龄/标题，故事节点展开第一人称 memoryText，末尾保留“如今”。
-- 重要故事（recordToHistory 或结构效果）必须有 memoryText。普通 RecentAction 不写入永久历史。
+- LifeEvent 的近期展示目标字段是 `recentText`；当前 `text` 只是待迁移的过渡字段。`recentText` 只服务“最近”，`memoryText` 只服务 Story Chapter。
+- 人生模式只有年龄升序时间轴，不按少年/青年分组。Fact Chapter 只显示年龄/标题；Story Chapter 展开第一人称 `memoryText`，末尾保留“如今”。
+- `recordToHistory = true` 的 Story Chapter 必须有 `memoryText`。结构型结果也可以只形成 Fact Chapter，不为了文学感强行写长故事。普通 RecentAction 不写入永久历史。
+- Tag / 结构事实只决定未来故事资格；故事真正发生后写入 LifeChapter，打开人生页面时不得根据当前 Tag 即时重算过去。
 - 过去的 LifeTag 影响后来 Eligibility；无需扫描全文历史。保留未婚 → 成婚 → spouse/Household 改变 → newly-married → 后续两人生活 → 临时 Tag 消失的真实链。
 - Content 是权威；Stable ID 不由标题、数组顺序生成。新增内容遵守 Schema、Reference、Coverage。
 - generated 文件经 Compiler 生成，不手动修改。涉及内容契约的修改要同步 Authoring、Schema、Compiler、Web 消费者与审查。
@@ -81,7 +83,7 @@ Review 已拆成两个独立工作流：
 
 纯文档不触发视觉 Review。跨域文件（例如 App.tsx、main.tsx、styles.css、ResidentAvatar.tsx、package 配置）会同时触发两边。
 
-**居民内容批次**：最新 main → tmp-* 聚合内容 / Schema / Compiler / Resident UI 修改 → Build + Resident Content Review → 下载同 SHA Artifact 并实际查看 Resident Panel、LifeEvent、Life History 等关键截图 → 重读 main → 正常合入 → main 回归。
+**居民内容快速通道**：最新 main → `tmp-*` 小批修改 → 只跑 Build；阶段完成后创建 PR → Build + Resident Content Review → 下载同 SHA Artifact 并实际查看对应 UI / Life History → 重读 main → 正常合入 → main 回归。纯文档不为了制造绿色状态额外跑视觉 Review。
 
 **头像正式批次**：继续使用 Build + Avatar Visual Review，并下载同 SHA Artifact 实际审图。只修改 Face / Hair / Outfit / Expression SVG 画稿时，仍可先走真实 Renderer 静态短循环；静态图不能替代正式 UI / 存储 / 绑定回归。
 
