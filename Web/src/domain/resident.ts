@@ -56,7 +56,13 @@ export type ResidentRecentActionRecord = {
   placeId?: string;
 };
 
-export type ResidentMajorLifeEvent = {
+export type ResidentRecentLifeEventRecord = {
+  id: string;
+  day: number;
+  eventId: string;
+};
+
+export type ResidentLifeChapter = {
   id: string;
   day: number;
   type: 'employment' | 'marriage' | 'family' | 'move' | 'story' | string;
@@ -95,11 +101,11 @@ export type ResidentRecord = {
   nextUpdateDay: number;
   lifeStage: LifeStageId;
   stateBits: number;
-  activeStoryId: string | null;
   lifeTags: string[];
   currentAction: ResidentCurrentAction;
   recentActions: ResidentRecentActionRecord[];
-  majorLifeHistory: ResidentMajorLifeEvent[];
+  recentLifeEvents: ResidentRecentLifeEventRecord[];
+  lifeChapters: ResidentLifeChapter[];
 };
 
 export type HouseholdRecord = {
@@ -111,7 +117,7 @@ export type HouseholdRecord = {
 };
 
 export type ResidentWorldSnapshot = {
-  schema: 'wanhu.resident-snapshot.v5';
+  schema: 'wanhu.resident-snapshot.v6';
   citySeed: number;
   currentDay: number;
   residents: ResidentRecord[];
@@ -231,21 +237,16 @@ export type LifeEventEffects = {
   structuralRequests?: LifeEventStructuralRequest[];
 };
 
-export type LifeEventStageDefinition = {
-  delayDays: { min: number; max: number };
-  title: string;
-  text: string;
-};
-
 export type LifeEventDefinition = {
   id: string;
   title: string;
+  text: string;
   weight: number;
   eligibility: LifeEventEligibility;
   effects?: LifeEventEffects;
   source?: LifeEventSource;
   recordToHistory?: boolean;
-  stages: [LifeEventStageDefinition, LifeEventStageDefinition, LifeEventStageDefinition];
+  memoryText?: string;
 };
 
 export type StoryBucketDefinition = {

@@ -39,5 +39,6 @@ for(const resident of snapshot.residents){
  counts.focus[focus.id]=(counts.focus[focus.id]??0)+1;
  counts.presentation[presentation.id]=(counts.presentation[presentation.id]??0)+1;
 }
+snapshot.schema='wanhu.resident-snapshot.v6';
 await writeFile(join(generated,'resident-snapshot.json'),JSON.stringify(snapshot,null,2)+'\n','utf8');
 console.log(`Compiled Resident Profile V1 for ${snapshot.residents.length} residents. ${JSON.stringify(counts)}`);

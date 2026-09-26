@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wanhu.local/schemas/life-event.schema.json",
-  "title": "Wanhu Resident Life Events V2",
+  "title": "Wanhu Resident Life Events V3",
   "$defs": {
     "stableId": {
       "type": "string",
@@ -88,26 +88,33 @@
     "schema",
     "items"
   ],
+  "additionalProperties": false,
   "properties": {
     "schema": {
-      "const": "wanhu.life-events.v2"
+      "const": "wanhu.life-events.v3"
     },
     "items": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
         "required": [
           "id",
           "title",
+          "text",
           "weight",
-          "eligibility",
-          "stages"
+          "eligibility"
         ],
+        "additionalProperties": false,
         "properties": {
           "id": {
             "$ref": "#/$defs/stableId"
           },
           "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
             "type": "string",
             "minLength": 1
           },
@@ -117,13 +124,14 @@
           },
           "weight": {
             "type": "number",
-            "minimum": 0
+            "exclusiveMinimum": 0
           },
           "recordToHistory": {
             "type": "boolean"
           },
           "eligibility": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "occupations": {
                 "type": "array",
@@ -170,11 +178,11 @@
               "forbiddenTags": {
                 "$ref": "#/$defs/lifeTagList"
               }
-            },
-            "additionalProperties": false
+            }
           },
           "effects": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "addTags": {
                 "$ref": "#/$defs/lifeTagList"
@@ -189,8 +197,7 @@
                 },
                 "maxItems": 4
               }
-            },
-            "additionalProperties": false
+            }
           },
           "source": {
             "type": "object",
@@ -198,6 +205,7 @@
               "type",
               "label"
             ],
+            "additionalProperties": false,
             "properties": {
               "type": {
                 "enum": [
@@ -212,55 +220,10 @@
                 "type": "string",
                 "minLength": 1
               }
-            },
-            "additionalProperties": false
-          },
-          "stages": {
-            "type": "array",
-            "minItems": 3,
-            "maxItems": 3,
-            "items": {
-              "type": "object",
-              "required": [
-                "delayDays",
-                "title",
-                "text"
-              ],
-              "properties": {
-                "delayDays": {
-                  "type": "object",
-                  "required": [
-                    "min",
-                    "max"
-                  ],
-                  "properties": {
-                    "min": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "max": {
-                      "type": "integer",
-                      "minimum": 0
-                    }
-                  },
-                  "additionalProperties": false
-                },
-                "title": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "text": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "additionalProperties": false
             }
           }
-        },
-        "additionalProperties": false
+        }
       }
     }
-  },
-  "additionalProperties": false
+  }
 }
