@@ -2,7 +2,7 @@ name: Resident Content Review
 
 on:
   push:
-    branches: [main, 'tmp-*']
+    branches: [main]
     paths:
       - 'Content/LifeEvents/**'
       - 'Content/Names/**'
