@@ -23,10 +23,13 @@ http://localhost:5173/?view=avatar-editor
 
 Resident Panel、人生时间轴、头像工坊、内容 Compiler 与 Resident Action Life 的展示语义已经足够支撑内容生产。
 
-当前工作重点不再是继续完善 Web 居民算法，而是：
+当前工作重点不再是继续完善 Web 居民算法。当前先完成 **LifeEvent V3 离散事件迁移**：
 
-- 扩充 LifeEvent / 人生经历内容；
-- 用 Coverage 找内容缺口；
+- 把 LifeEvent 从固定 `stages[3]` 改成一次完整离散事件；
+- 用结构事实 / LifeTag 串联后续事件；
+- 取消居民面板独立“正在经历 / 最近发生”；
+- 把 RecentAction 与近期 LifeEvent 合并到一个“最近”；
+- 迁移现有 14 条 V2 内容后，再用 Coverage 扩 LifeEvent / 人生经历；
 - 维护姓名、职业、LifeTag、Resident Profile 等内容资产；
 - Action Presentation 跟随 Unity 真实 Behaviour 增长；
 - 需要时继续制作头像素材；
@@ -56,7 +59,7 @@ Phase 8D2 已完成儿童与老人扩库：儿童 6 Hair / 6 Outfit、老人 6 H
 
 `Web/src/avatar/` 是工坊及 Web 外观覆盖。`Web/src/resident/portrait/`、`Content/Portrait/`、正式五字段 DNA 保持冻结。未保存玩家覆盖的居民优先显示 Profile 派生默认 Q 版头像；生成链不可用时才进入冻结 Portrait fallback。移除玩家覆盖回到 Profile 派生默认。外观编辑不改身份、家庭、职业、故事和游戏日期。
 
-生活模式展示真实 CurrentAction、LifeEvent 与少量 RecentAction；人生模式仍是一条年龄升序时间轴，一件事一个 Chapter，展开 memoryText。RecentAction 来自真实完成行为并自然淘汰，LifeTag 继续保留过去影响后来的真实链。
+目标生活模式只展示“此刻 / 最近”：此刻读取真实 CurrentAction；最近在展示层混合 RecentAction 与离散 LifeEvent。人生模式仍是一条年龄升序时间轴，一件事一个 Chapter，重要事件展开 memoryText。当前代码仍是 V2 三阶段 Fixture，下一代码批次统一迁移，不新增 V2 内容。 
 
 `npm run build` 完整构建；`npm run build-content` 生成 Web 内容，generated 文件不手改。
 
