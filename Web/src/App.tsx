@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ageAtDay,
   districtName,
@@ -12,17 +12,8 @@ import {
 } from './domain/resident';
 import { ResidentAvatar } from './resident/ResidentAvatar';
 import { AvatarIntegration, openAvatarEditor } from './avatar/Integration';
-import {
-  assignmentForEvent,
-  buildResidentLifeView,
-  chooseLifeEvent,
-  eligibleLifeEvents,
-  nextStageDay,
-  stageForAssignment,
-  type LifeEventAssignment,
-} from './simulation/life-events';
+import { buildResidentLifeView, eligibleLifeEvents } from './simulation/life-events';
 
-const START_OFFSETS = [0, 3, 8, 14, 21, 2, 5, 11, 18, 27, 6, 16];
 
 async function loadJson<T>(url: string, label: string): Promise<T> {
   const response = await fetch(url);
@@ -45,14 +36,6 @@ function markerPosition(resident: ResidentRecord, index: number) {
   return { x, y };
 }
 
-function sourceTypeLabel(type: string | undefined) {
-  if (type === 'city') return '城市影响';
-  if (type === 'family') return '家里';
-  if (type === 'work') return '营生';
-  if (type === 'weather') return '天气';
-  return '生活';
-}
-
 function relationLabel(owner: ResidentRecord, member: ResidentRecord) {
   if (owner.spouseId === member.id) return '配偶';
   if (owner.fatherId === member.id) return '父亲';
@@ -61,29 +44,12 @@ function relationLabel(owner: ResidentRecord, member: ResidentRecord) {
   return '家人';
 }
 
-function createAssignments(
-  residents: ResidentRecord[],
-  households: HouseholdRecord[],
-  definitions: ResidentDefinitions,
-  currentDay: number,
-): Record<number, LifeEventAssignment> {
-  const householdById = new Map(households.map((item) => [item.id, item]));
-  return Object.fromEntries(residents.map((resident, index) => {
-    const household = householdById.get(resident.householdId);
-    const event = chooseLifeEvent(resident, household, definitions, currentDay, `initial:${index}`);
-    const startDay = currentDay - START_OFFSETS[index % START_OFFSETS.length];
-    return [resident.id, assignmentForEvent(resident, event, startDay)];
-  }));
-}
-
 export default function App() {
   const [definitions, setDefinitions] = useState<ResidentDefinitions | null>(null);
   const [residentSnapshot, setResidentSnapshot] = useState<ResidentWorldSnapshot | null>(null);
   const [loadError, setLoadError] = useState('');
   const [gameDay, setGameDay] = useState(120);
   const [selectedResidentId, setSelectedResidentId] = useState<number | null>(null);
-  const [assignments, setAssignments] = useState<Record<number, LifeEventAssignment>>({});
-  const [seenStages, setSeenStages] = useState<Record<number, number>>({});
   const [showDev, setShowDev] = useState(true);
   const [panelOpen, setPanelOpen] = useState(true);
   const [familyOpen, setFamilyOpen] = useState(false);
@@ -91,10 +57,6 @@ export default function App() {
   const [expandedChapterId, setExpandedChapterId] = useState<string | null>(null);
   const [followed, setFollowed] = useState<Record<number, boolean>>({});
   const [locationNotice, setLocationNotice] = useState('');
-  const [bodyLines, setBodyLines] = useState(0);
-  const [titleLines, setTitleLines] = useState(0);
-  const bodyRef = useRef<HTMLParagraphElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -104,12 +66,11 @@ export default function App() {
     ])
       .then(([definitionData, snapshotData]) => {
         if (cancelled) return;
-        if (!definitionData.lifeEvents?.length) throw new Error('LifeEvent V2 定义为空');
+        if (!definitionData.lifeEvents?.length) throw new Error('LifeEvent V3 定义为空');
         setDefinitions(definitionData);
         setResidentSnapshot(snapshotData);
         setGameDay(snapshotData.currentDay);
         setSelectedResidentId(snapshotData.residents[0]?.id ?? null);
-        setAssignments(createAssignments(snapshotData.residents, snapshotData.households, definitionData, snapshotData.currentDay));
       })
       .catch((error: Error) => {
         if (!cancelled) setLoadError(error.message);
@@ -120,20 +81,9 @@ export default function App() {
   const residents = residentSnapshot?.residents ?? [];
   const selectedResident = residents.find((item) => item.id === selectedResidentId) ?? residents[0];
   const selectedHousehold = residentSnapshot?.households.find((item) => item.id === selectedResident?.householdId);
-  const assignment = selectedResident ? assignments[selectedResident.id] : undefined;
-  const lifeView = selectedResident && selectedHousehold && definitions && residentSnapshot && assignment
-    ? buildResidentLifeView(selectedResident, selectedHousehold, residentSnapshot, definitions, assignment, gameDay)
-    : selectedResident && definitions && residentSnapshot && assignment
-      ? buildResidentLifeView(selectedResident, undefined, residentSnapshot, definitions, assignment, gameDay)
-      : undefined;
-
-  useEffect(() => {
-    if (!panelOpen || !selectedResident || !assignment) return;
-    setSeenStages((current) => ({
-      ...current,
-      [selectedResident.id]: stageForAssignment(gameDay, assignment),
-    }));
-  }, [panelOpen, selectedResident?.id, assignment, gameDay]);
+  const lifeView = selectedResident && definitions
+    ? buildResidentLifeView(selectedResident, selectedHousehold, definitions, gameDay)
+    : undefined;
 
   useEffect(() => {
     setFamilyOpen(false);
@@ -141,27 +91,6 @@ export default function App() {
     setExpandedChapterId(null);
     setLocationNotice('');
   }, [selectedResidentId]);
-
-  useLayoutEffect(() => {
-    function measure(element: HTMLElement | null) {
-      if (!element) return 0;
-      const style = window.getComputedStyle(element);
-      const lineHeight = Number.parseFloat(style.lineHeight);
-      if (!Number.isFinite(lineHeight) || lineHeight <= 0) return 0;
-      return element.scrollHeight / lineHeight;
-    }
-
-    const frame = window.requestAnimationFrame(() => {
-      setBodyLines(measure(bodyRef.current));
-      setTitleLines(measure(titleRef.current));
-    });
-    return () => window.cancelAnimationFrame(frame);
-  }, [lifeView?.currentStage, lifeView?.showCurrentEvent, selectedResidentId, gameDay, historyExpanded]);
-
-  const stageByResident = useMemo(() => Object.fromEntries(residents.map((resident) => {
-    const currentAssignment = assignments[resident.id];
-    return [resident.id, currentAssignment ? stageForAssignment(gameDay, currentAssignment) : 0];
-  })) as Record<number, number>, [assignments, gameDay, residents]);
 
   const markerResidents = useMemo(() => {
     const visible = residents.slice(0, 18);
@@ -186,27 +115,6 @@ export default function App() {
     const currentIndex = residents.findIndex((item) => item.id === selectedResident.id);
     const nextIndex = (currentIndex + offset + residents.length) % residents.length;
     selectResident(residents[nextIndex].id);
-  }
-
-  function rerollEvent() {
-    if (!selectedResident || !definitions) return;
-    const eligible = eligibleLifeEvents(selectedResident, selectedHousehold, definitions, gameDay);
-    if (!eligible.length) return;
-    const currentId = assignment?.eventId;
-    const currentIndex = Math.max(0, eligible.findIndex((item) => item.id === currentId));
-    const next = eligible[(currentIndex + 1) % eligible.length];
-    setAssignments((current) => ({
-      ...current,
-      [selectedResident.id]: assignmentForEvent(selectedResident, next, gameDay),
-    }));
-    setSeenStages((current) => ({ ...current, [selectedResident.id]: -1 }));
-    setHistoryExpanded(false);
-    setExpandedChapterId(null);
-  }
-
-  function jumpToNextStage() {
-    if (!assignment) return;
-    setGameDay((day) => Math.max(day, nextStageDay(day, assignment)));
   }
 
   function focusLocation(label: string) {
@@ -242,7 +150,7 @@ export default function App() {
     );
   }
 
-  if (!definitions || !residentSnapshot || !selectedResident || !assignment || !lifeView) {
+  if (!definitions || !residentSnapshot || !selectedResident || !lifeView) {
     return (
       <main className="app-shell center-state">
         <section className="state-card">
@@ -259,14 +167,12 @@ export default function App() {
   const selectedDistrict = districtName(definitions, selectedResident.districtId);
   const selectedProfileLabels = residentProfileLabels(definitions, selectedResident);
   const selectedIndex = residents.findIndex((item) => item.id === selectedResident.id);
-  const currentEventEntry = lifeView.eventEntries.at(-1)!;
-  const previousEventEntry = lifeView.priorEventEntries[0];
-  const unreadCount = residents.filter((resident) => (stageByResident[resident.id] ?? 0) > (seenStages[resident.id] ?? -1)).length;
-  const currentStage = lifeView.currentStage;
-  const bodyDensity = bodyLines <= 3.5 ? 'good' : bodyLines <= 4.8 ? 'warn' : 'bad';
-  const titleDensity = titleLines <= 2.05 ? 'good' : 'bad';
   const lifeCount = lifeView.history.length;
   const chronologicalHistory = [...lifeView.history].sort((left, right) => left.day - right.day);
+  const eligibleEventCount = eligibleLifeEvents(selectedResident, selectedHousehold, definitions, gameDay).length;
+  const lifeTagLabels = selectedResident.lifeTags
+    .map((id) => definitions.lifeTags.find((item) => item.id === id)?.label)
+    .filter((label): label is string => Boolean(label));
 
   return (
     <main className="sim-game" data-dev={showDev ? 'true' : 'false'} data-city-seed={residentSnapshot.citySeed} data-game-day={gameDay}>
@@ -294,14 +200,12 @@ export default function App() {
 
       <section className="resident-markers" aria-label="模拟居民">
         {markerResidents.map((resident, index) => {
-          const isUnread = (stageByResident[resident.id] ?? 0) > (seenStages[resident.id] ?? -1);
           const isSelected = resident.id === selectedResident.id && panelOpen;
           const position = markerPosition(resident, index);
           const residentOccupation = occupationFor(definitions, resident.occupationId)?.name ?? '居民';
           return (
             <button key={resident.id} type="button" className={`resident-marker ${isSelected ? 'is-selected' : ''}`} style={{ left: `${position.x}%`, top: `${position.y}%` }} onClick={() => selectResident(resident.id)} aria-label={`查看居民 ${resident.displayName}`}>
               <span className="resident-marker__person">人</span>
-              {isUnread && !isSelected && <i className="resident-marker__new" />}
               <span className="resident-marker__label"><b>{resident.displayName}</b><small>{residentOccupation}</small></span>
             </button>
           );
@@ -447,43 +351,28 @@ export default function App() {
                   </div>
                 </section>
 
-                {lifeView.showCurrentEvent && (
-                  <section className="resident-recent">
-                    <div className="resident-recent__heading"><b>{currentStage < 2 ? '正在经历' : '最近发生'}</b></div>
-                    <article className="life-event-card">
-                      <div className="life-event-card__meta">
-                        <time>{relativeDayLabel(Math.max(0, gameDay - currentEventEntry.day))}</time>
-                        {lifeView.event.source && (
-                          <button type="button" className={`life-event-source is-${lifeView.event.source.type}`} onClick={() => focusLocation(lifeView.event.source!.label)}>
-                            {sourceTypeLabel(lifeView.event.source.type)} · {lifeView.event.source.label}
-                          </button>
+                <section className="resident-recent-feed">
+                  <div className="resident-recent-feed__heading"><b>最近</b></div>
+                  <ul className="resident-recent-feed__list">
+                    {lifeView.recentEntries.map((entry) => (
+                      <li
+                        key={entry.id}
+                        data-recent-kind={entry.kind}
+                        className={entry.kind === 'life-event' ? 'is-life-event' : 'is-action'}
+                      >
+                        <time>{relativeDayLabel(Math.max(0, gameDay - entry.day))}</time>
+                        {entry.kind === 'life-event' ? (
+                          <div className="resident-recent-feed__event">
+                            <b>{entry.title}</b>
+                            <p>{entry.text}</p>
+                          </div>
+                        ) : (
+                          <p className="resident-recent-feed__action">{entry.text}</p>
                         )}
-                      </div>
-                      <h2 ref={titleRef}>{currentEventEntry.title}</h2>
-                      <p ref={bodyRef}>{currentEventEntry.text}</p>
-                      {previousEventEntry && (
-                        <div className="life-event-prior">
-                          <span>└ {relativeDayLabel(Math.max(0, gameDay - previousEventEntry.day))}</span>
-                          <b>{previousEventEntry.title}</b>
-                        </div>
-                      )}
-                    </article>
-                  </section>
-                )}
-
-                {lifeView.recentActions.length > 0 && (
-                  <section className="resident-recent-action-section">
-                    <div className="resident-recent-action-section__heading"><b>最近</b></div>
-                    <ul className="resident-recent-action-list">
-                      {lifeView.recentActions.slice(0, 3).map((entry) => (
-                        <li key={entry.id}>
-                          <time>{relativeDayLabel(Math.max(0, gameDay - entry.day))}</time>
-                          <span>{entry.text}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-                )}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               </>
             )}
           </div>
@@ -517,31 +406,26 @@ export default function App() {
 
       {showDev && (
         <aside className="dev-panel">
-          <header><b>RESIDENT PANEL / PORTRAIT-FIRST</b><button type="button" onClick={() => setShowDev(false)}>隐藏</button></header>
+          <header><b>RESIDENT PANEL / CONTENT FIXTURE</b><button type="button" onClick={() => setShowDev(false)}>隐藏</button></header>
           <div className="dev-panel__row"><span>居民</span><b>{selectedResident.displayName} · {selectedIndex + 1}/{residents.length}</b></div>
-          <div className="dev-panel__row"><span>LifeEvent</span><b>{lifeView.event.id}</b></div>
-          <div className="dev-panel__row"><span>阶段</span><b>{currentStage + 1}/3 · {lifeView.event.source?.label ?? '个人生活'}</b></div>
-          <div className="dev-panel__row"><span>人生记录</span><b>{lifeView.event.recordToHistory ? '完成后进入人生经历' : '普通生活事件'}</b></div>
+          <div className="dev-panel__row"><span>近期事件</span><b>{selectedResident.recentLifeEvents.length} 条</b></div>
+          <div className="dev-panel__row"><span>可用事件</span><b>{eligibleEventCount} 条</b></div>
+          <div className="dev-panel__row"><span>人生记录</span><b>{lifeCount} 章</b></div>
+          <div className="dev-panel__row"><span>经历标记</span><b>{lifeTagLabels.length ? lifeTagLabels.join(' · ') : '暂无'}</b></div>
           <div className="dev-panel__row"><span>面板模式</span><b>{historyExpanded ? '人生经历' : '当前生活'}</b></div>
           <div className="dev-panel__row"><span>家庭</span><b>Household {selectedResident.householdId} · {householdMembers.length} 位家人</b></div>
-          <div className="dev-density">
-            <span className={`density-chip is-${bodyDensity}`}>正文 {bodyLines.toFixed(1)} 行</span>
-            <span className={`density-chip is-${titleDensity}`}>标题 {titleLines.toFixed(1)} 行</span>
-          </div>
-          <div className="dev-buttons dev-buttons--three">
+          <div className="dev-buttons dev-buttons--two">
             <button type="button" onClick={() => selectRelativeResident(-1)}>上一居民</button>
             <button type="button" onClick={() => selectRelativeResident(1)}>下一居民</button>
-            <button type="button" onClick={rerollEvent}>换一件事</button>
           </div>
-          <div className="dev-buttons dev-buttons--three">
+          <div className="dev-buttons dev-buttons--two">
             <button type="button" onClick={() => setGameDay((day) => day + 1)}>+1 天</button>
             <button type="button" onClick={() => setGameDay((day) => day + 10)}>+10 天</button>
-            <button type="button" onClick={jumpToNextStage} disabled={currentStage === 2}>推进故事</button>
           </div>
           <div className="dev-buttons dev-buttons--two">
             <button type="button" onClick={toggleFamily}>展开家人</button>
           </div>
-          <p>{unreadCount} 位居民有未查看的新故事阶段。生活模式看现在，人生模式只按年龄回看已经沉淀的往事。</p>
+          <p>固定 Fixture 只用于内容与界面预览；正式事件触发、行为和结构变化由 Unity 主工程负责。</p>
         </aside>
       )}
 
