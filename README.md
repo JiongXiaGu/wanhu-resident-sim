@@ -62,8 +62,18 @@ Phase 8D2 已完成儿童与老人扩库：儿童 6 Hair / 6 Outfit、老人 6 H
 
 ## Review 与交付
 
-不依赖 Vercel。纯 SVG 画稿先通过当前真实 Renderer 静态短循环，实际看 320/96/64/48px；静态图不能证明 UI、保存、导入或居民绑定。
+不依赖 Vercel。正式 CI 已拆分：
 
-正式批次 tmp-* 聚合 → Build + Resident Visual Review → 下载同 SHA Artifact 并看图 → 重读 main → 非 force 推进 → main 再回归。8D2 的 11 张诊断、28 张真实工坊/全列表首尾/绑定截图和 96 张原尺寸图在 avatar/phase8d2/，源码与 SHA 随 Artifact 保存。原全组合、Coverage、保存导入、居民连续性及正式 fallback 保留，132 份旧固定配方逐字节不变。
+~~~text
+Build
+Resident Content Review
+Avatar Visual Review
+~~~
 
-用户从 main 拉取测试，不交付压缩包；执行者仍需下载并实际看 Artifact。8D2 Artifact 继续作为头像基线；当前回归还要覆盖 Profile 派生头像、玩家覆盖优先级与 Portrait fallback。8C 大交互和 Unity 迁移未实施。CI PASS 不等于视觉或玩法最终认可，接手以远端当前代码和文档为准。
+居民内容修改只跑 Build + Resident Content Review；头像素材 / Catalog / Renderer 修改跑 Build + Avatar Visual Review；App.tsx、main.tsx、styles.css、ResidentAvatar.tsx 等跨域修改同时跑两套。纯文档不触发视觉 Review。
+
+Resident Content Review 的 Artifact 为 `resident-content-review`，重点检查 Resident Panel、LifeEvent、Life History、婚姻 / LifeTag 连续性和 Action Presentation 展示。Avatar Visual Review 的 Artifact 为 `avatar-visual-review`，继续保留 Portrait、Avatar Workshop、8A / 8B / 8D 与旧固定配方门禁。
+
+纯 SVG 画稿仍可先通过真实 Renderer 静态短循环检查 320/96/64/48px；静态图不能证明 UI、保存、导入或居民绑定。
+
+用户从 main 拉取测试，不交付压缩包；执行者仍需下载并实际查看对应同 SHA Artifact。CI PASS 不等于视觉或内容最终认可，接手以远端当前代码和文档为准。

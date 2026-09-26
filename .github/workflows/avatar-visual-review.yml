@@ -1,25 +1,40 @@
-name: Resident Visual Review
+name: Avatar Visual Review
 
 on:
   push:
     branches: [main, 'tmp-*']
     paths:
-      - 'Web/**'
-      - 'Content/**'
-      - 'Tools/**'
-      - 'scripts/**'
+      - 'Content/Portrait/**'
+      - 'Content/Residents/**'
+      - 'Tools/PortraitCatalogAudit/**'
+      - 'Tools/ResidentPortraitCompiler/**'
+      - 'Tools/ResidentProfileCompiler/**'
+      - 'Web/src/App.tsx'
+      - 'Web/src/PortraitLab.tsx'
+      - 'Web/src/avatar/**'
+      - 'Web/src/main.tsx'
+      - 'Web/src/portrait-lab.css'
+      - 'Web/src/resident-avatar.css'
+      - 'Web/src/resident/ResidentAvatar.tsx'
+      - 'Web/src/resident/portrait/**'
+      - 'Web/src/styles.css'
+      - 'scripts/avatar-review/**'
+      - 'scripts/capture-avatar-*.mjs'
+      - 'scripts/capture-portrait-review.mjs'
+      - 'scripts/compress-review-screenshots.mjs'
+      - 'scripts/review-avatar-integration.mjs'
       - 'package.json'
-      - '.github/workflows/visual-review.yml'
-      - 'Documentation/**'
-      - 'AGENTS.md'
-      - 'README.md'
+      - 'package-lock.json'
+      - '.github/workflows/avatar-visual-review.yml'
   workflow_dispatch:
 
 concurrency:
-  group: resident-visual-review-${{ github.ref }}
+  group: avatar-visual-review-${{ github.ref }}
   cancel-in-progress: true
+
 permissions:
   contents: read
+
 jobs:
   capture:
     runs-on: ubuntu-latest
@@ -33,7 +48,7 @@ jobs:
         run: |
           mkdir -p review-screenshots/avatar
           git rev-parse HEAD > review-screenshots/avatar/source-commit.txt
-          git archive --format=zip --output=review-screenshots/avatar/source-and-contract.zip HEAD Web/src/avatar Web/src/App.tsx Web/src/resident/ResidentAvatar.tsx Web/src/main.tsx scripts Documentation AGENTS.md README.md .github/workflows/visual-review.yml
+          git archive --format=zip --output=review-screenshots/avatar/source-and-contract.zip HEAD Content/Portrait Content/Residents Tools/PortraitCatalogAudit Tools/ResidentPortraitCompiler Tools/ResidentProfileCompiler Web/src/avatar Web/src/App.tsx Web/src/PortraitLab.tsx Web/src/resident/ResidentAvatar.tsx Web/src/resident/portrait Web/src/main.tsx scripts Documentation AGENTS.md README.md package.json .github/workflows/avatar-visual-review.yml
       - name: Install CJK fonts
         run: |
           sudo apt-get update -qq
@@ -63,8 +78,6 @@ jobs:
           done
           cat /tmp/wanhu-resident-vite.log
           exit 1
-      - name: Review resident life and story continuity
-        run: node scripts/capture-resident-review.mjs
       - name: Review frozen portrait frame contract
         run: node scripts/capture-portrait-review.mjs
       - name: Review avatar editing, object saves and modular artwork
@@ -96,11 +109,11 @@ jobs:
           node scripts/capture-avatar-age-themes.mjs
       - name: Compress legacy review previews
         run: node scripts/compress-review-screenshots.mjs
-      - name: Upload screenshots and editable components
+      - name: Upload avatar visual review
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: resident-visual-review
+          name: avatar-visual-review
           path: review-screenshots/
           if-no-files-found: error
           retention-days: 7

@@ -1,0 +1,105 @@
+name: Resident Content Review
+
+on:
+  push:
+    branches: [main, 'tmp-*']
+    paths:
+      - 'Content/LifeEvents/**'
+      - 'Content/Names/**'
+      - 'Content/Occupations/**'
+      - 'Content/ResidentActions/**'
+      - 'Content/Residents/**'
+      - 'Content/Simulation/**'
+      - 'Content/Stories/**'
+      - 'Content/Tags/**'
+      - 'Schemas/**'
+      - 'Tools/ContentContractCompiler/**'
+      - 'Tools/LifeEventCompiler/**'
+      - 'Tools/ResidentActionLife/**'
+      - 'Tools/ResidentGenerator/**'
+      - 'Tools/ResidentProfileCompiler/**'
+      - 'Tools/ResidentSnapshotCompiler/**'
+      - 'Tools/StoryBucketCompiler/**'
+      - 'Tools/StoryCompiler/**'
+      - 'Tools/WebContentCompiler/**'
+      - 'Web/src/App.tsx'
+      - 'Web/src/domain/**'
+      - 'Web/src/game-validation.css'
+      - 'Web/src/life-log.css'
+      - 'Web/src/main.tsx'
+      - 'Web/src/mock-residents.ts'
+      - 'Web/src/resident-avatar.css'
+      - 'Web/src/resident-life-memory.css'
+      - 'Web/src/resident-panel-v2.css'
+      - 'Web/src/resident/ResidentAvatar.tsx'
+      - 'Web/src/simulation/**'
+      - 'Web/src/styles.css'
+      - 'scripts/capture-resident-review.mjs'
+      - 'scripts/compress-review-screenshots.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/resident-content-review.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: resident-content-review-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Retain content source with review artifacts
+        run: |
+          mkdir -p review-screenshots/content
+          git rev-parse HEAD > review-screenshots/content/source-commit.txt
+          git archive --format=zip --output=review-screenshots/content/source-and-contract.zip HEAD Content Schemas Tools Web/src/App.tsx Web/src/domain Web/src/main.tsx Web/src/resident/ResidentAvatar.tsx Web/src/simulation scripts/capture-resident-review.mjs Documentation AGENTS.md README.md package.json .github/workflows/resident-content-review.yml
+      - name: Install CJK fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+      - name: Install app dependencies
+        run: npm install --prefer-offline --no-audit --no-fund
+      - name: Cache Playwright browser
+        id: cache-playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-1.55.0-chromium
+      - name: Install review packages
+        run: npm install --no-save --prefer-offline --no-audit --no-fund playwright@1.55.0 sharp@0.34.3
+      - name: Install Chromium
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+      - name: Build generated content
+        run: npm run build-content
+      - name: Start Vite review server
+        run: |
+          npm run dev -w Web -- --host 127.0.0.1 --port 4173 > /tmp/wanhu-resident-vite.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173 >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/wanhu-resident-vite.log
+          exit 1
+      - name: Review resident content, life and story continuity
+        run: node scripts/capture-resident-review.mjs
+      - name: Compress resident content previews
+        run: node scripts/compress-review-screenshots.mjs
+      - name: Upload resident content review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resident-content-review
+          path: review-screenshots/
+          if-no-files-found: error
+          retention-days: 7

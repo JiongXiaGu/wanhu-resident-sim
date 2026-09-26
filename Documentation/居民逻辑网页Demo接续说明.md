@@ -129,24 +129,16 @@ LifeTag                  12
 
 ## 下一阶段顺序
 
-### 1. 先拆内容 Review 与头像 Review
-
-当前 Resident Visual Review 对 Content/**、Documentation/** 等修改也会执行整套头像 8A / 8B / 8D 回归。
-
-这对高频内容生产过重。
-
-下一项基础设施任务应把 Review 分成：
+Review 拆分已经完成：
 
 ~~~text
-Resident Content Review
-Avatar Visual Review
+居民内容 → Build + Resident Content Review
+头像内容 → Build + Avatar Visual Review
+跨域修改 → Build + 两套 Review
+纯文档 → 不触发视觉 Review
 ~~~
 
-内容改动只跑 Build + 居民内容专项浏览器检查；头像改动才跑完整头像资产回归。跨域代码再跑两边。
-
-这一步只优化验证链路，不改变居民玩法。
-
-### 2. LifeEvent 内容生产
+### 1. LifeEvent 内容生产
 
 Review 变轻后，进入 LifeEvent 小批量生产。
 
@@ -167,13 +159,13 @@ Review 变轻后，进入 LifeEvent 小批量生产。
 
 每批保持小规模，先看真实 Resident Panel / Life History 阅读效果，再继续扩。
 
-### 3. Coverage 驱动补缺
+### 2. Coverage 驱动补缺
 
 不要以“总条数”为唯一目标。
 
 继续利用 LifeStage、Occupation Group、家庭状态、Gender、LifeTag 等已有 Coverage 找空洞，再决定下一批故事。
 
-### 4. 其它内容按缺口扩充
+### 3. 其它内容按缺口扩充
 
 姓名、职业、LifeTag、Profile 和头像都按实际内容需要扩。
 
@@ -193,7 +185,7 @@ Build
 
 头像修改继续按头像工作流审图。
 
-当前 Actions 尚未拆分，因此自动触发的完整 Resident Visual Review 只是现有 CI 结构，不应被理解为未来内容生产的永久要求。
+Resident Content Review 的 Artifact 只需要审查居民内容相关截图；Avatar Visual Review 才承担完整头像资产回归。
 
 ## 当前不做
 
@@ -205,4 +197,4 @@ Build
 - 不为未来可能存在的 Behaviour 预写大量 Action Presentation；
 - 不因为内容生产而重做已经稳定的头像系统。
 
-下一阶段应先完成 Review 工作流拆分，然后正式进入 LifeEvent / 人生经历内容生产。
+下一阶段正式进入 LifeEvent / 人生经历的小批量内容生产。
