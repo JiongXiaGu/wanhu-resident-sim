@@ -23,7 +23,7 @@ if (givenNames.schema !== 'wanhu.given-names.v2') throw new Error(`Unsupported g
 if (lifeTags.schema !== 'wanhu.life-tags.v1') throw new Error(`Unsupported life-tag schema: ${lifeTags.schema}`);
 if (occupationGroups.schema !== 'wanhu.occupation-groups.v1') throw new Error(`Unsupported occupation-group schema: ${occupationGroups.schema}`);
 if (actionPresentations.schema !== 'wanhu.resident-action-presentations.v1') throw new Error(`Unsupported Action Presentation schema: ${actionPresentations.schema}`);
-if (lifeEvents.schema !== 'wanhu.life-events.v2') throw new Error(`Unsupported LifeEvent schema: ${lifeEvents.schema}`);
+if (lifeEvents.schema !== 'wanhu.life-events.v3') throw new Error(`Unsupported LifeEvent schema: ${lifeEvents.schema}`);
 if (portrait.schema !== 'wanhu.portrait-catalog.v2') throw new Error(`Unsupported portrait schema: ${portrait.schema}`);
 if (residentProfiles.schema !== 'wanhu.resident-profile-catalog.v1') throw new Error(`Unsupported resident profile schema: ${residentProfiles.schema}`);
 
@@ -227,6 +227,16 @@ for (const action of actionPresentations.items) {
 }
 
 const structuralRequestCounts = Object.fromEntries([...structuralRequestTypes].map((type) => [type, 0]));
+requireArray(lifeEvents.items, 'LifeEvent V3');
+for (const event of lifeEvents.items) {
+  validateWeight(event.weight, event.id);
+  if (typeof event.title !== 'string' || !event.title.trim()) throw new Error(`${event.id}: title is required.`);
+  if (typeof event.text !== 'string' || !event.text.trim()) throw new Error(`${event.id}: LifeEvent V3 text is required.`);
+  if ('stages' in event || 'delayDays' in event) throw new Error(`${event.id}: LifeEvent V3 must not contain Stage fields.`);
+  if (event.recordToHistory !== undefined && typeof event.recordToHistory !== 'boolean') throw new Error(`${event.id}: recordToHistory must be boolean.`);
+  if (event.recordToHistory && (typeof event.memoryText !== 'string' || !event.memoryText.trim())) throw new Error(`${event.id}: Story Chapter requires memoryText.`);
+  if (event.memoryText !== undefined && !event.recordToHistory) throw new Error(`${event.id}: memoryText is only valid when recordToHistory is true.`);
+}
 for (const event of lifeEvents.items ?? []) {
   const rule = event.eligibility ?? {};
   const requiredTags = rule.requiredTags ?? [];
