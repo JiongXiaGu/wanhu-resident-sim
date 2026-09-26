@@ -215,7 +215,6 @@ const followup = definitions.lifeEvents.find((event) => event.id === 'lifeevent.
 if (!followup || !occupation || !eligible(followup, newlywed, occupation.groupId)) throw new Error('spouse + newly-married must unlock the discrete newlywed follow-up.');
 
 if (!(await page.locator('.resident-identity').innerText()).includes('已婚')) throw new Error('Marriage structure fact should be visible in resident identity.');
-await page.getByRole('button', { name: /返回生活/ }).click();
 await page.waitForSelector('.resident-recent-feed');
 const continuityText = await page.locator('.resident-recent-feed').innerText();
 for (const title of ['有人来给家里说亲', '两家把亲事谈妥了', '今日成了婚']) {
